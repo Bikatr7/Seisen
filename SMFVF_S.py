@@ -7,372 +7,370 @@ from time import sleep
 
 #-------------------Start-of-search()---------------------------------------------------------
 
-def search(term,connection,force_return_value,pause_value):
+def search(term,connection,forceReturnValue,pauseValue):
 
-    Jap = readSingleColumnQuery(connection,'select jValue from words where jValue = "' + term + '"')
-    Jap_roma = readSingleColumnQuery(connection,'select jrValue from words where jrValue = "' + term + '"')
-    Eng = readSingleColumnQuery(connection,'select eValue from words where eValue = "' + term + '"')
-    Furi = readSingleColumnQuery(connection,'select fValue from words where fValue != 0 and fValue = "' + term + '"')
-    corr = readSingleColumnQuery(connection,'select cValue from words where cValue = "' + term + '"')
-    prob = readSingleColumnQuery(connection,'select pValue from words where pValue = "' + term + '"')
-    csep_line = readSingleColumnQuery(connection,'select csep from cseps where csep_id = "' + term + '"')
-    csep_actual = readSingleColumnQuery(connection,'select csep from cseps where csep = "' + term + '"')
-    word_id = readSingleColumnQuery(connection,'select jValue from words where word_id = "' + term + '"')
-    typo_actual = readSingleColumnQuery(connection,'select typo from typos where typo = "' + term + '"')
-    itypo_actual = readSingleColumnQuery(connection,'select itypo from itypos where itypo = "' + term + '"')
-    typo_id = readSingleColumnQuery(connection,'select typo from typos where typo_id = "' + term + '"')
-    itypo_id = readSingleColumnQuery(connection,'select itypo from itypos where itypo_id = "' + term + '"')
-    csep_id = readSingleColumnQuery(connection,'select csep from cseps where csep_id = "' + term + '"')
+    jap = read_single_column_query(connection,'select jValue from words where jValue = "' + term + '"')
+    japRoma = read_single_column_query(connection,'select jrValue from words where jrValue = "' + term + '"')
+    eng = read_single_column_query(connection,'select eValue from words where eValue = "' + term + '"')
+    furi = read_single_column_query(connection,'select fValue from words where fValue != 0 and fValue = "' + term + '"')
+    corr = read_single_column_query(connection,'select cValue from words where cValue = "' + term + '"')
+    prob = read_single_column_query(connection,'select pValue from words where pValue = "' + term + '"')
+    csepLine = read_single_column_query(connection,'select csep from cseps where csep_id = "' + term + '"')
+    csepActual = read_single_column_query(connection,'select csep from cseps where csep = "' + term + '"')
+    word_id = read_single_column_query(connection,'select jValue from words where word_id = "' + term + '"')
+    typoActual = read_single_column_query(connection,'select typo from typos where typo = "' + term + '"')
+    itypoActual = read_single_column_query(connection,'select itypo from itypos where itypo = "' + term + '"')
+    typo_id = read_single_column_query(connection,'select typo from typos where typo_id = "' + term + '"')
+    itypo_id = read_single_column_query(connection,'select itypo from itypos where itypo_id = "' + term + '"')
+    csep_id = read_single_column_query(connection,'select csep from cseps where csep_id = "' + term + '"')
 
-    if(len(Jap) > 0 and force_return_value == None or force_return_value == "JAP"):
+    if(len(jap) > 0 and forceReturnValue == None or forceReturnValue == "JAP"):
 
         print("------------------------------------------------\njValue\n------------------------------------------------")
 
-        wordid_j = readSingleColumnQuery(connection,'select word_id from words where jValue = "' + term + '"')
+        word_id_j = read_single_column_query(connection,'select word_id from words where jValue = "' + term + '"')
 
-        if(len(Jap) > 1):
+        if(len(jap) > 1):
 
-            print(Jap,end="\n")
-            print(wordid_j)
-            index = input("\nPlease input the index of the jValue you are looking for")
-            term = Jap[index]
-            word_id = wordid_j[index]
+            print(jap,end="\n")
+            print(word_id_j)
+            index = int(input("\nPlease input the index of the jValue you are looking for "))
+            term = jap[index]
+            word_id = word_id_j[index]
 
         else:
 
-            term = Jap[0]
-            word_id = wordid_j[0]
+            term = jap[0]
+            word_id = word_id_j[0]
             
-        jr_j = readSingleColumnQuery(connection,'select jrValue from words where word_id = ' + word_id)
-        Eng_j = readSingleColumnQuery(connection,'select eValue from words where word_id = ' + word_id)
-        Furi_j = readSingleColumnQuery(connection,'select fValue from words where word_id = ' + word_id)
-        corr_j = readSingleColumnQuery(connection,'select cValue from words where word_id = ' + word_id)
-        prob_j = readSingleColumnQuery(connection,'select pValue from words where word_id = ' + word_id)
-        cSEP_j = readSingleColumnQuery(connection,'select csep from cseps where word_id = ' + word_id)
+        jr_j,eng_j,furi_j,corr_j,prob_j = read_multi_column_query(connection,'select jrValue,eValue,fValue,cValue,pValue from words where word_id = ' + word_id)
+        csep_j = read_single_column_query(connection,'select csep from cseps where word_id = ' + word_id)
+        csep_line_j = read_single_column_query(connection,'select csep_id from cseps where word_id = ' + word_id)
 
-        print("id : " +word_id)
+        print("word_id : " + word_id)
         print("jValue : " + term)
         print("jrValue : " + jr_j[0])
-        print("eValue : " + Eng_j[0])
-        print("fValue : " + Furi_j[0])
+        print("eValue : " + eng_j[0])
+        print("fValue : " + furi_j[0])
         print("cValue : " + corr_j[0])
         print("pValue : " + prob_j[0] + "\nValid Cseps : ",end = '')
-        print(cSEP_j)
+        print(csep_j)
+        print("\nValid Csep Ids : ",end = '')
+        print(csep_line_j)
 
-        if(force_return_value == "JAP"):
+        if(forceReturnValue == "JAP" and pauseValue == 1):
             os.system('pause')
             return
+        elif(forceReturnValue =="JAP"):
+            return
+        else:
+            pass
 
-    if(len(Eng) > 0 and force_return_value == None or force_return_value == "ENG"):
+    if(len(eng) > 0 and forceReturnValue == None or forceReturnValue == "ENG"):
 
         print("------------------------------------------------\neValue\n------------------------------------------------")
 
-        wordid_e = readSingleColumnQuery(connection,'select word_id from words where eValue = "' + term + '"')
+        word_id_e,jap_e = read_multi_column_query(connection,'select word_id,jValue from words where eValue = "' + term + '"')
 
-        if(len(Eng) > 1):
+        if(len(eng) > 1):
 
-            print(Eng,end="\n")
-            print(wordid_e)
-            index = input("\nPlease input the index of the eValue you are looking for")
-            term = Eng[index]
-            word_id = wordid_e[index]
+            print(eng,end="\n")
+            print(jap_e)
+            print(word_id_e)
+            index = int(input("\nPlease input the index of the eValue you are looking for "))
+            term = eng[index]
+            word_id = word_id_e[index]
 
         else:
             
-            term = Eng[0]
-            word_id = wordid_e[0]
+            term = eng[0]
+            word_id = word_id_e[0]
             
-        jr_e = readSingleColumnQuery(connection,'select jrValue from words where word_id = ' + word_id)
-        Jap_e = readSingleColumnQuery(connection,'select jValue from words where word_id = ' + word_id)
-        Furi_e = readSingleColumnQuery(connection,'select fValue from words where word_id = ' + word_id)
-        corr_e = readSingleColumnQuery(connection,'select cValue from words where word_id = ' + word_id)
-        prob_e = readSingleColumnQuery(connection,'select pValue from words where word_id = ' + word_id)
-        cSEP_e = readSingleColumnQuery(connection,'select csep from cseps where word_id = ' + word_id)
+        jr_e,jap_e,furi_e,corr_e,prob_e = read_multi_column_query(connection,'select jrValue,jValue,fValue,cValue,pValue from words where word_id = ' + word_id)
+        csep_e = read_single_column_query(connection,'select csep from cseps where word_id = ' + word_id)
+        csep_line_e = read_single_column_query(connection,'select csep_id from cseps where word_id = ' + word_id)
 
-        print("id : " + word_id)
-        print("jValue : " + Jap_e[0])
+        print("word_id : " + word_id)
+        print("jValue : " + jap_e[0])
         print("jrValue : " + jr_e[0])
         print("eValue : " + term)
-        print("fValue : " + Furi_e[0])
+        print("fValue : " + furi_e[0])
         print("cValue : " + corr_e[0])
         print("pValue : " + prob_e[0] + "\nValid Cseps : ",end = '')
-        print(cSEP_e)
+        print(csep_e)
+        print("\nValid Csep Ids : ",end = '')
+        print(csep_line_e)
 
-        if(force_return_value == "ENG" and pause_value == 1):
+        if(forceReturnValue == "ENG" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="ENG"):
+        elif(forceReturnValue =="ENG"):
             return
         else:
             pass
 
-    if(len(Jap_roma) > 0 and force_return_value == None or force_return_value == "JAP_ROMA"):
+    if(len(japRoma) > 0 and forceReturnValue == None or forceReturnValue == "JAP_ROMA"):
 
         print("------------------------------------------------\njrValue\n------------------------------------------------")
 
-        wordid_jr = readSingleColumnQuery(connection,'select word_id from words where jrValue = "' + term + '"')
+        word_id_jr = read_single_column_query(connection,'select word_id from words where jrValue = "' + term + '"')
 
-        if(len(Jap_roma) > 1):
+        if(len(japRoma) > 1):
 
-            print(Jap_roma,end="\n")
-            print(wordid_jr)
-            index = input("\nPlease input the index of the jrValue you are looking for")
-            term = Jap_roma[index]
-            word_id = wordid_jr[index]
+            print(japRoma,end="\n")
+            print(word_id_jr)
+            index = int(input("\nPlease input the index of the jrValue you are looking for "))
+            term = japRoma[index]
+            word_id = word_id_jr[index]
 
         else:
             
-            term = Jap_roma[0]
-            word_id = wordid_jr[0]
+            term = japRoma[0]
+            word_id = word_id_jr[0]
             
-        Jap_jr = readSingleColumnQuery(connection,'select jValue from words where word_id = ' + word_id)
-        Eng_jr = readSingleColumnQuery(connection,'select eValue from words where word_id = ' + word_id)
-        Furi_jr = readSingleColumnQuery(connection,'select fValue from words where word_id = ' + word_id)
-        corr_jr = readSingleColumnQuery(connection,'select cValue from words where word_id = ' + word_id)
-        prob_jr = readSingleColumnQuery(connection,'select pValue from words where word_id = ' + word_id)
-        cSEP_jr = readSingleColumnQuery(connection,'select csep from cseps where word_id = ' + word_id)
+        eng_jr,jap_jr,furi_jr,corr_jr,prob_jr = read_multi_column_query(connection,'select eValue,jValue,fValue,cValue,pValue from words where word_id = ' + word_id)
+        csep_jr = read_single_column_query(connection,'select csep from cseps where word_id = ' + word_id)
+        csep_line_jr = read_single_column_query(connection,'select csep_id from cseps where word_id = ' + word_id)
 
-        print("id : " +word_id)
-        print("jValue : " + Jap_jr[0])
+        print("word_id : " + word_id)
+        print("jValue : " + jap_jr[0])
         print("jrValue : " + term)
-        print("eValue : " + Eng_jr[0])
-        print("fValue : " + Furi_jr[0])
+        print("eValue : " + eng_jr[0])
+        print("fValue : " + furi_jr[0])
         print("cValue : " + corr_jr[0])
         print("pValue : " + prob_jr[0] + "\nValid Cseps : ",end = '')
-        print(cSEP_jr)
+        print(csep_jr)
+        print("\nValid Csep Ids : ",end = '')
+        print(csep_line_jr)
 
-        if(force_return_value == "JAP_ROMA" and pause_value == 1):
+        if(forceReturnValue == "JAP_ROMA" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="JAP_ROMA"):
+        elif(forceReturnValue =="JAP_ROMA"):
             return
         else:
             pass
 
-    if(len(Furi) > 0 and force_return_value == None or force_return_value == "FURI"):
+    if(len(furi) > 0 and forceReturnValue == None or forceReturnValue == "FURI"):
 
         print("------------------------------------------------\nfValue\n------------------------------------------------")
 
-        wordid_f = readSingleColumnQuery(connection,'select word_id from words where fValue != 0 and fValue = "' + term + '"')
+        word_id_f = read_single_column_query(connection,'select word_id from words where fValue != 0 and fValue = "' + term + '"')
 
-        if(len(Furi) > 1):
+        if(len(furi) > 1):
 
-            print(Furi,end="\n")
-            print(wordid_f)
-            index = input("\nPlease input the index of the fValue you are looking for")
-            term = Furi[index]
-            word_id = wordid_f[index]
+            print(furi,end="\n")
+            print(word_id_f)
+            index = int(input("\nPlease input the index of the fValue you are looking for "))
+            term = furi[index]
+            word_id = word_id_f[index]
 
         else:
             
-            term = Furi[0]
-            word_id = wordid_f[0]
+            term = furi[0]
+            word_id = word_id_f[0]
             
-        Jap_f = readSingleColumnQuery(connection,'select jValue from words where word_id = ' + word_id)
-        Eng_f = readSingleColumnQuery(connection,'select eValue from words where word_id = ' + word_id)
-        Jap_roma_f = readSingleColumnQuery(connection,'select jrValue from words where word_id = ' + word_id)
-        corr_f = readSingleColumnQuery(connection,'select cValue from words where word_id = ' + word_id)
-        prob_f = readSingleColumnQuery(connection,'select pValue from words where word_id = ' + word_id)
-        cSEP_f = readSingleColumnQuery(connection,'select csep from cseps where word_id = ' + word_id)
+        eng_f,jap_f,japRoma_f,corr_f,prob_f = read_multi_column_query(connection,'select eValue,jValue,jrValue,cValue,pValue from words where word_id = ' + word_id)
+        csep_f = read_single_column_query(connection,'select csep from cseps where word_id = ' + word_id)
+        csep_line_f = read_single_column_query(connection,'select csep_id from cseps where word_id = ' + word_id)
 
-        print("id : " + word_id)
-        print("jValue : " + Jap_f[0])
-        print("jrValue : " + Jap_roma_f[0])
-        print("eValue : " + Eng_f[0])
+        print("word_id : " + word_id)
+        print("jValue : " + jap_f[0])
+        print("jrValue : " + japRoma_f[0])
+        print("eValue : " + eng_f[0])
         print("fValue : " + term)
         print("cValue : " + corr_f[0])
         print("pValue : " + prob_f[0] + "\nValid Cseps : ",end = '')
-        print(cSEP_f)
+        print(csep_f)
+        print("\nValid Csep Ids : ",end = '')
+        print(csep_line_f)
 
-        if(force_return_value == "FURI" and pause_value == 1):
+        if(forceReturnValue == "FURI" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="FURI"):
+        elif(forceReturnValue =="FURI"):
             return
         else:
             pass
 
-    if(len(prob) > 0 and force_return_value == None or force_return_value == "PROB"):
+    if(len(prob) > 0 and forceReturnValue == None or forceReturnValue == "PROB"):
 
         print("------------------------------------------------\npValue\n------------------------------------------------")
 
-        wordid_p = readSingleColumnQuery(connection,'select word_id from words where pValue = "' + term + '"')
+        word_id_p = read_single_column_query(connection,'select word_id from words where pValue = "' + term + '"')
 
         print("Number of words with a pValue of " + term + " : " + str(len(prob)),end="\n")
-        print("Word_ids with a pValue of : " + term)
-        print(wordid_p)
+        print("word_ids with a pValue of : " + term)
+        print(word_id_p)
 
-        if(force_return_value == "PROB" and pause_value == 1):
+        if(forceReturnValue == "PROB" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="PROB"):
+        elif(forceReturnValue =="PROB"):
             return
         else:
             pass
 
-    if(len(corr) > 0 and force_return_value == None or force_return_value == "CORR"):
+    if(len(corr) > 0 and forceReturnValue == None or forceReturnValue == "CORR"):
 
         print("------------------------------------------------\ncValue\n------------------------------------------------")
 
-        wordid_c = readSingleColumnQuery(connection,'select word_id from words where cValue = "' + term + '"')
+        word_id_c = read_single_column_query(connection,'select word_id from words where cValue = "' + term + '"')
 
         print("Number of words with a cValue of " + term + " : " + str(len(corr)),end="\n")
-        print("Word_ids with a cValue of : " + term)
-        print(wordid_c)
+        print("word_ids with a cValue of : " + term)
+        print(word_id_c)
 
-        if(force_return_value == "CORR" and pause_value == 1):
+        if(forceReturnValue == "CORR" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="CORR"):
+        elif(forceReturnValue =="CORR"):
             return
         else:
             pass
 
-    if(len(word_id) > 0 and term.isnumeric() == True and force_return_value == None or force_return_value == "WORD_ID"):
+    if(len(word_id) > 0 and term.isnumeric() == True and forceReturnValue == None or forceReturnValue == "WORD_ID"):
 
         print("------------------------------------------------\nWORD_ID\n------------------------------------------------")
             
-        Jap_i = readSingleColumnQuery(connection,'select jValue from words where word_id = ' + term)
-        jr_i = readSingleColumnQuery(connection,'select jrValue from words where word_id = ' + term)
-        Eng_i = readSingleColumnQuery(connection,'select eValue from words where word_id = ' + term)
-        Furi_i = readSingleColumnQuery(connection,'select fValue from words where word_id = ' + term)
-        corr_i = readSingleColumnQuery(connection,'select cValue from words where word_id = ' + term)
-        prob_i = readSingleColumnQuery(connection,'select pValue from words where word_id = ' + term)
-        cSEP_i = readSingleColumnQuery(connection,'select csep from cseps where word_id = ' + term)
+        jap_i,jr_i,eng_i,furi_i,corr_i,prob_i = read_multi_column_query(connection,'select jValue,jrValue,eValue,fValue,cValue,pValue from words where word_id = ' + term)
+        csep_i,csep_line_i = read_multi_column_query(connection,'select csep,csep_id from cseps where word_id = ' + term)
 
         print("word_id : " + term)
-        print("jValue : " + Jap_i[0])
+        print("jValue : " + jap_i[0])
         print("jrValue : " + jr_i[0])
-        print("eValue : " + Eng_i[0])
-        print("fValue : " + Furi_i[0])
+        print("eValue : " + eng_i[0])
+        print("fValue : " + furi_i[0])
         print("cValue : " + corr_i[0])
         print("pValue : " + prob_i[0] + "\nValid Cseps : ",end = '')
-        print(cSEP_i)
+        print(csep_i)
+        print("\nValid Csep Ids : ",end = '')
+        print(csep_line_i)
 
-        if(force_return_value == "WORD_ID" and pause_value == 1):
+        if(forceReturnValue == "WORD_ID" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="WORD_ID"):
+        elif(forceReturnValue =="WORD_ID"):
             return
         else:
             pass
 
-    if(len(csep_id) > 0 and force_return_value == None or force_return_value == "CSEP_ID"):
+    if(len(csep_id) > 0 and forceReturnValue == None or forceReturnValue == "CSEP_ID"):
 
         print("------------------------------------------------\nCSEP_ID\n------------------------------------------------")
 
-        wordid_csep = readSingleColumnQuery(connection,'select word_id from cseps where csep_id = "' + term + '"')
-            
-        jap_csep = readSingleColumnQuery(connection,'select jValue from words where word_id = ' + wordid_csep[0])
-        jr_csep = readSingleColumnQuery(connection,'select jrValue from words where word_id = ' + wordid_csep[0])
-        Eng_csep = readSingleColumnQuery(connection,'select eValue from words where word_id = ' + wordid_csep[0])
-        cSEP_csep = readSingleColumnQuery(connection,'select csep from cseps where csep_id = ' + term)
+        word_id_csep,csep_csep = read_multi_column_query(connection,'select word_id,csep from cseps where csep_id = "' + term + '"')
 
-        print("csep_id : " + term)
-        print("word id : " + wordid_csep[0])
+        jap_csep,jr_csep,eng_csep,furi_csep,corr_csep,prob_csep = read_multi_column_query(connection,'select jValue,jrValue,eValue,fValue,cValue,pValue from words where word_id = ' + word_id_csep[0])
+        csep_all_csep,csep_line_csep = read_multi_column_query(connection,'select csep,csep_id from cseps where word_id = ' + term)
+
+        print("word_id : " + word_id_csep[0])
         print("jValue : " + jap_csep[0])
         print("jrValue : " + jr_csep[0])
-        print("eValue : " + Eng_csep[0])
-        print("CSEP : " + cSEP_csep[0])
+        print("eValue : " + eng_csep[0])
+        print("fValue : " + furi_csep[0])
+        print("cValue : " + corr_csep[0])
+        print("pValue : " + prob_csep[0])
+        print("CSEP : " + csep_csep[0])
+        print("CSEP ID : " + term + "\nValid Cseps : ",end = '')
+        print(csep_all_csep)
+        print("\nValid Csep Ids : ",end = '')
+        print(csep_line_csep)
 
-        if(force_return_value == "CSEP_ID" and pause_value == 1):
+        if(forceReturnValue == "CSEP_ID" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="CSEP_ID"):
+        elif(forceReturnValue =="CSEP_ID"):
             return
         else:
             pass
 
-    if(len(csep_line) > 0 and force_return_value == None or force_return_value == "CSEP_LINE"):
+    if(len(csepLine) > 0 and forceReturnValue == None or forceReturnValue == "CSEP_LINE"):
 
         print("------------------------------------------------\nCSEP_LINE\n------------------------------------------------")
 
         print("CSEP Line for word_id : " + term)
 
-        csep_csep_line = readSingleColumnQuery(connection,'select csep from cseps where word_id = "' + term + '"')
-        csep_id_line = readSingleColumnQuery(connection,'select csep_id from cseps where word_id = "' + term + '"')
-            
+        csep_line_csep,csep_id_line = read_multi_column_query(connection,'select csep,csep_id from cseps where word_id = "' + term + '"')
+
         print("\nCSEP Line : ",end="")
-        print(csep_csep_line)
+        print(csep_line_csep)
 
         print("\nCSEP ID Line : ",end="")
         print(csep_id_line)
 
-        if(force_return_value == "CSEP_LINE" and pause_value == 1):
+        if(forceReturnValue == "CSEP_LINE" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="CSEP_LINE"):
+        elif(forceReturnValue =="CSEP_LINE"):
             return
         else:
             pass
 
-    if(len(typo_id) > 0 and force_return_value == None or force_return_value == "TYPO_ID"):
+    if(len(typo_id) > 0 and term.isnumeric() == True and forceReturnValue == None or forceReturnValue == "TYPO_ID"):
 
         print("------------------------------------------------\nTYPO_ID\n------------------------------------------------")
             
-        typo_t = readSingleColumnQuery(connection,'select typo from typos where typo_id = ' + term)
-        word_id_t = readSingleColumnQuery(connection,'select word_id from typos where typo_id = ' + term)
+        typo_t,word_id_t = read_multi_column_query(connection,'select typo,word_id from typos where typo_id = ' + term)
 
         print("typo id : " + term)
         print("word_id : " + word_id_t[0])
         print("typo : " + typo_t[0])
 
-        if(force_return_value == "TYPO_ID" and pause_value == 1):
+        if(forceReturnValue == "TYPO_ID" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="TYPO_ID"):
+        elif(forceReturnValue =="TYPO_ID"):
             return
         else:
             pass
 
-    if(len(itypo_id) > 0 and force_return_value == None or force_return_value == "ITYPO_ID"):
+    if(len(itypo_id) > 0 and term.isnumeric() == True and forceReturnValue == None or forceReturnValue == "ITYPO_ID"):
 
         print("------------------------------------------------\nITYPO_ID\n------------------------------------------------")
             
-        itypo_it = readSingleColumnQuery(connection,'select itypo from itypos where itypo_id = ' + term)
-        word_id_it = readSingleColumnQuery(connection,'select word_id from itypos where itypo_id = ' + term)
+        itypo_it,word_id_it = read_multi_column_query(connection,'select itypo,word_id from itypos where itypo_id = ' + term)
 
         print("itypo id : " + term)
         print("word_id : " + word_id_it[0])
         print("itypo : " + itypo_it[0])
 
-        if(force_return_value == "ITYPO_ID" and pause_value == 1):
+        if(forceReturnValue == "ITYPO_ID" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="ITYPO_ID"):
+        elif(forceReturnValue =="ITYPO_ID"):
             return
         else:
             pass
 
-    if(len(typo_actual) > 0 and force_return_value == None or force_return_value == "TYPO_ACTUAL"):
+    if(len(typoActual) > 0 and forceReturnValue == None or forceReturnValue == "TYPO_ACTUAL"):
 
         i = 0
 
         print("------------------------------------------------\nTYPO_ACTUAL\n------------------------------------------------")
 
-        word_id_typo = readSingleColumnQuery(connection,'select word_id from typos where typo = "' + term + '"')
-        typo_id_typo = readSingleColumnQuery(connection,'select typo_id from typos where typo = "' + term + '"')
+        word_id_typo,typo_id_typo = read_multi_column_query(connection,'select word_id,typo_id from typos where typo = "' + term + '"')
         jap_typo = []
 
         while(i < len(word_id_typo)):
-            temp = readSingleColumnQuery(connection,'select jValue from words where word_id = "' + word_id_typo[i] + '"')
+            temp = read_single_column_query(connection,'select jValue from words where word_id = "' + word_id_typo[i] + '"')
             jap_typo += temp
             i+=1
 
-        if(len(typo_actual) > 1):
+        if(len(typoActual) > 1):
 
-            print(typo_actual)
+            print(typoActual)
             print(word_id_typo)
             print(jap_typo)
 
-            index = input("\nPlease input the index of the typo you are looking for")
-            term = typo_actual[index]
+            index = int(input("\nPlease input the index of the typo you are looking for "))
+            term = typoActual[index]
             word_id = word_id_typo[index]
             typo_id = typo_id_typo[index]
 
         else:
             
-            term = typo_actual[0]
+            term = typoActual[0]
             word_id = word_id_typo[0]
             typo_id = typo_id_typo[0]
 
@@ -380,43 +378,42 @@ def search(term,connection,force_return_value,pause_value):
         print("typo id : " + typo_id)
         print("typo : " + term)
 
-        if(force_return_value == "TYPO_ACUTAL" and pause_value == 1):
+        if(forceReturnValue == "TYPO_ACUTAL" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="TYPO_ACTUAL"):
+        elif(forceReturnValue =="TYPO_ACTUAL"):
             return
         else:
             pass
 
-    if(len(itypo_actual) > 0 and force_return_value == None or force_return_value == "ITYPO_ACTUAL"):
+    if(len(itypoActual) > 0 and forceReturnValue == None or forceReturnValue == "ITYPO_ACTUAL"):
 
         i = 0
 
         print("------------------------------------------------\nITYPO_ACTUAL\n------------------------------------------------")
 
-        word_id_itypo = readSingleColumnQuery(connection,'select word_id from itypos where itypo = "' + term + '"')
-        itypo_id_itypo = readSingleColumnQuery(connection,'select itypo_id from itypos where itypo = "' + term + '"')
+        word_id_itypo,itypo_id_itypo = read_multi_column_query(connection,'select word_id,itypo_id from itypos where itypo = "' + term + '"')
         jap_itypo = []
 
         while(i < len(word_id_itypo)):
-            temp = readSingleColumnQuery(connection,'select jValue from words where word_id = "' + word_id_itypo[i] + '"')
+            temp = read_single_column_query(connection,'select jValue from words where word_id = "' + word_id_itypo[i] + '"')
             jap_itypo += temp
             i+=1
 
-        if(len(itypo_actual) > 1):
+        if(len(itypoActual) > 1):
 
-            print(itypo_actual)
+            print(itypoActual)
             print(word_id_itypo)
             print(jap_itypo)
 
-            index = input("\nPlease input the index of the typo you are looking for")
-            term = itypo_actual[index]
+            index = int(input("\nPlease input the index of the typo you are looking for "))
+            term = itypoActual[index]
             word_id = word_id_itypo[index]
             itypo_id = itypo_id_itypo[index]
 
         else:
             
-            term = itypo_actual[0]
+            term = itypoActual[0]
             word_id = word_id_itypo[0]
             itypo_id = itypo_id_itypo[0]
 
@@ -425,58 +422,57 @@ def search(term,connection,force_return_value,pause_value):
         print("itypo : " + term)
 
 
-        if(force_return_value == "ITYPO_ACUTAL" and pause_value == 1):
+        if(forceReturnValue == "ITYPO_ACTUAL" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="ITYPO_ACTUAL"):
+        elif(forceReturnValue =="ITYPO_ACTUAL"):
             return
         else:
             pass
 
-    if(len(csep_actual) > 0 and force_return_value == None or force_return_value == "CSEP_ACTUAL"):
+    if(len(csepActual) > 0 and forceReturnValue == None or forceReturnValue == "CSEP_ACTUAL"):
 
         i = 0
 
         print("------------------------------------------------\nCSEP_ACTUAL\n------------------------------------------------")
 
-        word_id_csep_actual = readSingleColumnQuery(connection,'select word_id from cseps where csep = "' + term + '"')
-        csep_id_csep_actual = readSingleColumnQuery(connection,'select csep_id from cseps where csep = "' + term + '"')
+        word_id_csep_actual,csep_id_csep_actual = read_multi_column_query(connection,'select word_id,csep_id from cseps where csep = "' + term + '"')
         jap_csep_actual = []
 
         while(i < len(word_id_csep_actual)):
-            temp = readSingleColumnQuery(connection,'select jValue from words where word_id = "' + word_id_csep_actual[i] + '"')
+            temp = read_single_column_query(connection,'select jValue from words where word_id = "' + word_id_csep_actual[i] + '"')
             jap_csep_actual += temp
             i+=1
 
-        if(len(itypo_actual) > 1):
+        if(len(itypoActual) > 1):
 
-            print(csep_actual)
+            print(csepActual)
             print(word_id_csep_actual)
             print(jap_csep_actual)
 
-            index = input("\nPlease input the index of the typo you are looking for")
-            term = csep_actual[index]
+            index = int(input("\nPlease input the index of the typo you are looking for "))
+            term = csepActual[index]
             word_id = word_id_csep_actual[index]
             csep_id = csep_id_csep_actual[index]
 
         else:
             
-            term = csep_actual[0]
+            term = csepActual[0]
             word_id = word_id_csep_actual[0]
             csep_id = csep_id_csep_actual[0]
 
-        Jap = readSingleColumnQuery(connection,'select jValue from words where word_id = ' + word_id) 
+        jap = read_single_column_query(connection,'select jValue from words where word_id = ' + word_id) 
 
         print("word id : " + word_id)
         print("csep id : " + csep_id)
-        print("jValue : " + Jap[0])
+        print("jValue : " + jap[0])
         print("csep : " + term)
 
 
-        if(force_return_value == "CSEP_ACTUAL" and pause_value == 1):
+        if(forceReturnValue == "CSEP_ACTUAL" and pauseValue == 1):
             os.system('pause')
             return
-        elif(force_return_value =="CSEP_ACTUAL"):
+        elif(forceReturnValue =="CSEP_ACTUAL"):
             return
         else:
             pass
@@ -486,14 +482,15 @@ def search(term,connection,force_return_value,pause_value):
 
 #-------------------Start-of-ecset()---------------------------------------------------------
 
-def ecset(targetLine, columnNum, uInput, filePath):
+def ecset(targetLine, columnNum, userInput, filePath):
+
     with open(filePath, "r+", encoding="utf8") as f:
         lines = f.readlines()
 
     line = lines[targetLine]
 
     items = line.split(",")
-    items[columnNum - 1] = repr(uInput)
+    items[columnNum - 1] = repr(userInput,)
 
     new_line = ",".join(items)
 
@@ -502,79 +499,83 @@ def ecset(targetLine, columnNum, uInput, filePath):
     with open(filePath, "w", encoding="utf8") as f:
         f.writelines(lines)
 
-#-------------------Start-of-clearStream()-------------------------------------------------
+#-------------------Start-of-clear_stream()-------------------------------------------------
 
-def clearStream():
+def clear_stream():
     
     while msvcrt.kbhit():
         msvcrt.getch()
         
-    sleep(0.07) 
+    sleep(0.1) 
 
-#-------------------Start-of-userConfirm()-------------------------------------------------
+#-------------------Start-of-user_confirm()-------------------------------------------------
 
-def userConfirm(ucPrompt,ucConfirm1,ucConfirm2):
+def user_confirm(prompt):
 
-    entryConfirmed = False
-    ucConfirm3 = ""
+    confirmation = "Just To Confirm You Selected "
+    options = " Press 1 To Confirm or 2 To Retry"
+    output = ""
     
+    entryConfirmed = False
+
     while(entryConfirmed == False):
 
         os.system('cls')
         
-        clearStream()
+        clear_stream()
         
-        userInput = input(ucPrompt)
+        userInput = input(prompt)
         
         if(userInput == "q"):
             exit()
 
         assert userInput != "z"
 
-        ucConfirm3 = ucConfirm1 + userInput + ucConfirm2
         os.system('cls')
+
+        output = confirmation + userInput + options
         
-        print(ucConfirm3)
-        clearStream()
+        print(output)
         
-        if(int(inputCheck(4,key.read_key(),2,ucConfirm3)) == 1):
+        clear_stream()
+        
+        if(int(input_check(4,key.read_key(),2,output)) == 1):
                 entryConfirmed = True
         else:
+
             os.system('cls')
             
-            print(ucPrompt)
-            
-            ucConfirm3 = ""
-
+            print(prompt)
+    
     os.system('cls')
 
     return userInput
        
-#--------------------start of inputCheck()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------start of input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def inputCheck(iType, userInput, numChoices, inputPromptMsg):
+def input_check(iType, userInput, numChoices, inputPromptMsg):
 
-    userInput = str(userInput)
     newUserI = str(userInput)
     inputIssueMsg = ""
 
     os.system('cls')
 
-    while True:
-        if userInput == 'q':
+    while(True):
+
+        if(userInput == 'q'):
             exit()
-        elif userInput == 'v' and iType != 1:
+        elif(userInput == 'v' and iType != 1):
             return newUserI
-        elif iType == 1 and (userInput.isdigit() == False or userInput == "0"):
+        elif(iType == 1 and (userInput.isdigit() == False or userInput == "0")):
             inputIssueMsg = "Invalid Input, please enter a valid number choice or 'q'\n"
-        elif iType == 4 and (userInput.isdigit() == False or int(userInput) > numChoices):
+        elif(iType == 4 and (userInput.isdigit() == False or int(userInput) > numChoices)):
             inputIssueMsg = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
-        elif iType == 5 and (userInput.isdigit() == False or int(userInput) > numChoices):
+        elif(iType == 5 and (userInput.isdigit() == False or int(userInput) > numChoices)):
             inputIssueMsg = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
         else:
             return newUserI
 
-        if iType == 5:
+        if(iType == 5):
             print(inputIssueMsg + "\n")
             userInput = input(inputPromptMsg)
         else:
@@ -582,26 +583,25 @@ def inputCheck(iType, userInput, numChoices, inputPromptMsg):
             userInput = key.read_key()
 
         os.system('cls')
-        clearStream()
+        clear_stream()
+
         newUserI = str(userInput)
 
-    return str(newUserI)
+#-------------------start of read_loop_data()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#-------------------start of readLoopData()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def read_loop_data(column):
 
-def readLoopData(column):
-    file1 = open(r"C:\ProgramData\SJLT\loopData.txt", "r",encoding="utf8")
-    raw_s= file1.read()
-    file1.close()
+    with open(r"C:\ProgramData\SJLT\loopData.txt", "r", encoding="utf-8") as file:
+        loopData = file.read()
 
-    count = raw_s.count(',')
+    count = loopData.count(',')
     i,ii = 0,0
     buildStr = ""
     stats = []
 
     while(i < count):
-        if(raw_s[ii] != ","):
-            buildStr += raw_s[ii]
+        if(loopData[ii] != ","):
+            buildStr += loopData[ii]
         else:
             stats.append(buildStr)
             buildStr = ""
@@ -610,14 +610,14 @@ def readLoopData(column):
         
     return int(stats[column-1])
 
-#--------------------Start-of-addToItypos()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-add_to_Itypos()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def addToItypos(itypo, word_id, itypo_id, connection):
+def add_to_Itypos(itypo, word_id, itypo_id, connection):
     cursor = connection.cursor()
 
     query ="""
-    INSERT INTO itypos (itypo_id, word_id, itypo)
-    VALUES (%s, %s, %s)
+    insert into itypos (itypo_id, word_id, itypo)
+    values (%s, %s, %s)
     """
     values = (itypo_id,word_id,itypo.lower())
     
@@ -627,14 +627,14 @@ def addToItypos(itypo, word_id, itypo_id, connection):
 
     cursor.close()
     
-#--------------------Start-of-addToTypos()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-add_to_Typos()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def addToTypos(typo, word_id, typo_id, connection):
+def add_to_Typos(typo, word_id, typo_id, connection):
     cursor = connection.cursor()
 
     query ="""
-    INSERT INTO typos (typo_id, word_id, typo)
-    VALUES (%s, %s, %s)
+    insert into typos (typo_id, word_id, typo)
+    values (%s, %s, %s)
     """
     values = (typo_id,word_id,typo.lower())    
     cursor.execute(query, values)
@@ -643,43 +643,42 @@ def addToTypos(typo, word_id, typo_id, connection):
 
     cursor.close()
 
+#--------------------Start-of-delete_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#--------------------Start-of-deleteValue()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def delete_value(connection,target_id):
 
-def deleteValue(connection,target_id):
+        word = read_single_column_query(connection,'select word_id from words where word_id = "' + target_id + '"')
+        csep = read_single_column_query(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
+        typo = read_single_column_query(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
+        itypo = read_single_column_query(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
 
-        word = readSingleColumnQuery(connection,'select word_id from words where word_id = "' + target_id + '"')
-        csep = readSingleColumnQuery(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
-        typo = readSingleColumnQuery(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
-        itypo = readSingleColumnQuery(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
+        wLength = len(word)
+        cLength = len(csep)
+        iLength = len(typo)
+        itLength = len(itypo)
 
-        w_length = len(word)
-        c_length = len(csep)
-        i_length = len(typo)
-        it_length = len(itypo)
-
-        if(w_length == 1):
+        if(wLength == 1):
             print("Nusevei has confirmed the existence of a word with an id of " + target_id)
             search(target_id,connection,"WORD_ID",None)
-        if(c_length == 1):
+        if(cLength == 1):
             print("Nusevei has confirmed the existence of a csep with an id of " + target_id)
             search(target_id,connection,"CSEP_ID",None)
-        if(i_length == 1):
+        if(iLength == 1):
             print("Nusevei has confirmed the existence of a typo with an id of " + target_id)
             search(target_id,connection,"TYPO_ID",None)
-        if(it_length == 1):
+        if(itLength == 1):
             print("Nusevei has confirmed the existence of a itypo with an id of " + target_id,)
             search(target_id,connection,"ITYPO_ID",None)
 
         print("\n")
 
-        if(w_length == 1):
+        if(wLength == 1):
             print("Nusevei has confirmed the existence of a word with an id of " + target_id + ", Press 1 to select this.\n")
-        if(c_length == 1):
+        if(cLength == 1):
             print("Nusevei has confirmed the existence of a csep with an id of " + target_id + ", Press 2 to select this.\n")
-        if(i_length == 1):
+        if(iLength == 1):
             print("Nusevei has confirmed the existence of a typo with an id of " + target_id + ", Press 3 to select this.\n")
-        if(it_length == 1):
+        if(itLength == 1):
             print("Nusevei has confirmed the existence of a itypo with an id of " + target_id + ", Press 4 to select this.\n")
 
         sleep(.7)
@@ -698,34 +697,35 @@ def deleteValue(connection,target_id):
         else:
             pass
 
-#--------------------Start-of-replaceValue()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-replace_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def replaceValue(typeReplacement,connection,target_id):
+def replace_value(typeReplacement,connection,target_id):
+        
+        target = None
 
         if(typeReplacement == "1"):
             print("Please select which value you would like to replace")
             print("\n1. jValue = ",end="") 
-            print(readSingleColumnQuery(connection,'select jValue from words where word_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select jValue from words where word_id = "' + target_id + '"'))
             print("\n2. jrValue = ",end="") 
-            print(readSingleColumnQuery(connection,'select jrValue from words where word_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select jrValue from words where word_id = "' + target_id + '"'))
             print("\n3. eValue = ",end="") 
-            print(readSingleColumnQuery(connection,'select eValue from words where word_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select eValue from words where word_id = "' + target_id + '"'))
             print("\n4. fValue",end="") 
-            print(readSingleColumnQuery(connection,'select fValue from words where word_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select fValue from words where word_id = "' + target_id + '"'))
             print("\n5. pValue",end="") 
-            print(readSingleColumnQuery(connection,'select pValue from words where word_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select pValue from words where word_id = "' + target_id + '"'))
             print("\n6. cValue",end="") 
-            print(readSingleColumnQuery(connection,'select cValue from words where word_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select cValue from words where word_id = "' + target_id + '"'))
 
             sleep(.7)
 
             path = key.read_key()
             
-            clearStream()
+            clear_stream()
             os.system('cls')
 
-            value = userConfirm("What would you like to replace it with?\n","Just To Confirm You Selected "," Press 1 To Confirm or 2 To Retry")
-
+            value = user_confirm("What would you like to replace it with?\n")
 
             if(path == "1"):
                 target = "jValue"
@@ -739,89 +739,85 @@ def replaceValue(typeReplacement,connection,target_id):
                 target = "pValue"
             elif(path == "6"):
                 target = "cValue"
-            else:
-                exit()
-            
-            executeQuery(connection,'update words set ' + target + ' = "' + value + '" where word_id = ' + target_id)
+    
+            if(target != None):
+                execute_query(connection,'update words set ' + target + ' = "' + value + '" where word_id = ' + target_id)
 
         elif(typeReplacement == "2"):
             print("Please select which value you would like to replace")
             print("\n1. word_id = ",end="") 
-            print(readSingleColumnQuery(connection,'select word_id from cseps where csep_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select word_id from cseps where csep_id = "' + target_id + '"'))
             print("\n2. csep = ",end="") 
-            print(readSingleColumnQuery(connection,'select csep from cseps where csep_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select csep from cseps where csep_id = "' + target_id + '"'))
 
             sleep(.7)
 
             path = key.read_key()
 
-            clearStream()
+            clear_stream()
             os.system('cls')
             
-            value = userConfirm("What would you like to replace it with?\n","Just To Confirm You Selected "," Press 1 To Confirm or 2 To Retry")
+            value = user_confirm("What would you like to replace it with?\n")
 
             if(path == "1"):
                 target = "word_id"
             elif(path == "2"):
                 target = "csep"
-            else:
-                exit()
             
-            executeQuery(connection,'update cseps set ' + target + ' = "' + value + '" where csep_id = ' + target_id)
+            if(target != None):
+                execute_query(connection,'update cseps set ' + target + ' = "' + value + '" where csep_id = ' + target_id)
 
         elif(typeReplacement == "3"):
             print("Please select which value you would like to replace")
             print("\n1. word_id = ",end="") 
-            print(readSingleColumnQuery(connection,'select word_id from typos where typo_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select word_id from typos where typo_id = "' + target_id + '"'))
             print("\n2. typo = ",end="") 
-            print(readSingleColumnQuery(connection,'select typo from typos where typo_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select typo from typos where typo_id = "' + target_id + '"'))
 
             sleep(.7)
 
             path = key.read_key()
 
-            clearStream()
+            clear_stream()
             os.system('cls')
             
-            value = userConfirm("What would you like to replace it with?\n","Just To Confirm You Selected "," Press 1 To Confirm or 2 To Retry")
+            value = user_confirm("What would you like to replace it with?\n")
 
             if(path == "1"):
                 target = "word_id"
             elif(path == "2"):
                 target = "typo"
-            else:
-                exit()
             
-            executeQuery(connection,'update typos set ' + target + ' = "' + value + '" where typo_id = ' + target_id)
+            if(target != None):
+                execute_query(connection,'update typos set ' + target + ' = "' + value + '" where typo_id = ' + target_id)
 
         elif(typeReplacement == "4"):
             print("Please select which value you would like to replace")
             print("\n1. word_id = ",end="") 
-            print(readSingleColumnQuery(connection,'select word_id from itypos where itypo_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select word_id from itypos where itypo_id = "' + target_id + '"'))
             print("\n2. itypo = ",end="") 
-            print(readSingleColumnQuery(connection,'select itypo from itypos where itypo_id = "' + target_id + '"'))
+            print(read_single_column_query(connection,'select itypo from itypos where itypo_id = "' + target_id + '"'))
 
             sleep(.7)
 
             path = key.read_key()
 
-            clearStream()
+            clear_stream()
             os.system('cls')
             
-            value = userConfirm("What would you like to replace it with?\n","Just To Confirm You Selected "," Press 1 To Confirm or 2 To Retry")
+            value = user_confirm("What would you like to replace it with?\n")
 
             if(path == "1"):
                 target = "word_id"
             elif(path == "2"):
                 target = "itypo"
-            else:
-                exit()
-            
-            executeQuery(connection,'update itypos set ' + target + ' = "' + value + '" where itypo_id = ' + target_id)
 
-#--------------------Start-of-createConnection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            if(target != None):
+                execute_query(connection,'update itypos set ' + target + ' = "' + value + '" where itypo_id = ' + target_id)
 
-def createConnection(host_name, user_name, user_password,db_name):
+#--------------------Start-of-create_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def create_connection(host_name, user_name, user_password,db_name):
 
     connection = mysql.connector.connect(
         host=host_name,
@@ -831,18 +827,18 @@ def createConnection(host_name, user_name, user_password,db_name):
 
     return connection
 
-#--------------------Start-of-executeQuery()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def executeQuery(connection, query):
+def execute_query(connection, query):
     
     cursor = connection.cursor()
     cursor.execute(query)
     
     connection.commit()
 
-#--------------------Start-of-readSingleColumnQuery()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-read_single_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def readSingleColumnQuery(connection, query):
+def read_single_column_query(connection, query):
     
     cursor = connection.cursor()
     resultsActual = []
@@ -855,9 +851,9 @@ def readSingleColumnQuery(connection, query):
 
     return resultsActual
 
-#--------------------Start-of-readMultiColumnQuery()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-read_multi_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def readMultiColumnQuery(connection, query):
+def read_multi_column_query(connection, query):
 
     cursor = connection.cursor()
     cursor.execute(query)
@@ -876,9 +872,9 @@ def readMultiColumnQuery(connection, query):
     return resultsByColumn
 
 
-#--------------------Start-of-readQueryRaw()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-read_raw_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def readQueryRaw(connection, query):
+def read_raw_query(connection, query):
     
     cursor = connection.cursor()
 
@@ -887,15 +883,15 @@ def readQueryRaw(connection, query):
 
     return results
 
-#--------------------Start-of-addToJSET()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#--------------------Start-of-add_to_JSET()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def addToJSET(jValue, jrValue, eValue, fValue, pValue, cValue, word_id, word_type, connection):
+def add_to_JSET(jValue, jrValue, eValue, fValue, pValue, cValue, word_id, word_type, connection):
     
     cursor = connection.cursor()
 
     query ="""
-    INSERT INTO words (word_id, jValue, jrValue, eValue, fValue, pValue, cValue, word_type)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    insert into words (word_id, jValue, jrValue, eValue, fValue, pValue, cValue, word_type)
+    values (%s, %s, %s, %s, %s, %s, %s, %s)
     """
     values = (word_id, jValue.lower(), jrValue.lower(), eValue.lower(), fValue, pValue, cValue, word_type)
     
@@ -905,13 +901,13 @@ def addToJSET(jValue, jrValue, eValue, fValue, pValue, cValue, word_id, word_typ
 
     cursor.close()
 
-#--------------------Start-of-addToCSEP()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def addToCSEP(csep, word_id, csep_id, connection):
+#--------------------Start-of-add_to_CSEP()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+def add_to_CSEP(csep, word_id, csep_id, connection):
     cursor = connection.cursor()
 
     query ="""
-    INSERT INTO cseps (csep_id, word_id, csep)
-    VALUES (%s, %s, %s)
+    insert into cseps (csep_id, word_id, csep)
+    values (%s, %s, %s)
     """
     values = (csep_id, word_id, csep.lower())
     

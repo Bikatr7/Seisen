@@ -226,7 +226,7 @@ def generate_sSingle(connection,word_type):
 
         displayList.append(displayScore)
 
-        displayItem = "\n---------------------------------\nLikelyhood : " + displayScore + "%  \njValue : " + jVal  + "\nP : " + pVal + "\nC : " + cVal  + "\nID : " + word_idList[i]  + "\n---------------------------------"
+        displayItem = "\n---------------------------------\nLikelihood : " + displayScore + "%  \njValue : " + jVal  + "\nP : " + pVal + "\nC : " + cVal  + "\nID : " + word_idList[i]  + "\n---------------------------------"
         
         displayList[-1] = displayItem
 
@@ -346,65 +346,77 @@ def SJLT(connection,word_type):
 
         ratio = roundCount and str(round(numCorrect / roundCount,2)) or str(0.0) 
 
-        if(fValue != "None"): 
-            testJapanese += "/" + fValue
-
         outputMsg = "You currently have " + str(numCorrect) + " out of " + str(roundCount) + " correct; Ratio : " + ratio + "\n"
-        outputMsg += "Likelyhood : " + Chance
+        outputMsg += "Likelihood : " + Chance
         outputMsg +=  "\n" + "-" * len(outputMsg)
         outputMsg += "\nWhat does " + testJapanese + " mean?\n"
+
+        if(fValue != "None"):
+            testJapanese += "/" + fValue
+
+        outputMsgRoma = "You currently have " + str(numCorrect) + " out of " + str(roundCount) + " correct; Ratio : " + ratio + "\n"
+        outputMsgRoma += "Likelihood : " + Chance
+        outputMsgRoma +=  "\n" + "-" * len(outputMsgRoma)
+        outputMsgRoma += "\nWhat does " + testJapanese  + " mean?\n"
 
         userGuess = str(input(outputMsg)).lower()
 
         with open(r"C:\ProgramData\SJLT\prompt.txt", "w+", encoding="utf-8") as file:
             file.write(outputMsg)
 
-
         if(userGuess == "v"): 
             change_mode()
+
+        if(userGuess == "b"):
+
+            os.system('cls')
+            userGuess = str(input(outputMsgRoma)).lower()
+
+            with open(r"C:\ProgramData\SJLT\prompt.txt", "w+", encoding="utf-8") as file:
+                file.write(outputMsgRoma)
+
+        roundCount+=1
+        isCorrect,acceptedEngValues,userGuess = check_answers_EFB(userGuess,connection,word_id)
+
+        os.system('cls')
+
+        if(isCorrect == True):
+            numCorrect+=1
+            outputMsgRoma += "\n\nYou guessed " + userGuess + ", which is correct.\n"
+            log_corr_chars(connection,word_id)                
+
         else:
+            outputMsgRoma += "\n\nYou guessed " + userGuess + ", which is incorrect, the correct answer was " + matchingEng + ".\n"
+            log_prob_chars(connection,word_id)
+                                    
 
-            roundCount+=1
-            isCorrect,acceptedEngValues,userGuess = check_answers_EFB(userGuess,connection,word_id)
+        while(i < len(acceptedEngValues)):
 
-            os.system('cls')
+            if(isCorrect == False and matchingEng != userGuess):
 
-            if(isCorrect == True):
-                numCorrect+=1
-                outputMsg += "\n\nYou guessed " + userGuess + ", which is correct.\n"
-                log_corr_chars(connection,word_id)                
+                if(displayOther == False):
+                    outputMsgRoma += "\nOther Answers include:\n"
 
-            else:
-                outputMsg += "\n\nYou guessed " + userGuess + ", which is incorrect, the correct answer was " + matchingEng + ".\n"
-                log_prob_chars(connection,word_id)
-                                       
+                outputMsgRoma +=  "----------\n" + acceptedEngValues[i] + "\n"
+                displayOther = True
 
-            while(i < len(acceptedEngValues)):
+            elif(isCorrect == True and acceptedEngValues[i] != userGuess):
 
-                if(isCorrect == False and matchingEng != userGuess):
+                if(displayOther == False):
+                    outputMsgRoma += "\nOther Answers include:\n"
+                    
+                outputMsgRoma +=  "----------\n" + acceptedEngValues[i] + "\n"
+                displayOther = True
 
-                    if(displayOther == False):
-                        outputMsg += "\nOther Answers include:\n"
+            i+=1
+                    
+        print(outputMsgRoma)
 
-                    outputMsg +=  "----------\n" + acceptedEngValues[i] + "\n"
-                    displayOther = True
+        sleep(2)
+            
+        os.system('cls')
 
-                elif(isCorrect == True and acceptedEngValues[i] != userGuess):
-
-                    if(displayOther == False):
-                        outputMsg += "\nOther Answers include:\n"
-                        
-                    outputMsg +=  "----------\n" + acceptedEngValues[i] + "\n"
-                    displayOther = True
-                i+=1
-                        
-            print(outputMsg)
-
-            sleep(2)
-                
-            os.system('cls')
-
-            update_sSchedule()
+        update_sSchedule()
 
         ecset(0,2,roundCount,r"C:\ProgramData\SJLT\loopData.txt")
 
@@ -414,7 +426,7 @@ def SJLT(connection,word_type):
 
 def SAPH_tools(connection) : 
 
-    outputMsg = "1.Print Character SRatings\n2.Query Nusevei\n3.Add To JSET\n4.Add To CSEP\n5.Search Term\n6.Replace Value\n7.Delete Value\n8.Refresh sSchedule"
+    outputMsg = "1.Print Character SRatings\n2.Query Nusevei\n3.Add To Set\n4.Add To CSEP\n5.Search Term\n6.Replace Value\n7.Delete Value\n8.Refresh sSchedule"
 
     pathing,i = 0,0
 
@@ -470,9 +482,9 @@ def SAPH_tools(connection) :
             inputForJapRoma = user_confirm("Please Enter " + inputForJap + "'s Roma\n")
             inputForEng = user_confirm("Please Enter " + inputForJap + "'s English\n")
 
-            while(input("Enter 1 if " + inputForJap + " has any additonal CSEP\n") == "1"):
+            while(input("Enter 1 if " + inputForJap + " has any additional CSEP\n") == "1"):
                 clear_stream()
-                csepList.append(user_confirm("Please Enter " + inputForJap + "'s additonal CSEP\n"))
+                csepList.append(user_confirm("Please Enter " + inputForJap + "'s additional CSEP\n"))
 
             while(i < len(inputForJap)):
                 if(inputForJap[i] not in kana):
@@ -516,10 +528,10 @@ def SAPH_tools(connection) :
 
             if(len(jap) != 0):
 
-                while(input("Enter 1 if " + jap + " has any additonal CSEP\n") == "1"):
+                while(input("Enter 1 if " + jap + " has any additional CSEP\n") == "1"):
 
                     clear_stream()
-                    inputForCsep  = user_confirm("Please Enter " + jap + "'s additonal CSEP\n")
+                    inputForCsep  = user_confirm("Please Enter " + jap + "'s additional CSEP\n")
                     new_csep_id = get_new_id(read_single_column_query(connection,'select csep_id from cseps'+ '\norder by csep_id asc;'))
                     add_to_CSEP(inputForCsep,word_id,new_csep_id,connection)
 
@@ -585,7 +597,7 @@ def SAPH_tools(connection) :
 
 def bootup():
 
-    print("Initalizing SJLT")
+    print("Initializing SJLT")
     
     exec(open(r"ensure_file_sec.py", errors='ignore').read())
 
@@ -602,11 +614,11 @@ def bootup():
 
     os.system('cls')
     
-    print("SJLT Sucessfully Booted")
+    print("SJLT Successfully Booted")
 
-#-------------------start of initalize_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#-------------------start of initialize_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def initalize_connection():
+def initialize_connection():
         
         try:
                 with open(r'C:\ProgramData\SJLT\pass.txt', 'r', encoding='utf-8') as file:  ## get saved connection key if exists
@@ -643,7 +655,7 @@ def initalize_connection():
         return connection
     
 #-------------------start of main()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-connection = initalize_connection()
+connection = initialize_connection()
 
 bootup()
 

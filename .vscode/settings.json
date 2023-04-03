@@ -1,5 +1,11 @@
 {
     "python.analysis.extraPaths": [
         "./SMFVF"
+    ],
+    "cSpell.words": [
+        "furi",
+        "getch",
+        "kbhit",
+        "Nusevei"
     ]
 }

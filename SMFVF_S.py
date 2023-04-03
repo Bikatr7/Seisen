@@ -255,7 +255,7 @@ def search(term,connection,forceReturnValue,pauseValue):
         else:
             pass
 
-    if(len(csep_id) > 0 and forceReturnValue == None or forceReturnValue == "CSEP_ID"):
+    if(len(csep_id) > 0 and term.isnumeric() == True and forceReturnValue == None or forceReturnValue == "CSEP_ID"):
 
         print("------------------------------------------------\nCSEP_ID\n------------------------------------------------")
 
@@ -285,7 +285,7 @@ def search(term,connection,forceReturnValue,pauseValue):
         else:
             pass
 
-    if(len(csepLine) > 0 and forceReturnValue == None or forceReturnValue == "CSEP_LINE"):
+    if(len(csepLine) > 0 and term.isnumeric() == True and forceReturnValue == None or forceReturnValue == "CSEP_LINE"):
 
         print("------------------------------------------------\nCSEP_LINE\n------------------------------------------------")
 
@@ -378,7 +378,7 @@ def search(term,connection,forceReturnValue,pauseValue):
         print("typo id : " + typo_id)
         print("typo : " + term)
 
-        if(forceReturnValue == "TYPO_ACUTAL" and pauseValue == 1):
+        if(forceReturnValue == "TYPO_ACTUAL" and pauseValue == 1):
             os.system('pause')
             return
         elif(forceReturnValue =="TYPO_ACTUAL"):

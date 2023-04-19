@@ -2,11 +2,8 @@ import pyautogui as gui # imports
 import keyboard as key
 import random as r 
 import os
-import sys
 
-sys.path.insert(0, os.getcwd())
-
-from SMFVF_S import *
+from associated_functions import core
 from time import sleep
 
 #--------------------Start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -63,7 +60,7 @@ def check_typo(userGuess,correctList,connection,word_id):
     bestMatch = None
     newUserGuess = userGuess
 
-    typos, itypos = read_multi_column_query(connection, 'select typos.typo,itypos.itypo from typos join itypos on typos.word_id = itypos.word_id where typos.word_id = ' + word_id)
+    typos, itypos = core.read_multi_column_query(connection, 'select typos.typo,itypos.itypo from typos join itypos on typos.word_id = itypos.word_id where typos.word_id = ' + word_id)
 
     if(userGuess in typos):
         return correctList[0]
@@ -81,7 +78,7 @@ def check_typo(userGuess,correctList,connection,word_id):
 
         print("\nDid you mean : " + bestMatch + "? Press 1 to Confirm or 2 to Decline.\n")
         
-        userA = int(input_check(1,key.read_key(),2,prompt + "\nDid you mean : " + bestMatch + "? Press 1 to Confirm or 2 to Decline.\n"))
+        userA = int(core.input_check(1,key.read_key(),2,prompt + "\nDid you mean : " + bestMatch + "? Press 1 to Confirm or 2 to Decline.\n"))
         
         if(userA == 1):
             newUserGuess = bestMatch
@@ -97,16 +94,16 @@ def check_typo(userGuess,correctList,connection,word_id):
 
 def add_Typo(typo,word_id,connection): 
 
-    typo_idList = read_single_column_query(connection,'select typo_id from typos'+ '\norder by typo_id asc;')
+    typo_idList = core.read_single_column_query(connection,'select typo_id from typos'+ '\norder by typo_id asc;')
 
-    add_to_Typos(typo,word_id,get_new_id(typo_idList),connection)
+    core.add_to_Typos(typo,word_id,get_new_id(typo_idList),connection)
     
 #--------------------Start-of-add_Itypo()--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def add_Itypo(itypo,word_id,connection):
 
-    itypo_idList = read_single_column_query(connection,'select itypo_id from itypos'+ '\norder by itypo_id asc;')
+    itypo_idList = core.read_single_column_query(connection,'select itypo_id from itypos'+ '\norder by itypo_id asc;')
 
-    add_to_Itypos(itypo,word_id,get_new_id(itypo_idList),connection)
+    core.add_to_Itypos(itypo,word_id,get_new_id(itypo_idList),connection)
 
 #--------------------Start-of-check_answers_EFB()--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -115,33 +112,35 @@ def check_answers_EFB(userGuess,connection, word_id):
     if(userGuess == 'q'):
         exit()
 
-    clear_stream()
+    core.clear_stream()
     
-    filteredEng = read_single_column_query(connection,'select csep from cseps where word_id = ' + word_id)
+    filteredEng = core.read_single_column_query(connection,'select csep from cseps where word_id = ' + word_id)
 
-    if(userGuess not in filteredEng):
+    if(userGuess not in filteredEng and userGuess != 'z'):
         userGuess = check_typo(userGuess,filteredEng,connection,word_id)
 
     if(userGuess in filteredEng): 
         return True,filteredEng,userGuess
-    else:
+    elif(userGuess != 'z'):
         return False,filteredEng,userGuess
-        
+    else:
+        return None,filteredEng,userGuess
+    
 #--------------------Start-of-log_prob_chars()----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def log_prob_chars(connection,word_id): 
 
-    currPValue = str(int(read_single_column_query(connection,'select pValue from words where word_id = ' + word_id)[0]) + 1)
+    currPValue = str(int(core.read_single_column_query(connection,'select pValue from words where word_id = ' + word_id)[0]) + 1)
 
-    execute_query(connection,'update words set pValue = ' + currPValue + ' where word_id = ' + word_id)
+    core.execute_query(connection,'update words set pValue = ' + currPValue + ' where word_id = ' + word_id)
 
 #--------------------Start-of-log_corr_chars()----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def log_corr_chars(connection,word_id):
 
-    currCValue = str(int(read_single_column_query(connection,'select cValue from words where word_id = ' + word_id)[0]) + 1)
+    currCValue = str(int(core.read_single_column_query(connection,'select cValue from words where word_id = ' + word_id)[0]) + 1)
 
-    execute_query(connection,'update words set cValue = ' + currCValue + ' where word_id = ' + word_id)
+    core.execute_query(connection,'update words set cValue = ' + currCValue + ' where word_id = ' + word_id)
 
 #----------------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -153,13 +152,13 @@ def change_mode(): ## changes mode
 
     sleep(0.17)
 
-    newMode = int(input_check(1,key.read_key(),4,mainMenu))
+    newMode = int(core.input_check(1,key.read_key(),4,mainMenu))
     
-    ecset(0,1,newMode,r"C:\ProgramData\SJLT\loopData.txt") ## changes mode in files
+    core.ecset(0,1,newMode,r"C:\ProgramData\SJLT\loopData.txt") ## changes mode in files
 
     if(modeNum != newMode and newMode == 1 or newMode == 2): ## if mode is for sjlt, generate a new schedule for that word bank
         generate_sSchedule(connection,word_type=newMode)   
-    elif(newMode == 3 and newMode != newMode):
+    elif(newMode == 3 and modeNum != newMode):
         generate_sSchedule(connection,word_type=0)   
 
     os.system('cls')
@@ -174,9 +173,9 @@ def sRate(connection,word_type):
     i,selectionRange,sRating,sRatingPrime = 0,0,0,0
 
     if(word_type == 0):
-        corrCharCountList,probCharCountList,word_idList = read_multi_column_query(connection,'select cValue,pValue,word_id from words'+ '\norder by word_id asc;')
+        corrCharCountList,probCharCountList,word_idList = core.read_multi_column_query(connection,'select cValue,pValue,word_id from words'+ '\norder by word_id asc;')
     else:
-        corrCharCountList,probCharCountList,word_idList = read_multi_column_query(connection,'select cValue,pValue,word_id from words where word_type = ' + str(word_type) + '\norder by word_id asc;')
+        corrCharCountList,probCharCountList,word_idList = core.read_multi_column_query(connection,'select cValue,pValue,word_id from words where word_type = ' + str(word_type) + '\norder by word_id asc;')
 
     while(i < len(corrCharCountList)): 
           rawScoreValue.append(int(corrCharCountList[i]) - int(probCharCountList[i]))
@@ -220,7 +219,7 @@ def generate_sSingle(connection,word_type):
 
     for i, score in enumerate(jValueScoreRateList):
 
-        jVal,pVal,cVal = [result[0] for result in read_multi_column_query(connection, "select jValue,pValue,cValue from words where word_id = " + str(word_idList[i]))]
+        jVal,pVal,cVal = [result[0] for result in core.read_multi_column_query(connection, "select jValue,pValue,cValue from words where word_id = " + str(word_idList[i]))]
 
         displayScore = str(round((score / selectionRange * 100), 4))
 
@@ -234,7 +233,7 @@ def generate_sSingle(connection,word_type):
 
     displayList = list(map(lambda x: str(displayList.index(x) + 1) + " " + str(x), displayList)) 
 
-    jVal,eVal = [result[0] for result in read_multi_column_query(connection,"select jValue,eValue from words where word_id = " + word_id)]
+    jVal,eVal = [result[0] for result in core.read_multi_column_query(connection,"select jValue,eValue from words where word_id = " + word_id)]
 
     return jVal,eVal,displayList,jValueScoreRateList,selectionRange,Chance,word_id 
 
@@ -257,7 +256,7 @@ def generate_sSchedule(connection, word_type):
 
         idList.append(word_idList[max_index])
 
-        jVal,eVal = [result[0] for result in read_multi_column_query(connection, "select jValue,eValue from words where word_id = " + str(word_idList[max_index]))]
+        jVal,eVal = [result[0] for result in core.read_multi_column_query(connection, "select jValue,eValue from words where word_id = " + str(word_idList[max_index]))]
 
         jValList.append(jVal)
         eValList.append(eVal)
@@ -327,7 +326,7 @@ def update_sSchedule():
 
 def SJLT(connection,word_type): 
 
-        clear_stream()
+        core.clear_stream()
 
         os.system('cls')
         
@@ -339,10 +338,10 @@ def SJLT(connection,word_type):
 
         outputMsg = ""
         
-        roundCount = int(read_loop_data(2))
-        numCorrect = int(read_loop_data(3))
+        roundCount = int(core.read_loop_data(2))
+        numCorrect = int(core.read_loop_data(3))
 
-        fValue = read_single_column_query(connection,'select fValue from words where word_id = ' + word_id)[0]
+        fValue = core.read_single_column_query(connection,'select fValue from words where word_id = ' + word_id)[0]
 
         ratio = roundCount and str(round(numCorrect / roundCount,2)) or str(0.0) 
 
@@ -366,8 +365,9 @@ def SJLT(connection,word_type):
 
         if(userGuess == "v"): 
             change_mode()
-
-        if(userGuess == "b"):
+            return
+        
+        elif(userGuess == "b"):
 
             os.system('cls')
             userGuess = str(input(outputMsgRoma)).lower()
@@ -385,14 +385,17 @@ def SJLT(connection,word_type):
             outputMsgRoma += "\n\nYou guessed " + userGuess + ", which is correct.\n"
             log_corr_chars(connection,word_id)                
 
-        else:
+        elif(isCorrect == False):
             outputMsgRoma += "\n\nYou guessed " + userGuess + ", which is incorrect, the correct answer was " + matchingEng + ".\n"
             log_prob_chars(connection,word_id)
-                                    
+
+        else:
+            outputMsgRoma += "\n\nSkipped.\n"
+            log_prob_chars(connection,word_id) 
 
         while(i < len(acceptedEngValues)):
 
-            if(isCorrect == False and matchingEng != userGuess):
+            if(isCorrect == None or isCorrect == False and matchingEng != userGuess):
 
                 if(displayOther == False):
                     outputMsgRoma += "\nOther Answers include:\n"
@@ -418,27 +421,27 @@ def SJLT(connection,word_type):
 
         update_sSchedule()
 
-        ecset(0,2,roundCount,r"C:\ProgramData\SJLT\loopData.txt")
+        core.ecset(0,2,roundCount,r"C:\ProgramData\SJLT\loopData.txt")
 
-        ecset(0,3,numCorrect,r"C:\ProgramData\SJLT\loopData.txt")
+        core.ecset(0,3,numCorrect,r"C:\ProgramData\SJLT\loopData.txt")
 
 #-------------------Start-Of-SAPH_tools()-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def SAPH_tools(connection) : 
 
-    outputMsg = "1.Print Character SRatings\n2.Query Nusevei\n3.Add To Set\n4.Add To CSEP\n5.Search Term\n6.Replace Value\n7.Delete Value\n8.Refresh sSchedule"
+    outputMsg = "1.Print Character SRatings\n2.Query Nusevei\n3.Add To JSET\n4.Add To CSEP\n5.Search Term\n6.Replace Value\n7.Delete Value\n8.Refresh sSchedule"
 
     pathing,i = 0,0
 
     csepList = []
 
-    clear_stream()
+    core.clear_stream()
     
     print(outputMsg)
     
-    pathing = input_check(4,key.read_key(),8,outputMsg)
+    pathing = core.input_check(4,key.read_key(),8,outputMsg)
     
-    clear_stream()
+    core.clear_stream()
     
     os.system('cls')
 
@@ -458,7 +461,7 @@ def SAPH_tools(connection) :
         os.system('cls')
 
         try:
-            print(read_raw_query(connection,query))
+            print(core.read_raw_query(connection,query))
             os.system('pause')
         except:
             print("Invalid Query\n")
@@ -466,8 +469,8 @@ def SAPH_tools(connection) :
 
     elif(pathing == "3"):
 
-        new_word_id = get_new_id(read_single_column_query(connection,'select word_id from words'+ '\norder by word_id asc;'))
-        new_csep_id = get_new_id(read_single_column_query(connection,'select csep_id from cseps'+ '\norder by csep_id asc;'))
+        new_word_id = get_new_id(core.read_single_column_query(connection,'select word_id from words'+ '\norder by word_id asc;'))
+        new_csep_id = get_new_id(core.read_single_column_query(connection,'select csep_id from cseps'+ '\norder by csep_id asc;'))
         
         word_type = 1
 
@@ -477,20 +480,20 @@ def SAPH_tools(connection) :
             kana = [x.strip() for x in ArrayRaw]
 
         try:
-            inputForJap = user_confirm("Please Enter A Japanese Word\n")
+            inputForJap = core.user_confirm("Please Enter A Japanese Word\n")
 
-            inputForJapRoma = user_confirm("Please Enter " + inputForJap + "'s Roma\n")
-            inputForEng = user_confirm("Please Enter " + inputForJap + "'s English\n")
+            inputForJapRoma = core.user_confirm("Please Enter " + inputForJap + "'s Roma\n")
+            inputForEng = core.user_confirm("Please Enter " + inputForJap + "'s English\n")
 
             while(input("Enter 1 if " + inputForJap + " has any additional CSEP\n") == "1"):
-                clear_stream()
-                csepList.append(user_confirm("Please Enter " + inputForJap + "'s additional CSEP\n"))
+                core.clear_stream()
+                csepList.append(core.user_confirm("Please Enter " + inputForJap + "'s additional CSEP\n"))
 
             while(i < len(inputForJap)):
                 if(inputForJap[i] not in kana):
                     print("\n" + inputForJap[i] + " is kanji")
                     sleep(0.5)
-                    inputForFur = user_confirm("Please Enter " + inputForJap + "'s Furigana\n")
+                    inputForFur = core.user_confirm("Please Enter " + inputForJap + "'s Furigana\n")
                     break
                 i+=1
 
@@ -499,18 +502,18 @@ def SAPH_tools(connection) :
             else:
                 query = 'select word_id from words where jValue = "' + inputForJap + '" and jrValue = "' + inputForJapRoma + '" and fValue = "' + inputForFur + '"'
 
-            word_id = read_single_column_query(connection,query)
+            word_id = core.read_single_column_query(connection,query)
 
             if(len(word_id) == 0):
 
-                add_to_JSET(inputForJap,inputForJapRoma,inputForEng,inputForFur,0,0,new_word_id,word_type,connection)
-                add_to_CSEP(inputForEng,new_word_id,new_csep_id,connection)
+                core.add_to_JSET(inputForJap,inputForJapRoma,inputForEng,inputForFur,0,0,new_word_id,word_type,connection)
+                core.add_to_CSEP(inputForEng,new_word_id,new_csep_id,connection)
 
                 i = 0
                 while(i < len(csepList)):
                     
-                    new_csep_id = get_new_id(read_single_column_query(connection,'select csep_id from cseps'+ '\norder by csep_id asc;'))
-                    add_to_CSEP(csepList[i],new_word_id,new_csep_id,connection)
+                    new_csep_id = get_new_id(core.read_single_column_query(connection,'select csep_id from cseps'+ '\norder by csep_id asc;'))
+                    core.add_to_CSEP(csepList[i],new_word_id,new_csep_id,connection)
                     i+=1
             else:
                 print("This value is already in Nusevei : " + inputForJap + "\n")
@@ -523,17 +526,17 @@ def SAPH_tools(connection) :
 
         try:
         
-            word_id = user_confirm("Please Enter The ID Of The Word Where You Want To Add A CSEP To\n")
-            jap = read_single_column_query(connection,'select jValue from words where word_id = ' + word_id)[0]
+            word_id = core.user_confirm("Please Enter The ID Of The Word Where You Want To Add A CSEP To\n")
+            jap = core.read_single_column_query(connection,'select jValue from words where word_id = ' + word_id)[0]
 
             if(len(jap) != 0):
 
                 while(input("Enter 1 if " + jap + " has any additional CSEP\n") == "1"):
 
-                    clear_stream()
-                    inputForCsep  = user_confirm("Please Enter " + jap + "'s additional CSEP\n")
-                    new_csep_id = get_new_id(read_single_column_query(connection,'select csep_id from cseps'+ '\norder by csep_id asc;'))
-                    add_to_CSEP(inputForCsep,word_id,new_csep_id,connection)
+                    core.clear_stream()
+                    inputForCsep  = core.user_confirm("Please Enter " + jap + "'s additional CSEP\n")
+                    new_csep_id = get_new_id(core.read_single_column_query(connection,'select csep_id from cseps'+ '\norder by csep_id asc;'))
+                    core.add_to_CSEP(inputForCsep,word_id,new_csep_id,connection)
 
             else:
                 print(jap + " is not in Nusevei\n")
@@ -548,16 +551,16 @@ def SAPH_tools(connection) :
 
         os.system('cls')
 
-        search(term,connection,None,1)
+        core.search(term,connection,None,1)
 
     elif(pathing =="6"):
 
         target_id = input("Please enter the id of the word/csep/typo/itypo you would like to replace\n")
 
-        word = read_single_column_query(connection,'select word_id from words where word_id = "' + target_id + '"')
-        csep = read_single_column_query(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
-        itypo = read_single_column_query(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
-        typo = read_single_column_query(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
+        word = core.read_single_column_query(connection,'select word_id from words where word_id = "' + target_id + '"')
+        csep = core.read_single_column_query(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
+        itypo = core.read_single_column_query(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
+        typo = core.read_single_column_query(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
 
         print("\n")
 
@@ -574,22 +577,22 @@ def SAPH_tools(connection) :
 
         typeReplacement = key.read_key()
 
-        clear_stream()
+        core.clear_stream()
         os.system('cls')
 
-        replace_value(typeReplacement,connection,target_id)
+        core.replace_value(typeReplacement,connection,target_id)
 
     elif(pathing == "7"):
 
         target_id = input("Please enter the id of the word/csep/typo/itypo you would like to delete\n")
 
-        delete_value(connection,target_id)
+        core.delete_value(connection,target_id)
 
     elif(pathing == "8"):
         generate_sSchedule(connection,word_type=0)
         
     else:
-        ecset(0,1,-1,r"C:\ProgramData\SJLT\loopData.txt")
+        core.ecset(0,1,-1,r"C:\ProgramData\SJLT\loopData.txt")
 
     os.system('cls')
 
@@ -597,18 +600,18 @@ def SAPH_tools(connection) :
 
 def bootup():
 
-    print("Initializing SJLT")
+    print("Initializing Seisen")
     
     exec(open(r"ensure_file_sec.py", errors='ignore').read())
 
-    os.system("title " + "SJLT Client")
+    os.system("title " + "Seisen")
 
-    ecset(0,1,-1,r"C:\ProgramData\SJLT\loopData.txt")
+    core.ecset(0,1,-1,r"C:\ProgramData\SJLT\loopData.txt")
     
     sleep(0.1)
     
     try:
-        gui.getWindowsWithTitle("SJLT Client")[0].maximize()
+        gui.getWindowsWithTitle("Seisen")[0].maximize()
     except:
         pass
 
@@ -624,16 +627,16 @@ def initialize_connection():
                 with open(r'C:\ProgramData\SJLT\pass.txt', 'r', encoding='utf-8') as file:  ## get saved connection key if exists
                     Pass = file.read()
 
-                connection = create_connection("localhost","root",Pass,"nusevei")
+                connection = core.create_connection("localhost","root",Pass,"nusevei")
 
                 print("Used saved pass in C:\ProgramData\SJLT\pass.txt")
 
         except: ## else try to get pass manually
-                Pass = input("Please enter the root password for your local database you have \n")
+                Pass = input("Please enter the root password for your local database you have\n")
 
                 try: ## if valid save the api key
 
-                        connection = create_connection("localhost","root",Pass,"nusevei")
+                        connection = core.create_connection("localhost","root",Pass,"nusevei")
                             
                         if(os.path.exists(r'C:\ProgramData\SJLT\pass.txt') == False):
                             print("'C:\ProgramData\SJLT\pass.txt' was created due to lack of the file")
@@ -663,7 +666,7 @@ validModes = [1,2,3,4]
 mainMenu = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.J-E\n2.Kana Practice\n3.SJLT\n4.SAPH"
 
 while True:
-    modeNum = read_loop_data(1)
+    modeNum = core.read_loop_data(1)
     
     if(modeNum == 1):
         SJLT(connection,word_type=1)

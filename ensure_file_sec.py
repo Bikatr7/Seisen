@@ -1,9 +1,5 @@
 import os
-import sys
 
-sys.path.insert(0, os.getcwd())
-
-from SMFVF_S import *
 from time import sleep
 
 #-------------------Start-of-main()-------------------------------------------------

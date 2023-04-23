@@ -372,6 +372,10 @@ def SJLT(connection,word_type):
             os.system('cls')
             userGuess = str(input(outputMsgRoma)).lower()
 
+            if(userGuess == "v"): 
+                change_mode()
+                return
+
             with open(r"C:\ProgramData\SJLT\prompt.txt", "w+", encoding="utf-8") as file:
                 file.write(outputMsgRoma)
 

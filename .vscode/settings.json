@@ -7,5 +7,6 @@
         "getch",
         "kbhit",
         "Nusevei"
-    ]
+    ],
+    "python.analysis.typeCheckingMode": "basic"
 }

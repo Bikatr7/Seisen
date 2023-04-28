@@ -5,9 +5,53 @@ import mysql.connector
 
 from time import sleep
 
+#--------------------Start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def get_new_id(idList):
+
+    """
+
+    Generate's a new id for an sql entry 
+
+    Parameters:
+    idList (list - string) a list of already active ids
+
+    Returns:
+    newID (int) a new id for an sql entry
+
+    """
+
+    ## the idList is currently full of strings so they need to be converted
+    idList = [int(element) for element in idList]
+
+    newID = 1
+
+    for num in idList:
+        if(num < newID):
+            continue
+        elif(num == newID):
+            newID += 1
+        else:
+            return newID
+        
+    return newID
+
 #-------------------Start-of-search()---------------------------------------------------------
 
 def search(term,connection,forceReturnValue,pauseValue):
+
+    """
+    takes a term and searches the database for it
+
+    Parameters:
+    term (string) the term to be searched for
+    connection (mysql.connector.connect) the connection to the database
+    forceReturnValue (string) a value indicating if we should force a return
+    pauseValue (int) a value indicating if we should force a console pause
+
+    Returns:
+    None
+    """
 
     jap = read_single_column_query(connection,'select jValue from words where jValue = "' + term + '"')
     japRoma = read_single_column_query(connection,'select jrValue from words where jrValue = "' + term + '"')
@@ -34,7 +78,7 @@ def search(term,connection,forceReturnValue,pauseValue):
 
             print(jap,end="\n")
             print(word_id_j)
-            index = int(input("\nPlease input the index of the jValue you are looking for "))
+            index = int(input("\nWhich jValue are you looking for (1 - "+ str(len(jap)) + ")")) - 1
             term = jap[index]
             word_id = word_id_j[index]
 
@@ -77,7 +121,7 @@ def search(term,connection,forceReturnValue,pauseValue):
             print(eng,end="\n")
             print(jap_e)
             print(word_id_e)
-            index = int(input("\nPlease input the index of the eValue you are looking for "))
+            index = int(input("\nWhich eValue are you looking for (1 - "+ str(len(eng)) + ")")) - 1
             term = eng[index]
             word_id = word_id_e[index]
 
@@ -119,7 +163,7 @@ def search(term,connection,forceReturnValue,pauseValue):
 
             print(japRoma,end="\n")
             print(word_id_jr)
-            index = int(input("\nPlease input the index of the jrValue you are looking for "))
+            index = int(input("\nWhich jrValue are you looking for (1 - "+ str(len(japRoma)) + ")")) - 1
             term = japRoma[index]
             word_id = word_id_jr[index]
 
@@ -161,7 +205,7 @@ def search(term,connection,forceReturnValue,pauseValue):
 
             print(furi,end="\n")
             print(word_id_f)
-            index = int(input("\nPlease input the index of the fValue you are looking for "))
+            index = int(input("\nWhich fValue are you looking for (1 - "+ str(len(furi)) + ")")) - 1
             term = furi[index]
             word_id = word_id_f[index]
 
@@ -363,7 +407,7 @@ def search(term,connection,forceReturnValue,pauseValue):
             print(word_id_typo)
             print(jap_typo)
 
-            index = int(input("\nPlease input the index of the typo you are looking for "))
+            index = int(input("\nWhich typo are you looking for (1 - "+ str(len(typoActual)) + ")")) - 1
             term = typoActual[index]
             word_id = word_id_typo[index]
             typo_id = typo_id_typo[index]
@@ -406,7 +450,7 @@ def search(term,connection,forceReturnValue,pauseValue):
             print(word_id_itypo)
             print(jap_itypo)
 
-            index = int(input("\nPlease input the index of the typo you are looking for "))
+            index = int(input("\nWhich itypo are you looking for (1 - "+ str(len(itypoActual)) + ")")) - 1
             term = itypoActual[index]
             word_id = word_id_itypo[index]
             itypo_id = itypo_id_itypo[index]
@@ -450,7 +494,7 @@ def search(term,connection,forceReturnValue,pauseValue):
             print(word_id_csep_actual)
             print(jap_csep_actual)
 
-            index = int(input("\nPlease input the index of the typo you are looking for "))
+            index = int(input("\nWhich csep are you looking for (1 - "+ str(len(csepActual)) + ")")) - 1
             term = csepActual[index]
             word_id = word_id_csep_actual[index]
             csep_id = csep_id_csep_actual[index]
@@ -481,8 +525,21 @@ def search(term,connection,forceReturnValue,pauseValue):
     os.system('pause')
 
 #-------------------Start-of-ecset()---------------------------------------------------------
-
 def ecset(targetLine, columnNum, userInput, filePath):
+
+    """
+    ecset (element comma separated editor tool) is used for editing files that look like '1,2,3,4,'
+
+    Parameters:
+    targetLine (int) the line of the file we are editing
+    columnNum (int) the value we are editing
+    userInput (String) what the edit value is being replaced with
+    filePath (String) what file is being edited
+
+    Returns:
+    None
+
+    """
 
     with open(filePath, "r+", encoding="utf8") as f:
         lines = f.readlines()
@@ -501,7 +558,19 @@ def ecset(targetLine, columnNum, userInput, filePath):
 
 #-------------------Start-of-clear_stream()-------------------------------------------------
 
-def clear_stream():
+def clear_stream(): 
+
+    """
+
+    Clears the console stream
+
+    Parameters:
+    None
+
+    Returns:
+    None
+
+    """
     
     while msvcrt.kbhit():
         msvcrt.getch()
@@ -512,9 +581,20 @@ def clear_stream():
 
 def user_confirm(prompt):
 
+    """
+    Prompts the user to confirm their input
+
+    Parameters:
+    prompt (String) the prompt to be displayed to the user
+
+    Returns:
+    userInput (String) the user's input
+    """
+
     confirmation = "Just To Confirm You Selected "
     options = " Press 1 To Confirm or 2 To Retry"
     output = ""
+    userInput = ""
     
     entryConfirmed = False
 
@@ -526,10 +606,10 @@ def user_confirm(prompt):
         
         userInput = input(prompt)
         
-        if(userInput == "q"):
+        if(userInput == "q"): ## if the user wants to quit do so
             exit()
 
-        assert userInput != "z"
+        assert userInput != "z" ## z is used to skip
 
         os.system('cls')
 
@@ -555,6 +635,19 @@ def user_confirm(prompt):
 
 def input_check(iType, userInput, numChoices, inputPromptMsg):
 
+    """
+    Checks the user's input to make sure it is valid for the given input type
+
+    Parameters:
+    iType (int) the type of input we are checking
+    userInput (String) the user's input
+    numChoices (int) the number of choices the user has
+    inputPromptMsg (String) the prompt to be displayed to the user
+
+    Returns:
+    newUserI (String) the user's input
+    """
+
     newUserI = str(userInput)
     inputIssueMsg = ""
 
@@ -566,11 +659,11 @@ def input_check(iType, userInput, numChoices, inputPromptMsg):
             exit()
         elif(userInput == 'v' and iType != 1):
             return newUserI
-        elif(iType == 1 and (userInput.isdigit() == False or userInput == "0")):
+        elif(iType == 1 and (str(userInput).isdigit() == False or userInput == "0")):
             inputIssueMsg = "Invalid Input, please enter a valid number choice or 'q'\n"
-        elif(iType == 4 and (userInput.isdigit() == False or int(userInput) > numChoices)):
+        elif(iType == 4 and (str(userInput).isdigit() == False or int(userInput) > numChoices)):
             inputIssueMsg = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
-        elif(iType == 5 and (userInput.isdigit() == False or int(userInput) > numChoices)):
+        elif(iType == 5 and (str(userInput).isdigit() == False or int(userInput) > numChoices)):
             inputIssueMsg = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
         else:
             return newUserI
@@ -590,6 +683,17 @@ def input_check(iType, userInput, numChoices, inputPromptMsg):
 #-------------------start of read_loop_data()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def read_loop_data(column):
+
+    """
+    Reads the loop data file and returns the value of the given column
+    
+    Parameters:
+    column (int) the column we are reading
+
+    Returns:
+    int(stats[column-1]) (int) the value of the given column
+
+    """
 
     with open(r"C:\ProgramData\SJLT\loopData.txt", "r", encoding="utf-8") as file:
         loopData = file.read()
@@ -613,6 +717,21 @@ def read_loop_data(column):
 #--------------------Start-of-add_to_Itypos()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def add_to_Itypos(itypo, word_id, itypo_id, connection):
+
+    """
+    Adds a value to the itypos table
+
+    Parameters:
+    itypo (String) the itypo we are adding
+    word_id (int) the word_id of the word we are adding
+    itypo_id (int) the itypo_id of the itypo we are adding
+    connection (object - mysql.connector.connect) the connection to the database
+
+    Returns:
+    None
+
+    """
+
     cursor = connection.cursor()
 
     query ="""
@@ -630,6 +749,20 @@ def add_to_Itypos(itypo, word_id, itypo_id, connection):
 #--------------------Start-of-add_to_Typos()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def add_to_Typos(typo, word_id, typo_id, connection):
+
+    """
+    Adds a value to the typos table
+    
+    Parameters:
+    typo (String) the typo we are adding
+    word_id (int) the word_id of the word we are adding
+    typo_id (int) the typo_id of the typo we are adding
+    connection (object - mysql.connector.connect) the connection to the database
+    
+    Returns:
+    None
+
+    """
     cursor = connection.cursor()
 
     query ="""
@@ -647,177 +780,231 @@ def add_to_Typos(typo, word_id, typo_id, connection):
 
 def delete_value(connection,target_id):
 
-        word = read_single_column_query(connection,'select word_id from words where word_id = "' + target_id + '"')
-        csep = read_single_column_query(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
-        typo = read_single_column_query(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
-        itypo = read_single_column_query(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
+    """
+    Deletes a value from the database
+    
+    Parameters:
+    connection (object - mysql.connector.connect) the connection to the database
+    target_id (String) the id of the value we are deleting
 
-        wLength = len(word)
-        cLength = len(csep)
-        iLength = len(typo)
-        itLength = len(itypo)
+    Returns:
+    None
+    """
 
-        if(wLength == 1):
-            print("Nusevei has confirmed the existence of a word with an id of " + target_id)
-            search(target_id,connection,"WORD_ID",None)
-        if(cLength == 1):
-            print("Nusevei has confirmed the existence of a csep with an id of " + target_id)
-            search(target_id,connection,"CSEP_ID",None)
-        if(iLength == 1):
-            print("Nusevei has confirmed the existence of a typo with an id of " + target_id)
-            search(target_id,connection,"TYPO_ID",None)
-        if(itLength == 1):
-            print("Nusevei has confirmed the existence of a itypo with an id of " + target_id,)
-            search(target_id,connection,"ITYPO_ID",None)
+    word = read_single_column_query(connection,'select word_id from words where word_id = "' + target_id + '"')
+    csep = read_single_column_query(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
+    typo = read_single_column_query(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
+    itypo = read_single_column_query(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
 
-        print("\n")
+    wLength = len(word)
+    cLength = len(csep)
+    iLength = len(typo)
+    itLength = len(itypo)
 
-        if(wLength == 1):
-            print("Nusevei has confirmed the existence of a word with an id of " + target_id + ", Press 1 to select this.\n")
-        if(cLength == 1):
-            print("Nusevei has confirmed the existence of a csep with an id of " + target_id + ", Press 2 to select this.\n")
-        if(iLength == 1):
-            print("Nusevei has confirmed the existence of a typo with an id of " + target_id + ", Press 3 to select this.\n")
-        if(itLength == 1):
-            print("Nusevei has confirmed the existence of a itypo with an id of " + target_id + ", Press 4 to select this.\n")
+    if(wLength == 1):
+        print("Nusevei has confirmed the existence of a word with an id of " + target_id)
+        search(target_id,connection,"WORD_ID",None)
+    if(cLength == 1):
+        print("Nusevei has confirmed the existence of a csep with an id of " + target_id)
+        search(target_id,connection,"CSEP_ID",None)
+    if(iLength == 1):
+        print("Nusevei has confirmed the existence of a typo with an id of " + target_id)
+        search(target_id,connection,"TYPO_ID",None)
+    if(itLength == 1):
+        print("Nusevei has confirmed the existence of a itypo with an id of " + target_id,)
+        search(target_id,connection,"ITYPO_ID",None)
+
+    print("\n")
+
+    if(wLength == 1):
+        print("Nusevei has confirmed the existence of a word with an id of " + target_id + ", Press 1 to select this.\n")
+    if(cLength == 1):
+        print("Nusevei has confirmed the existence of a csep with an id of " + target_id + ", Press 2 to select this.\n")
+    if(iLength == 1):
+        print("Nusevei has confirmed the existence of a typo with an id of " + target_id + ", Press 3 to select this.\n")
+    if(itLength == 1):
+        print("Nusevei has confirmed the existence of a itypo with an id of " + target_id + ", Press 4 to select this.\n")
+
+    sleep(.7)
+
+    path = key.read_key()
+
+    if(path == "1"):
+        delete(connection,'words','word_id',str(target_id))
+        delete(connection,'cseps','word_id',str(target_id))
+    elif(path == "2"):
+        delete(connection,'cseps','csep_id',str(target_id))
+    elif(path == "3"):
+        delete(connection,'typos','typo_id',str(target_id))
+    elif(path == "4"):
+        delete(connection,'itypos','itypo_id',str(target_id))
+    else:
+        pass
+
+#--------------------Start-of-replace_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def replace_value(typeReplacement,connection,target_id):
+
+    """
+    Replaces a value in the database
+
+    Parameters:
+    typeReplacement (String) the type of value we are replacing
+    connection (object - mysql.connector.connect) the connection to the database
+    target_id (String) the id of the value we are replacing
+
+    Returns:
+    None
+    """
+        
+    target = None
+
+    if(typeReplacement == "1"):
+        print("Please select which value you would like to replace")
+        print("\n1. jValue = ",end="") 
+        print(read_single_column_query(connection,'select jValue from words where word_id = "' + target_id + '"'))
+        print("\n2. jrValue = ",end="") 
+        print(read_single_column_query(connection,'select jrValue from words where word_id = "' + target_id + '"'))
+        print("\n3. eValue = ",end="") 
+        print(read_single_column_query(connection,'select eValue from words where word_id = "' + target_id + '"'))
+        print("\n4. fValue",end="") 
+        print(read_single_column_query(connection,'select fValue from words where word_id = "' + target_id + '"'))
+        print("\n5. pValue",end="") 
+        print(read_single_column_query(connection,'select pValue from words where word_id = "' + target_id + '"'))
+        print("\n6. cValue",end="") 
+        print(read_single_column_query(connection,'select cValue from words where word_id = "' + target_id + '"'))
+
+        sleep(.7)
+
+        path = key.read_key()
+        
+        clear_stream()
+        os.system('cls')
+
+        try:
+            value = user_confirm("What would you like to replace it with?\n")
+
+        except AssertionError:
+            return
+
+        if(path == "1"):
+            target = "jValue"
+        elif(path == "2"):
+            target = "jrValue"
+        elif(path == "3"):
+            target = "eValue"
+        elif(path == "4"):
+            target = "fValue"
+        elif(path == "5"):
+            target = "pValue"
+        elif(path == "6"):
+            target = "cValue"
+
+        if(target != None):
+            execute_query(connection,'update words set ' + target + ' = "' + value + '" where word_id = ' + target_id)
+
+    elif(typeReplacement == "2"):
+        print("Please select which value you would like to replace")
+        print("\n1. word_id = ",end="") 
+        print(read_single_column_query(connection,'select word_id from cseps where csep_id = "' + target_id + '"'))
+        print("\n2. csep = ",end="") 
+        print(read_single_column_query(connection,'select csep from cseps where csep_id = "' + target_id + '"'))
 
         sleep(.7)
 
         path = key.read_key()
 
+        clear_stream()
+        os.system('cls')
+
+        try:
+            value = user_confirm("What would you like to replace it with?\n")
+
+        except AssertionError:
+            return
+
         if(path == "1"):
-            delete(connection,'words','word_id',str(target_id))
-            delete(connection,'cseps','word_id',str(target_id))
+            target = "word_id"
         elif(path == "2"):
-            delete(connection,'cseps','csep_id',str(target_id))
-        elif(path == "3"):
-            delete(connection,'typos','typo_id',str(target_id))
-        elif(path == "4"):
-            delete(connection,'itypos','itypo_id',str(target_id))
-        else:
-            pass
-
-#--------------------Start-of-replace_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-def replace_value(typeReplacement,connection,target_id):
+            target = "csep"
         
-        target = None
+        if(target != None):
+            execute_query(connection,'update cseps set ' + target + ' = "' + value + '" where csep_id = ' + target_id)
 
-        if(typeReplacement == "1"):
-            print("Please select which value you would like to replace")
-            print("\n1. jValue = ",end="") 
-            print(read_single_column_query(connection,'select jValue from words where word_id = "' + target_id + '"'))
-            print("\n2. jrValue = ",end="") 
-            print(read_single_column_query(connection,'select jrValue from words where word_id = "' + target_id + '"'))
-            print("\n3. eValue = ",end="") 
-            print(read_single_column_query(connection,'select eValue from words where word_id = "' + target_id + '"'))
-            print("\n4. fValue",end="") 
-            print(read_single_column_query(connection,'select fValue from words where word_id = "' + target_id + '"'))
-            print("\n5. pValue",end="") 
-            print(read_single_column_query(connection,'select pValue from words where word_id = "' + target_id + '"'))
-            print("\n6. cValue",end="") 
-            print(read_single_column_query(connection,'select cValue from words where word_id = "' + target_id + '"'))
+    elif(typeReplacement == "3"):
+        print("Please select which value you would like to replace")
+        print("\n1. word_id = ",end="") 
+        print(read_single_column_query(connection,'select word_id from typos where typo_id = "' + target_id + '"'))
+        print("\n2. typo = ",end="") 
+        print(read_single_column_query(connection,'select typo from typos where typo_id = "' + target_id + '"'))
 
-            sleep(.7)
+        sleep(.7)
 
-            path = key.read_key()
-            
-            clear_stream()
-            os.system('cls')
+        path = key.read_key()
 
+        clear_stream()
+        os.system('cls')
+        
+        try:
             value = user_confirm("What would you like to replace it with?\n")
 
-            if(path == "1"):
-                target = "jValue"
-            elif(path == "2"):
-                target = "jrValue"
-            elif(path == "3"):
-                target = "eValue"
-            elif(path == "4"):
-                target = "fValue"
-            elif(path == "5"):
-                target = "pValue"
-            elif(path == "6"):
-                target = "cValue"
-    
-            if(target != None):
-                execute_query(connection,'update words set ' + target + ' = "' + value + '" where word_id = ' + target_id)
+        except AssertionError:
+            return
 
-        elif(typeReplacement == "2"):
-            print("Please select which value you would like to replace")
-            print("\n1. word_id = ",end="") 
-            print(read_single_column_query(connection,'select word_id from cseps where csep_id = "' + target_id + '"'))
-            print("\n2. csep = ",end="") 
-            print(read_single_column_query(connection,'select csep from cseps where csep_id = "' + target_id + '"'))
+        if(path == "1"):
+            target = "word_id"
+        elif(path == "2"):
+            target = "typo"
+        
+        if(target != None):
+            execute_query(connection,'update typos set ' + target + ' = "' + value + '" where typo_id = ' + target_id)
 
-            sleep(.7)
+    elif(typeReplacement == "4"):
+        print("Please select which value you would like to replace")
+        print("\n1. word_id = ",end="") 
+        print(read_single_column_query(connection,'select word_id from itypos where itypo_id = "' + target_id + '"'))
+        print("\n2. itypo = ",end="") 
+        print(read_single_column_query(connection,'select itypo from itypos where itypo_id = "' + target_id + '"'))
 
-            path = key.read_key()
+        sleep(.7)
 
-            clear_stream()
-            os.system('cls')
-            
+        path = key.read_key()
+
+        clear_stream()
+        os.system('cls')
+        
+        try:
             value = user_confirm("What would you like to replace it with?\n")
 
-            if(path == "1"):
-                target = "word_id"
-            elif(path == "2"):
-                target = "csep"
-            
-            if(target != None):
-                execute_query(connection,'update cseps set ' + target + ' = "' + value + '" where csep_id = ' + target_id)
+        except AssertionError:
+            return
 
-        elif(typeReplacement == "3"):
-            print("Please select which value you would like to replace")
-            print("\n1. word_id = ",end="") 
-            print(read_single_column_query(connection,'select word_id from typos where typo_id = "' + target_id + '"'))
-            print("\n2. typo = ",end="") 
-            print(read_single_column_query(connection,'select typo from typos where typo_id = "' + target_id + '"'))
+        if(path == "1"):
+            target = "word_id"
+        elif(path == "2"):
+            target = "itypo"
 
-            sleep(.7)
-
-            path = key.read_key()
-
-            clear_stream()
-            os.system('cls')
-            
-            value = user_confirm("What would you like to replace it with?\n")
-
-            if(path == "1"):
-                target = "word_id"
-            elif(path == "2"):
-                target = "typo"
-            
-            if(target != None):
-                execute_query(connection,'update typos set ' + target + ' = "' + value + '" where typo_id = ' + target_id)
-
-        elif(typeReplacement == "4"):
-            print("Please select which value you would like to replace")
-            print("\n1. word_id = ",end="") 
-            print(read_single_column_query(connection,'select word_id from itypos where itypo_id = "' + target_id + '"'))
-            print("\n2. itypo = ",end="") 
-            print(read_single_column_query(connection,'select itypo from itypos where itypo_id = "' + target_id + '"'))
-
-            sleep(.7)
-
-            path = key.read_key()
-
-            clear_stream()
-            os.system('cls')
-            
-            value = user_confirm("What would you like to replace it with?\n")
-
-            if(path == "1"):
-                target = "word_id"
-            elif(path == "2"):
-                target = "itypo"
-
-            if(target != None):
-                execute_query(connection,'update itypos set ' + target + ' = "' + value + '" where itypo_id = ' + target_id)
+        if(target != None):
+            execute_query(connection,'update itypos set ' + target + ' = "' + value + '" where itypo_id = ' + target_id)
 
 #--------------------Start-of-create_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def create_connection(host_name, user_name, user_password,db_name):
+
+    """
+
+    Creates a connection to the database
+
+    Parameters :
+    host_name (str) : The host name of the database
+    user_name (str) : The user name of the database
+    user_password (str) : The password of the database
+    db_name (str) : The name of the database
+
+    Returns :
+    connection (obj - mysql.connector.connect) : The connection object to the database
+
+    """
 
     connection = mysql.connector.connect(
         host=host_name,
@@ -830,6 +1017,19 @@ def create_connection(host_name, user_name, user_password,db_name):
 #--------------------Start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def execute_query(connection, query):
+
+    """
+
+    Executes a query to the database
+
+    Parameters :
+    connection (obj - mysql.connector.connect) : The connection object to the database
+    query (str) : The query to be executed
+
+    Returns :
+    None
+
+    """
     
     cursor = connection.cursor()
     cursor.execute(query)
@@ -839,10 +1039,21 @@ def execute_query(connection, query):
 #--------------------Start-of-read_single_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def read_single_column_query(connection, query):
+
+    """
+    reads a single column query from the database
+
+    Parameters :
+    connection (obj - mysql.connector.connect) : The connection object to the database
+    query (str) : The query to be executed
+
+    Returns :
+    resultsActual (list - string) : The results of the query
+
+    """
     
     cursor = connection.cursor()
     resultsActual = []
-    i = 0
 
     cursor.execute(query)
     results = cursor.fetchall()
@@ -854,6 +1065,18 @@ def read_single_column_query(connection, query):
 #--------------------Start-of-read_multi_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def read_multi_column_query(connection, query):
+
+    """
+    reads a multi column query from the database
+
+    Parameters :
+    connection (obj - mysql.connector.connect) : The connection object to the database
+    query (str) : The query to be executed
+
+    Returns :
+    resultsByColumn (list - list) : The results of the query
+
+    """
 
     cursor = connection.cursor()
     cursor.execute(query)
@@ -875,6 +1098,19 @@ def read_multi_column_query(connection, query):
 #--------------------Start-of-read_raw_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def read_raw_query(connection, query):
+
+    """
+
+    reads a raw query from the database
+
+    Parameters :
+    connection (obj - mysql.connector.connect) : The connection object to the database
+    query (str) : The query to be executed
+
+    Returns :
+    results (tuple) : The results of the query
+
+    """
     
     cursor = connection.cursor()
 
@@ -886,6 +1122,25 @@ def read_raw_query(connection, query):
 #--------------------Start-of-add_to_JSET()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def add_to_JSET(jValue, jrValue, eValue, fValue, pValue, cValue, word_id, word_type, connection):
+
+    """
+    adds a word to JSET (READ : words table)
+
+    Parameters :
+    jValue (str) : The japanese value of the word
+    jrValue (str) : The japanese romaji value of the word
+    eValue (str) : The english value of the word
+    fValue (str) : The furigana value of the word
+    pValue (str) : The problem value of the word
+    cValue (str) : The correct value of the word
+    word_id (str) : The word id of the word
+    word_type (str) : The word type of the word
+    connection (obj - mysql.connector.connect) : The connection object to the database
+
+    Returns :
+    None
+
+    """
     
     cursor = connection.cursor()
 
@@ -903,6 +1158,22 @@ def add_to_JSET(jValue, jrValue, eValue, fValue, pValue, cValue, word_id, word_t
 
 #--------------------Start-of-add_to_CSEP()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def add_to_CSEP(csep, word_id, csep_id, connection):
+
+    """
+    adds a word to CSEP (READ : cseps table)
+
+    Parameters :
+    csep (str) : The csep value of the word
+    word_id (str) : The word id of the word
+    csep_id (str) : The csep id of the word
+    connection (obj - mysql.connector.connect) : The connection object to the database
+
+    Returns :
+    None
+
+    """
+
+
     cursor = connection.cursor()
 
     query ="""
@@ -919,6 +1190,22 @@ def add_to_CSEP(csep, word_id, csep_id, connection):
 
 #--------------------Start-of-delete()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def delete(connection,table,row,Id):
+
+    """
+    deletes a row entry from a table
+
+    Parameters :
+    connection (obj - mysql.connector.connect) : The connection object to the database
+    table (str) : The table to delete from
+    row (str) : The row to delete from
+    Id (str) : The id of the row to delete
+
+    Returns :
+    None
+
+    """
+    
+
     cursor = connection.cursor()
 
     query = 'delete from ' + table + ' where ' + row + ' = ' + Id

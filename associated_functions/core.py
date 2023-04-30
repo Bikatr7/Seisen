@@ -5,6 +5,10 @@ import mysql.connector
 
 from time import sleep
 
+
+class UnexpectedInputError(Exception):
+    pass
+
 #--------------------Start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def get_new_id(idList):
@@ -306,7 +310,7 @@ def search(term,connection,forceReturnValue,pauseValue):
         word_id_csep,csep_csep = read_multi_column_query(connection,'select word_id,csep from cseps where csep_id = "' + term + '"')
 
         jap_csep,jr_csep,eng_csep,furi_csep,corr_csep,prob_csep = read_multi_column_query(connection,'select jValue,jrValue,eValue,fValue,cValue,pValue from words where word_id = ' + word_id_csep[0])
-        csep_all_csep,csep_line_csep = read_multi_column_query(connection,'select csep,csep_id from cseps where word_id = ' + term)
+        csep_all_csep,csep_line_csep = read_multi_column_query(connection,'select csep,csep_id from cseps where csep_id = ' + term)
 
         print("word_id : " + word_id_csep[0])
         print("jValue : " + jap_csep[0])

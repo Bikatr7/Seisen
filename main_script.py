@@ -873,6 +873,10 @@ def SAPH_tools(connection) :
         try:
         
             word_id = core.user_confirm("Please Enter The ID Of The Word Where You Want To Add A CSEP To\n")
+
+            if(word_id.isnumeric() == False):
+                raise core.UnexpectedInputError
+
             jap = core.read_single_column_query(connection,'select jValue from words where word_id = ' + word_id)[0]
 
             if(len(jap) != 0):
@@ -891,6 +895,10 @@ def SAPH_tools(connection) :
         except AssertionError: ## if the user enters 'z', the program will return to the main menu as 'z' is the skip key
             pass
 
+        except core.UnexpectedInputError:
+            pass
+
+
     elif(pathing == "5"): ## searches the Nusevei Database
 
         term = input("Please select the term you are querying\n")
@@ -901,32 +909,39 @@ def SAPH_tools(connection) :
  
     elif(pathing == "6"): ## replaces a value in the database
 
-        target_id = input("Please enter the id of the word/csep/typo/itypo you would like to replace\n")
+        try:
+            
+            target_id = input("Please enter the id of the word/csep/typo/itypo you would like to replace\n")
+            
+            assert target_id != 'z'
 
-        word = core.read_single_column_query(connection,'select word_id from words where word_id = "' + target_id + '"')
-        csep = core.read_single_column_query(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
-        itypo = core.read_single_column_query(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
-        typo = core.read_single_column_query(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
+            word = core.read_single_column_query(connection,'select word_id from words where word_id = "' + target_id + '"')
+            csep = core.read_single_column_query(connection,'select csep_id from cseps where csep_id = "' + target_id + '"')
+            itypo = core.read_single_column_query(connection,'select itypo_id from itypos where itypo_id = "' + target_id + '"')
+            typo = core.read_single_column_query(connection,'select typo_id from typos where typo_id = "' + target_id + '"')
 
-        print("\n")
+            print("\n")
 
-        if(len(word) == 1):
-            print("Nusevei has confirmed the existence of a word with an id of " + target_id + " \nPress 1 to edit this word\n")
-        if(len(csep) == 1):
-            print("Nusevei has confirmed the existence of a csep with an id of " + target_id + "\nPress 2 to edit this word\n")
-        if(len(typo) == 1):
-            print("Nusevei has confirmed the existence of a itypo with an id of " + target_id + "\nPress 3 to edit this word\n")
-        if(len(itypo) == 1):
-            print("Nusevei has confirmed the existence of a typo with an id of " + target_id + "\nPress 4 to edit this word\n")
+            if(len(word) == 1):
+                print("Nusevei has confirmed the existence of a word with an id of " + target_id + " \nPress 1 to edit this word\n")
+            if(len(csep) == 1):
+                print("Nusevei has confirmed the existence of a csep with an id of " + target_id + "\nPress 2 to edit this word\n")
+            if(len(typo) == 1):
+                print("Nusevei has confirmed the existence of a itypo with an id of " + target_id + "\nPress 3 to edit this word\n")
+            if(len(itypo) == 1):
+                print("Nusevei has confirmed the existence of a typo with an id of " + target_id + "\nPress 4 to edit this word\n")
 
-        sleep(.7)
+            sleep(.7)
 
-        typeReplacement = key.read_key() 
+            typeReplacement = key.read_key() 
 
-        core.clear_stream()
-        os.system('cls')
+            core.clear_stream()
+            os.system('cls')
 
-        core.replace_value(typeReplacement,connection,target_id)
+            core.replace_value(typeReplacement,connection,target_id)
+
+        except AssertionError:
+            pass
 
     elif(pathing == "7"): ## deletes a value in the database
 

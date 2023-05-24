@@ -210,16 +210,14 @@ def change_mode(): ## changes mode
 
     print(mainMenu)
 
-    sleep(0.17)
-
-    newMode = int(core.input_check(1,key.read_key(),4,mainMenu))
+    newMode = int(core.input_check(1,key.read_key(),3,mainMenu))
     
     core.ecset(0,1,newMode,r"C:\\ProgramData\\SJLT\\loopData.txt") ## changes mode in files
 
     if(modeNum != newMode and (newMode == 1 or newMode == 2)): ## mode 1 and mode 2 have their word type match their modes
         generate_sSchedule(connection,word_type=newMode)   
-    elif(modeNum != newMode and (newMode == 3 or newMode == 4)): ## mode 3 and mode 4  don't have their word type match their modes and are set to 0
-        generate_sSchedule(connection,word_type=0)
+    elif(modeNum != newMode and (newMode == 3)): ## mode 3 does not have a word type
+        pass
 
     os.system('cls')
 
@@ -257,7 +255,7 @@ def sRate(connection,word_type):
           rawScoreValue.append(int(corrCharCountList[i]) - int(probCharCountList[i]))
           i+=1
           
-    sRatingPrime = max(abs(x) for x in rawScoreValue) + 2
+    sRatingPrime = max(abs(int(x)) for x in rawScoreValue) + 2
 
     i = 0
     
@@ -1047,22 +1045,21 @@ connection = initialize_connection()
 
 bootup()
 
-validModes = [1,2,3,4,5] ## -1 is meant to be a code that forces the input to be changed
+validModes = [1,2,3] ## -1 is meant to be a code that forces the input to be changed
 
-mainMenu = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.J-E\n2.Kana Practice\n3.Romaji Practice\n4.SJLT\n5.SAPH"
+mainMenu = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.J-E\n2.Kana Practice\n3.SAPH"
 
 while True: ## main loop
     modeNum = core.read_loop_data(1)
     
     if(modeNum == 1):
-        SJLT(connection,word_type=1)
+        if(r.randint(1,2) == 1):
+            SJLT(connection,word_type=1)
+        else:
+            SJLT_Romaji(connection,word_type=1)
     elif(modeNum == 2):
         SJLT(connection,word_type=2)
     elif(modeNum == 3):
-        SJLT_Romaji(connection,word_type=1)
-    elif(modeNum == 4):
-        SJLT(connection,word_type=0)
-    elif(modeNum == 5):
         SAPH_tools(connection)
     elif(modeNum != -1): ## if invalid input, clear screen and print error
         os.system('cls')

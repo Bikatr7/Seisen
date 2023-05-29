@@ -8,10 +8,6 @@ def load_database():
 
     handler = mysqlHandler()
 
-    handler.initialize_database_connection()
-
-    print("Database connection established.") 
-
 ##--------------------Start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ensure_files()

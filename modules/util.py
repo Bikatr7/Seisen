@@ -6,47 +6,7 @@ import time
 ## third party modules
 import keyboard
 
-##-------------------start of read_loop_data()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-def read_loop_data(column) -> int:
-
-    """
-
-    Reads the loop data file and returns the value of the given column\n
-    
-    Parameters:\n
-    column (int) : the column we are reading\n
-
-    Returns:\n
-    int(stats[column-1]) : (int) the value of the given column\n
-
-    """
-
-    ## the path to the config directory
-    config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
-
-    loop_data_file = os.path.join(config_dir, "loopData.txt")
-
-    with open(loop_data_file, "r", encoding="utf-8") as file:
-        loop_data = file.read()
-
-    count = loop_data.count(',')
-    i,ii = 0,0
-    buildStr = ""
-    stats = []
-
-    while(i < count):
-        if(loop_data[ii] != ","):
-            buildStr += loop_data[ii]
-        else:
-            stats.append(buildStr)
-            buildStr = ""
-            i+=1
-        ii+=1
-        
-    return int(stats[column-1])
-
-##--------------------start of input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def input_check(input_type, user_input, number_of_choices, input_prompt_message) -> str:
 
@@ -130,7 +90,7 @@ def pause_console(message:str="Press enter to continue . . .") -> None:
     pauses the console\n
 
     Parameters:\n
-    message (string) : the message that will be displayed when the console is paused\n
+    message (str) : the message that will be displayed when the console is paused\n
 
     Returns:\n
     None\n
@@ -142,7 +102,7 @@ def pause_console(message:str="Press enter to continue . . .") -> None:
     else: ## Linux
         input(message)
 
-#-------------------Start-of-clear_stream()-------------------------------------------------
+##--------------------start-of-clear_stream()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def clear_stream(): 
 
@@ -163,7 +123,7 @@ def clear_stream():
         
     time.sleep(0.1) 
 
-#-------------------Start-of-user_confirm()-------------------------------------------------
+##--------------------start-of-user_confirm()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def user_confirm(prompt):
 
@@ -218,3 +178,97 @@ def user_confirm(prompt):
     os.system('cls')
 
     return user_input
+
+##--------------------start-of-write_sei_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def write_sei_line(sei_file_path, items_to_write):
+
+    """
+    
+    Writes the given items to the given sei file\n
+
+    Parameters:\n
+    sei_file_path (str) : the path to the sei file\n
+    items_to_write (list - str) : the items to be written to the sei file\n
+
+    Returns:\n
+    None\n
+
+    """
+
+    line = ",".join(str(item) for item in items_to_write)
+    
+    with open(sei_file_path, "a+", encoding="utf-8") as file:
+        file.write(line + "," + "\n")
+
+##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def edit_sei_line(target_line, column_number, value_to_replace_to, file_path):
+    
+    """
+
+    Edits the given line in the given file.\n
+
+    Parameters:\n
+    target_line (int) : The line number of the file we are editing.\n
+    column_number (int) : The column number we are editing.\n
+    value_to_replace_to (str) : The value to replace the edit value with.\n
+    file_path (str) : The file being edited.\n
+
+    Returns:\n
+    None\n
+
+    """
+    with open(file_path, "r+", encoding="utf8") as f:
+        lines = f.readlines()
+
+    line = lines[target_line - 1]
+    items = line.split(",")
+
+    items[column_number - 1] = str(value_to_replace_to)
+
+    new_line = ",".join(items)
+
+    lines[target_line - 1] = new_line 
+
+    with open(file_path, "w", encoding="utf8") as f:
+        f.writelines(lines)
+
+##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def read_sei_file(sei_file_path, column, target_line):
+
+    """
+
+    Reads the given sei file and returns the value of the given column
+    
+    Parameters:
+    sei_file_path (str) : the path to the sei file
+    column (int) : the column we are reading
+
+    Returns:
+    file_details[column-1] : the value of the given column
+
+    """
+
+    i,ii = 0,0
+    build_string = ""
+    file_details = []
+
+    with open(sei_file_path, "r", encoding="utf-8") as file:
+        sei_file = file.readlines()
+
+    sei_line = sei_file[target_line - 1]
+
+    count = sei_line.count(',')
+
+    while(i < count):
+        if(sei_line[ii] != ","):
+            build_string += sei_line[ii]
+        else:
+            file_details.append(build_string)
+            build_string = ""
+            i+=1
+        ii+=1
+        
+    return file_details[column-1]

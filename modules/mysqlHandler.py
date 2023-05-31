@@ -6,12 +6,14 @@ import time
 import mysql.connector
 
 ## custom modules
+from modules import util
+from modules.words import word as kana
 
-class mysqlHandler():
+class dataHandler():
 
     """
     
-    The handler that handles the connection to the database and all interactions with it\n
+    The handler that handles the connection to the database and all interactions with it. As well as all interactions with local storage.\n
 
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -20,7 +22,7 @@ class mysqlHandler():
 
         """
         
-        The __init__() method initializes the mysqlHandler class\n
+        The __init__() method initializes the dataHandler class\n
 
         """
         
@@ -30,27 +32,50 @@ class mysqlHandler():
         ## the path to the file that stores the password
         self.password_file = os.path.join(self.config_dir,"password.txt")
 
+        ## the path to the file that stores the kana words
+        self.kana_file = os.path.join(self.config_dir,"kana.txt")
+
         ## the database connection object
         self.connection = self.initialize_database_connection()
 
+
+##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def load_words_from_local_storage(self):
+        pass
+
 ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def load_words(self):
+    def reset_words_from_database(self):
 
         """
         
         loads the words from the database\n
+        Note that this will reset all the words locally stored on this device\n
+        Use carefully!\n
 
         Parameters:\n
-        self (object - mysqlHandler) : The handler object\n
+        self (object - dataHandler) : The handler object\n
 
         Returns:\n
         words (list) : The list of words\n
 
         """
 
-        words = []
+        KANA_WORD_TYPE = "2"
 
+        self.words = []
+
+        word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select word_id, jValue, eValue, pValue, cValue from words where word_type = " + KANA_WORD_TYPE)
+
+        self.words = [kana(word_id_list[i], jValue_list[i], eValue_list[i], pValue_list[i], cValue_list[i]) for i in range(len(word_id_list))]
+
+        with open(self.kana_file, "w", encoding="utf-8") as file:
+            file.truncate(0)
+
+        for word in self.words:
+            word_values = [word.id, word.testing_material, word.testing_material_answer, word.incorrect_count, word.correct_count]
+            util.write_sei_line(self.kana_file, word_values)
 
 
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -62,7 +87,7 @@ class mysqlHandler():
         Creates a connection to the database\n
 
         Parameters:\n
-        self (object - mysqlHandler) : The handler object\n
+        self (object - dataHandler) : The handler object\n
         host_name (str) : The host name of the database\n
         user_name (str) : The user name of the database\n
         user_password (str) : The password of the database\n
@@ -155,7 +180,7 @@ class mysqlHandler():
         Executes a query to the database\n
 
         Parameters:\n
-        self (object - mysqlHandler) : The handler object\n
+        self (object - dataHandler) : The handler object\n
         query (str) : The query to be executed\n
 
         Returns:\n
@@ -177,7 +202,7 @@ class mysqlHandler():
         reads a single column query from the database\n
 
         Parameters:\n
-        self (object - mysqlHandler) : The handler object\n
+        self (object - dataHandler) : The handler object\n
         query (str) : The query to be executed\n
 
         Returns:\n
@@ -204,7 +229,7 @@ class mysqlHandler():
         reads a multi column query from the database\n
 
         Parameters:\n
-        self (object - mysqlHandler) : The handler object\n
+        self (object - dataHandler) : The handler object\n
         query (str) : The query to be executed\n
 
         Returns:\n

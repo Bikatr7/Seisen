@@ -38,11 +38,35 @@ class dataHandler():
         ## the database connection object
         self.connection = self.initialize_database_connection()
 
+        ## the words that seisen will use to test the user
+        self.words = []
+
 
 ##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def load_words_from_local_storage(self):
-        pass
+        
+        """
+        
+        loads the kana words from the local storage\n
+
+        Parameters:\n
+        self (object - dataHandler) : The handler object\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        self.words.clear()
+
+        with open(self.kana_file, "r", encoding="utf-8") as file:
+
+            for i, line in enumerate(file):
+
+                values = line.strip().split(',')
+
+                self.words.append(kana(int(values[0]), values[1], values[2], int(values[3]), int(values[4])))
 
 ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -64,7 +88,7 @@ class dataHandler():
 
         KANA_WORD_TYPE = "2"
 
-        self.words = []
+        self.words.clear()
 
         word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select word_id, jValue, eValue, pValue, cValue from words where word_type = " + KANA_WORD_TYPE)
 

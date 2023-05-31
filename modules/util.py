@@ -2,13 +2,11 @@
 import os
 import msvcrt
 import time
-
-## third party modules
-import keyboard
+import typing
 
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def input_check(input_type, user_input, number_of_choices, input_prompt_message) -> str:
+def input_check(input_type:int, user_input:str, number_of_choices:int, input_prompt_message:str) -> str:
 
     """
 
@@ -56,7 +54,7 @@ def input_check(input_type, user_input, number_of_choices, input_prompt_message)
 
         else:
             print(input_issue_message + "\n" + input_prompt_message)
-            user_input = keyboard.read_key()
+            user_input = str(msvcrt.getch())
 
         os.system('cls')
         clear_stream()
@@ -104,7 +102,7 @@ def pause_console(message:str="Press enter to continue . . .") -> None:
 
 ##--------------------start-of-clear_stream()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def clear_stream(): 
+def clear_stream() -> None: 
 
     """
 
@@ -125,7 +123,7 @@ def clear_stream():
 
 ##--------------------start-of-user_confirm()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def user_confirm(prompt):
+def user_confirm(prompt:str) -> str:
 
     """
 
@@ -167,7 +165,7 @@ def user_confirm(prompt):
         
         clear_stream()
         
-        if(int(input_check(4, keyboard.read_key(), 2 , output)) == 1):
+        if(int(input_check(4, str(msvcrt.getch()), 2 , output)) == 1):
                 entry_confirmed = True
         else:
 
@@ -181,7 +179,7 @@ def user_confirm(prompt):
 
 ##--------------------start-of-write_sei_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def write_sei_line(sei_file_path, items_to_write):
+def write_sei_line(sei_file_path:str, items_to_write:typing.List[str]) -> None:
 
     """
     
@@ -203,7 +201,7 @@ def write_sei_line(sei_file_path, items_to_write):
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def edit_sei_line(target_line, column_number, value_to_replace_to, file_path):
+def edit_sei_line(target_line:int, column_number:int, value_to_replace_to:int, file_path:str) -> None:
     
     """
 
@@ -229,14 +227,14 @@ def edit_sei_line(target_line, column_number, value_to_replace_to, file_path):
 
     new_line = ",".join(items)
 
-    lines[target_line - 1] = new_line 
+    lines[target_line - 1] = new_line + ","
 
-    with open(file_path, "w", encoding="utf8") as f:
-        f.writelines(lines)
+    with open(file_path, "w", encoding="utf8") as file:
+        file.writelines(lines)
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def read_sei_file(sei_file_path, column, target_line):
+def read_sei_file(sei_file_path:str, column:int, target_line:int) -> str:
 
     """
 
@@ -272,3 +270,33 @@ def read_sei_file(sei_file_path, column, target_line):
         ii+=1
         
     return file_details[column-1]
+
+##--------------------Start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def get_new_id(id_list:typing.List[int]) -> int:
+
+    """
+
+    Generate's a new id 
+
+    Parameters:
+    id_list (list - string) : a list of already active ids
+
+    Returns:
+    new_id (int) : a new id
+
+    """
+
+    id_list = [id for id in id_list]
+
+    new_id = 1
+
+    for num in id_list:
+        if(num < new_id):
+            continue
+        elif(num == new_id):
+            new_id += 1
+        else:
+            return new_id
+        
+    return new_id

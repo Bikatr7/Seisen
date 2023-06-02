@@ -54,7 +54,7 @@ def input_check(input_type:int, user_input:str, number_of_choices:int, input_pro
 
         else:
             print(input_issue_message + "\n" + input_prompt_message)
-            user_input = str(msvcrt.getch())
+            user_input = str(msvcrt.getch().decode())
 
         os.system('cls')
         clear_stream()

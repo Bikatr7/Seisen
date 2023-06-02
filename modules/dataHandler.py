@@ -9,7 +9,7 @@ import mysql.connector
 
 ## custom modules
 from modules import util
-from modules.words import word as kana
+from modules.words import word as kana_blueprint
 
 class dataHandler():
 
@@ -73,7 +73,7 @@ class dataHandler():
 
                 values = line.strip().split(',')
 
-                self.words.append(kana(int(values[0]), values[1], values[2], int(values[3]), int(values[4])))
+                self.words.append(kana_blueprint(int(values[0]), values[1], values[2], int(values[3]), int(values[4])))
 
 ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -95,17 +95,17 @@ class dataHandler():
 
         KANA_WORD_TYPE = "2"
 
-        self.words.clear()
+        self.kana.clear()
 
         word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select word_id, jValue, eValue, pValue, cValue from words where word_type = " + KANA_WORD_TYPE)
 
-        self.words = [kana(int(word_id_list[i]), jValue_list[i], eValue_list[i], int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
+        self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
 
         with open(self.kana_file, "w", encoding="utf-8") as file:
             file.truncate(0)
 
-        for word in self.words:
-            word_values = [word.id, word.testing_material, word.testing_material_answer, word.incorrect_count, word.correct_count]
+        for kana in self.kana:
+            word_values = [kana.id, kana.testing_material, kana.testing_material_answer, kana.incorrect_count, kana.correct_count]
             util.write_sei_line(self.kana_file, word_values)
 
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

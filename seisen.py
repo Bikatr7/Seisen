@@ -20,16 +20,22 @@ class Seisen:
         
         self.handler = dataHandler()
 
-        ## self.handler.reset_words_from_database()
-        self.handler.load_words_from_local_storage()
-
         self.current_mode = -1
+
+        self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
+
+        self.loop_data_path = os.path.join(self.config_dir, "loopData.txt")
 
         ## sets the title of the console window
         os.system("title " + "Seisen")
 
+        ## ensure the files needed for Seisen are present
         ensure_files() 
+        
+        ## self.handler.reset_words_from_database()
+        self.handler.load_words_from_local_storage()
 
+        self.commence_main_loop()
 
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -87,3 +93,36 @@ class Seisen:
 
             if(self.current_mode not in valid_modes): ## if invalid mode, change mode
                 self.current_mode = self.change_mode()
+
+##--------------------start-of-test_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def test_kana(self):
+        
+        util.clear_stream()
+
+        util.clear_console()
+
+        ROUND_COUNT_INDEX_LOCATION = 2
+        NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
+
+        ## this will need to be changed later into something like the sRate() function from the main branch of the project
+        testing_material= "あ"
+        testing_material_answer = "a"
+        likelihood_of_word_selection = "100%"
+        kana_id = 1
+
+        total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, ROUND_COUNT_INDEX_LOCATION, 1))
+        number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, 1))
+        round_ratio = total_number_of_rounds and str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
+
+        self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(number_of_correct_rounds) + " correct; Ratio : " + round_ratio + "\n"
+        self.current_question_prompt += "Likelihood : " + likelihood_of_word_selection
+        self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
+        self.current_question_prompt += "\nHow do you pronounce" + testing_material_answer + "?\n"
+
+        self.current_user_guess = str(input(self.current_question_prompt)).lower()
+
+        ## if the user wants to change the mode do so
+        if(self.current_user_guess == "v"): 
+            self.change_mode()
+            return

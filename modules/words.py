@@ -47,6 +47,3 @@ class word:
 
         ## the type of the word
         self.word_type = 2 ## is currently numerical, plan to change this later
-
-        ## the prompt given to the user for the testing_material
-        self.prompt = "What does " + self.testing_material + " mean?\n"

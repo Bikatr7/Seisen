@@ -47,3 +47,6 @@ class word:
 
         ## the type of the word
         self.word_type = 2 ## is currently numerical, plan to change this later
+
+        ## the likelihood of the word being selected for testing
+        self.likelihood = 0.0

@@ -6,6 +6,7 @@ import msvcrt
 from modules.dataHandler import dataHandler
 from modules.ensureFileSecurity import ensure_files
 from modules import util
+from modules.scoreRate import scoreRate
 
 class Seisen:
 
@@ -19,6 +20,7 @@ class Seisen:
     def __init__(self):
         
         self.handler = dataHandler()
+        self.word_rater = scoreRate(self.handler)
 
         self.current_mode = -1
 
@@ -53,13 +55,13 @@ class Seisen:
 
         """
 
-        main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.J-E\n2.Kana Practice\n3.SAPH"
+        main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.Kana Practice\n"
 
         os.system('cls')
 
         print(main_menu_message)
 
-        self.new_mode = int(util.input_check(1, str(msvcrt.getch()), 3, main_menu_message))
+        self.current_mode = int(util.input_check(1, str(msvcrt.getch().decode()), 1, main_menu_message))
         
         os.system('cls')
 
@@ -80,19 +82,19 @@ class Seisen:
         """
 
         ## -1 is meant to be a code that forces the input to be changed
-        valid_modes = [1,2,3]
+        valid_modes = [1]
 
         while True:
 
             if(self.current_mode == 1):
-                pass
+                self.test_kana()
         
             elif(self.current_mode != -1): ## if invalid input, clear screen and print error
                 util.clear_console()
                 print("Invalid Input, please enter a valid number choice or command.\n")
 
             if(self.current_mode not in valid_modes): ## if invalid mode, change mode
-                self.current_mode = self.change_mode()
+                self.change_mode()
 
 ##--------------------start-of-test_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -106,19 +108,16 @@ class Seisen:
         NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
 
         ## this will need to be changed later into something like the sRate() function from the main branch of the project
-        testing_material= "あ"
-        testing_material_answer = "a"
-        likelihood_of_word_selection = "100%"
-        kana_id = 1
+        kana_to_test, display_list = self.word_rater.get_kana_to_test(self.handler.kana)
 
         total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, ROUND_COUNT_INDEX_LOCATION, 1))
         number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, 1))
         round_ratio = total_number_of_rounds and str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
         self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(number_of_correct_rounds) + " correct; Ratio : " + round_ratio + "\n"
-        self.current_question_prompt += "Likelihood : " + likelihood_of_word_selection
+        self.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
         self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
-        self.current_question_prompt += "\nHow do you pronounce" + testing_material_answer + "?\n"
+        self.current_question_prompt += "\nHow do you pronounce" + kana_to_test.testing_material + "?\n"
 
         self.current_user_guess = str(input(self.current_question_prompt)).lower()
 
@@ -126,3 +125,12 @@ class Seisen:
         if(self.current_user_guess == "v"): 
             self.change_mode()
             return
+        
+        total_number_of_rounds += 1
+
+        
+    
+
+##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+client = Seisen()

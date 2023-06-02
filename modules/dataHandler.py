@@ -46,8 +46,8 @@ class dataHandler():
         ## the database connection object
         self.connection = self.initialize_database_connection()
 
-        ## the words that seisen will use to test the user
-        self.words = []
+        ## the kana that seisen will use to test the user
+        self.kana = [] 
 
 ##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ class dataHandler():
 
         """
 
-        self.words.clear()
+        self.kana.clear()
 
         with open(self.kana_file, "r", encoding="utf-8") as file:
 
@@ -73,7 +73,7 @@ class dataHandler():
 
                 values = line.strip().split(',')
 
-                self.words.append(kana_blueprint(int(values[0]), values[1], values[2], int(values[3]), int(values[4])))
+                self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], int(values[3]), int(values[4])))
 
 ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -300,3 +300,44 @@ def get_new_id(id_list:typing.List[int]) -> int:
             return new_id
         
     return new_id
+
+##--------------------Start-of-levenshtein()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def levenshtein(s1, s2):
+
+    """
+
+    Compares two strings for similarity 
+
+    Parameters:
+    s1 (string)
+    s2 (string)
+
+    Returns:
+    distance[sLength1][sLength2] (int) the minimum number of single-character edits required to transform s1 into s2
+
+    """
+
+    sLength1, sLength2 = len(s1), len(s2)
+    distance = [[0] * (sLength2 + 1) for _ in range(sLength1 + 1)]
+    
+    for i in range(sLength1 + 1):
+        distance[i][0] = i
+
+    for ii in range(sLength2 + 1):
+        distance[0][ii] = ii
+
+    for i in range(1, sLength1 + 1):
+        for ii in range(1, sLength2 + 1):
+
+            if(s1[i - 1] == s2[ii - 1]):
+                cost = 0
+            else:
+                cost = 1
+
+            distance[i][ii] = min(distance[i - 1][ii] + 1, distance[i][ii- 1] + 1, distance[i - 1][ii - 1] + cost)
+
+            if(i > 1 and ii > 1 and s1[i-1] == s2[ii-2] and s1[i-2] == s2[ii-1]):
+                distance[i][ii] = min(distance[i][ii], distance[i-2][ii-2] + cost)
+
+    return distance[sLength1][sLength2]

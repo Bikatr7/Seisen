@@ -8,6 +8,7 @@ from mysql.connector import pooling
 import mysql.connector 
 
 ## custom modules
+from modules.typos import typo as typo_blueprint
 from modules import util
 from modules.words import word as kana_blueprint
 
@@ -38,16 +39,21 @@ class dataHandler():
         self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
 
         ## the path to the file that stores the password
-        self.password_file = os.path.join(self.config_dir,"password.txt")
+        self.password_file = os.path.join(os.path.join(self.config_dir, "Logins"), "credentials.txt")
 
         ## the path to the file that stores the kana words
-        self.kana_file = os.path.join(self.config_dir,"kana.txt")
+        self.kana_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana.txt")
+
+        self.kana_typos_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana typos.txt")
 
         ## the database connection object
         self.connection = self.initialize_database_connection()
 
         ## the kana that seisen will use to test the user
         self.kana = [] 
+
+        ## the accepted typos for kana
+        self.kana_typos = []
 
 ##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -65,6 +71,8 @@ class dataHandler():
 
         """
 
+        KANA_WORD_TYPE = "2"
+
         self.kana.clear()
 
         with open(self.kana_file, "r", encoding="utf-8") as file:
@@ -73,7 +81,19 @@ class dataHandler():
 
                 values = line.strip().split(',')
 
-                self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], int(values[3]), int(values[4])))
+                self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [],  int(values[3]), int(values[4])))
+
+        with open(self.kana_typos_file, "r", encoding="utf-8") as file:
+
+            for line in file:
+                
+                values = line.strip().split(',')
+
+                if(int(values[0]) == KANA_WORD_TYPE):
+                    for kana in self.kana:
+                        if(kana.id == int(values[1])):
+                            kana.typos.append(typo_blueprint(int(values[0]), int(values[1]), int(values[2]), values[4]))
+
 
 ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -95,19 +115,38 @@ class dataHandler():
 
         KANA_WORD_TYPE = "2"
 
+        list_of_all_accepted_answers = []
+
         self.kana.clear()
+        self.kana_typos.clear()
 
         word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select word_id, jValue, eValue, pValue, cValue from words where word_type = " + KANA_WORD_TYPE)
+        
+        self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
+        
+        word_type_list, typo_id_list, word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, word_id, typo from typos where word_type = " + KANA_WORD_TYPE)
 
-        self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
+        self.kana_typos = [typo_blueprint(int(word_type_list[i]), int(typo_id_list[i]), int(word_id_list[i]), typo_value_list[i]) for i in range(len(word_type_list))] 
 
         with open(self.kana_file, "w", encoding="utf-8") as file:
             file.truncate(0)
+            
+        with open(self.kana_typos_file, "w", encoding="utf-8") as file:
+            file.truncate(0)
 
         for kana in self.kana:
-            word_values = [kana.id, kana.testing_material, kana.testing_material_answer, kana.incorrect_count, kana.correct_count]
+            word_values = [kana.id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
             util.write_sei_line(self.kana_file, word_values)
 
+        for typo in self.kana_typos:
+            typo_values = [typo.word_type, typo.typo_id, typo.word_id, typo.typo_value]
+            util.write_sei_line(self.kana_typos_file, typo_values)
+
+        for kana in self.kana:
+            for typo in self.kana_typos:
+                if(typo.word_type == KANA_WORD_TYPE and typo.word_id == kana.id):
+                    kana.typos.append(typo)        
+            
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def create_database_connection(self, host_name:str, user_name:str, user_password:str, db_name:str) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection]:

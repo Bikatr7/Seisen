@@ -1,6 +1,7 @@
 ## built-in modules
 import os
 import msvcrt
+import time
 
 ## custom modules
 from modules.dataHandler import dataHandler
@@ -26,7 +27,7 @@ class Seisen:
 
         self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
 
-        self.loop_data_path = os.path.join(self.config_dir, "loopData.txt")
+        self.loop_data_path = os.path.join(os.path.join(self.config_dir, "Loop Data"), "loopData.txt")
 
         ## sets the title of the console window
         os.system("title " + "Seisen")
@@ -34,7 +35,7 @@ class Seisen:
         ## ensure the files needed for Seisen are present
         ensure_files() 
         
-        ## self.handler.reset_words_from_database()
+        ##self.handler.reset_words_from_database()
         self.handler.load_words_from_local_storage()
 
         self.commence_main_loop()
@@ -107,6 +108,8 @@ class Seisen:
         ROUND_COUNT_INDEX_LOCATION = 2
         NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
 
+        displayOther = False
+
         ## this will need to be changed later into something like the sRate() function from the main branch of the project
         kana_to_test, display_list = self.word_rater.get_kana_to_test(self.handler.kana)
 
@@ -117,7 +120,7 @@ class Seisen:
         self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(number_of_correct_rounds) + " correct; Ratio : " + round_ratio + "\n"
         self.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
         self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
-        self.current_question_prompt += "\nHow do you pronounce" + kana_to_test.testing_material + "?\n"
+        self.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material + "?\n"
 
         self.current_user_guess = str(input(self.current_question_prompt)).lower()
 
@@ -128,9 +131,48 @@ class Seisen:
         
         total_number_of_rounds += 1
 
-        
-    
+        isCorrect, self.current_user_guess = kana_to_test.check_answers_kana(self.current_user_guess, self.current_question_prompt)
 
+        if(isCorrect == True):
+            number_of_correct_rounds+=1
+            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is correct.\n"
+            ##log_corr_chars(connection,word_id)                
+
+        elif(isCorrect == False):
+            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is incorrect, the correct answer was " + kana_to_test.testing_material_answer_main + ".\n"
+            ##log_prob_chars(connection,word_id)
+
+        else:
+            self.current_question_prompt += "\n\nSkipped.\n"
+            ##log_prob_chars(connection,word_id) 
+
+        for answer in kana_to_test.testing_material_answer_all:
+
+            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess):
+
+                if(displayOther == False):
+                    self.current_question_prompt += "\nOther Answers include:\n"
+
+                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                displayOther = True
+
+            elif(isCorrect == True and answer != self.current_user_guess):
+
+                if(displayOther == False):
+                    self.current_question_prompt += "\nOther Answers include:\n"
+                    
+                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                displayOther = True
+
+        print(self.current_question_prompt)
+
+        time.sleep(2)
+            
+        util.clear_console()
+
+        util.edit_sei_line(1,ROUND_COUNT_INDEX_LOCATION, total_number_of_rounds, self.loop_data_path)
+        util.edit_sei_line(1,NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, number_of_correct_rounds, self.loop_data_path)
+        
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-client = Seisen()
+Seisen()

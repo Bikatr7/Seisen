@@ -19,6 +19,18 @@ class Seisen:
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def __init__(self):
+
+        """
+        
+        Sets up the things needed to run Seisen.\n
+
+        Parameters:\n
+        self (object - Seisen): the Seisen object\n
+
+        Returns:\n
+        None\n
+
+        """
         
         self.handler = dataHandler()
         self.word_rater = scoreRate(self.handler)
@@ -110,11 +122,10 @@ class Seisen:
 
         displayOther = False
 
-        ## this will need to be changed later into something like the sRate() function from the main branch of the project
         kana_to_test, display_list = self.word_rater.get_kana_to_test(self.handler.kana)
 
-        total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, ROUND_COUNT_INDEX_LOCATION, 1))
-        number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, 1))
+        total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = total_number_of_rounds and str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
         self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(number_of_correct_rounds) + " correct; Ratio : " + round_ratio + "\n"
@@ -170,8 +181,8 @@ class Seisen:
             
         util.clear_console()
 
-        util.edit_sei_line(1,ROUND_COUNT_INDEX_LOCATION, total_number_of_rounds, self.loop_data_path)
-        util.edit_sei_line(1,NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, number_of_correct_rounds, self.loop_data_path)
+        util.edit_sei_line(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, total_number_of_rounds)
+        util.edit_sei_line(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, number_of_correct_rounds)
         
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

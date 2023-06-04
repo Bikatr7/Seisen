@@ -9,6 +9,7 @@ import mysql.connector
 
 ## custom modules
 from modules.typos import typo as typo_blueprint
+from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules import util
 from modules.words import word as kana_blueprint
 
@@ -41,10 +42,10 @@ class dataHandler():
         ## the path to the file that stores the password
         self.password_file = os.path.join(os.path.join(self.config_dir, "Logins"), "credentials.txt")
 
-        ## the path to the file that stores the kana words
+        ## the paths to the file that stores the kana words and its typos
         self.kana_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana.txt")
-
         self.kana_typos_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana typos.txt")
+        self.kana_incorrect_typos_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana incorrect typos.txt")
 
         ## the database connection object
         self.connection = self.initialize_database_connection()
@@ -52,8 +53,14 @@ class dataHandler():
         ## the kana that seisen will use to test the user
         self.kana = [] 
 
+        ## the literal used in the database to flag words as Kana
+        self.KANA_WORD_TYPE = "2"
+
         ## the accepted typos for kana
         self.kana_typos = []
+
+        ## the accepted incorrect typos for kana
+        self.kana_incorrect_typos = []
 
 ##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -71,7 +78,12 @@ class dataHandler():
 
         """
 
-        KANA_WORD_TYPE = "2"
+        KANA_TYPO_WORD_ID_INDEX_LOCATION = 0
+        KANA_TYPO_TYPO_ID_INDEX_LOCATION = 1
+        KANA_TYPO_VALUE_INDEX_LOCATION = 2
+        KANA_TYPO_WORD_TYPE_INDEX_LOCATION = 3
+        
+
 
         self.kana.clear()
 
@@ -81,7 +93,7 @@ class dataHandler():
 
                 values = line.strip().split(',')
 
-                self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [],  int(values[3]), int(values[4])))
+                self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [], int(values[3]), int(values[4])))
 
         with open(self.kana_typos_file, "r", encoding="utf-8") as file:
 
@@ -89,11 +101,21 @@ class dataHandler():
                 
                 values = line.strip().split(',')
 
-                if(int(values[0]) == KANA_WORD_TYPE):
+                if(int(values[0]) == self.KANA_WORD_TYPE):
                     for kana in self.kana:
-                        if(kana.id == int(values[1])):
+                        if(kana.word_id == int(values[1])):
                             kana.typos.append(typo_blueprint(int(values[0]), int(values[1]), int(values[2]), values[4]))
 
+        with open(self.kana_incorrect_typos_file, "r", encoding="utf-8") as file:
+
+            for line in file:
+
+                values = line.strip().split(',')
+
+                if(int(values[0]) == self.KANA_WORD_TYPE):
+                    for kana in self.kana:
+                        if(kana.word_id == int(values[1])):
+                            kana.incorrect_typos.append(incorrect_typo_blueprint(int(values[0]), int(values[1]), int(values[2]), values[4]))
 
 ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -113,40 +135,64 @@ class dataHandler():
 
         """
 
-        KANA_WORD_TYPE = "2"
+        def clear_local_storage():
 
-        list_of_all_accepted_answers = []
+            with open(self.kana_file, "w", encoding="utf-8") as file:
+                file.truncate(0)
+                
+            with open(self.kana_typos_file, "w", encoding="utf-8") as file:
+                file.truncate(0)
 
-        self.kana.clear()
-        self.kana_typos.clear()
+            with open(self.kana_incorrect_typos_file, "w", encoding="utf-8") as file:
+                file.truncate(0)
 
-        word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select word_id, jValue, eValue, pValue, cValue from words where word_type = " + KANA_WORD_TYPE)
-        
-        self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
-        
-        word_type_list, typo_id_list, word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, word_id, typo from typos where word_type = " + KANA_WORD_TYPE)
+        def reset_kana_relations():
 
-        self.kana_typos = [typo_blueprint(int(word_type_list[i]), int(typo_id_list[i]), int(word_id_list[i]), typo_value_list[i]) for i in range(len(word_type_list))] 
-
-        with open(self.kana_file, "w", encoding="utf-8") as file:
-            file.truncate(0)
+            KANA_WORD_TYPE = "2"
             
-        with open(self.kana_typos_file, "w", encoding="utf-8") as file:
-            file.truncate(0)
+            ##KANA_TYPO_WORD_ID_INDEX_LOCATION = 0
+            ##KANA_TYPO_TYPO_ID_INDEX_LOCATION = 1
+            ##KANA_TYPO_VALUE_INDEX_LOCATION = 2
+            ##KANA_TYPO_WORD_TYPE_INDEX_LOCATION = 3
 
-        for kana in self.kana:
-            word_values = [kana.id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-            util.write_sei_line(self.kana_file, word_values)
+            list_of_all_accepted_answers = []
 
-        for typo in self.kana_typos:
-            typo_values = [typo.word_type, typo.typo_id, typo.word_id, typo.typo_value]
-            util.write_sei_line(self.kana_typos_file, typo_values)
+            self.kana.clear()
+            self.kana_typos.clear()
+            self.kana_incorrect_typos.clear()
+            
+            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select word_id, jValue, eValue, pValue, cValue from words where word_type = " + KANA_WORD_TYPE)
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, word_id, typo from typos where word_type = " + KANA_WORD_TYPE)
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, itypo_id, word_id, itypo from itypos where word_type = " + KANA_WORD_TYPE)
 
-        for kana in self.kana:
+            self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
+            self.kana_typos = [typo_blueprint(int(typo_word_type_list[i]), int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
+            self.kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_word_type_list[i]), int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
+
+            for kana in self.kana:
+                word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
+                util.write_sei_line(self.kana_file, word_values)
+
             for typo in self.kana_typos:
-                if(typo.word_type == KANA_WORD_TYPE and typo.word_id == kana.id):
-                    kana.typos.append(typo)        
-            
+                typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
+                util.write_sei_line(self.kana_typos_file, typo_values)
+
+            for incorrect_typo in self.kana_incorrect_typos:
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
+                util.write_sei_line(self.kana_incorrect_typos_file, incorrect_typo_values)
+
+            for kana in self.kana:
+                for typo in self.kana_typos:
+                    if(typo.word_type == int(KANA_WORD_TYPE) and typo.word_id == kana.word_id):
+                        kana.typos.append(typo)        
+
+                for incorrect_typo in self.kana_incorrect_typos:
+                    if(incorrect_typo.word_type == int(KANA_WORD_TYPE) and incorrect_typo.word_id == kana.word_type):
+                        kana.incorrect_typos.append(incorrect_typo)
+
+        clear_local_storage()
+        reset_kana_relations()   
+        
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def create_database_connection(self, host_name:str, user_name:str, user_password:str, db_name:str) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection]:

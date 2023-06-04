@@ -18,11 +18,33 @@ class scoreRate:
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def __init__(self, handler:dataHandler):
+
+        """
         
+        This method is used to initialize the scoreRate class.
+
+        """
+        
+        ## sets up the dataHandler
         self.handler = handler
 
+##--------------------start-of-get_kana_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_kana_to_test(self, kana_list:typing.List[word]):
+    def get_kana_to_test(self, kana_list:typing.List[word]) -> tuple[word, typing.List[str]]:
+
+        """
+        
+        This method is used to determine which "kana" will be given to the user based on a multitude of factors, such as number of answers, the number of correct answers, the number of incorrect answers etc.
+
+        Parameters:\n
+        self (object - scoreRate) : The scoreRate class object.
+        kana_list (list - word) : The list of kana we can test.
+        
+        Returns:\n
+        kana_to_test (word) : The kana we want to test.
+        display_item_list (list - str) : The list of display items. I.E. all the kana and their likelihoods.
+
+        """
         
         raw_score_list = []
         kana_scores = []
@@ -69,7 +91,7 @@ class scoreRate:
 
             display_item_list.append(str(kana_list[i].likelihood) + "%")
 
-            displayItem = "\n---------------------------------\nLikelihood : " + display_item_list[i] +"\njValue : " + kana_list[i].testing_material  + "\nP : " + str(kana_list[i].incorrect_count) + "\nC : " + str(kana_list[i].correct_count)  + "\nID : " + str(kana_list[i].id)  + "\n---------------------------------"
+            displayItem = "\n---------------------------------\nLikelihood : " + display_item_list[i] +"\njValue : " + kana_list[i].testing_material  + "\nP : " + str(kana_list[i].incorrect_count) + "\nC : " + str(kana_list[i].correct_count)  + "\nID : " + str(kana_list[i].word_id)  + "\n---------------------------------"
             
             display_item_list[-1] = displayItem
 

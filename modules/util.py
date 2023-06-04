@@ -4,6 +4,9 @@ import msvcrt
 import time
 import typing
 
+## custom modules
+from modules.words import word
+
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def input_check(input_type:int, user_input:str, number_of_choices:int, input_prompt_message:str) -> str:
@@ -146,7 +149,7 @@ def user_confirm(prompt:str) -> str:
 
     while(entry_confirmed == False):
 
-        os.system('cls')
+        clear_console()
         
         clear_stream()
         
@@ -157,7 +160,7 @@ def user_confirm(prompt:str) -> str:
 
         assert user_input != "z" ## z is used to skip
 
-        os.system('cls')
+        clear_console()
 
         output = confirmation + user_input + options
         
@@ -169,11 +172,11 @@ def user_confirm(prompt:str) -> str:
                 entry_confirmed = True
         else:
 
-            os.system('cls')
-            
+            clear_console()
+
             print(prompt)
     
-    os.system('cls')
+    clear_console()
 
     return user_input
 
@@ -201,7 +204,7 @@ def write_sei_line(sei_file_path:str, items_to_write:typing.List[str]) -> None:
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def edit_sei_line(target_line:int, column_number:int, value_to_replace_to:int, file_path:str) -> None:
+def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:int,) -> None:
     
     """
 
@@ -217,6 +220,7 @@ def edit_sei_line(target_line:int, column_number:int, value_to_replace_to:int, f
     None\n
 
     """
+
     with open(file_path, "r+", encoding="utf8") as f:
         lines = f.readlines()
 
@@ -234,18 +238,18 @@ def edit_sei_line(target_line:int, column_number:int, value_to_replace_to:int, f
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def read_sei_file(sei_file_path:str, column:int, target_line:int) -> str:
+def read_sei_file(sei_file_path:str, target_line:int, column:int,) -> str:
 
     """
 
-    Reads the given sei file and returns the value of the given column
+    Reads the given sei file and returns the value of the given column\n
     
-    Parameters:
-    sei_file_path (str) : the path to the sei file
-    column (int) : the column we are reading
+    Parameters:\n
+    sei_file_path (str) : the path to the sei file\n
+    column (int) : the column we are reading\n
 
-    Returns:
-    file_details[column-1] : the value of the given column
+    Returns:\n
+    file_details[column-1] : the value of the given column\n
 
     """
 
@@ -277,13 +281,13 @@ def get_new_id(id_list:typing.List[int]) -> int:
 
     """
 
-    Generate's a new id 
+    Generate's a new id\n 
 
-    Parameters:
-    id_list (list - string) : a list of already active ids
+    Parameters:\n
+    id_list (list - string) : a list of already active ids\n
 
-    Returns:
-    new_id (int) : a new id
+    Returns:\n
+    new_id (int) : a new id\n
 
     """
 
@@ -303,22 +307,22 @@ def get_new_id(id_list:typing.List[int]) -> int:
 
 ##--------------------Start-of-levenshtein()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def levenshtein(s1, s2):
+def levenshtein(string_one:str, string_two:str) -> int:
 
     """
 
-    Compares two strings for similarity 
+    Compares two strings for similarity \n
 
-    Parameters:
-    s1 (string)
-    s2 (string)
+    Parameters:\n
+    string_one (str) : the first string to compare\n
+    string_two (str) : the second string to compare\n
 
-    Returns:
-    distance[sLength1][sLength2] (int) the minimum number of single-character edits required to transform s1 into s2
+    Returns:\n
+    distance[sLength1][sLength2] (int) : the minimum number of single-character edits required to transform string_one into string_two\n
 
     """
 
-    sLength1, sLength2 = len(s1), len(s2)
+    sLength1, sLength2 = len(string_one), len(string_two)
     distance = [[0] * (sLength2 + 1) for _ in range(sLength1 + 1)]
     
     for i in range(sLength1 + 1):
@@ -330,14 +334,65 @@ def levenshtein(s1, s2):
     for i in range(1, sLength1 + 1):
         for ii in range(1, sLength2 + 1):
 
-            if(s1[i - 1] == s2[ii - 1]):
+            if(string_one[i - 1] == string_two[ii - 1]):
                 cost = 0
             else:
                 cost = 1
 
             distance[i][ii] = min(distance[i - 1][ii] + 1, distance[i][ii- 1] + 1, distance[i - 1][ii - 1] + cost)
 
-            if(i > 1 and ii > 1 and s1[i-1] == s2[ii-2] and s1[i-2] == s2[ii-1]):
+            if(i > 1 and ii > 1 and string_one[i-1] == string_two[ii-2] and string_one[i-2] == string_two[ii-1]):
                 distance[i][ii] = min(distance[i][ii], distance[i-2][ii-2] + cost)
 
     return distance[sLength1][sLength2]
+
+#--------------------Start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def check_typo(word:word, user_guess:str, prompt:str) -> str:  
+
+    """
+
+    checks if a user_guess is a typo or not\n
+
+    Parameters:\n
+    self (object - word) : the word we're checking typos for\n
+    user_guess (str) : the user's guess\n
+    prompt (str) : the prompt that was given to the user\n
+
+    Returns:\n
+    final_answer (string) the user's final answer after being corrected for typos\n
+
+    """
+
+    min_distance = 3
+    final_answer = user_guess
+
+
+    if(user_guess in word.typos):
+        return [item for item in word.typos if item == user_guess][0]
+    elif(user_guess in word.incorrect_typos):
+        return user_guess
+
+    for correct_answer in word.testing_material_answer_all:
+
+        distance = levenshtein(user_guess, correct_answer)
+
+        if(distance < min_distance):
+
+            print("\nDid you mean : " + correct_answer + "? Press 1 to Confirm or 2 to Decline.\n")
+        
+            userA = int(input_check(1 ,str(msvcrt.getch().decode()), 2, prompt + "\nDid you mean : " + correct_answer + "? Press 1 to Confirm or 2 to Decline.\n"))
+        
+            clear_console()
+
+            if(userA == 1):
+
+                final_answer = correct_answer
+
+            ##  add_Typo(user_guess,word_id,connection)
+
+                return final_answer
+
+    ##add_Itypo(user_guess,word_id,connection)
+    
+    return final_answer

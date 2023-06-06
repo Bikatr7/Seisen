@@ -68,13 +68,13 @@ class Seisen:
 
         """
 
-        main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.Kana Practice\n"
+        main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.Kana Practice\n2.Settings\n"
 
         os.system('cls')
 
         print(main_menu_message)
 
-        self.current_mode = int(util.input_check(1, str(msvcrt.getch().decode()), 1, main_menu_message))
+        self.current_mode = int(util.input_check(1, str(msvcrt.getch().decode()), 2, main_menu_message))
         
         os.system('cls')
 
@@ -95,13 +95,16 @@ class Seisen:
         """
 
         ## -1 is meant to be a code that forces the input to be changed
-        valid_modes = [1]
+        valid_modes = [1,2]
 
         while True:
 
             if(self.current_mode == 1):
                 self.test_kana()
         
+            elif(self.current_mode == 2):
+                self.change_settings()
+
             elif(self.current_mode != -1): ## if invalid input, clear screen and print error
                 util.clear_console()
                 print("Invalid Input, please enter a valid number choice or command.\n")
@@ -142,20 +145,22 @@ class Seisen:
         
         total_number_of_rounds += 1
 
-        isCorrect, self.current_user_guess = kana_to_test.check_answers_kana(self.current_user_guess, self.current_question_prompt)
+        isCorrect, self.current_user_guess = kana_to_test.check_answers_kana(self.current_user_guess, self.current_question_prompt, self.handler)
+
+        util.clear_console()
 
         if(isCorrect == True):
             number_of_correct_rounds+=1
             self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is correct.\n"
-            ##log_corr_chars(connection,word_id)                
+            kana_to_test.log_correct_answer()                
 
         elif(isCorrect == False):
             self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is incorrect, the correct answer was " + kana_to_test.testing_material_answer_main + ".\n"
-            ##log_prob_chars(connection,word_id)
+            kana_to_test.log_incorrect_answer()
 
         else:
             self.current_question_prompt += "\n\nSkipped.\n"
-            ##log_prob_chars(connection,word_id) 
+            kana_to_test.log_incorrect_answer() 
 
         for answer in kana_to_test.testing_material_answer_all:
 
@@ -183,7 +188,45 @@ class Seisen:
 
         util.edit_sei_line(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, total_number_of_rounds)
         util.edit_sei_line(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, number_of_correct_rounds)
+
+##--------------------start-of-change_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def change_settings(self):
+
+        """
         
+        Used to change the settings of Seisen, and do things unrelated to testing.\n
+
+        Parameters:\n
+        self (object - Seisen) : The Seisen object.\n
+
+        Returns:\n
+        None\n
+
+        """  
+
+        util.clear_console()
+
+        settings_menu_message = "1. Reset Local Storage (DO NOT DO THIS)\n2. See Score Ratings\n"
+
+        print(settings_menu_message)
+
+        pathing = util.input_check(1, str(msvcrt.getch().decode()), 2, settings_menu_message)
+
+        if(pathing == "1"):
+            self.handler.reset_words_from_database()
+
+        elif(pathing == "2"):
+            kana_to_test, display_list = self.word_rater.get_kana_to_test(self.handler.kana)
+            
+            for item in display_list:
+                print(item)
+
+            util.pause_console()
+
+        else:
+            self.current_mode = -1
+
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Seisen()

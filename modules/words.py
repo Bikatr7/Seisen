@@ -1,9 +1,14 @@
 ## built-in modules
+from __future__ import annotations
+
 import typing
-import msvcrt
 
 ## custom modules
+from modules.typos import typo as typo_blueprint
 from modules import util
+
+if(typing.TYPE_CHECKING):
+    from dataHandler import dataHandler
 
 class word:
 
@@ -33,7 +38,7 @@ class word:
         incoming_correct_count (int) : the number of correct guesses of the word\n
 
         Returns:\n
-        self (object - word) : the object being initialized
+        self (object - word) : the object being initialized\n
 
         """
 
@@ -68,9 +73,69 @@ class word:
         ## the know incorrect typos of the word
         self.incorrect_typos = []
 
+##--------------------start-of-log_correct_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def log_correct_answer(self) -> None:
+
+        """
+
+        Logs a correct answer to the word\n
+
+        Parameters:\n
+        self (object - word) : the object being tested\n
+
+        Returns:\n
+        None\n
+        
+        """
+
+        self.correct_count += 1
+
+##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def log_incorrect_answer(self) -> None:
+
+        """
+        
+        Logs an incorrect answer to the word\n
+
+        Parameters:\n
+        self (object - word) : the object being tested\n
+
+        Returns:\n
+        None\n
+        
+        """
+
+        self.incorrect_count += 1
+
+##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def log_new_typo(self, typo, handler:dataHandler) -> None:
+
+        """
+
+        Logs a new typo to the word\n
+
+        Parameters:\n
+        self (object - word) : the object being tested\n
+
+        Returns:\n
+        None\n
+        
+        """
+
+        new_typo_id = util.get_new_id(handler.get_list_of_all_ids(1))
+
+        new_typo = typo_blueprint(self.word_type, new_typo_id, self.word_id, typo)
+
+        util.write_sei_line(handler.kana_typos_file, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+
+        self.typos.append(new_typo)
+
 ##--------------------start-of-check_answers_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_answers_kana(self, user_guess:str, prompt:str) -> tuple[bool | None, str]: 
+    def check_answers_kana(self, user_guess:str, prompt:str, handler:dataHandler) -> tuple[bool | None, str]: 
 
         """
         
@@ -91,7 +156,7 @@ class word:
             exit()
         
         if(user_guess not in self.testing_material_answer_all and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
-            user_guess = util.check_typo(self, user_guess, prompt)
+            user_guess = util.check_typo(self, user_guess, prompt, handler)
 
         if(user_guess in self.testing_material_answer_all): 
             return True, user_guess

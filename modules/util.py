@@ -1,11 +1,15 @@
 ## built-in modules
+from __future__ import annotations
+
 import os
 import msvcrt
 import time
 import typing
 
 ## custom modules
-from modules.words import word
+if(typing.TYPE_CHECKING):
+    from modules.dataHandler import dataHandler
+    from modules.words import word
 
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -348,7 +352,7 @@ def levenshtein(string_one:str, string_two:str) -> int:
 
 #--------------------Start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def check_typo(word:word, user_guess:str, prompt:str) -> str:  
+def check_typo(word:word, user_guess:str, prompt:str, handler:dataHandler) -> str:  
 
     """
 
@@ -389,7 +393,7 @@ def check_typo(word:word, user_guess:str, prompt:str) -> str:
 
                 final_answer = correct_answer
 
-            ##  add_Typo(user_guess,word_id,connection)
+                word.log_new_typo(user_guess, handler)
 
                 return final_answer
 

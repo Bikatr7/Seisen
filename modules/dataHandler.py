@@ -10,8 +10,8 @@ import mysql.connector
 ## custom modules
 from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
-from modules import util
 from modules.words import word as kana_blueprint
+from modules import util
 
 class dataHandler():
 
@@ -368,3 +368,31 @@ class dataHandler():
                 results_by_column[i].append(str(value))
 
         return results_by_column
+    
+##--------------------start-of-get_list_of_all_ids()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def get_list_of_all_ids(self, type_of_id_to_query:int) -> typing.List[int]:
+
+        """
+
+        Gets the list of all ids in the database\n
+
+        Parameters:\n
+        self (object - dataHandler) : The handler object\n
+
+        Returns:\n
+        ids (list - string) : The list of all ids in the database\n
+
+        """
+
+        ids = []
+
+        TYPO_ID_IDENTIFIER = 1
+
+        if(type_of_id_to_query == TYPO_ID_IDENTIFIER):
+            ids = self.read_single_column_query("select typo_id from typos order by typo_id")
+
+        ids =  [int(x) for x in ids]
+
+
+        return ids

@@ -385,12 +385,30 @@ class dataHandler():
 
         """
 
-        ids = []
+        ids = ["0"]
+
+        i = 0
 
         TYPO_ID_IDENTIFIER = 1
+        INCORRECT_TYPO_ID_IDENTIFIER = 2
 
         if(type_of_id_to_query == TYPO_ID_IDENTIFIER):
-            ids = self.read_single_column_query("select typo_id from typos order by typo_id")
+            with open(self.kana_typos_file, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(util.read_sei_file(self.kana_typos_file,i+1,2))
+                    i+=1
+
+        elif(type_of_id_to_query == INCORRECT_TYPO_ID_IDENTIFIER):
+            with open(self.kana_incorrect_typos_file, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(util.read_sei_file(self.kana_incorrect_typos_file,i+1,2))
+                    i+=1
+
+
 
         ids =  [int(x) for x in ids]
 

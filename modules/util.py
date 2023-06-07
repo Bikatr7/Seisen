@@ -371,7 +371,6 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:dataHandler) -> st
     min_distance = 3
     final_answer = user_guess
 
-
     if(user_guess in word.typos):
         return [item for item in word.typos if item == user_guess][0]
     elif(user_guess in word.incorrect_typos):
@@ -397,6 +396,6 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:dataHandler) -> st
 
                 return final_answer
 
-    ##add_Itypo(user_guess,word_id,connection)
+    word.log_new_incorrect_typo(user_guess, handler)
     
     return final_answer

@@ -5,6 +5,7 @@ import typing
 
 ## custom modules
 from modules.typos import typo as typo_blueprint
+from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules import util
 
 if(typing.TYPE_CHECKING):
@@ -119,6 +120,8 @@ class word:
 
         Parameters:\n
         self (object - word) : the object being tested\n
+        typo (str) : the typo to be logged\n
+        handler (object - dataHandler) : the dataHandler object\n
 
         Returns:\n
         None\n
@@ -132,6 +135,29 @@ class word:
         util.write_sei_line(handler.kana_typos_file, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         self.typos.append(new_typo)
+
+##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def log_new_incorrect_typo(self, incorrect_typo, handler:dataHandler) -> None:
+
+        """
+        
+        Logs a new incorrect typo to the word\n
+
+        Parameters:\n
+        self (object - word) : the object being tested\n
+        incorrect_typo (str) : the incorrect_typo to be logged\n
+        handler (object - dataHandler) : the dataHandler object\n
+        
+        """
+
+        new_incorrect_typo_id = util.get_new_id(handler.get_list_of_all_ids(2))
+
+        new_incorrect_typo = incorrect_typo_blueprint(self.word_type, new_incorrect_typo_id, self.word_id, incorrect_typo)
+
+        util.write_sei_line(handler.kana_incorrect_typos_file, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+
+        self.incorrect_typos.append(new_incorrect_typo)
 
 ##--------------------start-of-check_answers_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

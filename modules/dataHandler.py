@@ -60,7 +60,7 @@ class dataHandler():
         ## the accepted incorrect typos for kana
         self.kana_incorrect_typos = []
 
-        self.determine_if_local_database_exists()
+        self.connection = self.initialize_database_connection()
 
 ##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -287,24 +287,7 @@ class dataHandler():
 
         return connection
     
-##-------------------start-of-determine_if_local_database_exists()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    
-    def determine_if_local_database_exists(self):
 
-        ## the database connection object
-        database_confirmation_message = "Do you have a local database present on your system? (1 for yes 2 for no)\n"
-
-        print(database_confirmation_message)
-
-        if(int(util.input_check(1, str(msvcrt.getch().decode()), 2, database_confirmation_message)) == 1):
-            self.connection = self.initialize_database_connection()
-        else:
-            pass
-
-##--------------------start-of-set_up_new_database()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def set_up_new_database(self) -> None:
-    
 ##--------------------start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def execute_query(self, query:str) -> None:

@@ -4,8 +4,9 @@ import msvcrt
 import time
 
 ## custom modules
-from modules.dataHandler import dataHandler
-from modules.ensureFileSecurity import ensure_files
+from modules.localHandler import localHandler
+from modules.remoteHandler import remoteHandler
+from modules.ensureFileSecurity import fileEnsurer
 from modules import util
 from modules.scoreRate import scoreRate
 
@@ -31,9 +32,13 @@ class Seisen:
         None\n
 
         """
+
+        self.fileEnsurer = fileEnsurer()
         
-        self.handler = dataHandler()
-        self.word_rater = scoreRate(self.handler)
+        self.localHandler = localHandler()
+        self.remoteHandler = remoteHandler()
+
+        self.word_rater = scoreRate(self.localHandler)
 
         self.current_mode = -1
 
@@ -43,12 +48,8 @@ class Seisen:
 
         ## sets the title of the console window
         os.system("title " + "Seisen")
-
-        ## ensure the files needed for Seisen are present
-        ensure_files() 
         
-        ##self.handler.reset_words_from_database()
-        self.handler.load_words_from_local_storage()
+        self.localHandler.load_words_from_local_storage()
 
         self.commence_main_loop()
 
@@ -125,7 +126,7 @@ class Seisen:
 
         displayOther = False
 
-        kana_to_test, display_list = self.word_rater.get_kana_to_test(self.handler.kana)
+        kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
 
         total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
         number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
@@ -145,7 +146,7 @@ class Seisen:
         
         total_number_of_rounds += 1
 
-        isCorrect, self.current_user_guess = kana_to_test.check_answers_kana(self.current_user_guess, self.current_question_prompt, self.handler)
+        isCorrect, self.current_user_guess = kana_to_test.check_answers_kana(self.current_user_guess, self.current_question_prompt, self.localHandler)
 
         util.clear_console()
 
@@ -214,10 +215,10 @@ class Seisen:
         pathing = util.input_check(1, str(msvcrt.getch().decode()), 2, settings_menu_message)
 
         if(pathing == "1"):
-            self.handler.reset_words_from_database()
+            self.remoteHandler.reset_words_from_database()
 
         elif(pathing == "2"):
-            kana_to_test, display_list = self.word_rater.get_kana_to_test(self.handler.kana)
+            kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
             
             for item in display_list:
                 print(item)

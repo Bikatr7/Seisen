@@ -4,7 +4,7 @@ import typing
 
 ## custom modules
 from modules.words import word
-from modules.dataHandler import dataHandler
+from modules.localHandler import localHandler
 from modules import util
 
 class scoreRate:
@@ -17,7 +17,7 @@ class scoreRate:
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, handler:dataHandler):
+    def __init__(self, handler:localHandler) -> None:
 
         """
         
@@ -25,7 +25,7 @@ class scoreRate:
 
         """
         
-        ## sets up the dataHandler
+        ## sets up the localHandler
         self.handler = handler
 
 ##--------------------start-of-get_kana_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

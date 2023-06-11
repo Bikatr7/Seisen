@@ -2,7 +2,6 @@
 import os
 import time
 import typing
-import msvcrt
 
 ## third party modules
 from mysql.connector import pooling
@@ -14,11 +13,11 @@ from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules.words import word as kana_blueprint
 from modules import util
 
-class dataHandler():
+class remoteHandler():
 
     """
     
-    The handler that handles the connection to the database and all interactions with it. As well as all interactions with local storage.\n
+    The handler that handles the connection to the database and all interactions with it.\n
 
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -27,10 +26,10 @@ class dataHandler():
 
         """
         
-        The __init__() method initializes the dataHandler class\n
+        The __init__() method initializes the remoteHandler class\n
 
         Parameters:\n
-        self (object - dataHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object\n
 
         Returns:\n
         None\n
@@ -62,61 +61,6 @@ class dataHandler():
 
         self.connection = self.initialize_database_connection()
 
-##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def load_words_from_local_storage(self) -> None:
-        
-        """
-        
-        loads the words from the local storage\n
-
-        Parameters:\n
-        self (object - dataHandler) : The handler object\n
-
-        Returns:\n
-        None\n
-
-        """
-
-        KANA_TYPO_WORD_ID_INDEX_LOCATION = 0
-        KANA_TYPO_TYPO_ID_INDEX_LOCATION = 1
-        KANA_TYPO_VALUE_INDEX_LOCATION = 2
-        KANA_TYPO_WORD_TYPE_INDEX_LOCATION = 3
-        
-
-
-        self.kana.clear()
-
-        with open(self.kana_file, "r", encoding="utf-8") as file:
-
-            for line in file:
-
-                values = line.strip().split(',')
-
-                self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [], int(values[3]), int(values[4])))
-
-        with open(self.kana_typos_file, "r", encoding="utf-8") as file:
-
-            for line in file:
-                
-                values = line.strip().split(',')
-
-                if(int(values[0]) == self.KANA_WORD_TYPE):
-                    for kana in self.kana:
-                        if(kana.word_id == int(values[1])):
-                            kana.typos.append(typo_blueprint(int(values[0]), int(values[1]), int(values[2]), values[4]))
-
-        with open(self.kana_incorrect_typos_file, "r", encoding="utf-8") as file:
-
-            for line in file:
-
-                values = line.strip().split(',')
-
-                if(int(values[0]) == self.KANA_WORD_TYPE):
-                    for kana in self.kana:
-                        if(kana.word_id == int(values[1])):
-                            kana.incorrect_typos.append(incorrect_typo_blueprint(int(values[0]), int(values[1]), int(values[2]), values[4]))
-
 ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def reset_words_from_database(self) -> None:
@@ -128,7 +72,7 @@ class dataHandler():
         Use carefully!\n
 
         Parameters:\n
-        self (object - dataHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object\n
 
         Returns:\n
         None\n
@@ -202,7 +146,7 @@ class dataHandler():
         Creates a connection to the database\n
 
         Parameters:\n
-        self (object - dataHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object\n
         host_name (str) : The host name of the database\n
         user_name (str) : The user name of the database\n
         user_password (str) : The password of the database\n
@@ -297,7 +241,7 @@ class dataHandler():
         Executes a query to the database\n
 
         Parameters:\n
-        self (object - dataHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object\n
         query (str) : The query to be executed\n
 
         Returns:\n
@@ -319,7 +263,7 @@ class dataHandler():
         reads a single column query from the database\n
 
         Parameters:\n
-        self (object - dataHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object\n
         query (str) : The query to be executed\n
 
         Returns:\n
@@ -346,7 +290,7 @@ class dataHandler():
         reads a multi column query from the database\n
 
         Parameters:\n
-        self (object - dataHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object\n
         query (str) : The query to be executed\n
 
         Returns:\n
@@ -369,49 +313,3 @@ class dataHandler():
                 results_by_column[i].append(str(value))
 
         return results_by_column
-    
-##--------------------start-of-get_list_of_all_ids()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def get_list_of_all_ids(self, type_of_id_to_query:int) -> typing.List[int]:
-
-        """
-
-        Gets the list of all ids in the database\n
-
-        Parameters:\n
-        self (object - dataHandler) : The handler object\n
-
-        Returns:\n
-        ids (list - string) : The list of all ids in the database\n
-
-        """
-
-        ids = ["0"]
-
-        i = 0
-
-        TYPO_ID_IDENTIFIER = 1
-        INCORRECT_TYPO_ID_IDENTIFIER = 2
-
-        if(type_of_id_to_query == TYPO_ID_IDENTIFIER):
-            with open(self.kana_typos_file, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_typos_file,i+1,2))
-                    i+=1
-
-        elif(type_of_id_to_query == INCORRECT_TYPO_ID_IDENTIFIER):
-            with open(self.kana_incorrect_typos_file, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_incorrect_typos_file,i+1,2))
-                    i+=1
-
-
-
-        ids =  [int(x) for x in ids]
-
-
-        return ids

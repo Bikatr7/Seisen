@@ -8,7 +8,7 @@ import typing
 
 ## custom modules
 if(typing.TYPE_CHECKING):
-    from modules.dataHandler import dataHandler
+    from modules.localHandler import localHandler
     from modules.words import word
 
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -352,7 +352,7 @@ def levenshtein(string_one:str, string_two:str) -> int:
 
 #--------------------Start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def check_typo(word:word, user_guess:str, prompt:str, handler:dataHandler) -> str:  
+def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> str:  
 
     """
 

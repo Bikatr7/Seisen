@@ -9,7 +9,7 @@ from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules import util
 
 if(typing.TYPE_CHECKING):
-    from dataHandler import dataHandler
+    from modules.localHandler import localHandler
 
 class word:
 
@@ -112,7 +112,7 @@ class word:
 
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def log_new_typo(self, typo, handler:dataHandler) -> None:
+    def log_new_typo(self, typo, handler:localHandler) -> None:
 
         """
 
@@ -121,7 +121,7 @@ class word:
         Parameters:\n
         self (object - word) : the object being tested\n
         typo (str) : the typo to be logged\n
-        handler (object - dataHandler) : the dataHandler object\n
+        handler (object - localHandler) : the localHandler object\n
 
         Returns:\n
         None\n
@@ -138,7 +138,7 @@ class word:
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def log_new_incorrect_typo(self, incorrect_typo, handler:dataHandler) -> None:
+    def log_new_incorrect_typo(self, incorrect_typo, handler:localHandler) -> None:
 
         """
         
@@ -147,7 +147,7 @@ class word:
         Parameters:\n
         self (object - word) : the object being tested\n
         incorrect_typo (str) : the incorrect_typo to be logged\n
-        handler (object - dataHandler) : the dataHandler object\n
+        handler (object - localHandler) : the localHandler object\n
         
         """
 
@@ -161,7 +161,7 @@ class word:
 
 ##--------------------start-of-check_answers_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_answers_kana(self, user_guess:str, prompt:str, handler:dataHandler) -> tuple[bool | None, str]: 
+    def check_answers_kana(self, user_guess:str, prompt:str, handler:localHandler) -> tuple[bool | None, str]: 
 
         """
         

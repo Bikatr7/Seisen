@@ -77,8 +77,6 @@ class localHandler():
         KANA_TYPO_VALUE_INDEX_LOCATION = 2
         KANA_TYPO_WORD_TYPE_INDEX_LOCATION = 3
         
-
-
         self.kana.clear()
 
         with open(self.kana_file, "r", encoding="utf-8") as file:

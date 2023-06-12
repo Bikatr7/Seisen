@@ -208,16 +208,21 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Reset Local Storage (DO NOT DO THIS)\n2. See Score Ratings\n"
+        settings_menu_message = "1. Reset Local Storage (DO NOT DO THIS)\n2. Reset Remote Storage\n3. See Score Ratings\n"
 
         print(settings_menu_message)
 
-        pathing = util.input_check(1, str(msvcrt.getch().decode()), 2, settings_menu_message)
+        pathing = util.input_check(1, str(msvcrt.getch().decode()), 3, settings_menu_message)
 
         if(pathing == "1"):
-            self.remoteHandler.reset_words_from_database()
+            self.remoteHandler.reset_local_storage()
 
-        elif(pathing == "2"):
+        if(pathing == "2"):
+            self.remoteHandler.delete_remote_storage()
+            self.remoteHandler.create_remote_storage()
+            self.remoteHandler.fill_remote_storage()
+
+        elif(pathing == "3"):
             kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
             
             for item in display_list:

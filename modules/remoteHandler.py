@@ -61,9 +61,9 @@ class remoteHandler():
 
         self.connection = self.initialize_database_connection()
 
-##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def reset_words_from_database(self) -> None:
+    def reset_local_storage(self) -> None:
 
         """
         
@@ -280,6 +280,31 @@ class remoteHandler():
         results_actual = [str(i[0]) for i in results]
 
         return results_actual
+    
+##--------------------start-of-insert_into_table()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def insert_into_table(self, table_name, data):
+
+        """
+        
+        inserts data into a table\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object\n
+        table_name (str) : The name of the table\n
+        data (dict) : The data to be inserted\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        columns = ", ".join(data.keys())
+        values = ", ".join([f"'{value}'" for value in data.values()])
+
+        query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
+
+        self.execute_query(query)
 
 ##--------------------start-of-read_multi_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -313,3 +338,188 @@ class remoteHandler():
                 results_by_column[i].append(str(value))
 
         return results_by_column
+
+
+##--------------------start-of-delete_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def delete_remote_storage(self) -> None:
+
+        """
+        
+        resets the remote storage\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        delete_kana_query = """
+        drop table if exists kana;
+        """
+
+        delete_kana_typos_query = """
+        drop table if exists kana_typos;
+        """
+
+        delete_kana_incorrect_typos_query = """
+        drop table if exists kana_incorrect_typos;
+        """
+
+        delete_kana_csep_query = """
+        drop table if exists kana_csep;
+        """
+
+        self.execute_query(delete_kana_csep_query)
+        self.execute_query(delete_kana_typos_query)
+        self.execute_query(delete_kana_incorrect_typos_query)
+        self.execute_query(delete_kana_query)
+##--------------------start-of-create_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def create_remote_storage(self) -> None:
+
+        """
+        
+        creates the tables for the remote storage\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        create_kana_query = """
+        CREATE TABLE kana (
+            id INT NOT NULL,
+            kana VARCHAR(255) NOT NULL,
+            reading VARCHAR(255) NOT NULL,
+            incorrect_count INT NOT NULL,
+            correct_count INT NOT NULL,
+            word_type INT NOT NULL,
+            PRIMARY KEY (id)
+        );
+        """
+
+        create_kana_typos_query = """
+        CREATE TABLE kana_typos (
+            kana_id INT NOT NULL,
+            typo_id INT NOT NULL,
+            typo_value VARCHAR(255) NOT NULL,
+            word_type INT NOT NULL,
+            PRIMARY KEY (typo_id),
+            FOREIGN KEY (kana_id) REFERENCES kana(id)
+        );
+        """
+
+        create_kana_incorrect_typos_query = """
+        CREATE TABLE kana_incorrect_typos (
+            kana_id INT NOT NULL,
+            incorrect_typo_id INT NOT NULL,
+            incorrect_typo_value VARCHAR(255) NOT NULL,
+            word_type INT NOT NULL,
+            PRIMARY KEY (incorrect_typo_id),
+            FOREIGN KEY (kana_id) REFERENCES kana(id)
+        );
+        """
+
+        create_kana_csep_query = """
+        create table kana_csep (
+        kana_id INT NOT NULL,
+        kana_csep_id INT NOT NULL,
+        kana_csep_value VARCHAR(255) NOT NULL,
+        word_type INT NOT NULL,
+        PRIMARY KEY (kana_csep_id),
+        FOREIGN KEY (kana_id) REFERENCES kana(id)
+        );
+        """
+
+        self.execute_query(create_kana_query)
+        self.execute_query(create_kana_typos_query)
+        self.execute_query(create_kana_incorrect_typos_query)
+        self.execute_query(create_kana_csep_query)
+
+##--------------------start-of-fill_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def fill_remote_storage(self) -> None:
+
+        """
+        
+        fills the tables in remote storage with the local data\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object\n
+
+        Returns\n
+        None\n
+
+        """
+
+        def fill_kana():
+
+            with open(self.kana_file, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    table_name = "kana"
+                    insert_dict = {
+                    "id": values[0],
+                    "kana": values[1],
+                    "reading": values[2],
+                    "incorrect_count": values[3],
+                    "correct_count": values[4],
+                    "word_type": 2
+                    }
+
+                    self.insert_into_table(table_name, insert_dict)
+
+        def fill_kana_typos():
+
+            with open(self.kana_typos_file, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
+                    values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
+
+                    table_name = "kana_typos"
+                    insert_dict = {
+                        "kana_id": values[0],
+                        "typo_id": values[1],
+                        "typo_value": values[2],
+                        "word_type": values[3]
+                    }
+                    self.insert_into_table(table_name, insert_dict)
+        
+        def fill_kana_incorrect_typos():
+
+                with open(self.kana_incorrect_typos_file, "r", encoding="utf-8") as file:
+
+                    for line in file:
+
+                        values = line.strip().split(',')
+
+                        values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
+                        values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
+
+                        table_name = "kana_incorrect_typos"
+                        insert_dict = {
+                        "kana_id": values[0],
+                        "incorrect_typo_id": values[1],
+                        "incorrect_typo_value": values[2],
+                        "word_type": values[3]
+                        }
+
+                        self.insert_into_table(table_name, insert_dict)
+
+
+        fill_kana()
+        fill_kana_typos()
+        fill_kana_incorrect_typos()

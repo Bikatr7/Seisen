@@ -59,8 +59,11 @@ class remoteHandler():
         ## the accepted incorrect typos for kana
         self.kana_incorrect_typos = []
 
-        self.connection = self.initialize_database_connection()
-
+        try:
+            self.connection = self.initialize_database_connection()
+        
+        except:
+            print("Database credentials are invalid or database does not exist")
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def reset_local_storage(self) -> None:

@@ -42,6 +42,6 @@ Please note that this information is a brief summary of the GPL. For a detailed 
 
 If you have any questions, comments, or concerns, please feel free to contact me at [Seinuve@gmail.com](mailto:Seinuve@gmail.com).
 
-For any bugs or suggestions please use the issues tab [here](https://github.com/Seinuve/Kudasai/issues).
+For any bugs or suggestions please use the issues tab [here](https://github.com/Seinuve/Seisen/issues).
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------

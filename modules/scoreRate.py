@@ -5,13 +5,12 @@ import typing
 ## custom modules
 from modules.words import word
 from modules.localHandler import localHandler
-from modules import util
 
 class scoreRate:
 
     """
     
-    The scoreRate class is used to determine which "word" will be given to the user based on a multitude of factors, such as number of answers, the number of correct answers, the number of incorrect answers etc.
+    The scoreRate class is used to determine which "word" will be given to the user based on a multitude of factors, such as number of answers, the number of correct answers, the number of incorrect answers etc.\n
 
     """
 

@@ -1,5 +1,5 @@
 ## built-in modules
-from __future__ import annotations
+from __future__ import annotations ## used for cheating the circular import issue that occurs when i need to type check some things
 
 import typing
 
@@ -8,16 +8,15 @@ from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules import util
 
-if(typing.TYPE_CHECKING):
+if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from modules.localHandler import localHandler
 
 class word:
 
     """
     
-    The Superclass of all words in Seisen, all testing material in Seisen is part of or inherits this class
-
-    Kana also uses this class.
+    The Superclass of all words in Seisen, all testing material in Seisen is part of or inherits this class\n
+    Kana also uses this class.\n
     
     """
 
@@ -39,7 +38,7 @@ class word:
         incoming_correct_count (int) : the number of correct guesses of the word\n
 
         Returns:\n
-        self (object - word) : the object being initialized\n
+        None\n
 
         """
 
@@ -171,6 +170,7 @@ class word:
         self (object - word) : the word we're checking answers for\n
         user_guess (str) : the user's guess\n
         prompt (str) : the prompt that was given to the user\n
+        handler (object - localHandler) : the local handler
 
         Returns:\n
         bool or None : if the user's guess is correct or incorrect, or a None value iof the user decided to skip the question\n 

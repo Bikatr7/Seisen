@@ -23,10 +23,10 @@ class localHandler():
 
         """
         
-        The __init__() method initializes the remoteHandler class\n
+        Initializes the localHandler class\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - localHandler) : The handler object\n
 
         Returns:\n
         None\n
@@ -65,13 +65,14 @@ class localHandler():
         loads the words from the local storage\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - localHandler) : The handler object\n
 
         Returns:\n
         None\n
 
         """
 
+        ## for dev reference
         KANA_TYPO_WORD_ID_INDEX_LOCATION = 0
         KANA_TYPO_TYPO_ID_INDEX_LOCATION = 1
         KANA_TYPO_VALUE_INDEX_LOCATION = 2
@@ -96,7 +97,7 @@ class localHandler():
                 if(int(values[0]) == self.KANA_WORD_TYPE):
                     for kana in self.kana:
                         if(kana.word_id == int(values[1])):
-                            kana.typos.append(typo_blueprint(int(values[0]), int(values[1]), int(values[2]), values[4]))
+                            kana.typos.append(typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
 
         with open(self.kana_incorrect_typos_file, "r", encoding="utf-8") as file:
 
@@ -107,7 +108,7 @@ class localHandler():
                 if(int(values[0]) == self.KANA_WORD_TYPE):
                     for kana in self.kana:
                         if(kana.word_id == int(values[1])):
-                            kana.incorrect_typos.append(incorrect_typo_blueprint(int(values[0]), int(values[1]), int(values[2]), values[4]))
+                            kana.incorrect_typos.append(incorrect_typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
 
 ##--------------------start-of-get_list_of_all_ids()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -115,10 +116,10 @@ class localHandler():
 
         """
 
-        Gets the list of all ids in the database\n
+        Gets the list of all ids in local storage\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - localHandler) : The handler object\n
 
         Returns:\n
         ids (list - string) : The list of all ids in the database\n

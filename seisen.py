@@ -14,12 +14,12 @@ class Seisen:
 
     """
     
-    Seisen is the main class for the Seisen project. Everything is handled by this class, directly or indirectly.
+    Seisen is the main class for the Seisen project. Everything is handled by this class, directly or indirectly.\n
 
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         """
         
@@ -33,11 +33,14 @@ class Seisen:
 
         """
 
+        ## ensures the files needed to run Seisen are present
         self.fileEnsurer = fileEnsurer()
         
+        ## sets up the handlers for Seisen data
         self.localHandler = localHandler()
         self.remoteHandler = remoteHandler()
 
+        ## sets up the word_rater
         self.word_rater = scoreRate(self.localHandler)
 
         self.current_mode = -1
@@ -48,24 +51,25 @@ class Seisen:
 
         ## sets the title of the console window
         os.system("title " + "Seisen")
-        
+
+        ## loads the words currently in local storage, by default this is just the kana
         self.localHandler.load_words_from_local_storage()
 
         self.commence_main_loop()
 
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def change_mode(self): ## changes mode
+    def change_mode(self) -> None: 
 
         """
 
-        changes Seisen's active mode
+        changes Seisen's active mode\n
 
-        Parameters:
-        None
+        Parameters:\n
+        None\n
 
-        Returns:
-        new_mode (int) : the new mode for Seisen
+        Returns:\n
+        None\n
 
         """
 
@@ -95,7 +99,7 @@ class Seisen:
 
         """
 
-        ## -1 is meant to be a code that forces the input to be changed
+        ## -1 is a code that forces the input to be changed
         valid_modes = [1,2]
 
         while True:
@@ -115,7 +119,19 @@ class Seisen:
 
 ##--------------------start-of-test_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def test_kana(self):
+    def test_kana(self) -> None:
+
+        """
+        
+        tests the user on kana\n
+
+        Parameters:\n
+        self (object - Seisen) : The Seisen Object.\n
+
+        Returns:\n
+        None\n
+
+        """
         
         util.clear_stream()
 
@@ -126,6 +142,7 @@ class Seisen:
 
         displayOther = False
 
+        ## uses the word rater to get the kana we are gonna test, as well as the display list, but that is not used here
         kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
 
         total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
@@ -146,6 +163,7 @@ class Seisen:
         
         total_number_of_rounds += 1
 
+        ## checks if the users answer is correct
         isCorrect, self.current_user_guess = kana_to_test.check_answers_kana(self.current_user_guess, self.current_question_prompt, self.localHandler)
 
         util.clear_console()
@@ -163,7 +181,7 @@ class Seisen:
             self.current_question_prompt += "\n\nSkipped.\n"
             kana_to_test.log_incorrect_answer() 
 
-        for answer in kana_to_test.testing_material_answer_all:
+        for answer in kana_to_test.testing_material_answer_all: ## prints the other accepted answers 
 
             if(isCorrect == None or isCorrect == False and answer != self.current_user_guess):
 
@@ -192,7 +210,7 @@ class Seisen:
 
 ##--------------------start-of-change_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def change_settings(self):
+    def change_settings(self) -> None:
 
         """
         
@@ -208,16 +226,16 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Reset Local Storage (DO NOT DO THIS)\n2. Reset Remote Storage\n3. See Score Ratings\n"
+        settings_menu_message = "1. Reset Local Storage\n2. Reset Remote Storage\n3. See Score Ratings\n"
 
         print(settings_menu_message)
 
-        pathing = util.input_check(1, str(msvcrt.getch().decode()), 3, settings_menu_message)
+        pathing = util.input_check(4, str(msvcrt.getch().decode()), 3, settings_menu_message)
 
         if(pathing == "1"):
             self.remoteHandler.reset_local_storage()
 
-        if(pathing == "2"):
+        elif(pathing == "2"):
             self.remoteHandler.delete_remote_storage()
             self.remoteHandler.create_remote_storage()
             self.remoteHandler.fill_remote_storage()

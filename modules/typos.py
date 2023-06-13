@@ -3,14 +3,14 @@ class typo:
 
     '''
 
-    The typo class is used to represent typos the user makes.
+    The typo class is used to represent typos the user makes.\n
         
     '''
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    def __init__(self, incoming_word_type, incoming_typo_id , incoming_word_id, incoming_typo_value):
+    def __init__(self, incoming_word_type:str, incoming_typo_id:int, incoming_word_id:int, incoming_typo_value:str):
 
         """
         
@@ -42,13 +42,13 @@ class incorrectTypo:
 
     '''
 
-    The incorrectTypo class is used to represent typos the user makes but are not actually typos.
+    The incorrectTypo class is used to represent typos the user makes but are not actually typos.\n
         
     '''
 
 ##--------------------start-of-incorrectTypo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, incoming_word_type, incoming_incorrect_typo_id , incoming_word_id, incoming_incorrect_typo_value):
+    def __init__(self, incoming_word_type:str, incoming_incorrect_typo_id:int, incoming_word_id:int, incoming_incorrect_typo_value:str):
 
         """
         

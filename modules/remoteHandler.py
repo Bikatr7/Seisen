@@ -26,7 +26,7 @@ class remoteHandler():
 
         """
         
-        The __init__() method initializes the remoteHandler class\n
+        Initializes the remoteHandler class\n
 
         Parameters:\n
         self (object - remoteHandler) : The handler object\n
@@ -105,13 +105,13 @@ class remoteHandler():
             self.kana_typos.clear()
             self.kana_incorrect_typos.clear()
             
-            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select word_id, jValue, eValue, pValue, cValue from words where word_type = " + KANA_WORD_TYPE)
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, word_id, typo from typos where word_type = " + KANA_WORD_TYPE)
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, itypo_id, word_id, itypo from itypos where word_type = " + KANA_WORD_TYPE)
+            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
 
             self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
-            self.kana_typos = [typo_blueprint(int(typo_word_type_list[i]), int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
-            self.kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_word_type_list[i]), int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
+            self.kana_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
+            self.kana_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
 
             for kana in self.kana:
                 word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
@@ -197,8 +197,8 @@ class remoteHandler():
                 
             password = input("Please enter the root password for your local database you have\n")
 
-            
             util.clear_console()
+
             database_name = input("Please enter the name of the database you have\n")
 
             credentials = [
@@ -286,7 +286,7 @@ class remoteHandler():
     
 ##--------------------start-of-insert_into_table()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def insert_into_table(self, table_name, data):
+    def insert_into_table(self, table_name, data) -> None:
 
         """
         
@@ -379,6 +379,7 @@ class remoteHandler():
         self.execute_query(delete_kana_typos_query)
         self.execute_query(delete_kana_incorrect_typos_query)
         self.execute_query(delete_kana_query)
+
 ##--------------------start-of-create_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def create_remote_storage(self) -> None:

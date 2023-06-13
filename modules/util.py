@@ -1,5 +1,5 @@
 ## built-in modules
-from __future__ import annotations
+from __future__ import annotations ## used for cheating the circular import issue that occurs when i need to type check some things
 
 import os
 import msvcrt
@@ -7,7 +7,7 @@ import time
 import typing
 
 ## custom modules
-if(typing.TYPE_CHECKING):
+if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from modules.localHandler import localHandler
     from modules.words import word
 
@@ -208,17 +208,17 @@ def write_sei_line(sei_file_path:str, items_to_write:typing.List[str]) -> None:
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:int,) -> None:
+def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:int) -> None:
     
     """
 
     Edits the given line in the given file.\n
 
     Parameters:\n
+    file_path (str) : The file being edited.\n
     target_line (int) : The line number of the file we are editing.\n
     column_number (int) : The column number we are editing.\n
     value_to_replace_to (str) : The value to replace the edit value with.\n
-    file_path (str) : The file being edited.\n
 
     Returns:\n
     None\n
@@ -242,7 +242,7 @@ def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_re
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def read_sei_file(sei_file_path:str, target_line:int, column:int,) -> str:
+def read_sei_file(sei_file_path:str, target_line:int, column:int) -> str:
 
     """
 
@@ -250,6 +250,7 @@ def read_sei_file(sei_file_path:str, target_line:int, column:int,) -> str:
     
     Parameters:\n
     sei_file_path (str) : the path to the sei file\n
+    target_line (int) : the line number of the sei file
     column (int) : the column we are reading\n
 
     Returns:\n
@@ -315,7 +316,7 @@ def levenshtein(string_one:str, string_two:str) -> int:
 
     """
 
-    Compares two strings for similarity \n
+    Compares two strings for similarity\n
 
     Parameters:\n
     string_one (str) : the first string to compare\n
@@ -350,7 +351,7 @@ def levenshtein(string_one:str, string_two:str) -> int:
 
     return distance[sLength1][sLength2]
 
-#--------------------Start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------Start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> str:  
 
@@ -359,10 +360,11 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
     checks if a user_guess is a typo or not\n
 
     Parameters:\n
-    self (object - word) : the word we're checking typos for\n
+    word (object - word) : the word we're checking typos for\n
     user_guess (str) : the user's guess\n
     prompt (str) : the prompt that was given to the user\n
-
+    handler (object - localHandler) : the local handler
+    
     Returns:\n
     final_answer (string) the user's final answer after being corrected for typos\n
 

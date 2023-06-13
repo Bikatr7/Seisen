@@ -196,6 +196,9 @@ class remoteHandler():
         except: ## else try to get credentials manually
                 
             password = input("Please enter the root password for your local database you have\n")
+
+            
+            util.clear_console()
             database_name = input("Please enter the name of the database you have\n")
 
             credentials = [
@@ -220,12 +223,12 @@ class remoteHandler():
                     
             except Exception as e: ## if invalid exit
                         
-                os.system('cls')
+                util.clear_console()
 
                 print(str(e))
                 print("Error with creating connection object, please double check your password\n")
 
-                os.system('pause')
+                util.pause_console()
                 
                 exit()
 

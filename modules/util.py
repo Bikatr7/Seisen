@@ -1,5 +1,6 @@
 ## built-in modules
 from __future__ import annotations ## used for cheating the circular import issue that occurs when i need to type check some things
+from datetime import datetime
 
 import os
 import msvcrt
@@ -401,3 +402,94 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
     word.log_new_incorrect_typo(user_guess, handler)
     
     return final_answer
+
+##--------------------Start-of-create_standard_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def create_standard_directory(directory_path:str):
+
+    """
+
+    Creates a directory if it doesn't exist, as well as prints to console what was created, along with a slight delay.\n
+
+    Parameters:\n
+    directory_path (str) : path to the directory to be created.\n
+
+    Returns:\n
+    None\n
+
+    """
+
+    if(os.path.isdir(directory_path) == False):
+        os.mkdir(directory_path)
+        print(directory_path + " created due to lack of the folder")
+        time.sleep(0.1)
+
+##--------------------Start-of-create_standard_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def create_modified_directory(directory_path:str, path_to_check:str):
+
+    """
+
+    Creates a directory if it doesn't exist or if the path provided is blank or empty, as well as prints to console what was created, along with a slight delay.\n
+
+    Parameters:\n
+    directory_path (str) : path to the directory to be created.\n
+    path_to_check (str) : path to check if it is blank\n
+
+    Returns:\n
+    None\n
+
+    """
+
+    if(os.path.isdir(directory_path) == False or os.path.getsize(path_to_check) == 0):
+        os.mkdir(directory_path)
+        print(directory_path + " created due to lack of the folder or " + path_to_check + " was blank or empty")
+        time.sleep(0.1)
+
+##--------------------Start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def create_archive_dir(type_of_archive:int):
+
+    """
+    
+    Creates the archive directory based on the given type of archive\n
+
+    Parameters:\n
+    type_of_archive (int) : The type of archive\n
+
+    Returns:\n
+    archive_directory (str) : The path to the newly created archive directory\n
+
+    """
+
+    ##----------------------------------------------------------------dirs----------------------------------------------------------------
+
+    ## the folder where all the config files are located
+    config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
+
+    ## archives for previous versions of Seisen txt files
+    archives_dir = os.path.join(config_dir, "Archives")
+
+    ## archives for the database files
+    database_archives_dir = os.path.join(archives_dir, "Database")
+
+    ## archives for the local files
+    local_archives_dir = os.path.join(archives_dir, "Local")
+
+    ##----------------------------------------------------------------other things----------------------------------------------------------------
+    
+    current_day = datetime.today().strftime('%Y-%m-%d')
+
+    filePaths = {
+        1: database_archives_dir,
+        2: local_archives_dir
+    }
+
+    archive_directory = os.path.join(filePaths[type_of_archive], current_day)
+
+    if(os.path.isdir(archive_directory) == False):
+        os.mkdir(archive_directory, 0o666)
+        print(archive_directory + " created due to lack of the folder")
+        time.sleep(0.1)
+
+    return archive_directory

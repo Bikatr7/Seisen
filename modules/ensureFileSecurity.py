@@ -71,6 +71,8 @@ class fileEnsurer:
 
       self.ensure_lib_files()
 
+      self.ensure_archive_files()
+
       time.sleep(0.1)
 
       os.system('cls')
@@ -302,3 +304,48 @@ class fileEnsurer:
 
       with open(kana_actual_path, 'w+', encoding="utf-8") as file:
          file.write(default_kana_to_write)
+
+
+##--------------------start-of-ensure_archive_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+   def ensure_archive_files(self):
+      
+      """
+      
+      ensure that the files located in the archives directory are present and ready to be used.\n
+
+      Parameters:\n
+      self (object - fileEnsurer) : the fileEnsurer object\n
+
+      Returns:\n
+      None\n
+
+      """
+
+      ##----------------------------------------------------------------dirs----------------------------------------------------------------
+
+      ## archives for previous versions of Seisen txt files
+      archives_dir = os.path.join(self.config_dir, "Archives")
+
+      ## archives for the database files
+      database_archives_dir = os.path.join(archives_dir, "Database")
+
+      ## archives for the local files
+      local_archives_dir = os.path.join(archives_dir, "Local")
+
+      ##----------------------------------------------------------------other things----------------------------------------------------------------
+
+      if(os.path.isdir(archives_dir) == False):
+         os.mkdir(archives_dir, 0o666)
+         print(archives_dir + " created due to lack of the folder")
+         time.sleep(0.1)
+
+      if(os.path.isdir(database_archives_dir) == False):
+         os.mkdir(database_archives_dir, 0o666)
+         print(database_archives_dir + " created due to lack of the folder")
+         time.sleep(0.1)
+
+      if(os.path.isdir(local_archives_dir) == False):
+         os.mkdir(local_archives_dir, 0o666)
+         print(local_archives_dir + " created due to lack of the folder")
+         time.sleep(0.1)

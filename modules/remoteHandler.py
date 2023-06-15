@@ -13,6 +13,7 @@ from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules.words import word as kana_blueprint
 from modules import util
+from modules.ensureFileSecurity import fileEnsurer
 
 class remoteHandler():
 
@@ -23,7 +24,7 @@ class remoteHandler():
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self) -> None:
+    def __init__(self, file_ensurer:fileEnsurer) -> None:
 
         """
         
@@ -36,18 +37,32 @@ class remoteHandler():
         None\n
 
         """
+
+        ##----------------------------------------------------------------objects----------------------------------------------------------------
+
+        ## the file_ensurer used for paths here
+        self.fileEnsurer = file_ensurer
+
+        ##----------------------------------------------------------------dir----------------------------------------------------------------
         
-        ## the path to the config directory
-        self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
+        ## lib files for remoteHandler.py
+        self.remote_lib_dir = os.path.join(self.fileEnsurer.lib_dir, "remote")
+
+        ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
-        self.password_file = os.path.join(os.path.join(self.config_dir, "Logins"), "credentials.txt")
+        self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
         ## the paths to the file that stores the kana words and its typos
-        self.kana_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana.txt")
-        self.kana_typos_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana typos.txt")
-        self.kana_incorrect_typos_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana incorrect typos.txt")
+        self.kana_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana.txt")
+        self.kana_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana typos.txt")
+        self.kana_incorrect_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana incorrect typos.txt")
 
+        ## if remoteHandler failed to make a database connection
+        self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
+
+        ##----------------------------------------------------------------variables----------------------------------------------------------------
+        
         ## the kana that seisen will use to test the user
         self.kana = [] 
 
@@ -60,14 +75,7 @@ class remoteHandler():
         ## the accepted incorrect typos for kana
         self.kana_incorrect_typos = []
 
-        ## the directory where all the lib files are located, basically config files and libs
-        self.lib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lib")
-
-        ## lib files for remoteHandler.py
-        self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
-
-        ## if remoteHandler failed to make a database connection
-        self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
+        ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         try:
             self.connection = self.initialize_database_connection()
@@ -80,16 +88,40 @@ class remoteHandler():
 ##--------------------start-of-mark_failed_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def start_marked_failed_database_connection(self) -> None:
+         
+        """
+        
+        marks a file in lib that the most recently attempted database connection has failed to connect\n
 
-         with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
-            file.write("false")
+        Parameters:\n
+        self (object - remoteHandler) : The handler object\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+            file.write("true")
 
 ##--------------------start-of-mark_succeeded_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def start_marked_succeeded_database_connection(self) -> None:
+         
+        """
+        
+        marks a file in lib that the most recently attempted database connection has succeeded\n
 
-         with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
-            file.write("true")
+        Parameters:\n
+        self (object - remoteHandler) : The handler object\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+            file.write("false")
 
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -167,6 +199,7 @@ class remoteHandler():
                     if(incorrect_typo.word_type == int(KANA_WORD_TYPE) and incorrect_typo.word_id == kana.word_type):
                         kana.incorrect_typos.append(incorrect_typo)
 
+        save_backup()
         clear_local_storage()
         reset_kana_relations()   
 
@@ -177,6 +210,7 @@ class remoteHandler():
         """
         
         resets the remote storage\n
+        Use Carefully!\n
 
         Parameters:\n
         self (object - remoteHandler) : The handler object\n
@@ -235,7 +269,7 @@ class remoteHandler():
         """
 
         with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
-            if(file.read().strip() == "false"):
+            if(file.read().strip() == "true"):
                 print("Database connection has failed previously.... skipping\n")
                 time.sleep(.1)
                 return
@@ -292,7 +326,6 @@ class remoteHandler():
                 exit()
 
         return connection
-    
 
 ##--------------------start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -400,7 +433,6 @@ class remoteHandler():
                 results_by_column[i].append(str(value))
 
         return results_by_column
-
 
 ##--------------------start-of-delete_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -581,7 +613,6 @@ class remoteHandler():
                         }
 
                         self.insert_into_table(table_name, insert_dict)
-
 
         fill_kana()
         fill_kana_typos()

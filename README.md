@@ -4,6 +4,7 @@
 - [Notes](#notes)
 - [Dependencies](#dependencies)
 - [Quick Start](#quickstart)
+- [Setting Up A MySQL Database](#SUAMSD)
 - [License](#license)
 - [Contact](#contact)
 
@@ -27,6 +28,13 @@ or see requirements.txt
 **Quick Start**<a name="quickstart"></a>
 
 Assuming you will not be using a database connection, you should be able to get started by simply running seisen.py and typing 1
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+**Setting Up A MySQL Database**<a name="SUAMSD"></a>
+
+Seisen uses a backup data method using MySQL, once Seisen is opened for the first time it will prompt for A database name and password, if you have these already feel free to enter these and Seisen will take care of the rest.
+
+You can always set this up latter in settings by typing 2.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **License**<a name="license"></a>

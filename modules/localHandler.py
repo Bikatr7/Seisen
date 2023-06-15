@@ -7,7 +7,7 @@ from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules.words import word as kana_blueprint
 from modules import util
-
+from modules.ensureFileSecurity import fileEnsurer
 
 class localHandler():
 
@@ -19,7 +19,7 @@ class localHandler():
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self) -> None:
+    def __init__(self, file_ensurer:fileEnsurer) -> None:
 
         """
         
@@ -33,22 +33,28 @@ class localHandler():
 
         """
 
-        ## the path to the config directory
-        self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
+        ##----------------------------------------------------------------objects----------------------------------------------------------------
+
+        ## the file_ensurer used for paths here
+        self.fileEnsurer = file_ensurer
+
+        ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
-        self.password_file = os.path.join(os.path.join(self.config_dir, "Logins"), "credentials.txt")
+        self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
         ## the paths to the file that stores the kana words and its typos
-        self.kana_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana.txt")
-        self.kana_typos_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana typos.txt")
-        self.kana_incorrect_typos_file = os.path.join(os.path.join(self.config_dir, "Kana"), "kana incorrect typos.txt")
+        self.kana_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana.txt")
+        self.kana_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana typos.txt")
+        self.kana_incorrect_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana incorrect typos.txt")
 
-        ## the kana that seisen will use to test the user
-        self.kana = [] 
+        ##----------------------------------------------------------------variables----------------------------------------------------------------
 
         ## the literal used in the database to flag words as Kana
         self.KANA_WORD_TYPE = "2"
+
+        ## the kana that seisen will use to test the user
+        self.kana = [] 
 
         ## the accepted typos for kana
         self.kana_typos = []
@@ -72,12 +78,14 @@ class localHandler():
 
         """
 
-        ## for dev reference
+        """
+        for dev reference
         KANA_TYPO_WORD_ID_INDEX_LOCATION = 0
         KANA_TYPO_TYPO_ID_INDEX_LOCATION = 1
         KANA_TYPO_VALUE_INDEX_LOCATION = 2
         KANA_TYPO_WORD_TYPE_INDEX_LOCATION = 3
-        
+        """
+
         self.kana.clear()
 
         with open(self.kana_file, "r", encoding="utf-8") as file:
@@ -149,9 +157,6 @@ class localHandler():
                     ids.append(util.read_sei_file(self.kana_incorrect_typos_file,i+1,2))
                     i+=1
 
-
-
         ids =  [int(x) for x in ids]
-
 
         return ids

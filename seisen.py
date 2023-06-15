@@ -33,33 +33,39 @@ class Seisen:
 
         """
 
+        ##----------------------------------------------------------------objects----------------------------------------------------------------
+
         ## ensures the files needed to run Seisen are present
         self.fileEnsurer = fileEnsurer()
         
         ## sets up the handlers for Seisen data
-        self.localHandler = localHandler()
-        self.remoteHandler = remoteHandler()
+        self.localHandler = localHandler(self.fileEnsurer)
+        self.remoteHandler = remoteHandler(self.fileEnsurer)
 
         ## sets up the word_rater
         self.word_rater = scoreRate(self.localHandler)
 
-        self.current_mode = -1
-
-        self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
-
-        self.loop_data_path = os.path.join(os.path.join(self.config_dir, "Loop Data"), "loopData.txt")
-
-        ## the directory where all the lib files are located, basically config files and libs
-        self.lib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lib")
+        ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
         ## lib files for remoteHandler.py
-        self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
+        self.remote_lib_dir = os.path.join(self.fileEnsurer.lib_dir, "remote")
+
+        ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## if remoteHandler failed to make a database connection
         self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
 
+        ## path for the loop_data file
+        self.loop_data_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Loop Data"), "loopData.txt")
+
+        ##----------------------------------------------------------------variables----------------------------------------------------------------
+
         ## sets the title of the console window
         os.system("title " + "Seisen")
+
+        self.current_mode = -1
+
+        ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         ## loads the words currently in local storage, by default this is just the kana
         self.localHandler.load_words_from_local_storage()

@@ -12,7 +12,7 @@
 
 Built for Windows, Should work on Linux/MacOS but is untested.
 
-Python Version: 3.7+
+Python Version: 3.8+
 
 Tests the user on Japanese Kana
 

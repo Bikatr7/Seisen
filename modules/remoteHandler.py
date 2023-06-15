@@ -5,6 +5,7 @@ import typing
 
 ## third party modules
 from mysql.connector import pooling
+
 import mysql.connector 
 
 ## custom modules
@@ -59,11 +60,37 @@ class remoteHandler():
         ## the accepted incorrect typos for kana
         self.kana_incorrect_typos = []
 
+        ## the directory where all the lib files are located, basically config files and libs
+        self.lib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lib")
+
+        ## lib files for remoteHandler.py
+        self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
+
+        ## if remoteHandler failed to make a database connection
+        self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
+
         try:
             self.connection = self.initialize_database_connection()
-        
+            self.start_marked_succeeded_database_connection()
+
         except:
+            self.start_marked_failed_database_connection()
             print("Database credentials are invalid or database does not exist")
+
+##--------------------start-of-mark_failed_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def start_marked_failed_database_connection(self) -> None:
+
+         with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+            file.write("false")
+
+##--------------------start-of-mark_succeeded_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def start_marked_succeeded_database_connection(self) -> None:
+
+         with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+            file.write("true")
+
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def reset_local_storage(self) -> None:
@@ -81,6 +108,9 @@ class remoteHandler():
         None\n
 
         """
+
+        def save_backup():
+            pass
 
         def clear_local_storage():
 
@@ -139,7 +169,27 @@ class remoteHandler():
 
         clear_local_storage()
         reset_kana_relations()   
+
+##--------------------start-of-reset_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def reset_remote_storage(self):
+
+        """
         
+        resets the remote storage\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        self.delete_remote_storage()
+        self.create_remote_storage()
+        self.fill_remote_storage()
+
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def create_database_connection(self, host_name:str, user_name:str, user_password:str, db_name:str) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection]:
@@ -183,6 +233,12 @@ class remoteHandler():
         connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) : The connection object to the database\n
 
         """
+
+        with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+            if(file.read().strip() == "false"):
+                print("Database connection has failed previously.... skipping\n")
+                time.sleep(.1)
+                return
 
         try:
 

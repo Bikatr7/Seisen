@@ -49,6 +49,15 @@ class Seisen:
 
         self.loop_data_path = os.path.join(os.path.join(self.config_dir, "Loop Data"), "loopData.txt")
 
+        ## the directory where all the lib files are located, basically config files and libs
+        self.lib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lib")
+
+        ## lib files for remoteHandler.py
+        self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
+
+        ## if remoteHandler failed to make a database connection
+        self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
+
         ## sets the title of the console window
         os.system("title " + "Seisen")
 
@@ -226,19 +235,17 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Reset Local Storage\n2. Reset Remote Storage\n3. See Score Ratings\n"
+        settings_menu_message = "1. Reset Local Storage\n2. Reset Remote Storage\n3. See Score Ratings\n4. Add New Database\n"
 
         print(settings_menu_message)
 
-        pathing = util.input_check(4, str(msvcrt.getch().decode()), 3, settings_menu_message)
+        pathing = util.input_check(4, str(msvcrt.getch().decode()), 4, settings_menu_message)
 
         if(pathing == "1"):
             self.remoteHandler.reset_local_storage()
 
         elif(pathing == "2"):
-            self.remoteHandler.delete_remote_storage()
-            self.remoteHandler.create_remote_storage()
-            self.remoteHandler.fill_remote_storage()
+            self.remoteHandler.reset_remote_storage()
 
         elif(pathing == "3"):
             kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
@@ -247,6 +254,15 @@ class Seisen:
                 print(item)
 
             util.pause_console()
+
+        elif(pathing == "4"):
+            with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+                file.write("None")
+
+            self.remoteHandler = remoteHandler()
+
+            print("Remote Handler has been reset...\n")
+            time.sleep(1)
 
         else:
             self.current_mode = -1

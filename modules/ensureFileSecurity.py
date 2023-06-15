@@ -29,6 +29,12 @@ class fileEnsurer:
       ## the folder where all the files are located
       self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
 
+      ## the directory where all the lib files are located, basically config files and libs
+      self.lib_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "lib")
+
+      ## lib files for remoteHandler.py
+      self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
+
       ## the folder for all kana-related files are located
       self.kana_dir = os.path.join(self.config_dir, "Kana")
 
@@ -45,10 +51,13 @@ class fileEnsurer:
       self.kana_actual_path = os.path.join(self.kana_dir, "kana.txt")
 
       ## the kana seisen uses to determine if a word is kanji or not
-      self.kana_filter_path_kana = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), os.path.join("lib"), "kana.txt")
+      self.kana_filter_path_kana = os.path.join(self.lib_dir, "kana.txt")
 
       ## the readings for the kana in the file path above
-      self.kana_filter_path_readings = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), os.path.join("lib"), "kana readings.txt")
+      self.kana_filter_path_readings = os.path.join(self.lib_dir, "kana readings.txt")
+
+      ## if remoteHandler failed to make a database connection
+      self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
 
       ## the path to where the typos for the kana file are located
       self.kana_typos_path = os.path.join(self.kana_dir, "kana typos.txt")
@@ -82,6 +91,8 @@ class fileEnsurer:
          self.ensure_actual_kana_file()
 
       self.ensure_kana_files()
+
+      self.ensure_lib_files()
 
       time.sleep(0.1)
 
@@ -122,6 +133,17 @@ class fileEnsurer:
          os.mkdir(self.loop_data_dir, 0o666)
          print(self.loop_data_dir + " created due to lack of the folder")
          time.sleep(0.1)
+
+      if(os.path.isdir(self.lib_dir) == False):
+         os.mkdir(self.lib_dir, 0o666)
+         print(self.lib_dir + " created due to lack of the folder")
+         time.sleep(0.1)
+
+      if(os.path.isdir(self.remote_lib_dir) == False):
+         os.mkdir(self.remote_lib_dir, 0o666)
+         print(self.remote_lib_dir + " created due to lack of the folder")
+         time.sleep(0.1)
+
 
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -191,3 +213,12 @@ class fileEnsurer:
          print(self.kana_incorrect_typos_path + " was created due to lack of the file")
          with open(self.kana_incorrect_typos_path, "w+", encoding="utf-8") as file:
             file.truncate()
+
+##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+   def ensure_lib_files(self):
+
+      if(os.path.exists(self.database_connection_failed) == False or os.path.getsize(self.database_connection_failed) == 0):
+         print(self.database_connection_failed + " was created due to lack of the file")
+         with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+            file.write("false")

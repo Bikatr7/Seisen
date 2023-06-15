@@ -29,7 +29,7 @@ class scoreRate:
 
 ##--------------------start-of-get_kana_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_kana_to_test(self, kana_list:typing.List[word]) -> tuple[word, typing.List[str]]:
+    def get_kana_to_test(self, kana_list:typing.List[word]) -> typing.Tuple[word, typing.List[str]]:
 
         """
         

@@ -2,6 +2,9 @@
 import os
 import time
 
+## custom modules
+from modules import util
+
 class fileEnsurer:
 
    """
@@ -93,26 +96,11 @@ class fileEnsurer:
       
       """
 
-      if(os.path.isdir(self.config_dir) == False):
-         os.mkdir(self.config_dir)
-         print(self.config_dir + " created due to lack of the folder")
-         time.sleep(0.1)
-      
-      if(os.path.isdir(self.logins_dir) == False):
-         os.mkdir(self.logins_dir, 0o666)
-         print(self.logins_dir + " created due to lack of the folder")
-         time.sleep(0.1)
-
-      if(os.path.isdir(self.lib_dir) == False):
-         os.mkdir(self.lib_dir, 0o666)
-         print(self.lib_dir + " created due to lack of the folder")
-         time.sleep(0.1)
-
-      if(os.path.isdir(self.kana_dir) == False):
-         os.mkdir(self.kana_dir, 0o666)
-         print(self.kana_dir + " created due to lack of the folder")
-         time.sleep(0.1)
-         
+      util.standard_create_directory(self.config_dir)
+      util.standard_create_directory(self.logins_dir)
+      util.standard_create_directory(self.lib_dir)
+      util.standard_create_directory(self.kana_dir)
+               
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    def ensure_loop_data_files(self) -> None:
@@ -141,15 +129,10 @@ class fileEnsurer:
    
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      if(os.path.isdir(loop_data_dir) == False):
-         os.mkdir(loop_data_dir, 0o666)
-         print(loop_data_dir + " created due to lack of the folder")
-         time.sleep(0.1)
 
-      if(os.path.exists(loop_data_path) == False or os.path.getsize(loop_data_path) == 0):
-         print(loop_data_path + " was created due to lack of the file")
-         with open(loop_data_path, "w+", encoding="utf-8") as file:
-            file.write("0,0,0,0,")
+      util.standard_create_directory(loop_data_dir)
+
+      util.modified_create_file(loop_data_path, "0,0,0,0,")
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -165,15 +148,9 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      if(os.path.exists(kana_typos_path) == False):
-         print(kana_typos_path + " was created due to lack of the file")
-         with open(kana_typos_path, "w+", encoding="utf-8") as file:
-            file.truncate()
+      util.standard_create_file(kana_typos_path)
 
-      if(os.path.exists(kana_incorrect_typos_path) == False):
-         print(kana_incorrect_typos_path + " was created due to lack of the file")
-         with open(kana_incorrect_typos_path, "w+", encoding="utf-8") as file:
-            file.truncate()
+      util.standard_create_file(kana_incorrect_typos_path)
 
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -232,15 +209,9 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      if(os.path.isdir(remote_lib_dir) == False):
-         os.mkdir(remote_lib_dir, 0o666)
-         print(remote_lib_dir + " created due to lack of the folder")
-         time.sleep(0.1)
+      util.standard_create_directory(remote_lib_dir)
 
-      if(os.path.exists(database_connection_failed) == False or os.path.getsize(database_connection_failed) == 0):
-         print(database_connection_failed + " was created due to lack of the file")
-         with open(database_connection_failed, "w+", encoding="utf-8") as file:
-            file.write("false")
+      util.modified_create_file(database_connection_failed, "false")
 
 ##--------------------start-of-ensure_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -277,15 +248,8 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      if(os.path.isdir(local_lib_dir_path) == False):
-         os.mkdir(local_lib_dir_path, 0o666)
-         print(local_lib_dir_path + " created due to lack of the folder")
-         time.sleep(0.1)
-
-      if(os.path.isdir(local_kana_lib_dir_path) == False):
-         os.mkdir(local_kana_lib_dir_path, 0o666)
-         print(local_kana_lib_dir_path + " created due to lack of the folder")
-         time.sleep(0.1)
+      util.standard_create_directory(local_lib_dir_path)
+      util.standard_create_directory(local_kana_lib_dir_path)
 
       black_list_characters_kana = ['ヶ', 'ョ', 'ゃ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ァ', 'ゅ', 'ょ', 'ぉ', '-', 'ヱ', 'ゐ', 'ヰ', 'ー', 'ッ','っ']
 
@@ -335,17 +299,6 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      if(os.path.isdir(archives_dir) == False):
-         os.mkdir(archives_dir, 0o666)
-         print(archives_dir + " created due to lack of the folder")
-         time.sleep(0.1)
-
-      if(os.path.isdir(database_archives_dir) == False):
-         os.mkdir(database_archives_dir, 0o666)
-         print(database_archives_dir + " created due to lack of the folder")
-         time.sleep(0.1)
-
-      if(os.path.isdir(local_archives_dir) == False):
-         os.mkdir(local_archives_dir, 0o666)
-         print(local_archives_dir + " created due to lack of the folder")
-         time.sleep(0.1)
+      util.standard_create_directory(archives_dir)
+      util.standard_create_directory(database_archives_dir)
+      util.standard_create_directory(local_archives_dir)

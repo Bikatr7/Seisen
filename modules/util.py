@@ -281,7 +281,7 @@ def read_sei_file(sei_file_path:str, target_line:int, column:int) -> str:
         
     return file_details[column-1]
 
-##--------------------Start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def get_new_id(id_list:typing.List[int]) -> int:
 
@@ -311,7 +311,7 @@ def get_new_id(id_list:typing.List[int]) -> int:
         
     return new_id
 
-##--------------------Start-of-levenshtein()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-levenshtein()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def levenshtein(string_one:str, string_two:str) -> int:
 
@@ -352,7 +352,7 @@ def levenshtein(string_one:str, string_two:str) -> int:
 
     return distance[sLength1][sLength2]
 
-##--------------------Start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> str:  
 
@@ -403,9 +403,9 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
     
     return final_answer
 
-##--------------------Start-of-create_standard_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-standard_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def create_standard_directory(directory_path:str):
+def standard_create_directory(directory_path:str):
 
     """
 
@@ -424,9 +424,9 @@ def create_standard_directory(directory_path:str):
         print(directory_path + " created due to lack of the folder")
         time.sleep(0.1)
 
-##--------------------Start-of-create_standard_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-modified_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def create_modified_directory(directory_path:str, path_to_check:str):
+def modified_create_directory(directory_path:str, path_to_check:str):
 
     """
 
@@ -446,7 +446,50 @@ def create_modified_directory(directory_path:str, path_to_check:str):
         print(directory_path + " created due to lack of the folder or " + path_to_check + " was blank or empty")
         time.sleep(0.1)
 
-##--------------------Start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-standard_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def standard_create_file(file_path:str):
+
+    """
+
+    Creates a file if it doesn't exist, truncates it,  as well as prints to console what was created, along with a slight delay.\n
+
+    Parameters:\n
+    file_path (str) : path to the file to be created.\n
+
+    Returns:\n
+    None\n
+
+    """
+
+    if(os.path.exists(file_path) == False):
+        print(file_path + " was created due to lack of the file")
+        with open(file_path, "w+", encoding="utf-8") as file:
+            file.truncate()
+
+##--------------------start-of-modified_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def modified_create_file(file_path:str, content_to_write:str):
+
+    """
+
+    Creates a path if it doesn't exist or if it is blank or empty, writes to it,  as well as prints to console what was created, along with a slight delay.\n
+
+    Parameters:\n
+    file_path (str) : path to the file to be created.\n
+    content to write (str) : content to be written to the file\n
+
+    Returns:\n
+    None\n
+
+    """
+
+    if(os.path.exists(file_path) == False or os.path.getsize(file_path) == 0):
+        print(file_path + " was created due to lack of the file or because it is blank")
+        with open(file_path, "w+", encoding="utf-8") as file:
+            file.write(content_to_write)
+
+##--------------------start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def create_archive_dir(type_of_archive:int):
 
@@ -487,9 +530,6 @@ def create_archive_dir(type_of_archive:int):
 
     archive_directory = os.path.join(filePaths[type_of_archive], current_day)
 
-    if(os.path.isdir(archive_directory) == False):
-        os.mkdir(archive_directory, 0o666)
-        print(archive_directory + " created due to lack of the folder")
-        time.sleep(0.1)
+    standard_create_directory(archive_directory)
 
     return archive_directory

@@ -6,6 +6,7 @@ import os
 import msvcrt
 import time
 import typing
+import requests
 
 ## custom modules
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
@@ -533,3 +534,37 @@ def create_archive_dir(type_of_archive:int):
     standard_create_directory(archive_directory)
 
     return archive_directory
+
+##-------------------start-of-check_update()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def check_update() -> bool:
+
+    """
+
+    determines if Seisen has a new latest release, and confirms if an internet connection is present or not\n
+
+    Parameters:\n
+    None\n
+
+    Returns:\n
+    True if the user has an internet connection, False if the user does not\n
+
+    """
+    
+    try:
+    
+        CURRENT_VERSION = "v1.0.0" 
+
+        response = requests.get("https://api.github.com/repos/Seinuve/Seisen/releases/latest")
+        latestVersion = response.json()["tag_name"]
+
+        if(latestVersion != CURRENT_VERSION):
+            print("There is a new update for Seisen (" + latestVersion + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Seinuve/Seisen/releases/latest \n")
+            pause_console()
+            clear_console()
+
+        return True
+
+    except: ## used to determine if user lacks an internet connection or possesses another issue that would cause any internet related functionalities to fail
+                
+        return False

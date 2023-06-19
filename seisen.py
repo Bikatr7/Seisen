@@ -64,7 +64,9 @@ class Seisen:
         os.system("title " + "Seisen")
 
         self.current_mode = -1
-
+        
+        self.hasValidConnection = util.check_update()
+        
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         ## loads the words currently in local storage, by default this is just the kana

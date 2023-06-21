@@ -1,4 +1,6 @@
 ## built-in modules
+from datetime import datetime
+
 import os
 import typing
 
@@ -38,6 +40,14 @@ class localHandler():
         ## the file_ensurer used for paths here
         self.fileEnsurer = file_ensurer
 
+        ##----------------------------------------------------------------dirs----------------------------------------------------------------
+
+        ## archives for previous versions of Seisen txt files
+        self.archives_dir = os.path.join(self.fileEnsurer.config_dir, "Archives")
+
+        ## archives for the local files
+        self.local_archives_dir = os.path.join(self.archives_dir, "Local")
+
         ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
@@ -47,6 +57,9 @@ class localHandler():
         self.kana_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana.txt")
         self.kana_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana typos.txt")
         self.kana_incorrect_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana incorrect typos.txt")
+
+        ## contains the date of the last local backup
+        self.last_local_backup_file = os.path.join(self.local_archives_dir, "last_local_backup.txt")
 
         ##----------------------------------------------------------------variables----------------------------------------------------------------
 
@@ -160,3 +173,17 @@ class localHandler():
         ids =  [int(x) for x in ids]
 
         return ids
+    
+##--------------------start-of-create_daily_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def create_daily_local_backup(self):
+
+        if(os.path.exists(self.last_local_backup_file) == True):
+            with open(self.last_local_backup_file, 'r', encoding="utf-8") as file:
+                if(file.read() == datetime.today().strftime('%Y-%m-%d')):
+                    return
+                else:
+                    pass ## when come back make sure to resume this
+
+        else:
+            return

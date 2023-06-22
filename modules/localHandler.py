@@ -182,8 +182,21 @@ class localHandler():
 
     def create_daily_local_backup(self) -> None:
 
-        with open(self.last_local_backup_file, 'r', encoding="utf-8") as file:
+        """
+        
+        Creates Seisen's daily local backup\n
+
+        Parameters:\n
+        self (object - localHandler) : the local handler\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        with open(self.last_local_backup_file, 'r+', encoding="utf-8") as file:
             if(file.read() != datetime.today().strftime('%Y-%m-%d')):
+                file.truncate()
                 archive_dir = util.create_archive_dir(2)
 
                 shutil.copytree(self.kana_dir, os.path.join(archive_dir, "Kana"))

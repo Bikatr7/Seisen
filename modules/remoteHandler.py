@@ -1,7 +1,10 @@
 ## built-in modules
+from datetime import datetime
+
 import os
 import time
 import typing
+import shutil
 
 ## third party modules
 from mysql.connector import pooling
@@ -48,6 +51,12 @@ class remoteHandler():
         ## lib files for remoteHandler.py
         self.remote_lib_dir = os.path.join(self.fileEnsurer.lib_dir, "remote")
 
+        ## archives for previous versions of Seisen txt files
+        self.archives_dir = os.path.join(self.fileEnsurer.config_dir, "Archives")
+
+        ## archives for the local files
+        self.remote_archives_dir = os.path.join(self.archives_dir, "Database")
+
         ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
@@ -60,6 +69,9 @@ class remoteHandler():
 
         ## if remoteHandler failed to make a database connection
         self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
+
+        ## contains the date of the last local backup
+        self.last_remote_backup_file = os.path.join(self.remote_archives_dir, "last_remote_backup.txt")
 
         ##----------------------------------------------------------------variables----------------------------------------------------------------
         
@@ -82,6 +94,7 @@ class remoteHandler():
             self.start_marked_succeeded_database_connection()
 
         except:
+            self.connection = None
             self.start_marked_failed_database_connection()
             print("Database credentials are invalid or database does not exist")
 
@@ -141,9 +154,6 @@ class remoteHandler():
 
         """
 
-        def save_backup():
-            pass
-
         def clear_local_storage():
 
             with open(self.kana_file, "w", encoding="utf-8") as file:
@@ -199,7 +209,6 @@ class remoteHandler():
                     if(incorrect_typo.word_type == int(KANA_WORD_TYPE) and incorrect_typo.word_id == kana.word_type):
                         kana.incorrect_typos.append(incorrect_typo)
 
-        save_backup()
         clear_local_storage()
         reset_kana_relations()   
 
@@ -251,6 +260,63 @@ class remoteHandler():
             database= db_name)
 
         return connection
+    
+##--------------------start-of-create_daily_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def create_daily_remote_backup(self):
+
+        """
+        
+        Creates Seisen's daily remote backup\n
+
+        Parameters:\n
+        self (object - Seisen) : the seisen object.\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        if(self.connection is None):
+            return
+
+        with open(self.last_remote_backup_file, 'r+', encoding="utf-8") as file:
+            if(file.read() != datetime.today().strftime('%Y-%m-%d')):
+                archive_dir = util.create_archive_dir(1)
+
+                file.truncate()
+
+                file.write(datetime.today().strftime('%Y-%m-%d'))
+
+                remote_archive_kana_dir = os.path.join(archive_dir, "Kana")
+
+                remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.txt")
+                remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana typos.txt")
+                remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana incorrect typos.txt")
+
+                list_of_all_accepted_answers = []
+
+                util.standard_create_directory(remote_archive_kana_dir)
+
+                word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
+                typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
+                incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
+
+                self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
+                self.kana_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
+                self.kana_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
+
+                for kana in self.kana:
+                    word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
+                    util.write_sei_line(remote_archive_kana_path, word_values)
+
+                for typo in self.kana_typos:
+                    typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
+                    util.write_sei_line(remote_archive_kana_typos_path, typo_values)
+
+                for incorrect_typo in self.kana_incorrect_typos:
+                    incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
+                    util.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
 
 ##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

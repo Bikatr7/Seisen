@@ -74,6 +74,8 @@ class Seisen:
 
         self.localHandler.create_daily_local_backup()
 
+        self.remoteHandler.create_daily_remote_backup()
+
         self.commence_main_loop()
 
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

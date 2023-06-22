@@ -297,10 +297,16 @@ class fileEnsurer:
       ## archives for the local files
       local_archives_dir = os.path.join(archives_dir, "Local")
 
+      ## archives for the database files
+      remote_archives_dir = os.path.join(archives_dir, "Database")
+
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## contains the date of the last local backup
       last_local_backup_file = os.path.join(local_archives_dir, "last_local_backup.txt")
+
+      ## contains the date of the last database backup
+      last_remote_backup_file = os.path.join(remote_archives_dir, "last_remote_backup.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
@@ -309,3 +315,4 @@ class fileEnsurer:
       util.standard_create_directory(local_archives_dir)
 
       util.standard_create_file(last_local_backup_file)
+      util.standard_create_file(last_remote_backup_file)

@@ -72,6 +72,8 @@ class Seisen:
         ## loads the words currently in local storage, by default this is just the kana
         self.localHandler.load_words_from_local_storage()
 
+        self.localHandler.create_daily_local_backup()
+
         self.commence_main_loop()
 
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -241,10 +241,10 @@ class fileEnsurer:
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## the kana seisen uses to determine if a word is kanji or not
-      kana_filter_path_kana = os.path.join(self.lib_dir, "kana.txt")
+      kana_filter_path_kana = os.path.join(local_kana_lib_dir_path, "kana.txt")
 
       ## the readings for the kana in the file path above
-      kana_filter_path_readings = os.path.join(self.lib_dir, "kana readings.txt")
+      kana_filter_path_readings = os.path.join(local_kana_lib_dir_path, "kana readings.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
@@ -297,8 +297,15 @@ class fileEnsurer:
       ## archives for the local files
       local_archives_dir = os.path.join(archives_dir, "Local")
 
+      ##----------------------------------------------------------------paths----------------------------------------------------------------
+
+      ## contains the date of the last local backup
+      last_local_backup_file = os.path.join(local_archives_dir, "last_local_backup.txt")
+
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       util.standard_create_directory(archives_dir)
       util.standard_create_directory(database_archives_dir)
       util.standard_create_directory(local_archives_dir)
+
+      util.standard_create_file(last_local_backup_file)

@@ -3,6 +3,7 @@ from datetime import datetime
 
 import os
 import typing
+import shutil
 
 ## custom modules
 from modules.typos import typo as typo_blueprint
@@ -42,6 +43,9 @@ class localHandler():
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
+        ## directory for kana files
+        self.kana_dir = os.path.join(self.fileEnsurer.config_dir, "Kana")
+
         ## archives for previous versions of Seisen txt files
         self.archives_dir = os.path.join(self.fileEnsurer.config_dir, "Archives")
 
@@ -54,9 +58,9 @@ class localHandler():
         self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
         ## the paths to the file that stores the kana words and its typos
-        self.kana_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana.txt")
-        self.kana_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana typos.txt")
-        self.kana_incorrect_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana incorrect typos.txt")
+        self.kana_file = os.path.join(self.kana_dir, "kana.txt")
+        self.kana_typos_file = os.path.join(self.kana_dir, "kana typos.txt")
+        self.kana_incorrect_typos_file = os.path.join(self.kana_dir, "kana incorrect typos.txt")
 
         ## contains the date of the last local backup
         self.last_local_backup_file = os.path.join(self.local_archives_dir, "last_local_backup.txt")
@@ -176,14 +180,14 @@ class localHandler():
     
 ##--------------------start-of-create_daily_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def create_daily_local_backup(self):
+    def create_daily_local_backup(self) -> None:
 
-        if(os.path.exists(self.last_local_backup_file) == True):
-            with open(self.last_local_backup_file, 'r', encoding="utf-8") as file:
-                if(file.read() == datetime.today().strftime('%Y-%m-%d')):
-                    return
-                else:
-                    pass ## when come back make sure to resume this
+        with open(self.last_local_backup_file, 'r', encoding="utf-8") as file:
+            if(file.read() != datetime.today().strftime('%Y-%m-%d')):
+                archive_dir = util.create_archive_dir(2)
 
-        else:
-            return
+                shutil.copytree(self.kana_dir, os.path.join(archive_dir, "Kana"))
+
+                file.write(datetime.today().strftime('%Y-%m-%d'))
+
+

@@ -247,7 +247,7 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Reset Local Storage\n2. Reset Remote Storage\n3. See Score Ratings\n4. Add New Database\n"
+        settings_menu_message = "1. Reset Local Storage\n2. Reset Remote Storage\n3. See Score Ratings\n4. Add New Database\n5. Restore Local Backup\n6. Restore Remote Backup\n"
 
         print(settings_menu_message)
 
@@ -276,6 +276,12 @@ class Seisen:
             print("Remote Handler has been reset...\n")
             time.sleep(1)
 
+        elif(pathing == "5"):
+            self.localHandler.restore_local_backup()
+
+        elif(pathing == "6"):
+            self.remoteHandler.restore_remote_backup()
+            
         else:
             self.current_mode = -1
 

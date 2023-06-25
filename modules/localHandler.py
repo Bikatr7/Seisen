@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import typing
 import shutil
+import time
 
 ## custom modules
 from modules.typos import typo as typo_blueprint
@@ -207,4 +208,39 @@ class localHandler():
 ##--------------------start-of-restore_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def restore_local_backup(self):
-        pass
+
+        valid_backups = []
+        
+        util.clear_console()
+        
+        print("Please select a backup to restore:\n")
+        
+        for item in os.listdir(self.local_archives_dir):
+        
+            full_path = os.path.join(self.local_archives_dir, item)
+        
+            if(os.path.isdir(full_path)):
+                print(item)
+                valid_backups.append(item)
+        
+        backup_to_restore = input("\n")
+
+        try: ## user confirm will throw an assertion error if  the user wants to cancel the backup restore.
+
+            if(backup_to_restore in valid_backups):
+                util.clear_console()
+
+                util.user_confirm("Please confirm your selection (" + backup_to_restore + "), as this process is not easily reversible. (1 for yes, 2 to retry, z to cancel)\n")
+
+                shutil.rmtree(self.kana_dir)
+
+                shutil.copytree(os.path.join(self.local_archives_dir, backup_to_restore), self.fileEnsurer.config_dir, dirs_exist_ok=True)
+
+                self.load_words_from_local_storage()
+
+            else:
+                print("Invalid Backup\n")
+                time.sleep(1)
+
+        except AssertionError:
+            pass

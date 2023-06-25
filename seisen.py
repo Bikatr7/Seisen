@@ -51,6 +51,9 @@ class Seisen:
         self.remote_lib_dir = os.path.join(self.fileEnsurer.lib_dir, "remote")
 
         ##----------------------------------------------------------------paths----------------------------------------------------------------
+        
+        ## the path to the file that stores the password
+        self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
         ## if remoteHandler failed to make a database connection
         self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
@@ -251,10 +254,11 @@ class Seisen:
 
         print(settings_menu_message)
 
-        pathing = util.input_check(4, str(msvcrt.getch().decode()), 4, settings_menu_message)
+        pathing = util.input_check(4, str(msvcrt.getch().decode()), 6, settings_menu_message)
 
         if(pathing == "1"):
             self.remoteHandler.reset_local_storage()
+            self.localHandler.load_words_from_local_storage()
 
         elif(pathing == "2"):
             self.remoteHandler.reset_remote_storage()
@@ -268,10 +272,13 @@ class Seisen:
             util.pause_console()
 
         elif(pathing == "4"):
-            with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+            with open(self.database_connection_failed, "w+", encoding="utf-8") as file: ## forces the remote handler to try to attempt a database connection again
                 file.write("None")
 
-            self.remoteHandler = remoteHandler()
+            with open(self.password_file, "w+", encoding="utf-8") as file: ## clears the credentials file allowing for a different database connection to be added if the current one is valid
+                file.truncate()
+
+            self.remoteHandler = remoteHandler(self.fileEnsurer)
 
             print("Remote Handler has been reset...\n")
             time.sleep(1)

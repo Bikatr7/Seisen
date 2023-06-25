@@ -4,7 +4,6 @@ from datetime import datetime
 import os
 import time
 import typing
-import shutil
 
 ## third party modules
 from mysql.connector import pooling
@@ -89,14 +88,8 @@ class remoteHandler():
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
-        try:
-            self.connection = self.initialize_database_connection()
-            self.start_marked_succeeded_database_connection()
+        self.connection = self.initialize_database_connection()
 
-        except:
-            self.connection = None
-            self.start_marked_failed_database_connection()
-            print("Database credentials are invalid or database does not exist")
 
 ##--------------------start-of-mark_failed_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -117,7 +110,7 @@ class remoteHandler():
         with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
             file.write("true")
 
-##--------------------start-of-mark_succeeded_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-mark_succeeded_database_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def start_marked_succeeded_database_connection(self) -> None:
          
@@ -320,7 +313,7 @@ class remoteHandler():
 
 ##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def initialize_database_connection(self) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection]:
+    def initialize_database_connection(self) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection, None]:
 
         """
 
@@ -333,12 +326,14 @@ class remoteHandler():
         connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) : The connection object to the database\n
 
         """
-
-        with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+        
+        with open(self.database_connection_failed, "r+", encoding="utf-8") as file:
             if(file.read().strip() == "true"):
                 print("Database connection has failed previously.... skipping\n")
                 time.sleep(.1)
-                return
+                return None
+            
+        self.start_marked_succeeded_database_connection()
 
         try:
 
@@ -368,10 +363,7 @@ class remoteHandler():
 
                 connection = self.create_database_connection("localhost", "root", password, database_name)
                             
-                if(os.path.exists(self.password_file) == False):
-                    print(self.password_file + " was created due to lack of the file")
-                    with open(self.password_file, "w+",encoding='utf-8') as file:
-                        file.truncate(0)
+                util.standard_create_file(self.password_file) 
 
                 time.sleep(0.1)
 
@@ -385,12 +377,14 @@ class remoteHandler():
                 util.clear_console()
 
                 print(str(e))
-                print("Error with creating connection object, please double check your password\n")
+                print("Error with creating connection object, please double check your password and database name\n")
+
+                self.start_marked_failed_database_connection()
+
+                connection = None
 
                 util.pause_console()
-                
-                exit()
-
+            
         return connection
 
 ##--------------------start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

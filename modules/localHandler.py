@@ -197,11 +197,11 @@ class localHandler():
 
         with open(self.last_local_backup_file, 'r+', encoding="utf-8") as file:
             if(file.read() != datetime.today().strftime('%Y-%m-%d')):
-                file.truncate()
                 archive_dir = util.create_archive_dir(2)
 
                 shutil.copytree(self.kana_dir, os.path.join(archive_dir, "Kana"))
 
+                file.truncate(0)
                 file.write(datetime.today().strftime('%Y-%m-%d'))
 
 

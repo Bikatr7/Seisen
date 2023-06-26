@@ -277,7 +277,7 @@ class remoteHandler():
             if(file.read() != datetime.today().strftime('%Y-%m-%d')):
                 archive_dir = util.create_archive_dir(1)
 
-                file.truncate()
+                file.truncate(0)
 
                 file.write(datetime.today().strftime('%Y-%m-%d'))
 

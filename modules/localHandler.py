@@ -189,20 +189,33 @@ class localHandler():
 
         Parameters:\n
         self (object - localHandler) : the local handler\n
-
+W
         Returns:\n
         None\n
 
         """
 
         with open(self.last_local_backup_file, 'r+', encoding="utf-8") as file:
-            if(file.read() != datetime.today().strftime('%Y-%m-%d')):
+
+            last_backup_date = str(file.read().strip())
+            last_backup_date = last_backup_date.strip('\x00')
+        
+            current_day = str(datetime.today().strftime('%Y-%m-%d'))
+
+            if(last_backup_date != current_day):
+                
+                print(current_day == last_backup_date)
+
                 archive_dir = util.create_archive_dir(2)
 
                 shutil.copytree(self.kana_dir, os.path.join(archive_dir, "Kana"))
 
                 file.truncate(0)
-                file.write(datetime.today().strftime('%Y-%m-%d'))
+                
+                file.write(current_day)
+            
+            else:
+                pass
 
 
 ##--------------------start-of-restore_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -210,6 +223,8 @@ class localHandler():
     def restore_local_backup(self):
 
         valid_backups = []
+
+        backup_to_restore_prompt = ""
         
         util.clear_console()
         
@@ -222,15 +237,16 @@ class localHandler():
             if(os.path.isdir(full_path)):
                 print(item)
                 valid_backups.append(item)
+                backup_to_restore_prompt += item + "\n"
         
-        backup_to_restore = input("\n")
+        backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible.\n\n"
+
+        backup_to_restore = util.user_confirm(backup_to_restore_prompt)
 
         try: ## user confirm will throw an assertion error if  the user wants to cancel the backup restore.
 
             if(backup_to_restore in valid_backups):
                 util.clear_console()
-
-                util.user_confirm("Please confirm your selection (" + backup_to_restore + "), as this process is not easily reversible. (1 for yes, 2 to retry, z to cancel)\n")
 
                 shutil.rmtree(self.kana_dir)
 

@@ -288,6 +288,7 @@ class Seisen:
 
         elif(pathing == "6"):
             self.remoteHandler.restore_remote_backup()
+            self.localHandler.load_words_from_local_storage()
             
         else:
             self.current_mode = -1

@@ -61,7 +61,7 @@ def input_check(input_type:int, user_input:str, number_of_choices:int, input_pro
             print(input_issue_message + "\n")
             user_input = input(input_prompt_message)
 
-        else:
+        elif(input_type == 4):
             print(input_issue_message + "\n" + input_prompt_message)
             user_input = str(msvcrt.getch().decode())
 
@@ -147,7 +147,7 @@ def user_confirm(prompt:str) -> str:
     """
 
     confirmation = "Just To Confirm You Selected "
-    options = " Press 1 To Confirm or 2 To Retry"
+    options = " Press 1 To Confirm or 2 To Retry or z to cancel"
     output = ""
     user_input = ""
     
@@ -174,7 +174,7 @@ def user_confirm(prompt:str) -> str:
         
         clear_stream()
         
-        if(int(input_check(4, str(msvcrt.getch()), 2 , output)) == 1):
+        if(int(input_check(4, str(msvcrt.getch().decode()), 2 , output)) == 1):
                 entry_confirmed = True
         else:
 

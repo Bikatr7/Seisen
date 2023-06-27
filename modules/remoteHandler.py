@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import time
 import typing
+import shutil
 
 ## third party modules
 from mysql.connector import pooling
@@ -46,7 +47,10 @@ class remoteHandler():
         self.fileEnsurer = file_ensurer
 
         ##----------------------------------------------------------------dir----------------------------------------------------------------
-        
+
+        ## directory for kana files
+        self.kana_dir = os.path.join(self.fileEnsurer.config_dir, "Kana")
+
         ## lib files for remoteHandler.py
         self.remote_lib_dir = os.path.join(self.fileEnsurer.lib_dir, "remote")
 
@@ -274,12 +278,18 @@ class remoteHandler():
             return
 
         with open(self.last_remote_backup_file, 'r+', encoding="utf-8") as file:
-            if(file.read() != datetime.today().strftime('%Y-%m-%d')):
+
+            last_backup_date = str(file.read().strip())
+            last_backup_date = last_backup_date.strip('\x00')
+        
+            current_day = str(datetime.today().strftime('%Y-%m-%d'))
+
+            if(last_backup_date != current_day):
                 archive_dir = util.create_archive_dir(1)
 
                 file.truncate(0)
 
-                file.write(datetime.today().strftime('%Y-%m-%d'))
+                file.write(current_day)
 
                 remote_archive_kana_dir = os.path.join(archive_dir, "Kana")
 
@@ -310,6 +320,8 @@ class remoteHandler():
                 for incorrect_typo in self.kana_incorrect_typos:
                     incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
                     util.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
+            else:
+                pass
 
 ##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -681,4 +693,40 @@ class remoteHandler():
 ##--------------------start-of-restore_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def restore_remote_backup(self):
-        pass
+
+        valid_backups = []
+
+        backup_to_restore_prompt = ""
+        
+        util.clear_console()
+        
+        print("Please select a backup to restore:\n")
+        
+        for item in os.listdir(self.remote_archives_dir):
+        
+            full_path = os.path.join(self.remote_archives_dir, item)
+        
+            if(os.path.isdir(full_path)):
+                print(item)
+                valid_backups.append(item)
+                backup_to_restore_prompt += item + "\n"
+        
+        backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible.\n\n"
+
+        backup_to_restore = util.user_confirm(backup_to_restore_prompt)
+
+        try: ## user confirm will throw an assertion error if  the user wants to cancel the backup restore.
+
+            if(backup_to_restore in valid_backups):
+                util.clear_console()
+
+                shutil.rmtree(self.kana_dir)
+
+                shutil.copytree(os.path.join(self.remote_archives_dir, backup_to_restore), self.fileEnsurer.config_dir, dirs_exist_ok=True)
+
+            else:
+                print("Invalid Backup\n")
+                time.sleep(1)
+
+        except AssertionError:
+            pass

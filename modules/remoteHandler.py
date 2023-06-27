@@ -615,7 +615,7 @@ class remoteHandler():
 
         """
         
-        fills the tables in remote storage with the local data\n
+        fills the tables in remote storage with the local data.\n
 
         Parameters:\n
         self (object - remoteHandler) : The handler object\n

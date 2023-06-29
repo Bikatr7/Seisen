@@ -138,6 +138,18 @@ class fileEnsurer:
 
    def ensure_kana_files(self) -> None:
 
+      """"
+      
+      Ensures that the kna files are present and read to be used.\n
+
+      Parameters:\n
+      self (object - fileEnsurer) : the fileEnsurer object\n
+
+      Returns:\n
+      None.\n
+
+      """
+
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## the path to where the typos for the kana file are located
@@ -158,7 +170,7 @@ class fileEnsurer:
 
       """
 
-      ensures that the lib files are present and ready to be used\n
+      ensures that the lib files are present and ready to be used.\n
 
       Parameters:\n
       self (object - fileEnsurer) : the fileEnsurer object\n

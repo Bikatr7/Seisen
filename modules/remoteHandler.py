@@ -31,13 +31,13 @@ class remoteHandler():
 
         """
         
-        Initializes the remoteHandler class\n
+        Initializes the remoteHandler class.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -92,6 +92,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
+        ## the database connection, can either be itself or none
         self.connection = self.initialize_database_connection()
 
 
@@ -101,13 +102,13 @@ class remoteHandler():
          
         """
         
-        marks a file in lib that the most recently attempted database connection has failed to connect\n
+        Marks a file in lib that the most recently attempted database connection has failed to connect.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -120,13 +121,13 @@ class remoteHandler():
          
         """
         
-        marks a file in lib that the most recently attempted database connection has succeeded\n
+        Marks a file in lib that the most recently attempted database connection has succeeded.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -139,8 +140,8 @@ class remoteHandler():
 
         """
         
-        loads the words from the database and replaces the local storage with it\n
-        Note that this will reset all the words locally stored on this device\n
+        loads the words from the database and replaces the local storage with it.\n
+        Note that this will reset all the words locally stored on this device.\n
         Use carefully!\n
 
         Parameters:\n
@@ -219,14 +220,15 @@ class remoteHandler():
 
         """
         
-        resets the remote storage\n
+        resets the remote storage with the local storage.\n
+        Note that this will reset all the words remotely stored on the connected database.\n
         Use Carefully!\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -240,17 +242,17 @@ class remoteHandler():
 
         """
 
-        Creates a connection to the database\n
+        Creates a connection to the database.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
-        host_name (str) : The host name of the database\n
-        user_name (str) : The user name of the database\n
-        user_password (str) : The password of the database\n
-        db_name (str) : The name of the database\n
+        self (object - remoteHandler) : The handler object.\n
+        host_name (str) : The host name of the database.\n
+        user_name (str) : The user name of the database.\n
+        user_password (str) : The password of the database.\n
+        db_name (str) : The name of the database.\n
 
         Returns:\n
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) : The connection object to the database\n
+        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
 
         """
 
@@ -268,13 +270,13 @@ class remoteHandler():
 
         """
         
-        Creates Seisen's daily remote backup\n
+        Creates Seisen's daily remote backup.\n
 
         Parameters:\n
-        self (object - Seisen) : the seisen object.\n
+        self (object - Seisen) : the Seisen object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -336,10 +338,10 @@ class remoteHandler():
         Sets up the database connection. If the user has already entered the password for the database, the program will use the saved password. If not, the program will ask the user for the password.\n
 
         Parameters:\n
-        None\n
+        None.\n
 
         Returns:\n
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) : The connection object to the database\n
+        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
 
         """
         
@@ -412,11 +414,11 @@ class remoteHandler():
         Executes a query to the database\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
-        query (str) : The query to be executed\n
+        self (object - remoteHandler) : The handler object.\n
+        query (str) : The query to be executed.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
         
@@ -431,14 +433,14 @@ class remoteHandler():
 
         """
 
-        reads a single column query from the database\n
+        reads a single column query from the database.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
-        query (str) : The query to be executed\n
+        self (object - remoteHandler) : The handler object.\n
+        query (str) : The query to be executed.\n
 
         Returns:\n
-        results_actual (list - string) : The results of the query\n
+        results_actual (list - string) : The results of the query.\n
 
         """
         
@@ -458,12 +460,12 @@ class remoteHandler():
 
         """
         
-        inserts data into a table\n
+        inserts data into a table.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
-        table_name (str) : The name of the table\n
-        data (dict) : The data to be inserted\n
+        self (object - remoteHandler) : The handler object.\n
+        table_name (str) : The name of the table.\n
+        data (dict) : The data to be inserted.\n
 
         Returns:\n
         None\n
@@ -483,14 +485,14 @@ class remoteHandler():
 
         """
 
-        reads a multi column query from the database\n
+        reads a multi column query from the database.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
-        query (str) : The query to be executed\n
+        self (object - remoteHandler) : The handler object.\n
+        query (str) : The query to be executed.\n
 
         Returns:\n
-        results_by_column (list - list) : The results of the query\n
+        results_by_column (list - list) : The results of the query.\n
 
         """
 
@@ -516,13 +518,13 @@ class remoteHandler():
 
         """
         
-        resets the remote storage\n
+        resets the remote storage.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -553,13 +555,13 @@ class remoteHandler():
 
         """
         
-        creates the tables for the remote storage\n
+        creates the tables for the remote storage.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -622,10 +624,10 @@ class remoteHandler():
         fills the tables in remote storage with the local data.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns\n
-        None\n
+        None.\n
 
         """
 
@@ -696,7 +698,19 @@ class remoteHandler():
 
 ##--------------------start-of-restore_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def restore_remote_backup(self):
+    def restore_remote_backup(self) -> None:
+
+        """
+        
+        Prompts a user to restore a remote backup and does so if valid.\n
+
+        Parameters:\n
+        self (object - remoteHandler) : the handler object\n
+
+        Returns:\n
+        None.\n
+
+        """
 
         valid_backups = []
 

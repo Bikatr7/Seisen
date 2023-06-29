@@ -27,13 +27,13 @@ class localHandler():
 
         """
         
-        Initializes the localHandler class\n
+        Initializes the localHandler class.\n
 
         Parameters:\n
-        self (object - localHandler) : The handler object\n
+        self (object - localHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -86,13 +86,13 @@ class localHandler():
         
         """
         
-        loads the words from the local storage\n
+        loads the words from the local storage.\n
 
         Parameters:\n
-        self (object - localHandler) : The handler object\n
+        self (object - localHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -142,13 +142,13 @@ class localHandler():
 
         """
 
-        Gets the list of all ids in local storage\n
+        Gets the list of all ids in local storage.\n
 
         Parameters:\n
-        self (object - localHandler) : The handler object\n
+        self (object - localHandler) : The handler object.\n
 
         Returns:\n
-        ids (list - string) : The list of all ids in the database\n
+        ids (list - string) : The list of all ids in the database.\n
 
         """
 
@@ -185,13 +185,13 @@ class localHandler():
 
         """
         
-        Creates Seisen's daily local backup\n
+        Creates Seisen's daily local backup.\n
 
         Parameters:\n
-        self (object - localHandler) : the local handler\n
+        self (object - localHandler) : the local handler.\n
 W
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -221,6 +221,18 @@ W
 ##--------------------start-of-restore_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def restore_local_backup(self):
+
+        """
+        
+        Prompts the user to restart a local backup and does so if valid.\n
+
+        Parameters:\n
+        self (localHandler - object) : the local handler object.\n
+
+        Returns:\n
+        None.\n
+
+        """
 
         valid_backups = []
 

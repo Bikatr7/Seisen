@@ -206,6 +206,10 @@ class remoteHandler():
                     if(incorrect_typo.word_type == int(KANA_WORD_TYPE) and incorrect_typo.word_id == kana.word_type):
                         kana.incorrect_typos.append(incorrect_typo)
 
+        ## local storage does not reset if there is no valid database connection
+        if(self.connection == None): 
+            return
+        
         clear_local_storage()
         reset_kana_relations()   
 

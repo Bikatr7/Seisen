@@ -26,16 +26,16 @@ class Seisen:
         Sets up the things needed to run Seisen.\n
 
         Parameters:\n
-        self (object - Seisen): the Seisen object\n
+        self (object - Seisen): the Seisen object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
         ##----------------------------------------------------------------objects----------------------------------------------------------------
 
-        ## ensures the files needed to run Seisen are present
+        ## ensures the files needed to run Seisen are present, as well as creates the fileEnsurer object so the remoteHandler object can be reset later if necessary
         self.fileEnsurer = fileEnsurer()
         
         ## sets up the handlers for Seisen data
@@ -52,10 +52,10 @@ class Seisen:
 
         ##----------------------------------------------------------------paths----------------------------------------------------------------
         
-        ## the path to the file that stores the password
+        ## the path to the file that stores the password/credentials
         self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
-        ## if remoteHandler failed to make a database connection
+        ## the path to the file that stores if remoteHandler failed to make a database connection
         self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
 
         ## path for the loop_data file
@@ -66,8 +66,10 @@ class Seisen:
         ## sets the title of the console window
         os.system("title " + "Seisen")
 
+        ## the current mode of seisen, "-1" is invalid and will force seisen to reprompt for a valid mode
         self.current_mode = -1
-        
+
+        ## boolean that holds whether the user has a valid internet connection
         self.hasValidConnection = util.check_update()
         
         ##----------------------------------------------------------------functions----------------------------------------------------------------
@@ -75,10 +77,13 @@ class Seisen:
         ## loads the words currently in local storage, by default this is just the kana
         self.localHandler.load_words_from_local_storage()
 
+        ## creates the daily local backup
         self.localHandler.create_daily_local_backup()
 
+        ## creates the daily remote backup
         self.remoteHandler.create_daily_remote_backup()
 
+        ## starts Seisen
         self.commence_main_loop()
 
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -87,13 +92,13 @@ class Seisen:
 
         """
 
-        changes Seisen's active mode\n
+        changes Seisen's active mode.\n
 
         Parameters:\n
-        None\n
+        None.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -147,13 +152,13 @@ class Seisen:
 
         """
         
-        tests the user on kana\n
+        tests the user on kana.\n
 
         Parameters:\n
-        self (object - Seisen) : The Seisen Object.\n
+        self (object - Seisen) : The Seisen object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
         
@@ -256,13 +261,17 @@ class Seisen:
 
         pathing = util.input_check(4, str(msvcrt.getch().decode()), 6, settings_menu_message)
 
-        if(pathing == "1"):
+
+        ## deletes the local storage and refreshes it with the remote storage, as well as re-loads the testing words
+        if(pathing == "1"): 
             self.remoteHandler.reset_local_storage()
             self.localHandler.load_words_from_local_storage()
 
+        ## resets the remote storage and refreshes it with the local storage
         elif(pathing == "2"):
             self.remoteHandler.reset_remote_storage()
 
+        ## prints current word ratings, currently only has kana
         elif(pathing == "3"):
             kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
             
@@ -271,6 +280,7 @@ class Seisen:
 
             util.pause_console()
 
+        ## trys to set up a new database, WILL replace any existing database
         elif(pathing == "4"):
             with open(self.database_connection_failed, "w+", encoding="utf-8") as file: ## forces the remote handler to try to attempt a database connection again
                 file.write("None")
@@ -283,13 +293,17 @@ class Seisen:
             print("Remote Handler has been reset...\n")
             time.sleep(1)
 
+        ## prompts the user to restore a local backup
         elif(pathing == "5"):
             self.localHandler.restore_local_backup()
+            self.localHandler.load_words_from_local_storage()
 
+        ## prompts the user to restore a remote backup
         elif(pathing == "6"):
             self.remoteHandler.restore_remote_backup()
             self.localHandler.load_words_from_local_storage()
             
+        ## if no valid option is selected, exit the change_settings() function
         else:
             self.current_mode = -1
 

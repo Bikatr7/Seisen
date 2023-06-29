@@ -15,7 +15,7 @@ class word:
 
     """
     
-    The Superclass of all words in Seisen, all testing material in Seisen is part of or inherits this class\n
+    The Superclass of all words in Seisen, all testing material in Seisen is part of or inherits this class.\n
     Kana also uses this class.\n
     
     """
@@ -29,16 +29,16 @@ class word:
         Initializes the word class\n
 
         Parameters:\n
-        self (object - word) : the object being initialized\n
-        incoming_id (int) : the id of the word\n
-        incoming_testing_material (str) : the testing material of the word\n
-        incoming_testing_material_answer_main (str) : the main answer of the testing material\n
-        incoming_testing_material_answer_main_all (list - str) : the list of all answers to the testing material of the word\n
-        incoming_incorrect_count (int) : the number of incorrect guesses of the word\n
-        incoming_correct_count (int) : the number of correct guesses of the word\n
+        self (object - word) : the object being initialized.\n
+        incoming_id (int) : the id of the word.\n
+        incoming_testing_material (str) : the testing material of the word.\n
+        incoming_testing_material_answer_main (str) : the main answer of the testing material.\n
+        incoming_testing_material_answer_main_all (list - str) : the list of all answers to the testing material of the word.\n
+        incoming_incorrect_count (int) : the number of incorrect guesses of the word.\n
+        incoming_correct_count (int) : the number of correct guesses of the word.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
@@ -79,13 +79,13 @@ class word:
 
         """
 
-        Logs a correct answer to the word\n
+        Logs a correct answer to the word.\n
 
         Parameters:\n
-        self (object - word) : the object being tested\n
+        self (object - word) : the word being tested.\n
 
         Returns:\n
-        None\n
+        None.\n
         
         """
 
@@ -97,13 +97,13 @@ class word:
 
         """
         
-        Logs an incorrect answer to the word\n
+        Logs an incorrect answer to the word.\n
 
         Parameters:\n
-        self (object - word) : the object being tested\n
+        self (object - word) : the object being tested.\n
 
         Returns:\n
-        None\n
+        None.\n
         
         """
 
@@ -115,24 +115,27 @@ class word:
 
         """
 
-        Logs a new typo to the word\n
+        Logs a new typo to the word.\n
 
         Parameters:\n
-        self (object - word) : the object being tested\n
-        typo (str) : the typo to be logged\n
-        handler (object - localHandler) : the localHandler object\n
+        self (object - word) : the word being tested\n
+        typo (str) : the typo to be logged.\n
+        handler (object - localHandler) : the localHandler object.\n
 
         Returns:\n
-        None\n
+        None.\n
         
         """
 
+        ## gets a new id for the typo
         new_typo_id = util.get_new_id(handler.get_list_of_all_ids(1))
 
         new_typo = typo_blueprint(self.word_type, new_typo_id, self.word_id, typo)
 
+        ## updates local storage so the typo will be saved
         util.write_sei_line(handler.kana_typos_file, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
+        ## updates the current session with the typo
         self.typos.append(new_typo)
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -141,21 +144,24 @@ class word:
 
         """
         
-        Logs a new incorrect typo to the word\n
+        Logs a new incorrect typo to the word.\n
 
         Parameters:\n
-        self (object - word) : the object being tested\n
-        incorrect_typo (str) : the incorrect_typo to be logged\n
-        handler (object - localHandler) : the localHandler object\n
+        self (object - word) : the object being tested.\n
+        incorrect_typo (str) : the incorrect_typo to be logged.\n
+        handler (object - localHandler) : the localHandler object.\n
         
         """
 
+        ## gets a new id for the incorrect typo
         new_incorrect_typo_id = util.get_new_id(handler.get_list_of_all_ids(2))
 
         new_incorrect_typo = incorrect_typo_blueprint(self.word_type, new_incorrect_typo_id, self.word_id, incorrect_typo)
 
+        ## updates local storage so the incorrect typo will be saved
         util.write_sei_line(handler.kana_incorrect_typos_file, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
 
+        ## updates the current session with the incorrect typo
         self.incorrect_typos.append(new_incorrect_typo)
 
 ##--------------------start-of-check_answers_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -164,17 +170,17 @@ class word:
 
         """
         
-        Checks if the user_guess is correct or incorrect\n
+        Checks if the user_guess is correct or incorrect.\n
 
         Parameters:\n
-        self (object - word) : the word we're checking answers for\n
-        user_guess (str) : the user's guess\n
-        prompt (str) : the prompt that was given to the user\n
-        handler (object - localHandler) : the local handler
+        self (object - word) : the word we're checking answers for.\n
+        user_guess (str) : the user's guess.\n
+        prompt (str) : the prompt that was given to the user.\n
+        handler (object - localHandler) : the localHandler object.
 
         Returns:\n
-        bool or None : if the user's guess is correct or incorrect, or a None value iof the user decided to skip the question\n 
-        user_guess (str) : the user's guess after being corrected for typos\n
+        bool or None : if the user's guess is correct or incorrect, or a None value iof the user decided to skip the question.\n 
+        user_guess (str) : the user's guess after being corrected for typos.\n
 
         """
 

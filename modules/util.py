@@ -19,16 +19,16 @@ def input_check(input_type:int, user_input:str, number_of_choices:int, input_pro
 
     """
 
-    Checks the user's input to make sure it is valid for the given input type\n
+    Checks the user's input to make sure it is valid for the given input type.\n
 
     Parameters:\n
-    input_type (int) : the type of input we are checking\n
-    user_input (str) : the user's input\n
-    number_of_choices (int) : the number of choices the user has\n
-    input_prompt_message (str)  : the prompt to be displayed to the user\n
+    input_type (int) : the type of input we are checking.\n
+    user_input (str) : the user's input.\n
+    number_of_choices (int) : the number of choices the user has.\n
+    input_prompt_message (str)  : the prompt to be displayed to the user.\n
 
     Returns:\n
-    new_user_input (str) : the user's input\n
+    new_user_input (str) : the user's input.\n
 
     """
 
@@ -76,13 +76,13 @@ def clear_console() -> None:
 
     """
 
-    clears the console\n
+    clears the console.\n
 
     Parameters:\n
-    None\n
+    None.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
 
@@ -94,10 +94,10 @@ def pause_console(message:str="Press enter to continue . . .") -> None:
 
     """
 
-    pauses the console\n
+    pauses the console.\n
 
     Parameters:\n
-    message (str) : the message that will be displayed when the console is paused\n
+    message (str - optional) : the message that will be displayed when the console is paused.\n
 
     Returns:\n
     None\n
@@ -115,13 +115,13 @@ def clear_stream() -> None:
 
     """
 
-    Clears the console stream\n
+    Clears the console stream.\n
 
     Parameters:\n
-    None\n
+    None.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
     
@@ -136,13 +136,13 @@ def user_confirm(prompt:str) -> str:
 
     """
 
-    Prompts the user to confirm their input\n
+    Prompts the user to confirm their input.\n
 
     Parameters:\n
-    prompt (str) : the prompt to be displayed to the user\n
+    prompt (str) : the prompt to be displayed to the user.\n
 
     Returns:\n
-    user_input (str) : the user's input\n
+    user_input (str) : the user's input.\n
 
     """
 
@@ -192,14 +192,14 @@ def write_sei_line(sei_file_path:str, items_to_write:typing.List[str]) -> None:
 
     """
     
-    Writes the given items to the given sei file\n
+    Writes the given items to the given sei file.\n
 
     Parameters:\n
-    sei_file_path (str) : the path to the sei file\n
-    items_to_write (list - str) : the items to be written to the sei file\n
+    sei_file_path (str) : the path to the sei file.\n
+    items_to_write (list - str) : the items to be written to the sei file.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
 
@@ -223,7 +223,7 @@ def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_re
     value_to_replace_to (str) : The value to replace the edit value with.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
 
@@ -248,15 +248,15 @@ def read_sei_file(sei_file_path:str, target_line:int, column:int) -> str:
 
     """
 
-    Reads the given sei file and returns the value of the given column\n
+    Reads the given sei file and returns the value of the given column.\n
     
     Parameters:\n
-    sei_file_path (str) : the path to the sei file\n
-    target_line (int) : the line number of the sei file
-    column (int) : the column we are reading\n
+    sei_file_path (str) : the path to the sei file.\n
+    target_line (int) : the line number of the sei file.\n
+    column (int) : the column we are reading.\n
 
     Returns:\n
-    file_details[column-1] : the value of the given column\n
+    file_details[column-1] : the value of the given column.\n
 
     """
 
@@ -288,13 +288,13 @@ def get_new_id(id_list:typing.List[int]) -> int:
 
     """
 
-    Generate's a new id\n 
+    Generates a new id.\n 
 
     Parameters:\n
-    id_list (list - string) : a list of already active ids\n
+    id_list (list - string) : a list of already active ids.\n
 
     Returns:\n
-    new_id (int) : a new id\n
+    new_id (int) : a new id.\n
 
     """
 
@@ -318,14 +318,14 @@ def levenshtein(string_one:str, string_two:str) -> int:
 
     """
 
-    Compares two strings for similarity\n
+    Compares two strings for similarity.\n
 
     Parameters:\n
-    string_one (str) : the first string to compare\n
-    string_two (str) : the second string to compare\n
+    string_one (str) : the first string to compare.\n
+    string_two (str) : the second string to compare.\n
 
     Returns:\n
-    distance[sLength1][sLength2] (int) : the minimum number of single-character edits required to transform string_one into string_two\n
+    distance[sLength1][sLength2] (int) : the minimum number of single-character edits required to transform string_one into string_two.\n
 
     """
 
@@ -362,13 +362,13 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
     checks if a user_guess is a typo or not\n
 
     Parameters:\n
-    word (object - word) : the word we're checking typos for\n
-    user_guess (str) : the user's guess\n
-    prompt (str) : the prompt that was given to the user\n
-    handler (object - localHandler) : the local handler
+    word (object - word) : the word we're checking typos for.\n
+    user_guess (str) : the user's guess.\n
+    prompt (str) : the prompt that was given to the user.\n
+    handler (object - localHandler) : the localHandler object.\n
     
     Returns:\n
-    final_answer (string) the user's final answer after being corrected for typos\n
+    final_answer (string) the user's final answer after being corrected for typos.\n
 
     """
 
@@ -416,7 +416,7 @@ def standard_create_directory(directory_path:str):
     directory_path (str) : path to the directory to be created.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
 
@@ -435,10 +435,10 @@ def modified_create_directory(directory_path:str, path_to_check:str):
 
     Parameters:\n
     directory_path (str) : path to the directory to be created.\n
-    path_to_check (str) : path to check if it is blank\n
+    path_to_check (str) : path to check if it is blank.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
 
@@ -459,7 +459,7 @@ def standard_create_file(file_path:str):
     file_path (str) : path to the file to be created.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
 
@@ -478,10 +478,10 @@ def modified_create_file(file_path:str, content_to_write:str):
 
     Parameters:\n
     file_path (str) : path to the file to be created.\n
-    content to write (str) : content to be written to the file\n
+    content to write (str) : content to be written to the file.\n
 
     Returns:\n
-    None\n
+    None.\n
 
     """
 
@@ -496,13 +496,13 @@ def create_archive_dir(type_of_archive:int):
 
     """
     
-    Creates the archive directory based on the given type of archive\n
+    Creates the archive directory based on the given type of archive.\n
 
     Parameters:\n
-    type_of_archive (int) : The type of archive\n
+    type_of_archive (int) : The type of archive.\n
 
     Returns:\n
-    archive_directory (str) : The path to the newly created archive directory\n
+    archive_directory (str) : The path to the newly created archive directory.\n
 
     """
 
@@ -541,15 +541,15 @@ def check_update() -> bool:
 
     """
 
-    determines if Seisen has a new latest release, and confirms if an internet connection is present or not\n
+    determines if Seisen has a new latest release, and confirms if an internet connection is present or not.\n
 
     Parameters:\n
-    None\n
+    None.\n
 
     Returns:\n
-    True if the user has an internet connection, False if the user does not\n
+    True if the user has an internet connection, False if the user does not.\n
 
-    """
+    """s
     
     try:
     

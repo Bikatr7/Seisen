@@ -204,8 +204,6 @@ W
 
             if(last_backup_date != current_day):
                 
-                print(current_day == last_backup_date)
-
                 archive_dir = util.create_archive_dir(2)
 
                 shutil.copytree(self.kana_dir, os.path.join(archive_dir, "Kana"))

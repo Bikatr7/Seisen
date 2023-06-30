@@ -60,6 +60,9 @@ class remoteHandler():
         ## archives for the local files
         self.remote_archives_dir = os.path.join(self.archives_dir, "Database")
 
+        ## archives for the local-Database files
+        self.local_remote_archives_dir = os.path.join(self.archives_dir, "LocalRemote")
+
         ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
@@ -75,6 +78,9 @@ class remoteHandler():
 
         ## contains the date of the last local backup
         self.last_remote_backup_file = os.path.join(self.remote_archives_dir, "last_remote_backup.txt")
+
+        ## contains the date of the last time the database was overwritten with local
+        self.last_local_remote_backup_file = os.path.join(self.local_remote_archives_dir, "last_local_remote_backup.txt")
 
         ##----------------------------------------------------------------variables----------------------------------------------------------------
         
@@ -615,6 +621,8 @@ class remoteHandler():
         self.execute_query(create_kana_incorrect_typos_query)
         self.execute_query(create_kana_csep_query)
 
+        util.pause_console()
+
 ##--------------------start-of-fill_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def fill_remote_storage(self) -> None:
@@ -748,3 +756,28 @@ class remoteHandler():
 
         except AssertionError:
             pass
+
+
+##--------------------start-of-local_remote_overwrite()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def local_remote_overwrite(self) -> None:
+
+        if(self.connection is None):
+            return
+        
+        with open(self.last_local_remote_backup_file, 'r+', encoding="utf-8") as file:
+
+            last_backup_date = str(file.read().strip())
+            last_backup_date = last_backup_date.strip('\x00')
+        
+            current_day = str(datetime.today().strftime('%Y-%m-%d'))
+
+            if(last_backup_date != current_day):
+                print("Overwriting Remote with Local")
+                time.sleep(1)
+
+                file.truncate(0)
+                
+                file.write(current_day)
+
+                self.reset_remote_storage()

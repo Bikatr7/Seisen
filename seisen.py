@@ -83,6 +83,9 @@ class Seisen:
         ## creates the daily remote backup
         self.remoteHandler.create_daily_remote_backup()
 
+        ## overwrites remote with local
+        self.remoteHandler.local_remote_overwrite()
+
         ## starts Seisen
         self.commence_main_loop()
 

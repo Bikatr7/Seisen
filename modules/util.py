@@ -549,7 +549,7 @@ def check_update() -> bool:
     Returns:\n
     True if the user has an internet connection, False if the user does not.\n
 
-    """s
+    """
     
     try:
     

@@ -4,6 +4,7 @@
 - [Notes](#notes)
 - [Dependencies](#dependencies)
 - [Quick Start](#quickstart)
+- [Settings](#settings)
 - [Setting Up A MySQL Database](#SUAMSD)
 - [License](#license)
 - [Contact](#contact)
@@ -31,14 +32,32 @@ or see requirements.txt
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Quick Start**<a name="quickstart"></a>
 
-Assuming you will not be using a database connection, you should be able to get started by simply running seisen.py and typing 1.
+Run seisen.py
 
+Upon opening the file, you will be prompted to enter database credentials, if you have these go ahead and enter these, otherwise enter whatever.
+
+If you do not have credentials, Seisen will throw an error but you can ignore and continue to the main menu.
+
+Once at the main menu, press 1 and begin to answer questions.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+**Settings**<a name="settings"></a>
+
+pressing 2 will enter the settings menu. The settings are as follows.
+
+1. Reset Local Storage - this will reset your Local Storage with your Remote Storage (database), will do nothing if no database is present.
+2. Reset Remote Storage - this will reset your Remote Storage with your Local Storage, will do nothing if no database is present.
+3. See Score Ratings - this will print the likelihood of each kana being tested.
+4. Add New Database - this will cause Seisen to prompt for a new database.
+5. Restore Local Backup - this will cause Seisen to prompt the user to select an old Seisen Local Backup
+6. Restore Remote Backup - this will cause Seisen to prompt the user to select an old Seisen Remote Backup
+   
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Setting Up A MySQL Database**<a name="SUAMSD"></a>
 
 Seisen uses a backup data method using MySQL, once Seisen is opened for the first time it will prompt for A database name and password, if you have these already feel free to enter these and Seisen will take care of the rest.
 
-If not, you can always set this up latter in settings by typing 2.
+If not, you can always set this up latter in settings by typing 2 and then press 4.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **License**<a name="license"></a>

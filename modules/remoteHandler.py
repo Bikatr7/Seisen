@@ -621,8 +621,6 @@ class remoteHandler():
         self.execute_query(create_kana_incorrect_typos_query)
         self.execute_query(create_kana_csep_query)
 
-        util.pause_console()
-
 ##--------------------start-of-fill_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def fill_remote_storage(self) -> None:

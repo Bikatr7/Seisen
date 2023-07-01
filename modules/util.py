@@ -552,6 +552,8 @@ def check_update() -> bool:
     """
     
     try:
+
+        clear_console()
     
         CURRENT_VERSION = "v1.0.0" 
 

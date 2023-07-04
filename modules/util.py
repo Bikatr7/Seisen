@@ -147,7 +147,7 @@ def user_confirm(prompt:str) -> str:
     """
 
     confirmation = "Just To Confirm You Selected "
-    options = " Press 1 To Confirm or 2 To Retry or z to cancel"
+    options = " (Press 1 To Confirm, 2 To Retry, z to skip, or q to quit)\n"
     output = ""
     user_input = ""
     
@@ -159,7 +159,7 @@ def user_confirm(prompt:str) -> str:
         
         clear_stream()
         
-        user_input = input(prompt)
+        user_input = input(prompt + options)
         
         if(user_input == "q"): ## if the user wants to quit do so
             exit()

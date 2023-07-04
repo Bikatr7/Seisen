@@ -372,18 +372,19 @@ class remoteHandler():
             print("Used saved pass in " + self.password_file)
 
         except: ## else try to get credentials manually
-                
-            password = input("Please enter the root password for your local database you have\n")
-
-            util.clear_console()
-
-            database_name = input("Please enter the name of the database you have\n")
-
-            credentials = [
-                        password,
-                      database_name]
 
             try: ## if valid save the credentials
+
+                database_name = util.user_confirm("Please enter the name of the database you have")
+
+                util.clear_console()
+
+                password = util.user_confirm("Please enter the root password for your local database you have")
+
+                credentials = [
+                            password,
+                        database_name]
+                
 
                 connection = self.create_database_connection("localhost", "root", password, database_name)
                             
@@ -395,7 +396,15 @@ class remoteHandler():
 
                 with open(self.password_file, "w+",encoding='utf-8') as file:
                     file.writelines(credentials)
-                    
+
+            except AssertionError:
+                
+                util.clear_console()
+
+                self.start_marked_failed_database_connection()
+
+                connection = None
+
             except Exception as e: ## if invalid exit
                         
                 util.clear_console()

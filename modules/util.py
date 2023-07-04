@@ -555,15 +555,21 @@ def check_update() -> bool:
 
         clear_console()
     
-        CURRENT_VERSION = "v1.0.1" 
+        CURRENT_VERSION = "v1.0.0" 
 
         response = requests.get("https://api.github.com/repos/Seinuve/Seisen/releases/latest")
         latestVersion = response.json()["tag_name"]
+        release_notes = response.json()["body"]
 
         if(latestVersion != CURRENT_VERSION):
             print("There is a new update for Seisen (" + latestVersion + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Seinuve/Seisen/releases/latest \n")
-            pause_console()
-            clear_console()
+
+
+        if(release_notes):
+            print("Release notes:\n\n" + release_notes + '\n')
+
+        pause_console()
+        clear_console()
 
         return True
 

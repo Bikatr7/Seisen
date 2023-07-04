@@ -5,6 +5,7 @@ import os
 import time
 import typing
 import shutil
+import base64
 
 ## third party modules
 from mysql.connector import pooling
@@ -101,7 +102,225 @@ class remoteHandler():
         ## the database connection, can either be itself or none
         self.connection = self.initialize_database_connection()
 
+##--------------------start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    def execute_query(self, query:str) -> None:
+
+        """
+
+        Executes a query to the database\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object.\n
+        query (str) : The query to be executed.\n
+
+        Returns:\n
+        None.\n
+
+        """
+        
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        
+        self.connection.commit()
+
+##--------------------start-of-read_single_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def read_single_column_query(self, query:str) -> typing.List[str]:
+
+        """
+
+        reads a single column query from the database.\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object.\n
+        query (str) : The query to be executed.\n
+
+        Returns:\n
+        results_actual (list - string) : The results of the query.\n
+
+        """
+        
+        cursor = self.connection.cursor()
+        results_actual = []
+
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        results_actual = [str(i[0]) for i in results]
+
+        return results_actual
+    
+##--------------------start-of-insert_into_table()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def insert_into_table(self, table_name, data) -> None:
+
+        """
+        
+        inserts data into a table.\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object.\n
+        table_name (str) : The name of the table.\n
+        data (dict) : The data to be inserted.\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        columns = ", ".join(data.keys())
+        values = ", ".join([f"'{value}'" for value in data.values()])
+
+        query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
+
+        self.execute_query(query)
+
+##--------------------start-of-read_multi_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def read_multi_column_query(self, query:str) -> typing.List[typing.List[str]]:
+
+        """
+
+        reads a multi column query from the database.\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object.\n
+        query (str) : The query to be executed.\n
+
+        Returns:\n
+        results_by_column (list - list) : The results of the query.\n
+
+        """
+
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+
+        results = cursor.fetchall()
+
+        if(len(results) == 0):
+            return [[]] * cursor.description.__len__() if cursor.description else [[]]
+
+        results_by_column = [[] for i in range(len(results[0]))]
+        
+        for row in results:
+            for i, value in enumerate(row):
+                results_by_column[i].append(str(value))
+
+        return results_by_column
+    
+##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def create_database_connection(self, host_name:str, user_name:str, db_name:str, user_password:str) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection]:
+
+        """
+
+        Creates a connection to the database.\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object.\n
+        host_name (str) : The host name of the database.\n
+        user_name (str) : The user name of the database.\n
+        db_name (str) : The name of the database.\n
+        user_password (str) : The password of the database.\n
+
+        Returns:\n
+        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
+
+        """
+
+        connection = mysql.connector.connect(
+            host=host_name,
+            user=user_name,
+            database= db_name,
+            passwd=user_password)
+
+        return connection
+
+##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def initialize_database_connection(self) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection, None]:
+
+        """
+
+        Sets up the database connection. If the user has already entered the password for the database, the program will use the saved password. If not, the program will ask the user for the password.\n
+
+        Parameters:\n
+        None.\n
+
+        Returns:\n
+        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
+
+        """
+        
+        with open(self.database_connection_failed, "r+", encoding="utf-8") as file:
+            if(file.read().strip() == "true"):
+                print("Database connection has failed previously.... skipping\n")
+                time.sleep(.1)
+                return None
+            
+        self.start_marked_succeeded_database_connection()
+
+        try:
+
+            with open(self.password_file, 'r', encoding='utf-8') as file:  ## get saved connection credentials if exists
+                credentials = file.readlines()
+
+                database_name = base64.b64decode((credentials[0].strip()).encode('utf-8')).decode('utf-8')
+                password = base64.b64decode((credentials[1].strip()).encode('utf-8')).decode('utf-8')
+
+            connection = self.create_database_connection("localhost", "root", database_name, password)
+
+            print("Used saved pass in " + self.password_file)
+
+        except: ## else try to get credentials manually
+
+            try: ## if valid save the credentials
+
+                database_name = util.user_confirm("Please enter the name of the database you have")
+
+                util.clear_console()
+
+                password = util.user_confirm("Please enter the root password for your local database you have")
+
+                credentials = [
+                    base64.b64encode(database_name.encode('utf-8')).decode('utf-8'),
+                        base64.b64encode(password.encode('utf-8')).decode('utf-8')]
+                
+                connection = self.create_database_connection("localhost", "root", database_name, password)
+                            
+                util.standard_create_file(self.password_file) 
+
+                time.sleep(0.1)
+
+                credentials = [x + '\n' for x  in credentials]
+
+                with open(self.password_file, "w+",encoding='utf-8') as file:
+                    file.writelines(credentials)
+
+            except AssertionError:
+                
+                util.clear_console()
+
+                self.start_marked_failed_database_connection()
+
+                connection = None
+
+            except Exception as e: ## if invalid exit
+                        
+                util.clear_console()
+
+                print(str(e))
+                print("Error with creating connection object, please double check your password and database name\n")
+
+                self.start_marked_failed_database_connection()
+
+                connection = None
+
+                util.pause_console()
+            
+        return connection
+    
 ##--------------------start-of-mark_failed_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def start_marked_failed_database_connection(self) -> None:
@@ -219,7 +438,7 @@ class remoteHandler():
         
         clear_local_storage()
         reset_kana_relations()   
-
+      
 ##--------------------start-of-reset_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def reset_remote_storage(self):
@@ -241,291 +460,6 @@ class remoteHandler():
         self.delete_remote_storage()
         self.create_remote_storage()
         self.fill_remote_storage()
-
-##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def create_database_connection(self, host_name:str, user_name:str, user_password:str, db_name:str) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection]:
-
-        """
-
-        Creates a connection to the database.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        host_name (str) : The host name of the database.\n
-        user_name (str) : The user name of the database.\n
-        user_password (str) : The password of the database.\n
-        db_name (str) : The name of the database.\n
-
-        Returns:\n
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
-
-        """
-
-        connection = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            passwd=user_password,
-            database= db_name)
-
-        return connection
-    
-##--------------------start-of-create_daily_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def create_daily_remote_backup(self):
-
-        """
-        
-        Creates Seisen's daily remote backup.\n
-
-        Parameters:\n
-        self (object - Seisen) : the Seisen object.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        if(self.connection is None):
-            return
-
-        with open(self.last_remote_backup_file, 'r+', encoding="utf-8") as file:
-
-            last_backup_date = str(file.read().strip())
-            last_backup_date = last_backup_date.strip('\x00')
-        
-            current_day = str(datetime.today().strftime('%Y-%m-%d'))
-
-            if(last_backup_date != current_day):
-                archive_dir = util.create_archive_dir(1)
-
-                file.truncate(0)
-
-                file.write(current_day)
-
-                remote_archive_kana_dir = os.path.join(archive_dir, "Kana")
-
-                remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.txt")
-                remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana typos.txt")
-                remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana incorrect typos.txt")
-
-                list_of_all_accepted_answers = []
-
-                util.standard_create_directory(remote_archive_kana_dir)
-
-                word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
-                typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
-                incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
-
-                self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
-                self.kana_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
-                self.kana_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
-
-                for kana in self.kana:
-                    word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                    util.write_sei_line(remote_archive_kana_path, word_values)
-
-                for typo in self.kana_typos:
-                    typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                    util.write_sei_line(remote_archive_kana_typos_path, typo_values)
-
-                for incorrect_typo in self.kana_incorrect_typos:
-                    incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                    util.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
-            else:
-                pass
-
-##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def initialize_database_connection(self) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection, None]:
-
-        """
-
-        Sets up the database connection. If the user has already entered the password for the database, the program will use the saved password. If not, the program will ask the user for the password.\n
-
-        Parameters:\n
-        None.\n
-
-        Returns:\n
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
-
-        """
-        
-        with open(self.database_connection_failed, "r+", encoding="utf-8") as file:
-            if(file.read().strip() == "true"):
-                print("Database connection has failed previously.... skipping\n")
-                time.sleep(.1)
-                return None
-            
-        self.start_marked_succeeded_database_connection()
-
-        try:
-
-            with open(self.password_file, 'r', encoding='utf-8') as file:  ## get saved connection credentials if exists
-                credentials = file.readlines()
-
-                password = credentials[0].strip()
-                database_name = credentials[1].strip()
-
-            connection = self.create_database_connection("localhost", "root", password, database_name)
-
-            print("Used saved pass in " + self.password_file)
-
-        except: ## else try to get credentials manually
-
-            try: ## if valid save the credentials
-
-                database_name = util.user_confirm("Please enter the name of the database you have")
-
-                util.clear_console()
-
-                password = util.user_confirm("Please enter the root password for your local database you have")
-
-                credentials = [
-                            password,
-                        database_name]
-                
-
-                connection = self.create_database_connection("localhost", "root", password, database_name)
-                            
-                util.standard_create_file(self.password_file) 
-
-                time.sleep(0.1)
-
-                credentials = [x + '\n' for x  in credentials]
-
-                with open(self.password_file, "w+",encoding='utf-8') as file:
-                    file.writelines(credentials)
-
-            except AssertionError:
-                
-                util.clear_console()
-
-                self.start_marked_failed_database_connection()
-
-                connection = None
-
-            except Exception as e: ## if invalid exit
-                        
-                util.clear_console()
-
-                print(str(e))
-                print("Error with creating connection object, please double check your password and database name\n")
-
-                self.start_marked_failed_database_connection()
-
-                connection = None
-
-                util.pause_console()
-            
-        return connection
-
-##--------------------start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def execute_query(self, query:str) -> None:
-
-        """
-
-        Executes a query to the database\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        query (str) : The query to be executed.\n
-
-        Returns:\n
-        None.\n
-
-        """
-        
-        cursor = self.connection.cursor()
-        cursor.execute(query)
-        
-        self.connection.commit()
-
-##--------------------start-of-read_single_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def read_single_column_query(self, query:str) -> typing.List[str]:
-
-        """
-
-        reads a single column query from the database.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        query (str) : The query to be executed.\n
-
-        Returns:\n
-        results_actual (list - string) : The results of the query.\n
-
-        """
-        
-        cursor = self.connection.cursor()
-        results_actual = []
-
-        cursor.execute(query)
-        results = cursor.fetchall()
-
-        results_actual = [str(i[0]) for i in results]
-
-        return results_actual
-    
-##--------------------start-of-insert_into_table()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def insert_into_table(self, table_name, data) -> None:
-
-        """
-        
-        inserts data into a table.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        table_name (str) : The name of the table.\n
-        data (dict) : The data to be inserted.\n
-
-        Returns:\n
-        None\n
-
-        """
-
-        columns = ", ".join(data.keys())
-        values = ", ".join([f"'{value}'" for value in data.values()])
-
-        query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
-
-        self.execute_query(query)
-
-##--------------------start-of-read_multi_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def read_multi_column_query(self, query:str) -> typing.List[typing.List[str]]:
-
-        """
-
-        reads a multi column query from the database.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        query (str) : The query to be executed.\n
-
-        Returns:\n
-        results_by_column (list - list) : The results of the query.\n
-
-        """
-
-        cursor = self.connection.cursor()
-        cursor.execute(query)
-
-        results = cursor.fetchall()
-
-        if(len(results) == 0):
-            return [[]] * cursor.description.__len__() if cursor.description else [[]]
-
-        results_by_column = [[] for i in range(len(results[0]))]
-        
-        for row in results:
-            for i, value in enumerate(row):
-                results_by_column[i].append(str(value))
-
-        return results_by_column
 
 ##--------------------start-of-delete_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -711,6 +645,71 @@ class remoteHandler():
         fill_kana_typos()
         fill_kana_incorrect_typos()
 
+##--------------------start-of-create_daily_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def create_daily_remote_backup(self):
+
+        """
+        
+        Creates Seisen's daily remote backup.\n
+
+        Parameters:\n
+        self (object - Seisen) : the Seisen object.\n
+
+        Returns:\n
+        None.\n
+
+        """
+
+        if(self.connection is None):
+            return
+
+        with open(self.last_remote_backup_file, 'r+', encoding="utf-8") as file:
+
+            last_backup_date = str(file.read().strip())
+            last_backup_date = last_backup_date.strip('\x00')
+        
+            current_day = str(datetime.today().strftime('%Y-%m-%d'))
+
+            if(last_backup_date != current_day):
+                archive_dir = util.create_archive_dir(1)
+
+                file.truncate(0)
+
+                file.write(current_day.strip())
+
+                remote_archive_kana_dir = os.path.join(archive_dir, "Kana")
+
+                remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.txt")
+                remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana typos.txt")
+                remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana incorrect typos.txt")
+
+                list_of_all_accepted_answers = []
+
+                util.standard_create_directory(remote_archive_kana_dir)
+
+                word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
+                typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
+                incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
+
+                self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
+                self.kana_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
+                self.kana_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
+
+                for kana in self.kana:
+                    word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
+                    util.write_sei_line(remote_archive_kana_path, word_values)
+
+                for typo in self.kana_typos:
+                    typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
+                    util.write_sei_line(remote_archive_kana_typos_path, typo_values)
+
+                for incorrect_typo in self.kana_incorrect_typos:
+                    incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
+                    util.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
+            else:
+                pass
+  
 ##--------------------start-of-restore_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def restore_remote_backup(self) -> None:
@@ -764,7 +763,6 @@ class remoteHandler():
         except AssertionError:
             pass
 
-
 ##--------------------start-of-local_remote_overwrite()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def local_remote_overwrite(self) -> None:
@@ -785,6 +783,6 @@ class remoteHandler():
 
                 file.truncate(0)
                 
-                file.write(current_day)
+                file.write(current_day.strip())
 
                 self.reset_remote_storage()

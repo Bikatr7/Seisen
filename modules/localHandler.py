@@ -210,7 +210,7 @@ W
 
                 file.truncate(0)
                 
-                file.write(current_day)
+                file.write(current_day.strip())
             
             else:
                 pass

@@ -237,7 +237,7 @@ def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_re
 
     new_line = ",".join(items)
 
-    lines[target_line - 1] = new_line + ","
+    lines[target_line - 1] = new_line
 
     with open(file_path, "w", encoding="utf8") as file:
         file.writelines(lines)

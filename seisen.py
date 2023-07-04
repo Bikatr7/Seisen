@@ -203,15 +203,15 @@ class Seisen:
         if(isCorrect == True):
             number_of_correct_rounds+=1
             self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is correct.\n"
-            kana_to_test.log_correct_answer()                
+            kana_to_test.log_correct_answer(self.localHandler)              
 
         elif(isCorrect == False):
             self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is incorrect, the correct answer was " + kana_to_test.testing_material_answer_main + ".\n"
-            kana_to_test.log_incorrect_answer()
+            kana_to_test.log_incorrect_answer(self.localHandler)
 
         else:
             self.current_question_prompt += "\n\nSkipped.\n"
-            kana_to_test.log_incorrect_answer() 
+            kana_to_test.log_incorrect_answer(self.localHandler) 
 
         for answer in kana_to_test.testing_material_answer_all: ## prints the other accepted answers 
 

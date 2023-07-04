@@ -34,11 +34,11 @@ or see requirements.txt
 
 Run seisen.py
 
-Upon opening the file, you will be prompted to enter database credentials, if you have these go ahead and enter these, otherwise enter whatever.
+Upon opening the file, you will be prompted to enter database credentials, if you have these go ahead and enter these, otherwise enter z to skip.
 
-If you do not have credentials, Seisen will throw an error but you can ignore and continue to the main menu.
+Once at the main menu, press 1 and begin to quiz yourself on kana.
 
-Once at the main menu, press 1 and begin to answer questions.
+The average user will have no need to use the settings options unless they want to see the score ratings.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Settings**<a name="settings"></a>

@@ -555,7 +555,7 @@ def check_update() -> bool:
 
         clear_console()
     
-        CURRENT_VERSION = "v1.0.0" 
+        CURRENT_VERSION = "v1.0.1" 
 
         response = requests.get("https://api.github.com/repos/Seinuve/Seisen/releases/latest")
         latestVersion = response.json()["tag_name"]

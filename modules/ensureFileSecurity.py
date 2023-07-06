@@ -135,7 +135,6 @@ class fileEnsurer:
    
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-
       util.standard_create_directory(loop_data_dir)
 
       util.modified_create_file(loop_data_path, "0,0,0,0,")
@@ -169,7 +168,6 @@ class fileEnsurer:
       util.standard_create_file(kana_typos_path)
 
       util.standard_create_file(kana_incorrect_typos_path)
-
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

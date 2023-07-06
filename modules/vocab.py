@@ -50,4 +50,4 @@ class vocab(words.word):
 
         self.isKanji = incoming_kanji_flag
 
-        self.word_type = 3
+        self.word_type = "3"

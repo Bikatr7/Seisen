@@ -62,7 +62,7 @@ class word:
         self.correct_count = incoming_correct_count
 
         ## the type of the word
-        self.word_type = 2 ## is currently numerical, plan to change this later
+        self.word_type = "2" ## is currently numerical, plan to change this later
 
         ## the likelihood of the word being selected for testing
         self.likelihood = 0.0
@@ -98,16 +98,16 @@ class word:
 
         self.correct_count += 1
 
-        with open(handler.kana_file, 'r', encoding="utf-8") as file:
+        with open(handler.kana_path, 'r', encoding="utf-8") as file:
             kana_lines = file.readlines()
 
         for i, line in enumerate(kana_lines):
-            kana_ids.append(util.read_sei_file(handler.kana_file, i+1,1))
+            kana_ids.append(util.read_sei_file(handler.kana_path, i+1,1))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = kana_ids.index(str(self.word_id)) + 1
 
-        util.edit_sei_line(handler.kana_file, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.correct_count)
+        util.edit_sei_line(handler.kana_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.correct_count)
 
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -135,16 +135,16 @@ class word:
 
         self.incorrect_count += 1
 
-        with open(handler.kana_file, 'r', encoding="utf-8") as file:
+        with open(handler.kana_path, 'r', encoding="utf-8") as file:
             kana_lines = file.readlines()
 
         for i, line in enumerate(kana_lines):
-            kana_ids.append(util.read_sei_file(handler.kana_file, i+1,1))
+            kana_ids.append(util.read_sei_file(handler.kana_path, i+1,1))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = kana_ids.index(str(self.word_id)) + 1
 
-        util.edit_sei_line(handler.kana_file, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.incorrect_count)
+        util.edit_sei_line(handler.kana_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.incorrect_count)
 
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

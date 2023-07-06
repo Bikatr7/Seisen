@@ -44,9 +44,6 @@ class localHandler():
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
-        ## directory for kana files
-        self.kana_dir = os.path.join(self.fileEnsurer.config_dir, "Kana")
-
         ## archives for previous versions of Seisen txt files
         self.archives_dir = os.path.join(self.fileEnsurer.config_dir, "Archives")
 
@@ -58,10 +55,16 @@ class localHandler():
         ## the path to the file that stores the password
         self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
-        ## the paths to the file that stores the kana words and its typos
-        self.kana_file = os.path.join(self.kana_dir, "kana.txt")
-        self.kana_typos_file = os.path.join(self.kana_dir, "kana typos.txt")
-        self.kana_incorrect_typos_file = os.path.join(self.kana_dir, "kana incorrect typos.txt")
+        ## the paths for all kana related files
+        self.kana_path = os.path.join(self.fileEnsurer.kana_dir, "kana.txt")
+        self.kana_typos_path = os.path.join(self.fileEnsurer.kana_dir, "kana typos.txt")
+        self.kana_incorrect_typos_path = os.path.join(self.fileEnsurer.kana_dir, "kana incorrect typos.txt")
+
+        ## the paths for all vocab related files
+        self.vocab_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab.txt")
+        self.vocab_csep_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab csep.txt")
+        self.vocab_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab typos.txt")
+        self.vocab_incorrect_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab incorrect typos.txt")
 
         ## contains the date of the last local backup
         self.last_local_backup_file = os.path.join(self.local_archives_dir, "last_local_backup.txt")
@@ -71,15 +74,15 @@ class localHandler():
         ## the literal used in the database to flag words as Kana
         self.KANA_WORD_TYPE = "2"
 
+        ## the literal used in the database to flag words as Kana
+        self.VOCAB_WORD_TYPE = "3"
+
         ## the kana that seisen will use to test the user
         self.kana = [] 
 
-        ## the accepted typos for kana
-        self.kana_typos = []
-
-        ## the accepted incorrect typos for kana
-        self.kana_incorrect_typos = []
-
+        ## the vocab that will be used to test the user
+        self.vocab = []
+        
 ##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def load_words_from_local_storage(self) -> None:
@@ -106,7 +109,7 @@ class localHandler():
 
         self.kana.clear()
 
-        with open(self.kana_file, "r", encoding="utf-8") as file:
+        with open(self.kana_path, "r", encoding="utf-8") as file:
 
             for line in file:
 
@@ -114,7 +117,7 @@ class localHandler():
 
                 self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [], int(values[3]), int(values[4])))
 
-        with open(self.kana_typos_file, "r", encoding="utf-8") as file:
+        with open(self.kana_typos_path, "r", encoding="utf-8") as file:
 
             for line in file:
                 
@@ -125,7 +128,7 @@ class localHandler():
                         if(kana.word_id == int(values[1])):
                             kana.typos.append(typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
 
-        with open(self.kana_incorrect_typos_file, "r", encoding="utf-8") as file:
+        with open(self.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
 
             for line in file:
 
@@ -160,19 +163,19 @@ class localHandler():
         INCORRECT_TYPO_ID_IDENTIFIER = 2
 
         if(type_of_id_to_query == TYPO_ID_IDENTIFIER):
-            with open(self.kana_typos_file, 'r', encoding='utf-8') as file:
+            with open(self.kana_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_typos_file,i+1,2))
+                    ids.append(util.read_sei_file(self.kana_typos_path,i+1,2))
                     i+=1
 
         elif(type_of_id_to_query == INCORRECT_TYPO_ID_IDENTIFIER):
-            with open(self.kana_incorrect_typos_file, 'r', encoding='utf-8') as file:
+            with open(self.kana_incorrect_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_incorrect_typos_file,i+1,2))
+                    ids.append(util.read_sei_file(self.kana_incorrect_typos_path,i+1,2))
                     i+=1
 
         ids =  [int(x) for x in ids]
@@ -206,7 +209,7 @@ W
                 
                 archive_dir = util.create_archive_dir(2)
 
-                shutil.copytree(self.kana_dir, os.path.join(archive_dir, "Kana"))
+                shutil.copytree(self.fileEnsurer.kana_dir, os.path.join(archive_dir, "Kana"))
 
                 file.truncate(0)
                 
@@ -258,7 +261,7 @@ W
             if(backup_to_restore in valid_backups):
                 util.clear_console()
 
-                shutil.rmtree(self.kana_dir)
+                shutil.rmtree(self.fileEnsurer.kana_dir)
 
                 shutil.copytree(os.path.join(self.local_archives_dir, backup_to_restore), self.fileEnsurer.config_dir, dirs_exist_ok=True)
 

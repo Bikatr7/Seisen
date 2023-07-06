@@ -43,6 +43,9 @@ class fileEnsurer:
       ## the folder for all kana-related files are located
       self.kana_dir = os.path.join(self.config_dir, "Kana")
 
+      ## the folder for all vocab-related files are located
+      self.vocab_dir = os.path.join(self.config_dir, "Vocab")
+
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
 
@@ -72,6 +75,8 @@ class fileEnsurer:
 
       self.ensure_kana_files()
 
+      self.ensure_vocab_files()
+
       self.ensure_lib_files()
 
       self.ensure_archive_files()
@@ -100,6 +105,7 @@ class fileEnsurer:
       util.standard_create_directory(self.logins_dir)
       util.standard_create_directory(self.lib_dir)
       util.standard_create_directory(self.kana_dir)
+      util.standard_create_directory(self.vocab_dir)
                
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -140,7 +146,7 @@ class fileEnsurer:
 
       """"
       
-      Ensures that the kna files are present and read to be used.\n
+      Ensures that the kana files are present and read to be used.\n
 
       Parameters:\n
       self (object - fileEnsurer) : the fileEnsurer object\n
@@ -163,6 +169,37 @@ class fileEnsurer:
       util.standard_create_file(kana_typos_path)
 
       util.standard_create_file(kana_incorrect_typos_path)
+
+
+##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+   def ensure_vocab_files(self) -> None:
+
+      """"
+      
+      Ensures that the vocab files are present and read to be used.\n
+
+      Parameters:\n
+      self (object - fileEnsurer) : the fileEnsurer object\n
+
+      Returns:\n
+      None.\n
+
+      """
+
+      ##----------------------------------------------------------------paths----------------------------------------------------------------
+
+      ## the path to where the typos for the vocab file are located
+      vocab_typos_path = os.path.join(self.vocab_dir, "vocab typos.txt")
+
+      ## the path to where the incorrect typos for the vocab file are located
+      vocab_incorrect_typos_path = os.path.join(self.vocab_dir, "vocab incorrect typos.txt")
+
+      ##----------------------------------------------------------------other things----------------------------------------------------------------
+
+      util.standard_create_file(vocab_typos_path)
+
+      util.standard_create_file(vocab_incorrect_typos_path)
 
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

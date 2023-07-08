@@ -1,0 +1,7 @@
+hello,hi,
+thank you,thanks,
+excuse me,sorry,
+yes,yeah,yep,yes sir,
+no,nope,
+good morning,morning,
+farewell,goodbye,bye,

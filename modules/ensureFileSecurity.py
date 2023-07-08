@@ -357,8 +357,8 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      shutil.move(local_vocab_lib_path, vocab_actual_path)
-      shutil.move(local_vocab_csep_lib_path, vocab_csep_actual_path)
+      shutil.copy2(local_vocab_lib_path, vocab_actual_path)
+      shutil.copy2(local_vocab_csep_lib_path, vocab_csep_actual_path)
 
 ##--------------------start-of-ensure_archive_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -367,7 +367,7 @@ class fileEnsurer:
       """
       
       ensure that the files located in the archives directory are present and ready to be used.\n
-
+z
       Parameters:\n
       self (object - fileEnsurer) : the fileEnsurer object\n
 

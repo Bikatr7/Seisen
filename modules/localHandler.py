@@ -10,6 +10,7 @@ import time
 from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules.words import word as kana_blueprint
+from modules.vocab import vocab as vocab_blueprint
 from modules import util
 from modules.ensureFileSecurity import fileEnsurer
 
@@ -99,45 +100,101 @@ class localHandler():
 
         """
 
-        """
-        for dev reference
-        KANA_TYPO_WORD_ID_INDEX_LOCATION = 0
-        KANA_TYPO_TYPO_ID_INDEX_LOCATION = 1
-        KANA_TYPO_VALUE_INDEX_LOCATION = 2
-        KANA_TYPO_WORD_TYPE_INDEX_LOCATION = 3
-        """
+        ##----------------------------------------------------------------load_kana()----------------------------------------------------------------
+
+        def load_kana():
+    
+            with open(self.kana_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [], int(values[3]), int(values[4])))
+
+            with open(self.kana_typos_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+                    
+                    values = line.strip().split(',')
+
+                    if(int(values[0]) == self.KANA_WORD_TYPE):
+                        for kana in self.kana:
+                            if(kana.word_id == int(values[1])):
+                                kana.typos.append(typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+
+            with open(self.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    if(int(values[0]) == self.KANA_WORD_TYPE):
+                        for kana in self.kana:
+                            if(kana.word_id == int(values[1])):
+                                kana.incorrect_typos.append(incorrect_typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+
+        ##----------------------------------------------------------------load_vocab()----------------------------------------------------------------
+
+        def load_vocab():
+
+            csep_values = []
+
+            with open(self.vocab_csep_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    current_line_cseps = []
+
+                    values = line.strip().split(',')
+
+                    for value in values:
+                        current_line_cseps.append(value)
+
+                    csep_values.append(current_line_cseps)
+            
+            with open(self.vocab_path, "r", encoding="utf-8") as file:
+
+                for i, line in enumerate(file):
+
+                    values = line.strip().split(',')
+
+                    if(str(values[4])  == 0):
+                        kanji_flag = False
+                    else:
+                        kanji_flag = True
+
+                    self.vocab.append(vocab_blueprint(int(values[0]), values[1], values[2], values[3], csep_values[i], values[4], int(values[5]), int(values[6]), kanji_flag))
+
+            with open(self.vocab_typos_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+                    
+                    values = line.strip().split(',')
+
+                    if(int(values[0]) == self.VOCAB_WORD_TYPE):
+                        for vocab in self.vocab:
+                            if(vocab.word_id == int(values[1])):
+                                vocab.typos.append(typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+
+            with open(self.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    if(int(values[0]) == self.VOCAB_WORD_TYPE):
+                        for vocab in self.vocab:
+                            if(vocab.word_id == int(values[1])):
+                                vocab.incorrect_typos.append(incorrect_typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+
+        ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         self.kana.clear()
+        self.vocab.clear()
 
-        with open(self.kana_path, "r", encoding="utf-8") as file:
-
-            for line in file:
-
-                values = line.strip().split(',')
-
-                self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [], int(values[3]), int(values[4])))
-
-        with open(self.kana_typos_path, "r", encoding="utf-8") as file:
-
-            for line in file:
-                
-                values = line.strip().split(',')
-
-                if(int(values[0]) == self.KANA_WORD_TYPE):
-                    for kana in self.kana:
-                        if(kana.word_id == int(values[1])):
-                            kana.typos.append(typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
-
-        with open(self.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
-
-            for line in file:
-
-                values = line.strip().split(',')
-
-                if(int(values[0]) == self.KANA_WORD_TYPE):
-                    for kana in self.kana:
-                        if(kana.word_id == int(values[1])):
-                            kana.incorrect_typos.append(incorrect_typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+        load_kana()
+        load_vocab()
 
 ##--------------------start-of-get_list_of_all_ids()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -161,13 +218,17 @@ class localHandler():
 
         TYPO_ID_IDENTIFIER = 1
         INCORRECT_TYPO_ID_IDENTIFIER = 2
+        VOCAB_ID_IDENTIFIER = 3
+
+        TYPO_ID_INDEX_LOCATION = 2
+        VOCAB_ID_INDEX_LOCATION = 1
 
         if(type_of_id_to_query == TYPO_ID_IDENTIFIER):
             with open(self.kana_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_typos_path,i+1,2))
+                    ids.append(util.read_sei_file(self.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == INCORRECT_TYPO_ID_IDENTIFIER):
@@ -175,7 +236,15 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_incorrect_typos_path,i+1,2))
+                    ids.append(util.read_sei_file(self.kana_incorrect_typos_path,i+1, TYPO_ID_INDEX_LOCATION))
+                    i+=1
+
+        elif(type_of_id_to_query == VOCAB_ID_IDENTIFIER):
+            with open(self.vocab_path, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(util.read_sei_file(self.vocab_path, i+1, VOCAB_ID_INDEX_LOCATION))
                     i+=1
 
         ids =  [int(x) for x in ids]
@@ -210,6 +279,7 @@ W
                 archive_dir = util.create_archive_dir(2)
 
                 shutil.copytree(self.fileEnsurer.kana_dir, os.path.join(archive_dir, "Kana"))
+                shutil.copytree(self.fileEnsurer.vocab_dir, os.path.join(archive_dir, "Vocab"))
 
                 file.truncate(0)
                 
@@ -262,6 +332,7 @@ W
                 util.clear_console()
 
                 shutil.rmtree(self.fileEnsurer.kana_dir)
+                shutil.rmtree(self.fileEnsurer.vocab_dir)
 
                 shutil.copytree(os.path.join(self.local_archives_dir, backup_to_restore), self.fileEnsurer.config_dir, dirs_exist_ok=True)
 

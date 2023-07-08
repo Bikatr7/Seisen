@@ -1,6 +1,7 @@
 ## built-in modules
 import os
 import time
+import shutil
 
 ## custom modules
 from modules import util
@@ -221,12 +222,21 @@ class fileEnsurer:
       ## the path where the actual kana file is located, the one used for testing
       kana_actual_path = os.path.join(self.kana_dir, "kana.txt")
 
+      
+      ## the path where the actual vocab file is located, the one used for testing
+      vocab_actual_path = os.path.join(self.vocab_dir, "vocab.txt")
+
+      vocab_csep_actual_path = os.path.join(self.vocab_dir, "vocab csep.txt")
+
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       self.ensure_remote_lib_files()
 
       if(os.path.exists(kana_actual_path) == False or os.path.getsize(kana_actual_path) == 0):
-         self.ensure_local_lib_files(kana_actual_path)
+         self.ensure_kana_local_lib_files(kana_actual_path)
+
+      if(os.path.exists(vocab_actual_path) == False or os.path.getsize(vocab_actual_path) == 0):
+         self.ensure_vocab_local_lib_files(vocab_actual_path, vocab_csep_actual_path)
 
 ##--------------------start-of-ensure_remote_lib_files()------- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -260,13 +270,13 @@ class fileEnsurer:
 
       util.modified_create_file(database_connection_failed, "false")
 
-##--------------------start-of-ensure_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_local_lib_files(self, kana_actual_path):
+   def ensure_kana_local_lib_files(self, kana_actual_path):
 
       """
       
-      ensure that the files located in the kana directory are present and ready to be used.\n
+      ensure that the local lib kana files are present and ready to be used.\n
 
       Parameters:\n
       self (object - fileEnsurer) : the fileEnsurer object\n
@@ -295,9 +305,6 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_directory(local_lib_dir_path)
-      util.standard_create_directory(local_kana_lib_dir_path)
-
       black_list_characters_kana = ['ヶ', 'ョ', 'ゃ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ァ', 'ゅ', 'ょ', 'ぉ', '-', 'ヱ', 'ゐ', 'ヰ', 'ー', 'ッ','っ']
 
       default_kana_to_write = ""
@@ -316,6 +323,42 @@ class fileEnsurer:
       with open(kana_actual_path, 'w+', encoding="utf-8") as file:
          file.write(default_kana_to_write)
 
+##--------------------start-of-ensure_vocab_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+   def ensure_vocab_local_lib_files(self, vocab_actual_path, vocab_csep_actual_path):
+
+      """
+      
+      ensure that the local lib vocab files are present and ready to be used.\n
+
+      Parameters:\n
+      self (object - fileEnsurer) : the fileEnsurer object\n
+      vocab_actual_path (str) : the path to the vocab.txt file that is used for testing purposes\n
+      vocab_csep_actual_path (str) : the path to the vocab csep.txt file that is used for testing purposes\n
+
+      Returns:\n
+      None\n
+
+      """
+
+      ##----------------------------------------------------------------dirs----------------------------------------------------------------
+
+      ## where the lib files for the local handler are located
+      local_lib_dir_path = os.path.join(self.lib_dir, "local")
+
+      ## where the local kana files are located
+      local_vocab_lib_dir_path = os.path.join(local_lib_dir_path, "vocab")
+
+      ##----------------------------------------------------------------paths----------------------------------------------------------------
+
+      local_vocab_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab.txt")
+
+      local_vocab_csep_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab csep.txt")
+
+      ##----------------------------------------------------------------other things----------------------------------------------------------------
+
+      shutil.move(local_vocab_lib_path, vocab_actual_path)
+      shutil.move(local_vocab_csep_lib_path, vocab_csep_actual_path)
 
 ##--------------------start-of-ensure_archive_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

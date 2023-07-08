@@ -1,0 +1,7 @@
+1,こんにちは,konnichiwa,hello,0,0,0,
+2,ありがとう,arigatou,thank you,0,0,0,
+3,すみません,sumimasen,excuse me,0,0,0,
+4,はい,hai,yes,0,0,0,
+5,いいえ,iie,no,0,0,0,
+6,おはよう,ohayou,good morning,0,0,0,
+7,さようなら,sayounara,farewell,0,0,0,

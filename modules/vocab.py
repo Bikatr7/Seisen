@@ -22,7 +22,7 @@ class vocab(words.word):
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, incoming_id:int, incoming_testing_material:str, incoming_testing_material_answer_main:str, incoming_testing_material_answer_main_all:typing.List[str], incoming_incorrect_count:int, incoming_correct_count:int, incoming_furigana:str, incoming_kanji_flag:bool):
+    def __init__(self, incoming_id:int, incoming_testing_material:str, incoming_romaji:str, incoming_testing_material_answer_main:str, incoming_testing_material_answer_main_all:typing.List[str], incoming_furigana:str, incoming_incorrect_count:int,incoming_correct_count:int, incoming_kanji_flag:bool):
 
         """
         
@@ -32,11 +32,12 @@ class vocab(words.word):
         self (object - word) : the object being initialized.\n
         incoming_id (int) : the id of the vocab.\n
         incoming_testing_material (str) : the testing material of the vocab.\n
+        incoming_romaji (str) : the romaji of the vocab.\n
         incoming_testing_material_answer_main (str) : the main answer of the testing material.\n
         incoming_testing_material_answer_main_all (list - str) : the list of all answers to the testing material of the vocab.\n
+        incoming_furigana (str) : the furigana of the vocab.\n
         incoming_incorrect_count (int) : the number of incorrect guesses of the vocab.\n
         incoming_correct_count (int) : the number of correct guesses of the vocab.\n
-        incoming_furigana (str) : the furigana of the vocab.\n
         incoming_kanji_flag (bool) : if the vocab contains kanji or not.\n
 
         Returns:\n
@@ -45,6 +46,8 @@ class vocab(words.word):
         """
         
         super().__init__(incoming_id, incoming_testing_material, incoming_testing_material_answer_main, incoming_testing_material_answer_main_all, incoming_incorrect_count, incoming_correct_count)
+
+        self.romaji = incoming_romaji
 
         self.furigana = incoming_furigana
 

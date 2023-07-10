@@ -49,9 +49,6 @@ class remoteHandler():
 
         ##----------------------------------------------------------------dir----------------------------------------------------------------
 
-        ## directory for kana files
-        self.kana_dir = os.path.join(self.fileEnsurer.config_dir, "Kana")
-
         ## lib files for remoteHandler.py
         self.remote_lib_dir = os.path.join(self.fileEnsurer.lib_dir, "remote")
 
@@ -74,6 +71,12 @@ class remoteHandler():
         self.kana_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana typos.txt")
         self.kana_incorrect_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana incorrect typos.txt")
 
+        ## the paths for all vocab related files
+        self.vocab_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab.txt")
+        self.vocab_csep_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab csep.txt")
+        self.vocab_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab typos.txt")
+        self.vocab_incorrect_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab incorrect typos.txt")
+
         ## if remoteHandler failed to make a database connection
         self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
 
@@ -88,14 +91,8 @@ class remoteHandler():
         ## the kana that seisen will use to test the user
         self.kana = [] 
 
-        ## the literal used in the database to flag words as Kana
-        self.KANA_WORD_TYPE = "2"
-
-        ## the accepted typos for kana
-        self.kana_typos = []
-
-        ## the accepted incorrect typos for kana
-        self.kana_incorrect_typos = []
+        ## the vocab that will be used to test the user
+        self.vocab = []
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
@@ -377,7 +374,9 @@ class remoteHandler():
 
         """
 
-        def clear_local_storage():
+        ##----------------------------------------------------------------clear_local_kana()----------------------------------------------------------------
+
+        def clear_local_kana():
 
             with open(self.kana_file, "w", encoding="utf-8") as file:
                 file.truncate(0)
@@ -388,15 +387,26 @@ class remoteHandler():
             with open(self.kana_incorrect_typos_file, "w", encoding="utf-8") as file:
                 file.truncate(0)
 
+        ##----------------------------------------------------------------clear_local_vocab()----------------------------------------------------------------
+
+        def clear_local_vocab():
+
+            with open(self.vocab_path, "w", encoding="utf-8") as file:
+                file.truncate(0)
+
+            with open(self.vocab_csep_path, "w", encoding="utf-8") as file:
+                file.truncate(0)
+
+            with open(self.vocab_typos_path, "w'", encoding="utf-8") as file:
+                file.truncate(0)
+
+            with open(self.vocab_incorrect_typos_path, "w'", encoding="utf-8") as file:
+                file.truncate(0)
+
+        ##----------------------------------------------------------------reset_kana_relations()----------------------------------------------------------------
+
         def reset_kana_relations():
-
-            KANA_WORD_TYPE = "2"
             
-            ##KANA_TYPO_WORD_ID_INDEX_LOCATION = 0
-            ##KANA_TYPO_TYPO_ID_INDEX_LOCATION = 1
-            ##KANA_TYPO_VALUE_INDEX_LOCATION = 2
-            ##KANA_TYPO_WORD_TYPE_INDEX_LOCATION = 3
-
             list_of_all_accepted_answers = []
 
             self.kana.clear()
@@ -425,19 +435,29 @@ class remoteHandler():
 
             for kana in self.kana:
                 for typo in self.kana_typos:
-                    if(typo.word_type == int(KANA_WORD_TYPE) and typo.word_id == kana.word_id):
+                    if(typo.word_type == int(kana.word_type) and typo.word_id == kana.word_id):
                         kana.typos.append(typo)        
 
                 for incorrect_typo in self.kana_incorrect_typos:
-                    if(incorrect_typo.word_type == int(KANA_WORD_TYPE) and incorrect_typo.word_id == kana.word_type):
+                    if(incorrect_typo.word_type == int(kana.word_type) and incorrect_typo.word_id == kana.word_type):
                         kana.incorrect_typos.append(incorrect_typo)
+
+        ##----------------------------------------------------------------reset_vocab_relations()----------------------------------------------------------------
+        
+        def reset_vocab_relations():
+            pass
+
+        ##----------------------------------------------------------------main()----------------------------------------------------------------
 
         ## local storage does not reset if there is no valid database connection
         if(self.connection == None): 
             return
         
-        clear_local_storage()
-        reset_kana_relations()   
+        clear_local_kana()
+        clear_local_vocab()
+
+        reset_kana_relations()
+        reset_vocab_relations()
       
 ##--------------------start-of-reset_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -477,8 +497,10 @@ class remoteHandler():
 
         """
 
-        delete_kana_query = """
-        drop table if exists kana;
+        ##----------------------------------------------------------------kana----------------------------------------------------------------
+
+        delete_kana_csep_query = """
+        drop table if exists kana_csep;
         """
 
         delete_kana_typos_query = """
@@ -489,14 +511,39 @@ class remoteHandler():
         drop table if exists kana_incorrect_typos;
         """
 
-        delete_kana_csep_query = """
-        drop table if exists kana_csep;
+        delete_kana_query = """
+        drop table if exists kana;
         """
+
+        ##----------------------------------------------------------------vocab----------------------------------------------------------------
+
+        delete_vocab_csep_query = """
+        drop table if exists vocab_csep;
+        """
+
+        delete_vocab_typos_query = """
+        drop table if exists vocab_typos;
+        """
+
+        delete_vocab_incorrect_typos_query = """
+        drop table if exists vocab_incorrect_typos;
+        """
+
+        delete_vocab_query = """
+        drop table if exists vocab;
+        """
+
+        ##----------------------------------------------------------------calls----------------------------------------------------------------
 
         self.execute_query(delete_kana_csep_query)
         self.execute_query(delete_kana_typos_query)
         self.execute_query(delete_kana_incorrect_typos_query)
         self.execute_query(delete_kana_query)
+
+        self.execute_query(delete_vocab_csep_query)
+        self.execute_query(delete_vocab_typos_query)
+        self.execute_query(delete_vocab_incorrect_typos_query)
+        self.execute_query(delete_vocab_query)
 
 ##--------------------start-of-create_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -513,6 +560,8 @@ class remoteHandler():
         None.\n
 
         """
+
+        ##----------------------------------------------------------------kana----------------------------------------------------------------
 
         create_kana_query = """
         CREATE TABLE kana (
@@ -558,6 +607,8 @@ class remoteHandler():
         FOREIGN KEY (kana_id) REFERENCES kana(id)
         );
         """
+
+        
 
         self.execute_query(create_kana_query)
         self.execute_query(create_kana_typos_query)

@@ -148,8 +148,7 @@ class localHandler():
 
                     values = line.strip().split(',')
 
-                    for value in values:
-                        current_line_cseps.append(value)
+                    current_line_cseps.append(values[2])
 
                     csep_values.append(current_line_cseps)
             
@@ -219,9 +218,11 @@ class localHandler():
         TYPO_ID_IDENTIFIER = 1
         INCORRECT_TYPO_ID_IDENTIFIER = 2
         VOCAB_ID_IDENTIFIER = 3
+        CSEP_ID_IDENTIFIER = 4
 
         TYPO_ID_INDEX_LOCATION = 2
         VOCAB_ID_INDEX_LOCATION = 1
+        CSEP_ID_INDEX_LOCATION = 1
 
         if(type_of_id_to_query == TYPO_ID_IDENTIFIER):
             with open(self.kana_typos_path, 'r', encoding='utf-8') as file:
@@ -245,6 +246,14 @@ class localHandler():
 
                 while(i < len(file_size)):
                     ids.append(util.read_sei_file(self.vocab_path, i+1, VOCAB_ID_INDEX_LOCATION))
+                    i+=1
+
+        elif(type_of_id_to_query == CSEP_ID_IDENTIFIER):
+            with open(self.vocab_csep_path, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(util.read_sei_file(self.vocab_path, i+1, CSEP_ID_INDEX_LOCATION))
                     i+=1
 
         ids =  [int(x) for x in ids]

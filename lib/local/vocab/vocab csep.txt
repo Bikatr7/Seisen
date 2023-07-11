@@ -1,7 +1,17 @@
-hello,hi,
-thank you,thanks,
-excuse me,sorry,
-yes,yeah,yep,yes sir,
-no,nope,
-good morning,morning,
-farewell,goodbye,bye,
+1,1,hello,3
+1,2,hi,3
+2,3,thank you,3
+2,4,thanks,3
+3,5,excuse me,3
+3,6,sorry,3
+4,7,yes,3
+4,8,yeah,3
+4,9,yep,3
+4,10,yes sir,3
+5,11,no,3
+5,12,nope,3
+6,13,good morning,3
+6,14,morning,3
+7,15,farewell,3
+7,16,goodbye,3
+7,17,bye,3

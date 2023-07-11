@@ -598,22 +598,77 @@ class remoteHandler():
         """
 
         create_kana_csep_query = """
-        create table kana_csep (
-        kana_id INT NOT NULL,
-        kana_csep_id INT NOT NULL,
-        kana_csep_value VARCHAR(255) NOT NULL,
-        word_type INT NOT NULL,
-        PRIMARY KEY (kana_csep_id),
-        FOREIGN KEY (kana_id) REFERENCES kana(id)
+        CREATE TABLE kana_csep (
+            kana_id INT NOT NULL,
+            kana_csep_id INT NOT NULL,
+            kana_csep_value VARCHAR(255) NOT NULL,
+            word_type INT NOT NULL,
+            PRIMARY KEY (kana_csep_id),
+            FOREIGN KEY (kana_id) REFERENCES kana(id)
         );
         """
 
-        
+        ##----------------------------------------------------------------vocab----------------------------------------------------------------
+
+        create_vocab_query = """
+        CREATE TABLE vocab (
+            id INT NOT NULL,
+            vocab VARCHAR(255) NOT NULL,
+            romaji VARCHAR(255) NOT NULL,
+            answer VARCHAR(255) NOT NULL,
+            furigana VARCHAR(255) NOT NULL,
+            incorrect_count INT NOT NULL,
+            correct_count INT NOT NULL,
+            word_type INT NOT NULL,
+            isKanji TINYINT(1) NOT NULL,
+            PRIMARY KEY (id)
+        );
+
+        """        
+        create_vocab_typos_query = """
+        CREATE TABLE vocab_typos (
+            vocab_id INT NOT NULL,
+            typo_id INT NOT NULL,
+            typo_value VARCHAR(255) NOT NULL,
+            word_type INT NOT NULL,
+            PRIMARY KEY (typo_id),
+            FOREIGN KEY (vocab_id) REFERENCES vocab(id)
+        );
+        """
+
+        create_vocab_incorrect_typos_query = """
+        CREATE TABLE vocab_incorrect_typos (
+            vocab_id INT NOT NULL,
+            incorrect_typo_id INT NOT NULL,
+            incorrect_typo_value VARCHAR(255) NOT NULL,
+            word_type INT NOT NULL,
+            PRIMARY KEY (incorrect_typo_id),
+            FOREIGN KEY (vocab_id) REFERENCES vocab(id)
+        );
+        """
+
+        create_vocab_csep_query = """
+        CREATE TABLE vocab_csep (
+            vocab_id INT NOT NULL,
+            vocab_csep_id INT NOT NULL,
+            vocab_csep_value VARCHAR(255) NOT NULL,
+            word_type INT NOT NULL,
+            PRIMARY KEY (vocab_csep_id),
+            FOREIGN KEY (vocab_id) REFERENCES vocab(id)
+        );
+        """
+
+        ##----------------------------------------------------------------queries----------------------------------------------------------------
 
         self.execute_query(create_kana_query)
         self.execute_query(create_kana_typos_query)
         self.execute_query(create_kana_incorrect_typos_query)
         self.execute_query(create_kana_csep_query)
+
+        self.execute_query(create_vocab_query)
+        self.execute_query(create_vocab_typos_query)
+        self.execute_query(create_vocab_incorrect_typos_query)
+        self.execute_query(create_vocab_csep_query)
 
 ##--------------------start-of-fill_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -630,6 +685,9 @@ class remoteHandler():
         None.\n
 
         """
+
+
+        ##----------------------------------------------------------------kana----------------------------------------------------------------
 
         def fill_kana():
 
@@ -692,9 +750,109 @@ class remoteHandler():
 
                         self.insert_into_table(table_name, insert_dict)
 
+        ##----------------------------------------------------------------vocab----------------------------------------------------------------
+
+        def fill_vocab():
+
+            with open(self.vocab_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    if(values[4] == "0"):
+                        isKanji = 0
+                    else:
+                        isKanji = 1
+                    
+
+                    table_name = "vocab"
+                    insert_dict = {
+                    "id": values[0],
+                    "vocab": values[1],
+                    "romaji": values[2],
+                    "answer": values[3],
+                    "furigana": values[4],
+                    "incorrect_count": values[5],
+                    "correct_count": values[6],
+                    "word_type": 2,
+                    "isKanji": isKanji
+                    }
+
+                    self.insert_into_table(table_name, insert_dict)
+
+        def fill_vocab_typos():
+
+            with open(self.vocab_typos_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
+                    values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
+
+                    table_name = "vocab_typos"
+                    insert_dict = {
+                        "vocab_id": values[0],
+                        "typo_id": values[1],
+                        "typo_value": values[2],
+                        "word_type": values[3]
+                    }
+                    self.insert_into_table(table_name, insert_dict)
+        
+        def fill_vocab_incorrect_typos():
+
+                with open(self.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
+
+                    for line in file:
+
+                        values = line.strip().split(',')
+
+                        values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
+                        values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
+
+                        table_name = "vocab_incorrect_typos"
+                        insert_dict = {
+                        "vocab_id": values[0],
+                        "incorrect_typo_id": values[1],
+                        "incorrect_typo_value": values[2],
+                        "word_type": values[3]
+                        }
+
+                        self.insert_into_table(table_name, insert_dict)
+
+        def fill_vocab_csep():
+                                
+                with open(self.vocab_csep_path, "r", encoding="utf-8") as file:
+
+                    for line in file:
+
+                        values = line.strip().split(',')
+
+                        values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
+                        values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
+
+                        table_name = "vocab_csep"
+                        insert_dict = {
+                        "vocab_id": values[0],
+                        "vocab_csep_id": values[1],
+                        "vocab_csep_value": values[2],
+                        "word_type": values[3]
+                        }
+
+                        self.insert_into_table(table_name, insert_dict)
+
+        ##----------------------------------------------------------------functions----------------------------------------------------------------
+
         fill_kana()
         fill_kana_typos()
         fill_kana_incorrect_typos()
+
+        fill_vocab()
+        fill_vocab_typos
+        fill_vocab_incorrect_typos()
+        fill_vocab_csep()
 
 ##--------------------start-of-create_daily_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -803,7 +961,8 @@ class remoteHandler():
             if(backup_to_restore in valid_backups):
                 util.clear_console()
 
-                shutil.rmtree(self.kana_dir)
+                shutil.rmtree(self.fileEnsurer.kana_dir)
+                shutil.rmtree(self.fileEnsurer.vocab_dir)
 
                 shutil.copytree(os.path.join(self.remote_archives_dir, backup_to_restore), self.fileEnsurer.config_dir, dirs_exist_ok=True)
 

@@ -170,7 +170,7 @@ class word:
         new_typo = typo_blueprint(self.word_type, new_typo_id, self.word_id, typo)
 
         ## updates local storage so the typo will be saved
-        util.write_sei_line(handler.kana_typos_file, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        util.write_sei_line(handler.kana_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
         self.typos.append(new_typo)
@@ -196,7 +196,7 @@ class word:
         new_incorrect_typo = incorrect_typo_blueprint(self.word_type, new_incorrect_typo_id, self.word_id, incorrect_typo)
 
         ## updates local storage so the incorrect typo will be saved
-        util.write_sei_line(handler.kana_incorrect_typos_file, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+        util.write_sei_line(handler.kana_incorrect_typos_path, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
 
         ## updates the current session with the incorrect typo
         self.incorrect_typos.append(new_incorrect_typo)

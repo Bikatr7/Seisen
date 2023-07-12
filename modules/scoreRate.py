@@ -90,7 +90,7 @@ class scoreRate:
 
             display_item_list.append(str(kana_list[i].likelihood) + "%")
 
-            displayItem = "\n---------------------------------\nLikelihood : " + display_item_list[i] +"\njValue : " + kana_list[i].testing_material  + "\nP : " + str(kana_list[i].incorrect_count) + "\nC : " + str(kana_list[i].correct_count)  + "\nID : " + str(kana_list[i].word_id)  + "\n---------------------------------"
+            displayItem = "\n---------------------------------\nLikelihood : " + display_item_list[i] +"\nKana : " + kana_list[i].testing_material  + "\nP : " + str(kana_list[i].incorrect_count) + "\nC : " + str(kana_list[i].correct_count)  + "\nID : " + str(kana_list[i].word_id)  + "\n---------------------------------"
             
             display_item_list[-1] = displayItem
 

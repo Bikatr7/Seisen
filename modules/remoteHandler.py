@@ -15,7 +15,12 @@ import mysql.connector
 ## custom modules
 from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
+
+from modules.csep import csep as csep_blueprint
+
 from modules.words import word as kana_blueprint
+from modules.vocab import vocab as vocab_blueprint
+
 from modules import util
 from modules.ensureFileSecurity import fileEnsurer
 
@@ -91,8 +96,15 @@ class remoteHandler():
         ## the kana that seisen will use to test the user
         self.kana = [] 
 
+        self.kana_typos = []
+        self.kana_incorrect_typos = []
+
         ## the vocab that will be used to test the user
         self.vocab = []
+
+        self.vocab_typos = []
+        self.vocab_incorrect_typos = []
+        self.vocab_csep = []
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
@@ -397,10 +409,10 @@ class remoteHandler():
             with open(self.vocab_csep_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
 
-            with open(self.vocab_typos_path, "w'", encoding="utf-8") as file:
+            with open(self.vocab_typos_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
 
-            with open(self.vocab_incorrect_typos_path, "w'", encoding="utf-8") as file:
+            with open(self.vocab_incorrect_typos_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
 
         ##----------------------------------------------------------------reset_kana_relations()----------------------------------------------------------------
@@ -435,17 +447,61 @@ class remoteHandler():
 
             for kana in self.kana:
                 for typo in self.kana_typos:
-                    if(typo.word_type == int(kana.word_type) and typo.word_id == kana.word_id):
+                    if(typo.word_type == kana.word_type and typo.word_id == kana.word_id):
                         kana.typos.append(typo)        
 
                 for incorrect_typo in self.kana_incorrect_typos:
-                    if(incorrect_typo.word_type == int(kana.word_type) and incorrect_typo.word_id == kana.word_type):
+                    if(incorrect_typo.word_type == kana.word_type and incorrect_typo.word_id == kana.word_id):
                         kana.incorrect_typos.append(incorrect_typo)
 
         ##----------------------------------------------------------------reset_vocab_relations()----------------------------------------------------------------
-        
+                
         def reset_vocab_relations():
-            pass
+
+            self.vocab.clear()
+            self.vocab_typos.clear()
+            self.vocab_incorrect_typos.clear()
+
+            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
+            vocab_id_list, csep_id_list, csep_value_list, word_type_list = self.read_multi_column_query("select vocab_id, vocab_csep_id, vocab_csep_value, word_type from vocab_csep")
+
+            self.vocab = [vocab_blueprint(int(word_id_list[i]), vocab_list[i], romaji_list[i], answer_list[i], [], furigana_list[i], int(pValue_list[i]), int(cValue_list[i]), bool(isKanji_list[i])) for i in range(len(word_id_list))]
+            self.vocab_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
+            self.vocab_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
+            self.vocab_csep = [csep_blueprint(int(vocab_id_list[i]), int(csep_id_list[i]), csep_value_list[i], word_type_list[i]) for i in range(len(vocab_id_list))]
+
+            for vocab in self.vocab:
+                vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
+                util.write_sei_line(self.vocab_path, vocab_values)
+
+            for typo in self.vocab_typos:
+                typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
+                util.write_sei_line(self.vocab_typos_path, typo_values)
+
+            for incorrect_typo in self.vocab_incorrect_typos:
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
+                util.write_sei_line(self.vocab_incorrect_typos_path, incorrect_typo_values)
+
+            for csep in self.vocab_csep:
+                csep_values = [csep.word_id, csep.csep_id, csep.csep_value, csep.word_type]
+                util.write_sei_line(self.vocab_csep_path, csep_values)
+
+            for vocab in self.vocab:
+
+                for typo in self.vocab_typos:
+                    if(typo.word_type == vocab.word_type and typo.word_id == vocab.word_id):
+                        vocab.typos.append(typo)        
+
+                for incorrect_typo in self.vocab_incorrect_typos:
+                    if(incorrect_typo.word_type == vocab.word_type and incorrect_typo.word_id == vocab.word_id):
+                        vocab.incorrect_typos.append(incorrect_typo)
+
+                for csep in self.vocab_csep:
+                    if(csep.word_id == vocab.word_id and csep.word_type == vocab.word_type):
+                        vocab.testing_material_answer_all.append(csep)
+
 
         ##----------------------------------------------------------------main()----------------------------------------------------------------
 
@@ -870,6 +926,82 @@ class remoteHandler():
 
         """
 
+        ##----------------------------------------------------------------kana----------------------------------------------------------------
+
+        def backup_kana():
+
+            list_of_all_accepted_answers = []
+
+            remote_archive_kana_dir = os.path.join(archive_dir, "Kana")
+
+            remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.txt")
+            remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana typos.txt")
+            remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana incorrect typos.txt")
+
+            util.standard_create_directory(remote_archive_kana_dir)
+
+            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
+
+            self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
+            self.kana_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
+            self.kana_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
+
+            for kana in self.kana:
+                word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
+                util.write_sei_line(remote_archive_kana_path, word_values)
+
+            for typo in self.kana_typos:
+                typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
+                util.write_sei_line(remote_archive_kana_typos_path, typo_values)
+
+            for incorrect_typo in self.kana_incorrect_typos:
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
+                util.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
+
+        ##----------------------------------------------------------------vocab----------------------------------------------------------------
+
+        def backup_vocab():
+
+            remote_archive_vocab_dir = os.path.join(archive_dir, "Vocab")
+
+            remote_archive_vocab_path = os.path.join(remote_archive_vocab_dir, "vocab.txt")
+            remote_archive_vocab_typos_path = os.path.join(remote_archive_vocab_dir, "vocab typos.txt")
+            remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab incorrect typos.txt")
+            remote_archive_vocab_csep_path = os.path.join(remote_archive_vocab_dir, "vocab csep.txt")
+
+            util.standard_create_directory(remote_archive_vocab_dir)
+
+            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
+            vocab_id_list, csep_id_list, csep_value_list, word_type_list = self.read_multi_column_query("select vocab_id, vocab_csep_id, vocab_csep_value, word_type from vocab_csep")
+
+            self.vocab = [vocab_blueprint(int(word_id_list[i]), vocab_list[i], romaji_list[i], answer_list[i], [], furigana_list[i], int(pValue_list[i]), int(cValue_list[i]), bool(isKanji_list[i])) for i in range(len(word_id_list))]
+            self.vocab_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
+            self.vocab_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
+            self.vocab_csep = [csep_blueprint(int(vocab_id_list[i]), int(csep_id_list[i]), csep_value_list[i], word_type_list[i]) for i in range(len(vocab_id_list))]
+
+            for vocab in self.vocab:
+                vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
+                util.write_sei_line(remote_archive_vocab_path, vocab_values)
+
+            for typo in self.vocab_typos:
+                typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
+                util.write_sei_line(remote_archive_vocab_typos_path, typo_values)
+
+            for incorrect_typo in self.vocab_incorrect_typos:
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
+                util.write_sei_line(remote_archive_vocab_incorrect_typos_path, incorrect_typo_values)
+
+            for csep in self.vocab_csep:
+                csep_values = [csep.word_id, csep.csep_id, csep.csep_value, csep.word_type]
+                util.write_sei_line(remote_archive_vocab_csep_path, csep_values)
+
+        ##----------------------------------------------------------------main----------------------------------------------------------------
+
+
         if(self.connection is None):
             return
 
@@ -887,35 +1019,9 @@ class remoteHandler():
 
                 file.write(current_day.strip())
 
-                remote_archive_kana_dir = os.path.join(archive_dir, "Kana")
+                backup_kana()
+                backup_vocab()
 
-                remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.txt")
-                remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana typos.txt")
-                remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana incorrect typos.txt")
-
-                list_of_all_accepted_answers = []
-
-                util.standard_create_directory(remote_archive_kana_dir)
-
-                word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
-                typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
-                incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
-
-                self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
-                self.kana_typos = [typo_blueprint(typo_word_type_list[i], int(typo_id_list[i]), int(typo_word_id_list[i]), typo_value_list[i]) for i in range(len(typo_word_id_list))]
-                self.kana_incorrect_typos = [incorrect_typo_blueprint(incorrect_typo_word_type_list[i], int(incorrect_typo_id_list[i]), int(incorrect_typo_word_id_list[i]), incorrect_typo_value_list[i]) for i in range(len(incorrect_typo_word_id_list))]
-
-                for kana in self.kana:
-                    word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                    util.write_sei_line(remote_archive_kana_path, word_values)
-
-                for typo in self.kana_typos:
-                    typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                    util.write_sei_line(remote_archive_kana_typos_path, typo_values)
-
-                for incorrect_typo in self.kana_incorrect_typos:
-                    incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                    util.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
             else:
                 pass
   

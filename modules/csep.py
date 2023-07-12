@@ -14,14 +14,14 @@ class csep:
 
         """
         
-        Initializes a new typo object.\n
+        Initializes a new csep object.\n
 
         Parameters:\n
-        self (object - typo) : The typo object to be initialized.\n
-        incoming_word_id (int) : The id of the word the typo is for.\n
-        incoming_csep_id (int) : The id of the typo.\n
-        incoming_csep_value (string) : The value of the typo.\n
-        incoming_word_type (string) : The type of the word the typo is for.\n
+        self (object - typo) : The csep object to be initialized.\n
+        incoming_word_id (int) : The id of the word the csep is for.\n
+        incoming_csep_id (int) : The id of the csep.\n
+        incoming_csep_value (string) : The value of the csep.\n
+        incoming_word_type (string) : The type of the word the csep is for.\n
         Returns:\n
         None.\n
 

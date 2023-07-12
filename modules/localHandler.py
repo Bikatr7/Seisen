@@ -9,8 +9,10 @@ import time
 ## custom modules
 from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
+
 from modules.words import word as kana_blueprint
 from modules.vocab import vocab as vocab_blueprint
+
 from modules import util
 from modules.ensureFileSecurity import fileEnsurer
 
@@ -54,7 +56,7 @@ class localHandler():
         ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
-        self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
+        self.password_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
         ## the paths for all kana related files
         self.kana_path = os.path.join(self.fileEnsurer.kana_dir, "kana.txt")
@@ -68,7 +70,7 @@ class localHandler():
         self.vocab_incorrect_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab incorrect typos.txt")
 
         ## contains the date of the last local backup
-        self.last_local_backup_file = os.path.join(self.local_archives_dir, "last_local_backup.txt")
+        self.last_local_backup_path = os.path.join(self.local_archives_dir, "last_local_backup.txt")
 
         ##----------------------------------------------------------------variables----------------------------------------------------------------
 
@@ -276,7 +278,7 @@ W
 
         """
 
-        with open(self.last_local_backup_file, 'r+', encoding="utf-8") as file:
+        with open(self.last_local_backup_path, 'r+', encoding="utf-8") as file:
 
             last_backup_date = str(file.read().strip())
             last_backup_date = last_backup_date.strip('\x00')

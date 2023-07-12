@@ -82,9 +82,7 @@ class fileEnsurer:
 
       self.ensure_archive_files()
 
-      time.sleep(0.1)
-
-      os.system('cls')
+      util.clear_console()
 
 ##--------------------start-of-create_needed_base_directories()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -95,7 +93,7 @@ class fileEnsurer:
       Creates the needed base directories.\n
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
 
       Returns:\n
       None\n

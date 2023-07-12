@@ -69,12 +69,12 @@ class remoteHandler():
         ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
-        self.password_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
+        self.password_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
         ## the paths to the file that stores the kana words and its typos
-        self.kana_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana.txt")
-        self.kana_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana typos.txt")
-        self.kana_incorrect_typos_file = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana incorrect typos.txt")
+        self.kana_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana.txt")
+        self.kana_typos_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana typos.txt")
+        self.kana_incorrect_typos_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana incorrect typos.txt")
 
         ## the paths for all vocab related files
         self.vocab_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab.txt")
@@ -83,13 +83,13 @@ class remoteHandler():
         self.vocab_incorrect_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab incorrect typos.txt")
 
         ## if remoteHandler failed to make a database connection
-        self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
+        self.database_connection_failed_path = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
 
         ## contains the date of the last local backup
-        self.last_remote_backup_file = os.path.join(self.remote_archives_dir, "last_remote_backup.txt")
+        self.last_remote_backup_path = os.path.join(self.remote_archives_dir, "last_remote_backup.txt")
 
         ## contains the date of the last time the database was overwritten with local
-        self.last_local_remote_backup_file = os.path.join(self.local_remote_archives_dir, "last_local_remote_backup.txt")
+        self.last_local_remote_backup_path = os.path.join(self.local_remote_archives_dir, "last_local_remote_backup.txt")
 
         ##----------------------------------------------------------------variables----------------------------------------------------------------
         
@@ -262,7 +262,7 @@ class remoteHandler():
 
         """
         
-        with open(self.database_connection_failed, "r+", encoding="utf-8") as file:
+        with open(self.database_connection_failed_path, "r+", encoding="utf-8") as file:
             if(file.read().strip() == "true"):
                 print("Database connection has failed previously.... skipping\n")
                 time.sleep(.1)
@@ -272,7 +272,7 @@ class remoteHandler():
 
         try:
 
-            with open(self.password_file, 'r', encoding='utf-8') as file:  ## get saved connection credentials if exists
+            with open(self.password_path, 'r', encoding='utf-8') as file:  ## get saved connection credentials if exists
                 credentials = file.readlines()
 
                 database_name = base64.b64decode((credentials[0].strip()).encode('utf-8')).decode('utf-8')
@@ -280,7 +280,7 @@ class remoteHandler():
 
             connection = self.create_database_connection("localhost", "root", database_name, password)
 
-            print("Used saved pass in " + self.password_file)
+            print("Used saved pass in " + self.password_path)
 
         except: ## else try to get credentials manually
 
@@ -298,13 +298,13 @@ class remoteHandler():
                 
                 connection = self.create_database_connection("localhost", "root", database_name, password)
                             
-                util.standard_create_file(self.password_file) 
+                util.standard_create_file(self.password_path) 
 
                 time.sleep(0.1)
 
                 credentials = [x + '\n' for x  in credentials]
 
-                with open(self.password_file, "w+",encoding='utf-8') as file:
+                with open(self.password_path, "w+",encoding='utf-8') as file:
                     file.writelines(credentials)
 
             except AssertionError:
@@ -346,7 +346,7 @@ class remoteHandler():
 
         """
 
-        with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+        with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
             file.write("true")
 
 ##--------------------start-of-mark_succeeded_database_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -365,7 +365,7 @@ class remoteHandler():
 
         """
 
-        with open(self.database_connection_failed, "w+", encoding="utf-8") as file:
+        with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
             file.write("false")
 
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -390,13 +390,13 @@ class remoteHandler():
 
         def clear_local_kana():
 
-            with open(self.kana_file, "w", encoding="utf-8") as file:
+            with open(self.kana_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
                 
-            with open(self.kana_typos_file, "w", encoding="utf-8") as file:
+            with open(self.kana_typos_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
 
-            with open(self.kana_incorrect_typos_file, "w", encoding="utf-8") as file:
+            with open(self.kana_incorrect_typos_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
 
         ##----------------------------------------------------------------clear_local_vocab()----------------------------------------------------------------
@@ -435,15 +435,15 @@ class remoteHandler():
 
             for kana in self.kana:
                 word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                util.write_sei_line(self.kana_file, word_values)
+                util.write_sei_line(self.kana_path, word_values)
 
             for typo in self.kana_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                util.write_sei_line(self.kana_typos_file, typo_values)
+                util.write_sei_line(self.kana_typos_path, typo_values)
 
             for incorrect_typo in self.kana_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                util.write_sei_line(self.kana_incorrect_typos_file, incorrect_typo_values)
+                util.write_sei_line(self.kana_incorrect_typos_path, incorrect_typo_values)
 
             for kana in self.kana:
                 for typo in self.kana_typos:
@@ -747,7 +747,7 @@ class remoteHandler():
 
         def fill_kana():
 
-            with open(self.kana_file, "r", encoding="utf-8") as file:
+            with open(self.kana_path, "r", encoding="utf-8") as file:
 
                 for line in file:
 
@@ -767,7 +767,7 @@ class remoteHandler():
 
         def fill_kana_typos():
 
-            with open(self.kana_typos_file, "r", encoding="utf-8") as file:
+            with open(self.kana_typos_path, "r", encoding="utf-8") as file:
 
                 for line in file:
 
@@ -787,7 +787,7 @@ class remoteHandler():
         
         def fill_kana_incorrect_typos():
 
-                with open(self.kana_incorrect_typos_file, "r", encoding="utf-8") as file:
+                with open(self.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
 
                     for line in file:
 
@@ -1005,7 +1005,7 @@ class remoteHandler():
         if(self.connection is None):
             return
 
-        with open(self.last_remote_backup_file, 'r+', encoding="utf-8") as file:
+        with open(self.last_remote_backup_path, 'r+', encoding="utf-8") as file:
 
             last_backup_date = str(file.read().strip())
             last_backup_date = last_backup_date.strip('\x00')
@@ -1086,7 +1086,7 @@ class remoteHandler():
         if(self.connection is None):
             return
         
-        with open(self.last_local_remote_backup_file, 'r+', encoding="utf-8") as file:
+        with open(self.last_local_remote_backup_path, 'r+', encoding="utf-8") as file:
 
             last_backup_date = str(file.read().strip())
             last_backup_date = last_backup_date.strip('\x00')

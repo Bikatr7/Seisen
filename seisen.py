@@ -181,7 +181,7 @@ class Seisen:
         number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
-        self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(number_of_correct_rounds) + " correct; Ratio : " + round_ratio + "\n"
+        self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         self.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
         self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
         self.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material + "?\n"

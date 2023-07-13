@@ -211,22 +211,33 @@ class localHandler():
         Returns:\n
         ids (list - string) : The list of all ids in the database.\n
 
+        ------------------------------
+
+        KANA TYPO ID = 1\n
+        KANA INCORRECT TYPO ID = 2\n
+        VOCAB TYPO ID = 3\n
+        VOCAB INCORRECT TYPO ID = 4\n
+        VOCAB ID = 5\n
+        CSEP ID = 6\n
+
         """
 
         ids = ["0"]
 
         i = 0
 
-        TYPO_ID_IDENTIFIER = 1
-        INCORRECT_TYPO_ID_IDENTIFIER = 2
-        VOCAB_ID_IDENTIFIER = 3
-        CSEP_ID_IDENTIFIER = 4
+        KANA_TYPO_ID_IDENTIFIER = 1
+        KANA_INCORRECT_TYPO_ID_IDENTIFIER = 2
+        VOCAB_TYPO_ID_IDENTIFIER = 3
+        VOCAB_INCORRECT_TYPO_ID_IDENTIFIER = 4
+        VOCAB_ID_IDENTIFIER = 5
+        CSEP_ID_IDENTIFIER = 6
 
         TYPO_ID_INDEX_LOCATION = 2
         VOCAB_ID_INDEX_LOCATION = 1
         CSEP_ID_INDEX_LOCATION = 1
 
-        if(type_of_id_to_query == TYPO_ID_IDENTIFIER):
+        if(type_of_id_to_query == KANA_TYPO_ID_IDENTIFIER):
             with open(self.kana_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -234,13 +245,30 @@ class localHandler():
                     ids.append(util.read_sei_file(self.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
-        elif(type_of_id_to_query == INCORRECT_TYPO_ID_IDENTIFIER):
+        elif(type_of_id_to_query == KANA_INCORRECT_TYPO_ID_IDENTIFIER):
             with open(self.kana_incorrect_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
                     ids.append(util.read_sei_file(self.kana_incorrect_typos_path,i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
+
+        elif(type_of_id_to_query == VOCAB_TYPO_ID_IDENTIFIER):
+            with open(self.vocab_typos_path, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(util.read_sei_file(self.vocab_typos_path,i+1, TYPO_ID_INDEX_LOCATION))
+                    i+=1
+
+        elif(type_of_id_to_query == VOCAB_INCORRECT_TYPO_ID_IDENTIFIER):
+            with open(self.vocab_incorrect_typos_path, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(util.read_sei_file(self.vocab_incorrect_typos_path,i+1, TYPO_ID_INDEX_LOCATION))
+                    i+=1
+                    
 
         elif(type_of_id_to_query == VOCAB_ID_IDENTIFIER):
             with open(self.vocab_path, 'r', encoding='utf-8') as file:

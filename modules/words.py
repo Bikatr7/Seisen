@@ -89,8 +89,9 @@ class word:
         
         """
 
-        ## where the incorrect count index is in the
+        ## where the correct count index is in the
         CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 5
+        KANA_ID_FILE_INDEX_LOCATION = 1
 
         kana_ids = []
 
@@ -102,7 +103,7 @@ class word:
             kana_lines = file.readlines()
 
         for i, line in enumerate(kana_lines):
-            kana_ids.append(util.read_sei_file(handler.kana_path, i+1,1))
+            kana_ids.append(util.read_sei_file(handler.kana_path, i+1, KANA_ID_FILE_INDEX_LOCATION))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = kana_ids.index(str(self.word_id)) + 1
@@ -148,7 +149,7 @@ class word:
 
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def log_new_typo(self, typo, handler:localHandler) -> None:
+    def log_new_typo(self, typo:str, handler:localHandler) -> None:
 
         """
 
@@ -177,7 +178,7 @@ class word:
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def log_new_incorrect_typo(self, incorrect_typo, handler:localHandler) -> None:
+    def log_new_incorrect_typo(self, incorrect_typo:str, handler:localHandler) -> None:
 
         """
         

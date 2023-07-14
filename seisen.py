@@ -288,6 +288,18 @@ class Seisen:
             self.change_mode()
             return
         
+        elif(self.current_user_guess == "b" and vocab_to_test.furigana != "0"):
+
+            util.clear_console()
+
+            self.current_question_prompt = self.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
+
+            self.current_user_guess = str(input(self.current_question_prompt)).lower()
+
+            if(self.current_user_guess == "v"): 
+                self.change_mode()
+                return
+            
         total_number_of_rounds += 1
 
         ## checks if the users answer is correct

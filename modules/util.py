@@ -61,7 +61,7 @@ def input_check(input_type:int, user_input:str, number_of_choices:int, input_pro
             print(input_issue_message + "\n")
             user_input = input(input_prompt_message)
 
-        elif(input_type == 4):
+        elif(input_type == 4 or input_type == 1):
             print(input_issue_message + "\n" + input_prompt_message)
             user_input = str(msvcrt.getch().decode())
 

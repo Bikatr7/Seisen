@@ -71,7 +71,7 @@ class scoreRate:
             total_answer_score = total_answer / (total_answer + 1)
             kana_score *= total_answer_score
 
-            kana_scores.append(kana_score)
+            kana_scores.append(kana_score + 1.0)
 
         kana_to_test = random.choices(kana_list, weights=kana_scores)[0]
 
@@ -137,8 +137,8 @@ class scoreRate:
             total_answer_score = total_answer / (total_answer + 1)
             vocab_score *= total_answer_score
 
-            vocab_scores.append(vocab_score)
-
+            vocab_scores.append(vocab_score + 1.0)
+        
         vocab_to_test = random.choices(vocab_list, weights=vocab_scores)[0]
 
         for i, vocab in enumerate(vocab_list):

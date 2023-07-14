@@ -105,13 +105,13 @@ class Seisen:
 
         """
 
-        main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.Kana Practice\n2.Settings\n"
+        main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.Kana Practice\n2.Vocab Practice\n3.Settings\n"
 
         os.system('cls')
 
         print(main_menu_message)
 
-        self.current_mode = int(util.input_check(1, str(msvcrt.getch().decode()), 2, main_menu_message))
+        self.current_mode = int(util.input_check(1, str(msvcrt.getch().decode()), 3, main_menu_message))
         
         os.system('cls')
 
@@ -132,14 +132,17 @@ class Seisen:
         """
 
         ## -1 is a code that forces the input to be changed
-        valid_modes = [1,2]
+        valid_modes = [1, 2, 3]
 
         while True:
 
             if(self.current_mode == 1):
                 self.test_kana()
+
+            if(self.current_mode == 2):
+                self.test_vocab()
         
-            elif(self.current_mode == 2):
+            elif(self.current_mode == 3):
                 self.change_settings()
 
             elif(self.current_mode != -1): ## if invalid input, clear screen and print error
@@ -214,6 +217,98 @@ class Seisen:
             kana_to_test.log_incorrect_answer(self.localHandler) 
 
         for answer in kana_to_test.testing_material_answer_all: ## prints the other accepted answers 
+
+            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess):
+
+                if(displayOther == False):
+                    self.current_question_prompt += "\nOther Answers include:\n"
+
+                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                displayOther = True
+
+            elif(isCorrect == True and answer != self.current_user_guess):
+
+                if(displayOther == False):
+                    self.current_question_prompt += "\nOther Answers include:\n"
+                    
+                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                displayOther = True
+
+        print(self.current_question_prompt)
+
+        time.sleep(2)
+            
+        util.clear_console()
+
+        util.edit_sei_line(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, total_number_of_rounds)
+        util.edit_sei_line(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, number_of_correct_rounds)
+
+
+##--------------------start-of-test_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def test_vocab(self) -> None:
+
+        """
+        
+        tests the user on vocab.\n
+
+        Parameters:\n
+        self (object - Seisen) : The Seisen object.\n
+
+        Returns:\n
+        None.\n
+
+        """
+        
+        util.clear_stream()
+
+        util.clear_console()
+
+        ROUND_COUNT_INDEX_LOCATION = 2
+        NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
+
+        displayOther = False
+
+        ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
+        vocab_to_test, display_list = self.word_rater.get_vocab_to_test(self.localHandler.vocab)
+
+        total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
+
+        self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
+        self.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
+        self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
+        self.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material + "?\n"
+
+        self.current_user_guess = str(input(self.current_question_prompt)).lower()
+
+        ## if the user wants to change the mode do so
+        if(self.current_user_guess == "v"): 
+            self.change_mode()
+            return
+        
+        total_number_of_rounds += 1
+
+        ## checks if the users answer is correct
+        isCorrect, self.current_user_guess = vocab_to_test.check_answers_vocab(self.current_user_guess, self.current_question_prompt, self.localHandler)
+
+        util.clear_console()
+
+        if(isCorrect == True):
+            number_of_correct_rounds+=1
+            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is correct.\n"
+            vocab_to_test.log_correct_answer(self.localHandler)              
+
+        elif(isCorrect == False):
+            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is incorrect, the correct answer was " + vocab_to_test.testing_material_answer_main + ".\n"
+            vocab_to_test.log_incorrect_answer(self.localHandler)
+
+        else:
+            self.current_question_prompt += "\n\nSkipped.\n"
+            vocab_to_test.log_incorrect_answer(self.localHandler) 
+
+        for answer in vocab_to_test.testing_material_answer_all: ## prints the other accepted answers 
 
             if(isCorrect == None or isCorrect == False and answer != self.current_user_guess):
 

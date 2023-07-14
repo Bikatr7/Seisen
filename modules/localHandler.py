@@ -120,25 +120,25 @@ class localHandler():
                     
                     values = line.strip().split(',')
 
-                    if(int(values[0]) == self.KANA_WORD_TYPE):
+                    if(values[3] == self.KANA_WORD_TYPE):
                         for kana in self.kana:
-                            if(kana.word_id == int(values[1])):
-                                kana.typos.append(typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
-
+                            if(kana.word_id == int(values[0])):
+                                kana.typos.append(typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
+            
             with open(self.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
 
                 for line in file:
 
                     values = line.strip().split(',')
 
-                    if(int(values[0]) == self.KANA_WORD_TYPE):
+                    if(values[3] == self.KANA_WORD_TYPE):
                         for kana in self.kana:
-                            if(kana.word_id == int(values[1])):
-                                kana.incorrect_typos.append(incorrect_typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+                            if(kana.word_id == int(values[0])):
+                                kana.incorrect_typos.append(incorrect_typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
-        ##----------------------------------------------------------------load_vocab()----------------------------------------------------------------
+        ##----------------------------------------------------------------get_csep_values()----------------------------------------------------------------
 
-        def load_vocab():
+        def get_csep_values(vocab_id:str) -> typing.List[str]:
 
             csep_values = []
 
@@ -146,26 +146,36 @@ class localHandler():
 
                 for line in file:
 
-                    current_line_cseps = []
-
                     values = line.strip().split(',')
 
-                    current_line_cseps.append(values[2])
+                    if(values[0] == vocab_id):
+                        csep_values.append(values[2])
 
-                    csep_values.append(current_line_cseps)
-            
+            return csep_values
+
+        ##----------------------------------------------------------------load_vocab()----------------------------------------------------------------
+
+        def load_vocab():
+
+
             with open(self.vocab_path, "r", encoding="utf-8") as file:
 
-                for i, line in enumerate(file):
+                for line in file:
 
                     values = line.strip().split(',')
 
-                    if(str(values[4])  == 0):
+                    if(values[4]  == "0"):
                         kanji_flag = False
                     else:
                         kanji_flag = True
 
-                    self.vocab.append(vocab_blueprint(int(values[0]), values[1], values[2], values[3], csep_values[i], values[4], int(values[5]), int(values[6]), kanji_flag))
+                    csep_values = get_csep_values(values[0])
+
+                    print(csep_values)
+
+                    util.pause_console()
+
+                    self.vocab.append(vocab_blueprint(int(values[0]), values[1], values[2], values[3], csep_values, values[4], int(values[5]), int(values[6]), kanji_flag))
 
             with open(self.vocab_typos_path, "r", encoding="utf-8") as file:
 
@@ -173,10 +183,10 @@ class localHandler():
                     
                     values = line.strip().split(',')
 
-                    if(int(values[0]) == self.VOCAB_WORD_TYPE):
+                    if(values[3] == self.VOCAB_WORD_TYPE):
                         for vocab in self.vocab:
-                            if(vocab.word_id == int(values[1])):
-                                vocab.typos.append(typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+                            if(vocab.word_id == int(values[0])):
+                                vocab.typos.append(typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
             with open(self.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
 
@@ -184,10 +194,10 @@ class localHandler():
 
                     values = line.strip().split(',')
 
-                    if(int(values[0]) == self.VOCAB_WORD_TYPE):
+                    if(values[3] == self.VOCAB_WORD_TYPE):
                         for vocab in self.vocab:
-                            if(vocab.word_id == int(values[1])):
-                                vocab.incorrect_typos.append(incorrect_typo_blueprint(str(values[0]), int(values[1]), int(values[2]), values[4]))
+                            if(vocab.word_id == int(values[0])):
+                                vocab.incorrect_typos.append(incorrect_typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 

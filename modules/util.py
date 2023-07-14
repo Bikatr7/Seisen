@@ -399,8 +399,9 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
                 word.log_new_typo(user_guess, handler)
 
                 return final_answer
-
-    word.log_new_incorrect_typo(user_guess, handler)
+        
+            else:
+                word.log_new_incorrect_typo(user_guess, handler)
     
     return final_answer
 

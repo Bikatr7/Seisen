@@ -85,7 +85,7 @@ class vocab(words.word):
             vocab_lines = file.readlines()
 
         for i, line in enumerate(vocab_lines):
-            vocab_ids.append(util.read_sei_file(handler.vocab, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
+            vocab_ids.append(util.read_sei_file(handler.vocab_path, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = vocab_ids.index(str(self.word_id)) + 1
@@ -123,7 +123,7 @@ class vocab(words.word):
             vocab_lines = file.readlines()
 
         for i, line in enumerate(vocab_lines):
-            vocab_ids.append(util.read_sei_file(handler.vocab, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
+            vocab_ids.append(util.read_sei_file(handler.vocab_path, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = vocab_ids.index(str(self.word_id)) + 1

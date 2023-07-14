@@ -171,10 +171,6 @@ class localHandler():
 
                     csep_values = get_csep_values(values[0])
 
-                    print(csep_values)
-
-                    util.pause_console()
-
                     self.vocab.append(vocab_blueprint(int(values[0]), values[1], values[2], values[3], csep_values, values[4], int(values[5]), int(values[6]), kanji_flag))
 
             with open(self.vocab_typos_path, "r", encoding="utf-8") as file:

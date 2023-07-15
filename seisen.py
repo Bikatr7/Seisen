@@ -406,11 +406,13 @@ class Seisen:
         ## prompts the user to restore a local backup
         elif(pathing == "5"):
             self.localHandler.restore_local_backup()
+            self.fileEnsurer.ensure_files()
             self.localHandler.load_words_from_local_storage()
 
         ## prompts the user to restore a remote backup
         elif(pathing == "6"):
             self.remoteHandler.restore_remote_backup()
+            self.fileEnsurer.ensure_files()
             self.localHandler.load_words_from_local_storage()
             
         ## if no valid option is selected, exit the change_settings() function

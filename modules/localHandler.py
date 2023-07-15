@@ -367,11 +367,11 @@ W
                 valid_backups.append(item)
                 backup_to_restore_prompt += item + "\n"
         
-        backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible.\n\n"
-
-        backup_to_restore = util.user_confirm(backup_to_restore_prompt)
+        backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
 
         try: ## user confirm will throw an assertion error if  the user wants to cancel the backup restore.
+
+            backup_to_restore = util.user_confirm(backup_to_restore_prompt)
 
             if(backup_to_restore in valid_backups):
                 util.clear_console()

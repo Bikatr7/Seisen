@@ -47,8 +47,13 @@ class fileEnsurer:
       ## the folder for all vocab-related files are located
       self.vocab_dir = os.path.join(self.config_dir, "Vocab")
 
+      ## lib files for remoteHandler.py
+      self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
+
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
+      ## log file
+      self.log_path = os.path.join(self.remote_lib_dir, "log.txt")
 
       ##----------------------------------------------------------------functions----------------------------------------------------------------
 
@@ -105,6 +110,7 @@ class fileEnsurer:
       util.standard_create_directory(self.lib_dir)
       util.standard_create_directory(self.kana_dir)
       util.standard_create_directory(self.vocab_dir)
+      util.standard_create_directory(self.remote_lib_dir)
                
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -254,19 +260,17 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
-      ## lib files for remoteHandler.py
-      remote_lib_dir = os.path.join(self.lib_dir, "remote")
-
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## if remoteHandler failed to make a database connection
-      database_connection_failed = os.path.join(remote_lib_dir, "isConnectionFailed.txt")
+      database_connection_failed_path = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_directory(remote_lib_dir)
+      util.modified_create_file(database_connection_failed_path, "false")
 
-      util.modified_create_file(database_connection_failed, "false")
+      with open(self.log_path, "w+", encoding="utf-8") as file:
+         file.truncate()
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

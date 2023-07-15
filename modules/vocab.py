@@ -151,7 +151,7 @@ class vocab(words.word):
         ## gets a new id for the typo
         new_typo_id = util.get_new_id(handler.get_list_of_all_ids(3))
 
-        new_typo = typo_blueprint(self.word_type, new_typo_id, self.word_id, typo)
+        new_typo = typo_blueprint(self.word_id, new_typo_id, typo, self.word_type)
 
         ## updates local storage so the typo will be saved
         util.write_sei_line(handler.vocab_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
@@ -178,7 +178,7 @@ class vocab(words.word):
         ## gets a new id for the incorrect typo
         new_incorrect_typo_id = util.get_new_id(handler.get_list_of_all_ids(4))
 
-        new_incorrect_typo = incorrect_typo_blueprint(self.word_type, new_incorrect_typo_id, self.word_id, incorrect_typo)
+        new_incorrect_typo = incorrect_typo_blueprint(self.word_id, new_incorrect_typo_id, incorrect_typo, self.word_type)
 
         ## updates local storage so the incorrect typo will be saved
         util.write_sei_line(handler.vocab_incorrect_typos_path, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])

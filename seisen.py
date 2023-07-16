@@ -6,9 +6,13 @@ import time
 ## custom modules
 from modules.localHandler import localHandler
 from modules.remoteHandler import remoteHandler
+
 from modules.ensureFileSecurity import fileEnsurer
-from modules import util
 from modules.scoreRate import scoreRate
+from modules.logger import logger
+
+from modules import util
+
 
 class Seisen:
 
@@ -35,8 +39,14 @@ class Seisen:
 
         ##----------------------------------------------------------------objects----------------------------------------------------------------
 
-        ## ensures the files needed to run Seisen are present, as well as creates the fileEnsurer object so the remoteHandler object can be reset later if necessary
+        ## creates the fileEnsurer object
         self.fileEnsurer = fileEnsurer()
+
+        ## logger for all actions taken by Seisen.\n
+        self.logger = logger(self.fileEnsurer.log_path)
+
+        ## ensures files needed by Seisen are created
+        self.fileEnsurer.ensure_files()
         
         ## sets up the handlers for Seisen data
         self.localHandler = localHandler(self.fileEnsurer)

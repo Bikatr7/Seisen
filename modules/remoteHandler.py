@@ -22,6 +22,8 @@ from modules.words import word as kana_blueprint
 from modules.vocab import vocab as vocab_blueprint
 
 from modules import util
+
+from modules.logger import logger
 from modules.ensureFileSecurity import fileEnsurer
 
 class remoteHandler():
@@ -33,7 +35,7 @@ class remoteHandler():
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, file_ensurer:fileEnsurer) -> None:
+    def __init__(self, file_ensurer:fileEnsurer, logger:logger) -> None:
 
         """
         
@@ -51,6 +53,8 @@ class remoteHandler():
 
         ## the file_ensurer used for paths here
         self.fileEnsurer = file_ensurer
+
+        self.logger = logger
 
         ##----------------------------------------------------------------dir----------------------------------------------------------------
 
@@ -938,7 +942,7 @@ class remoteHandler():
             remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana typos.txt")
             remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana incorrect typos.txt")
 
-            util.standard_create_directory(remote_archive_kana_dir)
+            util.standard_create_directory(remote_archive_kana_dir, self.logger)
 
             word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
             typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
@@ -1013,7 +1017,7 @@ class remoteHandler():
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
             if(last_backup_date != current_day):
-                archive_dir = util.create_archive_dir(1)
+                archive_dir = util.create_archive_dir(1, self.logger)
 
                 file.truncate(0)
 

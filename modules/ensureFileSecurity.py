@@ -1,10 +1,11 @@
 ## built-in modules
 import os
-import time
 import shutil
 
 ## custom modules
 from modules import util
+
+from modules.logger import logger
 
 class fileEnsurer:
 
@@ -62,19 +63,22 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_files(self) -> None:
+   def ensure_files(self, logger:logger) -> None:
 
       """
 
       This function ensures that the files needed to run the program are present and ready to be used.\n
       
       Parameters:\n
-      None\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
+      logger (object - logger) : the logger object.\n
 
       Returns:\n
       None\n
       
       """
+
+      self.logger = logger
 
       self.create_needed_base_directories()
 
@@ -106,12 +110,12 @@ class fileEnsurer:
       
       """
 
-      util.standard_create_directory(self.config_dir)
-      util.standard_create_directory(self.logins_dir)
-      util.standard_create_directory(self.lib_dir)
-      util.standard_create_directory(self.kana_dir)
-      util.standard_create_directory(self.vocab_dir)
-      util.standard_create_directory(self.remote_lib_dir)
+      util.standard_create_directory(self.config_dir, self.logger)
+      util.standard_create_directory(self.logins_dir, self.logger)
+      util.standard_create_directory(self.lib_dir, self.logger)
+      util.standard_create_directory(self.kana_dir, self.logger)
+      util.standard_create_directory(self.vocab_dir, self.logger)
+      util.standard_create_directory(self.remote_lib_dir, self.logger)
                
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -141,9 +145,9 @@ class fileEnsurer:
    
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_directory(loop_data_dir)
+      util.standard_create_directory(loop_data_dir, self.logger)
 
-      util.modified_create_file(loop_data_path, "0,0,0,0,")
+      util.modified_create_file(loop_data_path, "0,0,0,0,", self.logger)
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -171,9 +175,9 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_file(kana_typos_path)
+      util.standard_create_file(kana_typos_path, self.logger)
 
-      util.standard_create_file(kana_incorrect_typos_path)
+      util.standard_create_file(kana_incorrect_typos_path, self.logger)
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -201,9 +205,9 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_file(vocab_typos_path)
+      util.standard_create_file(vocab_typos_path, self.logger)
 
-      util.standard_create_file(vocab_incorrect_typos_path)
+      util.standard_create_file(vocab_incorrect_typos_path, self.logger)
 
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -268,7 +272,7 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.modified_create_file(database_connection_failed_path, "false")
+      util.modified_create_file(database_connection_failed_path, "false", self.logger)
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -406,11 +410,11 @@ z
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_directory(archives_dir)
-      util.standard_create_directory(database_archives_dir)
-      util.standard_create_directory(local_archives_dir)
-      util.standard_create_directory(local_remote_archives_dir)
+      util.standard_create_directory(archives_dir, self.logger)
+      util.standard_create_directory(database_archives_dir, self.logger)
+      util.standard_create_directory(local_archives_dir, self.logger)
+      util.standard_create_directory(local_remote_archives_dir, self.logger)
 
-      util.standard_create_file(last_local_backup_file)
-      util.standard_create_file(last_remote_backup_file)
-      util.standard_create_file(last_local_remote_backup_file)
+      util.standard_create_file(last_local_backup_file, self.logger)
+      util.standard_create_file(last_remote_backup_file, self.logger)
+      util.standard_create_file(last_local_remote_backup_file, self.logger)

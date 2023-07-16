@@ -46,12 +46,11 @@ class Seisen:
         self.logger = logger(self.fileEnsurer.log_path)
 
         ## ensures files needed by Seisen are created
-        self.fileEnsurer.ensure_files()
+        self.fileEnsurer.ensure_files(self.logger)
         
         ## sets up the handlers for Seisen data
-        self.localHandler = localHandler(self.fileEnsurer)
-        self.remoteHandler = remoteHandler(self.fileEnsurer)
-
+        self.localHandler = localHandler(self.fileEnsurer, self.logger)
+        self.remoteHandler = remoteHandler(self.fileEnsurer, self.logger)
         ## sets up the word_rater
         self.word_rater = scoreRate(self.localHandler)
 

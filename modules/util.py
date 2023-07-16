@@ -12,6 +12,7 @@ import requests
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from modules.localHandler import localHandler
     from modules.words import word
+    from modules.logger import logger
 
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -407,7 +408,7 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
 
 ##--------------------start-of-standard_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def standard_create_directory(directory_path:str):
+def standard_create_directory(directory_path:str, logger:logger):
 
     """
 
@@ -423,12 +424,11 @@ def standard_create_directory(directory_path:str):
 
     if(os.path.isdir(directory_path) == False):
         os.mkdir(directory_path)
-        print(directory_path + " created due to lack of the folder")
-        time.sleep(0.1)
+        logger.log_action(directory_path + " created due to lack of the folder")
 
 ##--------------------start-of-modified_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def modified_create_directory(directory_path:str, path_to_check:str):
+def modified_create_directory(directory_path:str, path_to_check:str, logger:logger):
 
     """
 
@@ -445,12 +445,11 @@ def modified_create_directory(directory_path:str, path_to_check:str):
 
     if(os.path.isdir(directory_path) == False or os.path.getsize(path_to_check) == 0):
         os.mkdir(directory_path)
-        print(directory_path + " created due to lack of the folder or " + path_to_check + " was blank or empty")
-        time.sleep(0.1)
+        logger.log_action(directory_path + " created due to lack of the folder or " + path_to_check + " was blank or empty")
 
 ##--------------------start-of-standard_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def standard_create_file(file_path:str):
+def standard_create_file(file_path:str, logger:logger):
 
     """
 
@@ -465,13 +464,13 @@ def standard_create_file(file_path:str):
     """
 
     if(os.path.exists(file_path) == False):
-        print(file_path + " was created due to lack of the file")
+        logger.log_action(file_path + " was created due to lack of the file")
         with open(file_path, "w+", encoding="utf-8") as file:
             file.truncate()
 
 ##--------------------start-of-modified_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def modified_create_file(file_path:str, content_to_write:str):
+def modified_create_file(file_path:str, content_to_write:str, logger:logger):
 
     """
 
@@ -487,13 +486,13 @@ def modified_create_file(file_path:str, content_to_write:str):
     """
 
     if(os.path.exists(file_path) == False or os.path.getsize(file_path) == 0):
-        print(file_path + " was created due to lack of the file or because it is blank")
+        logger.log_action(file_path + " was created due to lack of the file or because it is blank")
         with open(file_path, "w+", encoding="utf-8") as file:
             file.write(content_to_write)
 
 ##--------------------start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def create_archive_dir(type_of_archive:int):
+def create_archive_dir(type_of_archive:int, logger:logger):
 
     """
     
@@ -532,7 +531,7 @@ def create_archive_dir(type_of_archive:int):
 
     archive_directory = os.path.join(filePaths[type_of_archive], current_day)
 
-    standard_create_directory(archive_directory)
+    standard_create_directory(archive_directory, logger)
 
     return archive_directory
 

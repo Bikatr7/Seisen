@@ -1,5 +1,6 @@
 ## built-in imports
 import datetime
+import os
 
 class logger:
 
@@ -29,7 +30,6 @@ class logger:
 
         self.log_file_path = incoming_log_file_path
 
-
 ##--------------------start-of-get_time_stamp()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def get_time_stamp(self):
@@ -51,13 +51,13 @@ class logger:
 
         current_time = datetime.datetime.now().time().strftime("%H:%M:%S")
 
-        time_stamp = "(" + current_date + " " + current_time + ")"
+        time_stamp = "(" + current_date + " " + current_time + ") : "
 
         return time_stamp
     
 ##--------------------start-of-log_action()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def log_action(self, action):
+    def log_action(self, action:str):
 
         """
         
@@ -72,5 +72,7 @@ class logger:
  
         """
 
-        with open(self.log_file_path, 'a', encoding="utf-8") as file:
-            file.write(action + "\n")
+        time_stamp = self.get_time_stamp()
+
+        with open(self.log_file_path, 'a+', encoding="utf-8") as file:
+            file.write(time_stamp + action + "\n")

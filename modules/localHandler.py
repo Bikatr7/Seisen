@@ -14,6 +14,8 @@ from modules.words import word as kana_blueprint
 from modules.vocab import vocab as vocab_blueprint
 
 from modules import util
+
+from modules.logger import logger
 from modules.ensureFileSecurity import fileEnsurer
 
 class localHandler():
@@ -26,7 +28,7 @@ class localHandler():
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, file_ensurer:fileEnsurer) -> None:
+    def __init__(self, file_ensurer:fileEnsurer, logger:logger) -> None:
 
         """
         
@@ -44,6 +46,8 @@ class localHandler():
 
         ## the file_ensurer used for paths here
         self.fileEnsurer = file_ensurer
+
+        self.logger = logger
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
@@ -321,7 +325,7 @@ W
 
             if(last_backup_date != current_day):
                 
-                archive_dir = util.create_archive_dir(2)
+                archive_dir = util.create_archive_dir(2, self.logger)
 
                 shutil.copytree(self.fileEnsurer.kana_dir, os.path.join(archive_dir, "Kana"))
                 shutil.copytree(self.fileEnsurer.vocab_dir, os.path.join(archive_dir, "Vocab"))

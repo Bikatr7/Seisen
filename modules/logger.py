@@ -30,6 +30,8 @@ class logger:
 
         self.log_file_path = incoming_log_file_path
 
+        self.batch = ""
+
 ##--------------------start-of-get_time_stamp()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def get_time_stamp(self):
@@ -74,5 +76,25 @@ class logger:
 
         time_stamp = self.get_time_stamp()
 
+        self.batch += time_stamp + action + "\n"
+
+##--------------------start-of-push_batch()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def push_batch(self):
+
+        """
+        
+        Pushes all stored actions to the file.\n
+
+        Parameters:\n
+        None.\n
+
+        Returns:\n
+        None.\n
+        
+        """
+
         with open(self.log_file_path, 'a+', encoding="utf-8") as file:
-            file.write(time_stamp + action + "\n")
+            file.write(self.batch)
+
+        self.batch = ""

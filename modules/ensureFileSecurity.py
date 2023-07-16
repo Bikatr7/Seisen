@@ -92,7 +92,7 @@ class fileEnsurer:
 
       self.ensure_archive_files()
 
-      util.clear_console()
+      self.logger.push_batch()
 
 ##--------------------start-of-create_needed_base_directories()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -309,6 +309,8 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
+      self.logger.log_action("Local kana files were reset to default using local lib")
+
       black_list_characters_kana = ['ヶ', 'ョ', 'ゃ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ァ', 'ゅ', 'ょ', 'ぉ', '-', 'ヱ', 'ゐ', 'ヰ', 'ー', 'ッ','っ']
 
       default_kana_to_write = ""
@@ -360,6 +362,8 @@ class fileEnsurer:
       local_vocab_csep_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab csep.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
+
+      self.logger.log_action("Local vocab files were reset using to default using local lib")
 
       shutil.copy2(local_vocab_lib_path, vocab_actual_path)
       shutil.copy2(local_vocab_csep_lib_path, vocab_csep_actual_path)

@@ -51,6 +51,7 @@ class Seisen:
         ## sets up the handlers for Seisen data
         self.localHandler = localHandler(self.fileEnsurer, self.logger)
         self.remoteHandler = remoteHandler(self.fileEnsurer, self.logger)
+
         ## sets up the word_rater
         self.word_rater = scoreRate(self.localHandler)
 
@@ -407,7 +408,7 @@ class Seisen:
             with open(self.password_file, "w+", encoding="utf-8") as file: ## clears the credentials file allowing for a different database connection to be added if the current one is valid
                 file.truncate()
 
-            self.remoteHandler = remoteHandler(self.fileEnsurer)
+            self.remoteHandler = remoteHandler(self.fileEnsurer, self.logger)
 
             print("Remote Handler has been reset...\n")
             time.sleep(1)
@@ -415,13 +416,13 @@ class Seisen:
         ## prompts the user to restore a local backup
         elif(pathing == "5"):
             self.localHandler.restore_local_backup()
-            self.fileEnsurer.ensure_files()
+            self.fileEnsurer.ensure_files(self.logger)
             self.localHandler.load_words_from_local_storage()
 
         ## prompts the user to restore a remote backup
         elif(pathing == "6"):
             self.remoteHandler.restore_remote_backup()
-            self.fileEnsurer.ensure_files()
+            self.fileEnsurer.ensure_files(self.logger)
             self.localHandler.load_words_from_local_storage()
             
         ## if no valid option is selected, exit the change_settings() function

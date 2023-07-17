@@ -45,6 +45,9 @@ class Seisen:
         ## logger for all actions taken by Seisen.\n
         self.logger = logger(self.fileEnsurer.log_path)
 
+        self.logger.log_action("Initialization")
+        self.logger.log_action("--------------------------------------------------------------")
+
         ## ensures files needed by Seisen are created
         self.fileEnsurer.ensure_files(self.logger)
         
@@ -53,7 +56,7 @@ class Seisen:
         self.remoteHandler = remoteHandler(self.fileEnsurer, self.logger)
 
         ## sets up the word_rater
-        self.word_rater = scoreRate(self.localHandler)
+        self.word_rater = scoreRate(self.localHandler, self.logger)
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
@@ -81,8 +84,17 @@ class Seisen:
 
         ## boolean that holds whether the user has a valid internet connection
         self.hasValidConnection = util.check_update()
+
+        ##----------------------------------------------------------------start----------------------------------------------------------------
+
+        self.logger.push_batch()
         
-        ##----------------------------------------------------------------functions----------------------------------------------------------------
+##--------------------start-of-bootup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def bootup(self):
+
+        self.logger.log_action("--------------------------------------------------------------")
+        self.logger.log_action("Bootup")
 
         ## loads the words currently in local storage, by default this is just the kana
         self.localHandler.load_words_from_local_storage()
@@ -96,8 +108,49 @@ class Seisen:
         ## overwrites remote with local
         self.remoteHandler.local_remote_overwrite()
 
-        ## starts Seisen
-        self.commence_main_loop()
+        ## push logging batch
+        self.logger.push_batch()
+
+##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def commence_main_loop(self) -> None:
+
+        """
+        
+        The main loop for the Seisen project. Basically everything is done here.\n
+
+        Parameters:\n
+        self (object - Seisen) : The Seisen object.\n
+
+        Returns:\n
+        None\n
+
+        """
+
+        self.logger.log_action("--------------------------------------------------------------")
+        self.logger.log_action("Main Loop")
+        self.logger.log_action("--------------------------------------------------------------")
+
+        ## -1 is a code that forces the input to be changed
+        valid_modes = [1, 2, 3]
+
+        while True:
+
+            if(self.current_mode == 1):
+                self.test_kana()
+
+            if(self.current_mode == 2):
+                self.test_vocab()
+        
+            elif(self.current_mode == 3):
+                self.change_settings()
+
+            elif(self.current_mode != -1): ## if invalid input, clear screen and print error
+                util.clear_console()
+                print("Invalid Input, please enter a valid number choice or command.\n")
+
+            if(self.current_mode not in valid_modes): ## if invalid mode, change mode
+                self.change_mode()
 
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -121,46 +174,13 @@ class Seisen:
 
         print(main_menu_message)
 
+        old_mode = self.current_mode
+        
         self.current_mode = int(util.input_check(1, str(msvcrt.getch().decode()), 3, main_menu_message))
         
+        self.logger.log_action("Current mode changed to " + str(self.current_mode) + " was " + str(old_mode))
+
         os.system('cls')
-
-##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def commence_main_loop(self) -> None:
-
-        """
-        
-        The main loop for the Seisen project. Basically everything is done here.\n
-
-        Parameters:\n
-        self (object - Seisen) : The Seisen object.\n
-
-        Returns:\n
-        None\n
-
-        """
-
-        ## -1 is a code that forces the input to be changed
-        valid_modes = [1, 2, 3]
-
-        while True:
-
-            if(self.current_mode == 1):
-                self.test_kana()
-
-            if(self.current_mode == 2):
-                self.test_vocab()
-        
-            elif(self.current_mode == 3):
-                self.change_settings()
-
-            elif(self.current_mode != -1): ## if invalid input, clear screen and print error
-                util.clear_console()
-                print("Invalid Input, please enter a valid number choice or command.\n")
-
-            if(self.current_mode not in valid_modes): ## if invalid mode, change mode
-                self.change_mode()
 
 ##--------------------start-of-test_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -194,6 +214,8 @@ class Seisen:
         number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
+        self.logger.log_action("Testing Kana... Round " + str(total_number_of_rounds))
+
         self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         self.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
         self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
@@ -203,6 +225,11 @@ class Seisen:
 
         ## if the user wants to change the mode do so
         if(self.current_user_guess == "v"): 
+
+            self.logger.log_action("--------------------------------------------------------------")
+            self.logger.log_action("User chose to change mode")
+            self.logger.log_action("--------------------------------------------------------------")
+
             self.change_mode()
             return
         
@@ -210,6 +237,8 @@ class Seisen:
 
         ## checks if the users answer is correct
         isCorrect, self.current_user_guess = kana_to_test.check_answers_kana(self.current_user_guess, self.current_question_prompt, self.localHandler)
+
+        self.logger.log_action("User guessed " + self.current_user_guess + ", isCorrect = " + str(isCorrect))
 
         util.clear_console()
 
@@ -253,6 +282,9 @@ class Seisen:
         util.edit_sei_line(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, total_number_of_rounds)
         util.edit_sei_line(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, number_of_correct_rounds)
 
+        self.logger.log_action("--------------------------------------------------------------")
+
+        self.logger.push_batch()
 
 ##--------------------start-of-test_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -286,6 +318,8 @@ class Seisen:
         number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
+        self.logger.log_action("Testing Vocab... Round " + str(total_number_of_rounds))
+
         self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         self.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
         self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
@@ -294,7 +328,12 @@ class Seisen:
         self.current_user_guess = str(input(self.current_question_prompt)).lower()
 
         ## if the user wants to change the mode do so
-        if(self.current_user_guess == "v"): 
+        if(self.current_user_guess == "v"):
+
+            self.logger.log_action("--------------------------------------------------------------")
+            self.logger.log_action("User chose to change mode")
+            self.logger.log_action("--------------------------------------------------------------")
+             
             self.change_mode()
             return
         
@@ -306,7 +345,13 @@ class Seisen:
 
             self.current_user_guess = str(input(self.current_question_prompt)).lower()
 
-            if(self.current_user_guess == "v"): 
+            ## if the user wants to change the mode do so
+            if(self.current_user_guess == "v"):
+                
+                self.logger.log_action("--------------------------------------------------------------")
+                self.logger.log_action("User chose to change mode")
+                self.logger.log_action("--------------------------------------------------------------")
+                
                 self.change_mode()
                 return
             
@@ -314,6 +359,8 @@ class Seisen:
 
         ## checks if the users answer is correct
         isCorrect, self.current_user_guess = vocab_to_test.check_answers_vocab(self.current_user_guess, self.current_question_prompt, self.localHandler)
+    
+        self.logger.log_action("User guessed " + self.current_user_guess + ", isCorrect = " + str(isCorrect))
 
         util.clear_console()
 
@@ -356,6 +403,10 @@ class Seisen:
 
         util.edit_sei_line(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, total_number_of_rounds)
         util.edit_sei_line(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, number_of_correct_rounds)
+
+        self.logger.log_action("--------------------------------------------------------------")
+
+        self.logger.push_batch()
 
 ##--------------------start-of-change_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -431,4 +482,22 @@ class Seisen:
 
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-Seisen()
+## create client
+client = Seisen()
+
+try:
+
+    ## ruin seisen
+    client.bootup()
+    client.commence_main_loop()
+
+except Exception as e:
+
+    #@ if crash, catch and log, then throw
+    client.logger.log_action("--------------------------------------------------------------")
+    client.logger.log_action("Seisen has crashed")
+    client.logger.log_action(str(e))
+
+    client.logger.push_batch()
+
+    raise e

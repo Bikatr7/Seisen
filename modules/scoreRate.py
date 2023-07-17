@@ -8,6 +8,8 @@ from modules.vocab import vocab
 
 from modules.localHandler import localHandler
 
+from modules.logger import logger
+
 class scoreRate:
 
     """
@@ -18,7 +20,7 @@ class scoreRate:
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, handler:localHandler) -> None:
+    def __init__(self, handler:localHandler, logger:logger) -> None:
 
         """
         
@@ -26,8 +28,12 @@ class scoreRate:
 
         """
         
-        ## sets up the localHandler
+        ## gets the local handler
         self.handler = handler
+
+        ## gets the logger
+        self.logger = logger
+        
 
 ##--------------------start-of-get_kana_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -46,6 +52,8 @@ class scoreRate:
         display_item_list (list - str) : The list of display items. I.E. all the kana, their likelihoods, number of incorrect/correct answers.\n
 
         """
+
+        self.logger.log_action("Getting Kana to test...")
         
         raw_score_list = []
         kana_scores = []
@@ -93,6 +101,8 @@ class scoreRate:
         display_item_list.sort()
         display_item_list = list(map(lambda x: str(display_item_list.index(x) + 1) + " " + str(x), display_item_list))
 
+        self.logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
+
         return kana_to_test, display_item_list
     
 ##--------------------start-of-get_vocab_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -112,6 +122,8 @@ class scoreRate:
         display_item_list (list - str) : The list of display items. I.E. all the vocab, their likelihoods, number of incorrect/correct answers.\n
 
         """
+
+        self.logger.log_action("Getting Vocab to test...")
         
         raw_score_list = []
         vocab_scores = []
@@ -158,6 +170,8 @@ class scoreRate:
 
         display_item_list.sort()
         display_item_list = list(map(lambda x: str(display_item_list.index(x) + 1) + " " + str(x), display_item_list))
+
+        self.logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
 
         return vocab_to_test, display_item_list
     

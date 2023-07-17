@@ -140,7 +140,7 @@ class Seisen:
             if(self.current_mode == 1):
                 self.test_kana()
 
-            if(self.current_mode == 2):
+            elif(self.current_mode == 2):
                 self.test_vocab()
         
             elif(self.current_mode == 3):
@@ -213,7 +213,7 @@ class Seisen:
 
         total_number_of_rounds = int(util.read_sei_file(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
         number_of_correct_rounds = int(util.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
-        round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
+        round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds, 2)) if total_number_of_rounds != 0 else "0.0"
 
         self.logger.log_action("Testing Kana... Round " + str(total_number_of_rounds))
 
@@ -378,23 +378,27 @@ class Seisen:
             self.current_question_prompt += "\n\nSkipped.\n"
             vocab_to_test.log_incorrect_answer(self.localHandler) 
 
+        printed_answers = []
+
         for answer in vocab_to_test.testing_material_answer_all: ## prints the other accepted answers 
 
-            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess):
+            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess and answer not in printed_answers):
 
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
 
                 self.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
+                printed_answers.append(answer)
 
-            elif(isCorrect == True and answer != self.current_user_guess):
+            elif(isCorrect == True and answer != self.current_user_guess and answer not in printed_answers and answer != vocab_to_test.testing_material_answer_main):
 
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
                     
                 self.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
+                printed_answers.append(answer)
 
         print(self.current_question_prompt)
 

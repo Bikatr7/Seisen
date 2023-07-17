@@ -54,10 +54,18 @@ class fileEnsurer:
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## log file
-      self.log_path = os.path.join(self.remote_lib_dir, "log.txt")
+      self.log_path = os.path.join(self.config_dir, "log.txt")
 
       ##----------------------------------------------------------------functions----------------------------------------------------------------
 
+      ## makes config dir where log sits, if not already there
+
+      try:
+         os.mkdir(self.config_dir)
+      except:
+         pass
+
+      ## make log path
       with open(self.log_path, "w+", encoding="utf-8") as file:
          file.truncate()
 
@@ -110,7 +118,6 @@ class fileEnsurer:
       
       """
 
-      util.standard_create_directory(self.config_dir, self.logger)
       util.standard_create_directory(self.logins_dir, self.logger)
       util.standard_create_directory(self.lib_dir, self.logger)
       util.standard_create_directory(self.kana_dir, self.logger)

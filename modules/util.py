@@ -564,7 +564,7 @@ def check_update(logger:logger) -> bool:
         logger.log_action("Current Version: " + CURRENT_VERSION)
 
         if(latest_version != CURRENT_VERSION):
-            print("There is a new update for Seisen (" + latest_version + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Seinuve/Seisen/releases/latest \n")
+            print("There is a new update for Seisen (" + latest_version + ") Currently on (" + CURRENT_VERSION + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Seinuve/Seisen/releases/latest \n")
             logger.log_action("Prompted Update Request for " + latest_version)
 
             if(release_notes):

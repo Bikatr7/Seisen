@@ -2,6 +2,7 @@
 import os
 import msvcrt
 import time
+import traceback
 
 ## custom modules
 from modules.localHandler import localHandler
@@ -83,7 +84,7 @@ class Seisen:
         self.current_mode = -1
 
         ## boolean that holds whether the user has a valid internet connection
-        self.hasValidConnection = util.check_update()
+        self.hasValidConnection = util.check_update(self.logger)
 
         ##----------------------------------------------------------------start----------------------------------------------------------------
 
@@ -496,7 +497,8 @@ except Exception as e:
     #@ if crash, catch and log, then throw
     client.logger.log_action("--------------------------------------------------------------")
     client.logger.log_action("Seisen has crashed")
-    client.logger.log_action(str(e))
+    traceback_str = traceback.format_exc()
+    client.logger.log_action(traceback_str)
 
     client.logger.push_batch()
 

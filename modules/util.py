@@ -537,7 +537,7 @@ def create_archive_dir(type_of_archive:int, logger:logger):
 
 ##-------------------start-of-check_update()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def check_update() -> bool:
+def check_update(logger:logger) -> bool:
 
     """
 
@@ -555,15 +555,17 @@ def check_update() -> bool:
 
         clear_console()
     
-        CURRENT_VERSION = "v1.0.1" 
+        CURRENT_VERSION = "v1.1.0beta" 
 
         response = requests.get("https://api.github.com/repos/Seinuve/Seisen/releases/latest")
-        latestVersion = response.json()["tag_name"]
+        latest_version = response.json()["tag_name"]
         release_notes = response.json()["body"]
 
-        if(latestVersion != CURRENT_VERSION):
-            print("There is a new update for Seisen (" + latestVersion + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Seinuve/Seisen/releases/latest \n")
+        logger.log_action("Current Version: " + CURRENT_VERSION)
 
+        if(latest_version != CURRENT_VERSION):
+            print("There is a new update for Seisen (" + latest_version + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Seinuve/Seisen/releases/latest \n")
+            logger.log_action("Prompted Update Request for " + latest_version)
 
             if(release_notes):
                 print("Release notes:\n\n" + release_notes + '\n')

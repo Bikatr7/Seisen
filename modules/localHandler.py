@@ -36,6 +36,7 @@ class localHandler():
 
         Parameters:\n
         self (object - localHandler) : The handler object.\n
+        logger (object - logger) : The logger object.\n
 
         Returns:\n
         None.\n
@@ -228,6 +229,8 @@ class localHandler():
         self.logger.log_action("Loading vocab from local storage...")
 
         load_vocab()
+
+        self.logger.log_action("--------------------------------------------------------------")
 
         self.logger.push_batch()
 

@@ -43,6 +43,7 @@ class remoteHandler():
 
         Parameters:\n
         self (object - remoteHandler) : The handler object.\n
+        logger (object - logger) : The logger object.\n
 
         Returns:\n
         None.\n
@@ -141,7 +142,7 @@ class remoteHandler():
         self.connection.commit()
 
         self.logger.log_action("The following query was sent and accepter by the database : ")
-        self.logger.log_action(query)
+        self.logger.log_action(query.strip())
 
         self.logger.log_action("--------------------------------------------------------------")
 
@@ -162,11 +163,10 @@ class remoteHandler():
 
         """
         
-        cursor = self.connection.cursor()
         results_actual = []
 
-        cursor.execute(query)
-        results = cursor.fetchall()
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
 
         results_actual = [str(i[0]) for i in results]
 
@@ -214,13 +214,12 @@ class remoteHandler():
 
         """
 
-        cursor = self.connection.cursor()
-        cursor.execute(query)
+        self.cursor.execute(query)
 
-        results = cursor.fetchall()
+        results = self.cursor.fetchall()
 
         if(len(results) == 0):
-            return [[]] * cursor.description.__len__() if cursor.description else [[]]
+            return [[]] * self.cursor.description.__len__() if self.cursor.description else [[]]
 
         results_by_column = [[] for i in range(len(results[0]))]
         
@@ -1014,7 +1013,7 @@ class remoteHandler():
             remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab incorrect typos.txt")
             remote_archive_vocab_csep_path = os.path.join(remote_archive_vocab_dir, "vocab csep.txt")
 
-            util.standard_create_directory(remote_archive_vocab_dir)
+            util.standard_create_directory(remote_archive_vocab_dir, self.logger)
 
             word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
             typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")

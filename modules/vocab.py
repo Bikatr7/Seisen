@@ -92,6 +92,7 @@ class vocab(words.word):
 
         util.edit_sei_line(handler.vocab_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.correct_count)
 
+        handler.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -130,6 +131,8 @@ class vocab(words.word):
 
         util.edit_sei_line(handler.vocab_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.incorrect_count)
 
+        handler.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
+
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def log_new_typo(self, typo:str, handler:localHandler) -> None:
@@ -159,6 +162,8 @@ class vocab(words.word):
         ## updates the current session with the typo
         self.typos.append(new_typo)
 
+        handler.logger.log_action("Logged a typo : " + typo + " for " + self.testing_material + ", id : " + str(self.word_id))
+
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -185,6 +190,8 @@ class vocab(words.word):
 
         ## updates the current session with the incorrect typo
         self.incorrect_typos.append(new_incorrect_typo)
+
+        handler.logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-check_answers_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

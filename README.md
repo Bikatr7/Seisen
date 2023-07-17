@@ -36,14 +36,14 @@ Run seisen.py
 
 Upon opening the file, you will be prompted to enter database credentials, if you have these go ahead and enter these, otherwise enter z to skip.
 
-Once at the main menu, press 1 and begin to quiz yourself on kana.
+Once at the main menu, press 1 and begin to quiz yourself on kana or 2 to quiz yourself on vocab.
 
 The average user will have no need to use the settings options unless they want to see the score ratings.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Settings**<a name="settings"></a>
 
-pressing 2 will enter the settings menu. The settings are as follows.
+pressing 3 will enter the settings menu. The settings are as follows.
 
 1. Reset Local Storage - this will reset your Local Storage with your Remote Storage (database), will do nothing if no database is present.
 2. Reset Remote Storage - this will reset your Remote Storage with your Local Storage, will do nothing if no database is present.
@@ -57,7 +57,7 @@ pressing 2 will enter the settings menu. The settings are as follows.
 
 Seisen uses a backup data method using MySQL, once Seisen is opened for the first time it will prompt for A database name and password, if you have these already feel free to enter these and Seisen will take care of the rest.
 
-If not, you can always set this up latter in settings by typing 2 and then press 4.
+If not, you can always set this up latter in settings by typing 3 and then press 4.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **License**<a name="license"></a>

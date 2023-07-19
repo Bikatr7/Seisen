@@ -141,7 +141,7 @@ class remoteHandler():
         
         self.connection.commit()
 
-        self.logger.log_action("The following query was sent and accepter by the database : ")
+        self.logger.log_action("The following query was sent and accepted by the database : ")
         self.logger.log_action(query.strip())
 
         self.logger.log_action("--------------------------------------------------------------")

@@ -8,11 +8,13 @@ import traceback
 from modules.localHandler import localHandler
 from modules.remoteHandler import remoteHandler
 
-from modules.ensureFileSecurity import fileEnsurer
+from modules.fileEnsurer import fileEnsurer
 from modules.scoreRate import scoreRate
 from modules.logger import logger
 
 from modules import util
+
+from modules import change_settings
 
 
 class Seisen:
@@ -431,55 +433,35 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Reset Local Storage\n2. Reset Remote Storage\n3. See Score Ratings\n4. Add New Database\n5. Restore Local Backup\n6. Restore Remote Backup\n"
+        settings_menu_message = "1. Reset Local Storage with Remote Storage\n2. Reset Remote Storage with Local Storage\n3. See Score Ratings\n4. Set Up New Database\n5. Restore Local Backup\n6. Restore Remote Backup\n"
 
         print(settings_menu_message)
 
         pathing = util.input_check(4, str(msvcrt.getch().decode()), 6, settings_menu_message)
 
-
         ## deletes the local storage and refreshes it with the remote storage, as well as re-loads the testing words
         if(pathing == "1"): 
-            self.remoteHandler.reset_local_storage()
-            self.localHandler.load_words_from_local_storage()
+            self.localHandler, self.remoteHandler = change_settings.reset_local_with_remote(self.localHandler, self.remoteHandler)
 
         ## resets the remote storage and refreshes it with the local storage
         elif(pathing == "2"):
-            self.remoteHandler.reset_remote_storage()
+            self.remoteHandler = change_settings.reset_remote_with_local(self.remoteHandler)
 
         ## prints current word ratings, currently only has kana
         elif(pathing == "3"):
-            kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
-            
-            for item in display_list:
-                print(item)
-
-            util.pause_console()
+            change_settings.print_score_ratings(self.word_rater, self.localHandler)
 
         ## trys to set up a new database, WILL replace any existing database
         elif(pathing == "4"):
-            with open(self.database_connection_failed, "w+", encoding="utf-8") as file: ## forces the remote handler to try to attempt a database connection again
-                file.write("None")
-
-            with open(self.password_file, "w+", encoding="utf-8") as file: ## clears the credentials file allowing for a different database connection to be added if the current one is valid
-                file.truncate()
-
-            self.remoteHandler = remoteHandler(self.fileEnsurer, self.logger)
-
-            print("Remote Handler has been reset...\n")
-            time.sleep(1)
+            self.remoteHandler = change_settings.set_up_new_database(self.remoteHandler)
 
         ## prompts the user to restore a local backup
         elif(pathing == "5"):
-            self.localHandler.restore_local_backup()
-            self.fileEnsurer.ensure_files(self.logger)
-            self.localHandler.load_words_from_local_storage()
+            self.localHandler = change_settings.restore_local_backup(self.localHandler)
 
         ## prompts the user to restore a remote backup
         elif(pathing == "6"):
-            self.remoteHandler.restore_remote_backup()
-            self.fileEnsurer.ensure_files(self.logger)
-            self.localHandler.load_words_from_local_storage()
+            self.localHandler, self.remoteHandler = change_settings.restore_remote_backup(self.localHandler, self.remoteHandler)
             
         ## if no valid option is selected, exit the change_settings() function
         else:

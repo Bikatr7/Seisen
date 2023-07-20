@@ -16,7 +16,7 @@ from modules.vocab import vocab as vocab_blueprint
 from modules import util
 
 from modules.logger import logger
-from modules.ensureFileSecurity import fileEnsurer
+from modules.fileEnsurer import fileEnsurer
 
 class localHandler():
 

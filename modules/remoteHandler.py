@@ -24,7 +24,7 @@ from modules.vocab import vocab as vocab_blueprint
 from modules import util
 
 from modules.logger import logger
-from modules.ensureFileSecurity import fileEnsurer
+from modules.fileEnsurer import fileEnsurer
 
 class remoteHandler():
 
@@ -385,6 +385,25 @@ class remoteHandler():
             file.write("false")
 
         self.logger.log_action("Database Connection Succeeded")
+
+##--------------------start-of-clear_credentials_File()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def clear_credentials_file(self):
+
+        """
+        
+        Clears the credentials file.\n
+
+        Parameters:\n
+        self (object - remoteHandler) : The handler object.\n
+
+        Returns:\n
+        None.\n
+
+        """
+
+        with open(self.credentials_path, "w+", encoding="utf-8") as file: ## clears the credentials file allowing for a different database connection to be added if the current one is valid
+            file.truncate()
 
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

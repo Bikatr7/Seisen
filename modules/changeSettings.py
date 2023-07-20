@@ -29,10 +29,16 @@ def reset_local_with_remote(local_handler:localHandler, remote_handler:remoteHan
 
 
         """
+        
+        with open(remote_handler.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
+            last_backup_date = str(file.read().strip()).strip('\x00').strip()
 
-        remote_handler.reset_local_storage()
-        local_handler.load_words_from_local_storage()
-
+        if(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no) ") == "1"):
+            remote_handler.reset_local_storage()
+            local_handler.load_words_from_local_storage()
+        else:
+            pass
+        
         return local_handler, remote_handler
 
 ##--------------------start-of-reset_remote_with_local()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

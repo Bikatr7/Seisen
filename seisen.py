@@ -14,7 +14,7 @@ from modules.logger import logger
 
 from modules import util
 
-from modules import change_settings
+from modules import changeSettings
 
 
 class Seisen:
@@ -146,7 +146,7 @@ class Seisen:
                 self.test_vocab()
         
             elif(self.current_mode == 3):
-                self.change_settings()
+                self.changeSettings()
 
             elif(self.current_mode != -1): ## if invalid input, clear screen and print error
                 util.clear_console()
@@ -415,9 +415,9 @@ class Seisen:
 
         self.logger.push_batch()
 
-##--------------------start-of-change_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-changeSettings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def change_settings(self) -> None:
+    def changeSettings(self) -> None:
 
         """
         
@@ -441,29 +441,29 @@ class Seisen:
 
         ## deletes the local storage and refreshes it with the remote storage, as well as re-loads the testing words
         if(pathing == "1"): 
-            self.localHandler, self.remoteHandler = change_settings.reset_local_with_remote(self.localHandler, self.remoteHandler)
+            self.localHandler, self.remoteHandler = changeSettings.reset_local_with_remote(self.localHandler, self.remoteHandler)
 
         ## resets the remote storage and refreshes it with the local storage
         elif(pathing == "2"):
-            self.remoteHandler = change_settings.reset_remote_with_local(self.remoteHandler)
+            self.remoteHandler = changeSettings.reset_remote_with_local(self.remoteHandler)
 
         ## prints current word ratings, currently only has kana
         elif(pathing == "3"):
-            change_settings.print_score_ratings(self.word_rater, self.localHandler)
+            changeSettings.print_score_ratings(self.word_rater, self.localHandler)
 
         ## trys to set up a new database, WILL replace any existing database
         elif(pathing == "4"):
-            self.remoteHandler = change_settings.set_up_new_database(self.remoteHandler)
+            self.remoteHandler = changeSettings.set_up_new_database(self.remoteHandler)
 
         ## prompts the user to restore a local backup
         elif(pathing == "5"):
-            self.localHandler = change_settings.restore_local_backup(self.localHandler)
+            self.localHandler = changeSettings.restore_local_backup(self.localHandler)
 
         ## prompts the user to restore a remote backup
         elif(pathing == "6"):
-            self.localHandler, self.remoteHandler = change_settings.restore_remote_backup(self.localHandler, self.remoteHandler)
+            self.localHandler, self.remoteHandler = changeSettings.restore_remote_backup(self.localHandler, self.remoteHandler)
             
-        ## if no valid option is selected, exit the change_settings() function
+        ## if no valid option is selected, exit the changeSettings() function
         else:
             self.current_mode = -1
 

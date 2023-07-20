@@ -348,7 +348,7 @@ W
             last_backup_date = str(file.read().strip())
             last_backup_date = last_backup_date.strip('\x00')
         
-            current_day = str(datetime.today().strftime('%Y-%m-%d'))
+            current_day = str(datetime.today().strftime('%Y-%m-%d').strip())
 
             if(last_backup_date != current_day):
                 
@@ -361,7 +361,7 @@ W
 
                 file.truncate(0)
                 
-                file.write(current_day.strip('\x00'))
+                file.write(current_day.strip('\x00').strip())
             
             else:
                 pass

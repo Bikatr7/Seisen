@@ -96,6 +96,9 @@ class remoteHandler():
         ## contains the date of the last time the database was overwritten with local
         self.last_local_remote_backup_path = os.path.join(self.local_remote_archives_dir, "last_local_remote_backup.txt")
 
+        ## contains a more accurate timestamp of the last time the database was overwritten with local
+        self.last_local_remote_backup_accurate_path = os.path.join(self.local_remote_archives_dir, "last_local_remote_backup_accurate.txt")
+
         ##----------------------------------------------------------------variables----------------------------------------------------------------
         
         ## the kana that seisen will use to test the user
@@ -1156,8 +1159,7 @@ class remoteHandler():
         
         with open(self.last_local_remote_backup_path, 'r+', encoding="utf-8") as file:
 
-            last_backup_date = str(file.read().strip())
-            last_backup_date = last_backup_date.strip('\x00')
+            last_backup_date = str(file.read().strip()).strip('\x00').strip()
         
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
@@ -1167,6 +1169,12 @@ class remoteHandler():
         
                 file.truncate(0)
                 
-                file.write(current_day.strip('\x00'))
+                file.write(current_day.strip('\x00').strip())
 
                 self.reset_remote_storage()
+
+                with open(self.last_local_remote_backup_accurate_path, 'w+', encoding="utf-8") as file:
+
+                    last_overwrite_date_accurate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+                    file.write(last_overwrite_date_accurate)

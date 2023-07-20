@@ -419,6 +419,9 @@ z
       ## contains the date of the last time the database was overwritten with local
       last_local_remote_backup_file = os.path.join(local_remote_archives_dir, "last_local_remote_backup.txt")
 
+      ## contains a more accurate timestamp of the last time the database was overwritten with local
+      last_local_remote_backup_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_backup_accurate.txt")
+
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       util.standard_create_directory(archives_dir, self.logger)
@@ -429,3 +432,4 @@ z
       util.standard_create_file(last_local_backup_file, self.logger)
       util.standard_create_file(last_remote_backup_file, self.logger)
       util.standard_create_file(last_local_remote_backup_file, self.logger)
+      util.standard_create_file(last_local_remote_backup_accurate_path, self.logger)

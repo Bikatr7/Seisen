@@ -146,7 +146,7 @@ class Seisen:
                 self.test_vocab()
         
             elif(self.current_mode == 3):
-                self.changeSettings()
+                self.change_settings()
 
             elif(self.current_mode != -1): ## if invalid input, clear screen and print error
                 util.clear_console()
@@ -415,9 +415,9 @@ class Seisen:
 
         self.logger.push_batch()
 
-##--------------------start-of-changeSettings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-change_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def changeSettings(self) -> None:
+    def change_settings(self) -> None:
 
         """
         
@@ -430,6 +430,8 @@ class Seisen:
         None\n
 
         """  
+
+        ## Note to self, combine 1 & 2 and 5 & 6 together
 
         util.clear_console()
 
@@ -451,7 +453,7 @@ class Seisen:
         elif(pathing == "3"):
             changeSettings.print_score_ratings(self.word_rater, self.localHandler)
 
-        ## trys to set up a new database, WILL replace any existing database
+        ## tries to set up a new database, WILL replace any existing database
         elif(pathing == "4"):
             self.remoteHandler = changeSettings.set_up_new_database(self.remoteHandler)
 

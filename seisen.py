@@ -431,39 +431,29 @@ class Seisen:
 
         """  
 
-        ## Note to self, combine 1 & 2 and 5 & 6 together
-
         util.clear_console()
 
-        settings_menu_message = "1. Reset Local Storage with Remote Storage\n2. Reset Remote Storage with Local Storage\n3. See Score Ratings\n4. Set Up New Database\n5. Restore Local Backup\n6. Restore Remote Backup\n"
+        settings_menu_message = "1. Reset Storage\n2. See Score Ratings\n3. Set Up New Database\n4. Restore Backup\n"
 
         print(settings_menu_message)
 
-        pathing = util.input_check(4, str(msvcrt.getch().decode()), 6, settings_menu_message)
+        pathing = util.input_check(4, str(msvcrt.getch().decode()), 4, settings_menu_message)
 
         ## deletes the local storage and refreshes it with the remote storage, as well as re-loads the testing words
         if(pathing == "1"): 
-            self.localHandler, self.remoteHandler = changeSettings.reset_local_with_remote(self.localHandler, self.remoteHandler)
-
-        ## resets the remote storage and refreshes it with the local storage
-        elif(pathing == "2"):
-            self.remoteHandler = changeSettings.reset_remote_with_local(self.remoteHandler)
+            self.localHandler, self.remoteHandler = changeSettings.reset_storage(self.localHandler, self.remoteHandler)
 
         ## prints current word ratings, currently only has kana
-        elif(pathing == "3"):
+        elif(pathing == "2"):
             changeSettings.print_score_ratings(self.word_rater, self.localHandler)
 
         ## tries to set up a new database, WILL replace any existing database
-        elif(pathing == "4"):
+        elif(pathing == "3"):
             self.remoteHandler = changeSettings.set_up_new_database(self.remoteHandler)
 
         ## prompts the user to restore a local backup
-        elif(pathing == "5"):
-            self.localHandler = changeSettings.restore_local_backup(self.localHandler)
-
-        ## prompts the user to restore a remote backup
-        elif(pathing == "6"):
-            self.localHandler, self.remoteHandler = changeSettings.restore_remote_backup(self.localHandler, self.remoteHandler)
+        elif(pathing == "4"):
+            self.localHandler, self.remoteHandler = changeSettings.restore_backup(self.localHandler, self.remoteHandler)
             
         ## if no valid option is selected, exit the changeSettings() function
         else:

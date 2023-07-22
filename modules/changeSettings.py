@@ -10,13 +10,13 @@ from modules.scoreRate import scoreRate
 
 from modules import util
 
-##--------------------start-of-reset_local_with_remote()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-reset_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def reset_local_with_remote(local_handler:localHandler, remote_handler:remoteHandler) -> typing.Tuple[localHandler, remoteHandler]:
+def reset_storage(local_handler:localHandler, remote_handler:remoteHandler) -> typing.Tuple[localHandler, remoteHandler]:
         
         """"
         
-        Resets local storage with remote storage.\n
+        Resets storage, either local with remote or remote with local.\n
         Will do nothing if no database connection is available.\n
 
         Parameters:\n
@@ -29,38 +29,31 @@ def reset_local_with_remote(local_handler:localHandler, remote_handler:remoteHan
 
 
         """
-        
-        with open(remote_handler.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
-            last_backup_date = str(file.read().strip()).strip('\x00').strip()
 
-        if(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no) ") == "1"):
-            remote_handler.reset_local_storage()
-            local_handler.load_words_from_local_storage()
-        else:
-            pass
+        util.clear_console()
+
+        reset_message = "How are you resetting storage?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n"
+
+        print(reset_message)
+
+        type_reset = util.input_check(4, str(msvcrt.getch().decode()), 2, reset_message)
+
+        if(type_reset == "1"):
+        
+            with open(remote_handler.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
+                last_backup_date = str(file.read().strip()).strip('\x00').strip()
+
+            if(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no) ") == "1"):
+                remote_handler.reset_local_storage()
+                local_handler.load_words_from_local_storage()
+            else:
+                pass
+
+        elif(type_reset == "2"):
+
+            remote_handler.reset_remote_storage()
         
         return local_handler, remote_handler
-
-##--------------------start-of-reset_remote_with_local()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-def reset_remote_with_local(remote_handler:remoteHandler) -> remoteHandler:
-
-        """"
-        
-        Resets remote storage with local storage.\n
-        Will do nothing if no database connection is available.\n
-
-        Parameters:\n
-        remote_handler (object - remoteHandler) : the remote handler.\n
-
-        Returns:\n
-        remote_handler (object - remoteHandler) : the altered remote handler.\n
-
-        """
-
-        remote_handler.reset_remote_storage()
-
-        return remote_handler
 
 ##--------------------start-of-print_score_ratings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -124,35 +117,13 @@ def set_up_new_database(remote_handler:remoteHandler) -> remoteHandler:
 
     return new_handler
 
-##--------------------start-of-restore_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-restore_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def restore_local_backup(local_handler:localHandler) -> localHandler:
+def restore_backup(local_handler:localHandler, remote_handler:remoteHandler) -> typing.Tuple[localHandler, remoteHandler]:
             
     """
 
-    Restores a local backup.\n
-
-    Parameters:\n
-    local_handler (object - localHandler) : the local handler object.\n
-
-    Returns:\n
-    local_handler (object - localHandler) : the altered local handler object.\n
-
-    """  
-    
-    local_handler.restore_local_backup()
-    local_handler.fileEnsurer.ensure_files(local_handler.logger)
-    local_handler.load_words_from_local_storage()
-
-    return local_handler
-
-##--------------------start-of-restore_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-def restore_remote_backup(local_handler:localHandler, remote_handler:remoteHandler) -> typing.Tuple[localHandler, remoteHandler]:
-            
-    """
-
-    Restores a local backup.\n
+    Restores a local or remote backup.\n
 
     Parameters:\n
     local_handler (object - localHandler) : the local handler object.\n
@@ -163,9 +134,25 @@ def restore_remote_backup(local_handler:localHandler, remote_handler:remoteHandl
     remote_handler (object - remoteHandler) : the altered remote handler object.\n
     
     """  
-    
-    remote_handler.restore_remote_backup()
-    local_handler.fileEnsurer.ensure_files(local_handler.logger)
-    local_handler.load_words_from_local_storage()
+
+    util.clear_console()
+
+    backup_message = "Which backup do you wish to restore?\n\n1.Local\n2.Remote\n"
+
+    print(backup_message)
+
+    type_backup = util.input_check(4, str(msvcrt.getch().decode()), 2, backup_message)
+
+    if(type_backup == "1"):
+
+        local_handler.restore_local_backup()
+        local_handler.fileEnsurer.ensure_files(local_handler.logger)
+        local_handler.load_words_from_local_storage()
+
+    elif(type_backup == "2"):
+
+        remote_handler.restore_remote_backup()
+        local_handler.fileEnsurer.ensure_files(local_handler.logger)
+        local_handler.load_words_from_local_storage()
 
     return local_handler, remote_handler

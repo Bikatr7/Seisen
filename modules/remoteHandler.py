@@ -138,6 +138,9 @@ class remoteHandler():
 
         """
 
+        if(self.connection == None):
+            return
+
         self.logger.log_action("--------------------------------------------------------------")
     
         self.cursor.execute(query)
@@ -970,7 +973,7 @@ class remoteHandler():
         fill_kana_incorrect_typos()
 
         fill_vocab()
-        fill_vocab_typos
+        fill_vocab_typos()
         fill_vocab_incorrect_typos()
         fill_vocab_csep()
 

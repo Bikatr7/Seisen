@@ -383,13 +383,13 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
 
     for correct_answer in word.testing_material_answer_all:
 
-        distance = levenshtein(user_guess, correct_answer)
+        distance = levenshtein(user_guess, correct_answer.csep_value)
 
         if(distance < min_distance):
 
-            print("\nDid you mean : " + correct_answer + "? Press 1 to Confirm or 2 to Decline.\n")
+            print("\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n")
         
-            userA = int(input_check(1 ,str(msvcrt.getch().decode()), 2, prompt + "\nDid you mean : " + correct_answer + "? Press 1 to Confirm or 2 to Decline.\n"))
+            userA = int(input_check(1 ,str(msvcrt.getch().decode()), 2, prompt + "\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n"))
         
             clear_console()
 
@@ -399,7 +399,7 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
 
                 word.log_new_typo(user_guess, handler)
 
-                return final_answer
+                return final_answer.csep_value
         
             else:
                 word.log_new_incorrect_typo(user_guess, handler)

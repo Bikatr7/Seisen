@@ -1,4 +1,5 @@
 ## built-in modules
+from __future__ import annotations ## used for cheating the circular import issue that occurs when i need to type check some things
 from datetime import datetime
 
 import os
@@ -13,10 +14,15 @@ from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules.words import word as kana_blueprint
 from modules.vocab import vocab as vocab_blueprint
 
+from modules.csep import csep as csep_blueprint
+
 from modules import util
 
 from modules.logger import logger
 from modules.fileEnsurer import fileEnsurer
+
+if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
+    from modules.csep import csep
 
 class localHandler():
 
@@ -152,7 +158,7 @@ class localHandler():
 
         ##----------------------------------------------------------------get_csep_values()----------------------------------------------------------------
 
-        def get_csep_values(vocab_id:str) -> typing.List[str]:
+        def get_csep_values(vocab_id:str) -> typing.List[csep]:
 
             csep_values = []
 
@@ -163,7 +169,7 @@ class localHandler():
                     values = line.strip().split(',')
 
                     if(values[0] == vocab_id):
-                        csep_values.append(values[2])
+                        csep_values.append(csep_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
             return csep_values
 

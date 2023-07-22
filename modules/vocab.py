@@ -6,7 +6,11 @@ import typing
 ## custom modules
 from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
+
+from modules.csep import csep as csep
+
 from modules import util
+
 from modules import words
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
@@ -22,7 +26,7 @@ class vocab(words.word):
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, incoming_id:int, incoming_testing_material:str, incoming_romaji:str, incoming_testing_material_answer_main:str, incoming_testing_material_answer_main_all:typing.List[str], incoming_furigana:str, incoming_incorrect_count:int,incoming_correct_count:int, incoming_kanji_flag:bool):
+    def __init__(self, incoming_id:int, incoming_testing_material:str, incoming_romaji:str, incoming_testing_material_answer_main:str, incoming_testing_material_answer_main_all:typing.List[csep], incoming_furigana:str, incoming_incorrect_count:int,incoming_correct_count:int, incoming_kanji_flag:bool):
 
         """
         

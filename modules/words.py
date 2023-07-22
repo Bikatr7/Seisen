@@ -6,6 +6,9 @@ import typing
 ## custom modules
 from modules.typos import typo as typo_blueprint
 from modules.typos import incorrectTypo as incorrect_typo_blueprint
+
+from modules.csep import csep
+
 from modules import util
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
@@ -22,7 +25,7 @@ class word:
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, incoming_id:int, incoming_testing_material:str, incoming_testing_material_answer_main:str, incoming_testing_material_answer_main_all:typing.List[str], incoming_incorrect_count:int, incoming_correct_count:int) -> None:
+    def __init__(self, incoming_id:int, incoming_testing_material:str, incoming_testing_material_answer_main:str, incoming_testing_material_answer_main_all:typing.List[csep], incoming_incorrect_count:int, incoming_correct_count:int) -> None:
 
         """
         
@@ -53,7 +56,6 @@ class word:
 
         ## the list of all answers to the testing_material
         self.testing_material_answer_all = incoming_testing_material_answer_main_all
-        self.testing_material_answer_all.append(self.testing_material_answer_main)
 
         ## the number of times the user answer to testing_material was incorrect
         self.incorrect_count = incoming_incorrect_count
@@ -174,7 +176,7 @@ class word:
         new_typo = incorrect_typo_blueprint(self.word_id, new_typo_id, typo , self.word_type)
 
         ## updates local storage so the typo will be saved
-        util.write_sei_line(handler.kana_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        util.write_sei_line(handler.kana_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.incorrect_typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
         self.typos.append(new_typo)

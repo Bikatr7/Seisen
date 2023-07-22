@@ -8,6 +8,10 @@ from modules.remoteHandler import remoteHandler
 
 from modules.scoreRate import scoreRate
 
+from modules.vocab import vocab as vocab_blueprint
+
+from modules.csep import csep as csep_blueprint
+
 from modules import util
 
 ##--------------------start-of-reset_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -156,3 +160,65 @@ def restore_backup(local_handler:localHandler, remote_handler:remoteHandler) -> 
         local_handler.load_words_from_local_storage()
 
     return local_handler, remote_handler
+
+##--------------------start-of-add_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def add_vocab(local_handler:localHandler) -> localHandler:
+     
+    """
+    
+    Adds a user entered vocab to the local handler.\n
+
+    Parameters:\n
+    local_handler (object - localHandler) : the local handler.\n
+
+    Returns:\n
+    local_handler (object - localHandler) : the altered local handler.n
+
+    """
+
+    new_vocab_id = util.get_new_id(local_handler.get_list_of_all_ids(5))
+    new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
+
+    csep_value_list = []
+    csep_actual_list = []
+
+    furigana = "0"
+    isKanji = False
+
+    try:
+        testing_material = util.user_confirm("Please enter a vocab term\n")
+        romaji = util.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation\n")
+        definition = util.user_confirm("Please enter " + testing_material + "'s definition/main answer\n")
+
+        csep_value_list.append(definition)
+
+        while(input("Enter 1 if " + testing_material + " has any additional answers\n") == "1"):
+            util.clear_stream()
+            csep_value_list.append(util.user_confirm("Please enter " + testing_material + "'s additional answers\n"))
+
+        for character in testing_material:
+            if(character not in local_handler.kana):
+                local_handler.logger.log_action(character + " is kanji")
+                furigana = util.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling\n")
+                isKanji = True
+                break
+    
+    except:
+        return local_handler
+
+
+    for csep_value in csep_value_list:
+        csep_insert_values = [new_vocab_id, new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE]
+        csep_actual_list.append(csep_blueprint(new_vocab_id, new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE))
+
+        util.write_sei_line(local_handler.vocab_csep_path, csep_insert_values)
+
+        new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
+
+    vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, csep_actual_list, furigana, 0, 0, isKanji]
+    local_handler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, csep_actual_list, furigana, 0, 0, isKanji))
+
+    util.write_sei_line(local_handler.vocab_path, vocab_insert_values)
+
+    return local_handler

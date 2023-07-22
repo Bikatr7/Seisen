@@ -16,6 +16,7 @@ from modules import util
 
 from modules import changeSettings
 
+## note to self, add a kana cseps file to solve that issue
 
 class Seisen:
 
@@ -150,7 +151,7 @@ class Seisen:
 
             elif(self.current_mode != -1): ## if invalid input, clear screen and print error
                 util.clear_console()
-                print("Invalid Input, please enter a valid number choice or command.\n")
+                print("Invalid Input, please enter a valid number choice or 'q' to quit.\n")
 
             if(self.current_mode not in valid_modes): ## if invalid mode, change mode
                 self.change_mode()
@@ -173,7 +174,7 @@ class Seisen:
 
         main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.Kana Practice\n2.Vocab Practice\n3.Settings\n"
 
-        os.system('cls')
+        ##os.system('cls')
 
         print(main_menu_message)
 
@@ -265,7 +266,7 @@ class Seisen:
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
 
-                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                self.current_question_prompt +=  "----------\n" + answer.csep_value + "\n"
                 displayOther = True
 
             elif(isCorrect == True and answer != self.current_user_guess):
@@ -273,7 +274,7 @@ class Seisen:
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
                     
-                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                self.current_question_prompt +=  "----------\n" + answer.csep_value + "\n"
                 displayOther = True
 
         print(self.current_question_prompt)
@@ -382,7 +383,9 @@ class Seisen:
 
         printed_answers = []
 
-        for answer in vocab_to_test.testing_material_answer_all: ## prints the other accepted answers 
+        answers = [value.csep_value for value in vocab_to_test.testing_material_answer_all]
+
+        for answer in answers: ## prints the other accepted answers 
 
             if(isCorrect == None or isCorrect == False and answer != self.current_user_guess and answer not in printed_answers):
 
@@ -433,7 +436,7 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Reset Storage\n2. See Score Ratings\n3. Set Up New Database\n4. Restore Backup\n"
+        settings_menu_message = "1. Reset Storage\n2. See Score Ratings\n3. Set Up New Database\n4. Restore Backup\n5. Add Vocab\n"
 
         print(settings_menu_message)
 
@@ -454,6 +457,9 @@ class Seisen:
         ## prompts the user to restore a local backup
         elif(pathing == "4"):
             self.localHandler, self.remoteHandler = changeSettings.restore_backup(self.localHandler, self.remoteHandler)
+
+        elif(pathing == "5"):
+            self.localHandler = changeSettings.add_vocab(self.localHandler)
             
         ## if no valid option is selected, exit the changeSettings() function
         else:

@@ -72,6 +72,7 @@ class localHandler():
 
         ## the paths for all kana related files
         self.kana_path = os.path.join(self.fileEnsurer.kana_dir, "kana.txt")
+        self.kana_csep_path = os.path.join(self.fileEnsurer.kana_dir, "kana csep.txt")
         self.kana_typos_path = os.path.join(self.fileEnsurer.kana_dir, "kana typos.txt")
         self.kana_incorrect_typos_path = os.path.join(self.fileEnsurer.kana_dir, "kana incorrect typos.txt")
 
@@ -116,6 +117,23 @@ class localHandler():
 
         """
 
+        ##----------------------------------------------------------------get_kana_csep_values()----------------------------------------------------------------
+
+        def get_kana_csep_values(kana_id:str) -> typing.List[csep]:
+
+            csep_values = []
+
+            with open(self.kana_csep_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    values = line.strip().split(',')
+
+                    if(values[0] == kana_id):
+                        csep_values.append(csep_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
+
+            return csep_values
+
         ##----------------------------------------------------------------load_kana()----------------------------------------------------------------
 
         def load_kana():
@@ -126,7 +144,9 @@ class localHandler():
 
                     values = line.strip().split(',')
 
-                    self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], [], int(values[3]), int(values[4])))
+                    csep_values = get_kana_csep_values(values[0])
+
+                    self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], csep_values, int(values[3]), int(values[4])))
 
                     self.logger.log_action("Loaded Kana - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + "," + values[4] + ",)")
 
@@ -156,9 +176,9 @@ class localHandler():
 
                                 self.logger.log_action("Loaded Kana Incorrect Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
 
-        ##----------------------------------------------------------------get_csep_values()----------------------------------------------------------------
+        ##----------------------------------------------------------------get_vocab_csep_values()----------------------------------------------------------------
 
-        def get_csep_values(vocab_id:str) -> typing.List[csep]:
+        def get_vocab_csep_values(vocab_id:str) -> typing.List[csep]:
 
             csep_values = []
 
@@ -189,7 +209,7 @@ class localHandler():
                     else:
                         kanji_flag = True
 
-                    csep_values = get_csep_values(values[0])
+                    csep_values = get_vocab_csep_values(values[0])
 
                     self.vocab.append(vocab_blueprint(int(values[0]), values[1], values[2], values[3], csep_values, values[4], int(values[5]), int(values[6]), kanji_flag))
 

@@ -230,6 +230,8 @@ class Seisen:
         ## if the user wants to change the mode do so
         if(self.current_user_guess == "v"): 
 
+            util.clear_console()
+
             self.logger.log_action("--------------------------------------------------------------")
             self.logger.log_action("User chose to change mode")
             self.logger.log_action("--------------------------------------------------------------")
@@ -259,14 +261,19 @@ class Seisen:
             self.current_question_prompt += "\n\nSkipped.\n"
             kana_to_test.log_incorrect_answer(self.localHandler) 
 
-        for answer in kana_to_test.testing_material_answer_all: ## prints the other accepted answers 
+        answers = [value.csep_value for value in kana_to_test.testing_material_answer_all]
+
+        for answer in answers: ## prints the other accepted answers 
+
+            if(len(answers) == 1):
+                break
 
             if(isCorrect == None or isCorrect == False and answer != self.current_user_guess):
 
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
 
-                self.current_question_prompt +=  "----------\n" + answer.csep_value + "\n"
+                self.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
 
             elif(isCorrect == True and answer != self.current_user_guess):
@@ -274,7 +281,7 @@ class Seisen:
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
                     
-                self.current_question_prompt +=  "----------\n" + answer.csep_value + "\n"
+                self.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
 
         print(self.current_question_prompt)
@@ -334,6 +341,8 @@ class Seisen:
         ## if the user wants to change the mode do so
         if(self.current_user_guess == "v"):
 
+            util.clear_console()
+
             self.logger.log_action("--------------------------------------------------------------")
             self.logger.log_action("User chose to change mode")
             self.logger.log_action("--------------------------------------------------------------")
@@ -351,6 +360,8 @@ class Seisen:
 
             ## if the user wants to change the mode do so
             if(self.current_user_guess == "v"):
+
+                util.clear_console()
                 
                 self.logger.log_action("--------------------------------------------------------------")
                 self.logger.log_action("User chose to change mode")
@@ -381,29 +392,28 @@ class Seisen:
             self.current_question_prompt += "\n\nSkipped.\n"
             vocab_to_test.log_incorrect_answer(self.localHandler) 
 
-        printed_answers = []
-
         answers = [value.csep_value for value in vocab_to_test.testing_material_answer_all]
 
         for answer in answers: ## prints the other accepted answers 
 
-            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess and answer not in printed_answers):
+            if(len(answers) == 1):
+                break
+
+            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
 
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
 
                 self.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
-                printed_answers.append(answer)
 
-            elif(isCorrect == True and answer != self.current_user_guess and answer not in printed_answers and answer != vocab_to_test.testing_material_answer_main):
+            elif(isCorrect == True and answer != self.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
 
                 if(displayOther == False):
                     self.current_question_prompt += "\nOther Answers include:\n"
                     
                 self.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
-                printed_answers.append(answer)
 
         print(self.current_question_prompt)
 

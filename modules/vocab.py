@@ -219,11 +219,13 @@ class vocab(words.word):
 
         if(user_guess == 'q'): # if the user wants to quit the program do so
             exit()
+
+        answers = [value.csep_value for value in self.testing_material_answer_all]
         
-        if(user_guess not in self.testing_material_answer_all and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
+        if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
             user_guess = util.check_typo(self, user_guess, prompt, handler)
 
-        if(user_guess in self.testing_material_answer_all): 
+        if(user_guess in answers): 
             return True, user_guess
         
         elif(user_guess != 'z'): 

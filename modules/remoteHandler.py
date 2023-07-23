@@ -597,6 +597,12 @@ class remoteHandler():
             self.logger.log_action("No database connection, skipping remote reset")
             return
 
+        with open(self.last_local_remote_backup_accurate_path, 'w+', encoding="utf-8") as file:
+
+            last_overwrite_date_accurate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            file.write(last_overwrite_date_accurate)
+
         self.logger.log_action("--------------------------------------------------------------")
         self.logger.log_action("Resetting Remote Storage...")
 
@@ -1175,9 +1181,3 @@ class remoteHandler():
                 file.write(current_day.strip('\x00').strip())
 
                 self.reset_remote_storage()
-
-                with open(self.last_local_remote_backup_accurate_path, 'w+', encoding="utf-8") as file:
-
-                    last_overwrite_date_accurate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-                    file.write(last_overwrite_date_accurate)

@@ -395,11 +395,11 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
 
             if(userA == 1):
 
-                final_answer = correct_answer
+                final_answer = correct_answer.csep_value
 
                 word.log_new_typo(user_guess, handler)
 
-                return final_answer.csep_value
+                return final_answer
         
             else:
                 word.log_new_incorrect_typo(user_guess, handler)

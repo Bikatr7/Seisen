@@ -238,7 +238,8 @@ class fileEnsurer:
       ## the path where the actual kana file is located, the one used for testing
       kana_actual_path = os.path.join(self.kana_dir, "kana.txt")
 
-      
+      kana_csep_actual_path = os.path.join(self.kana_dir, "kana csep.txt")
+
       ## the path where the actual vocab file is located, the one used for testing
       vocab_actual_path = os.path.join(self.vocab_dir, "vocab.txt")
 
@@ -248,8 +249,8 @@ class fileEnsurer:
 
       self.ensure_remote_lib_files()
 
-      if(os.path.exists(kana_actual_path) == False or os.path.getsize(kana_actual_path) == 0):
-         self.ensure_kana_local_lib_files(kana_actual_path)
+      if(os.path.exists(kana_actual_path) == False or os.path.getsize(kana_actual_path) == 0 or os.path.exists(kana_csep_actual_path) == False or os.path.getsize(kana_csep_actual_path) == 0):
+         self.ensure_kana_local_lib_files(kana_actual_path, kana_csep_actual_path)
 
       if(os.path.exists(vocab_actual_path) == False or os.path.getsize(vocab_actual_path) == 0):
          self.ensure_vocab_local_lib_files(vocab_actual_path, vocab_csep_actual_path)
@@ -283,7 +284,7 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_kana_local_lib_files(self, kana_actual_path):
+   def ensure_kana_local_lib_files(self, kana_actual_path:str, kana_csep_actual_path:str):
 
       """
       
@@ -314,6 +315,8 @@ class fileEnsurer:
       ## the readings for the kana in the file path above
       kana_filter_path_readings = os.path.join(local_kana_lib_dir_path, "kana readings.txt")
 
+      kana_csep_path = os.path.join(local_kana_lib_dir_path, "kana csep.txt")
+
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       self.logger.log_action("Local kana files were reset to default using local lib")
@@ -335,6 +338,16 @@ class fileEnsurer:
 
       with open(kana_actual_path, 'w+', encoding="utf-8") as file:
          file.write(default_kana_to_write)
+         
+
+      with open(kana_csep_path, 'r', encoding="utf-8") as file:
+         kana_csep = file.readlines()
+
+      for i, csep in enumerate(kana_csep,start=1):
+
+         kana_csep_insert_values = [str(i), str(i), csep.rstrip(',\n'), "2"]
+
+         util.write_sei_line(kana_csep_actual_path, kana_csep_insert_values)
 
 ##--------------------start-of-ensure_vocab_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

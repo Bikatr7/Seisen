@@ -323,6 +323,8 @@ class fileEnsurer:
 
       black_list_characters_kana = ['ヶ', 'ョ', 'ゃ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ァ', 'ゅ', 'ょ', 'ぉ', '-', 'ヱ', 'ゐ', 'ヰ', 'ー', 'ッ','っ']
 
+      black_list_indexes = []
+
       default_kana_to_write = ""
       kana_readings = []
       i = 0
@@ -335,6 +337,8 @@ class fileEnsurer:
             i+=1
             if(line.strip() not in black_list_characters_kana):
                default_kana_to_write += str(i) + "," + line.strip() + "," + kana_readings[i-1].strip() + ",0,0,\n"
+            else:
+               black_list_indexes.append(i)
 
       with open(kana_actual_path, 'w+', encoding="utf-8") as file:
          file.write(default_kana_to_write)
@@ -345,9 +349,10 @@ class fileEnsurer:
 
       for i, csep in enumerate(kana_csep,start=1):
 
-         kana_csep_insert_values = [str(i), str(i), csep.rstrip(',\n'), "2"]
+         if(i not in black_list_indexes):
+            kana_csep_insert_values = [str(i), str(i), csep.rstrip(',\n'), "2"]
 
-         util.write_sei_line(kana_csep_actual_path, kana_csep_insert_values)
+            util.write_sei_line(kana_csep_actual_path, kana_csep_insert_values)
 
 ##--------------------start-of-ensure_vocab_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

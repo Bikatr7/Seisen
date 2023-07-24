@@ -450,7 +450,7 @@ class Seisen:
 
         print(settings_menu_message)
 
-        pathing = util.input_check(4, str(msvcrt.getch().decode()), 4, settings_menu_message)
+        pathing = util.input_check(4, str(msvcrt.getch().decode()), 5, settings_menu_message)
 
         ## deletes the local storage and refreshes it with the remote storage, as well as re-loads the testing words
         if(pathing == "1"): 

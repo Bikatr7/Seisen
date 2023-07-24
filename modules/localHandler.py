@@ -313,7 +313,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_incorrect_typos_path,i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(util.read_sei_file(self.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == VOCAB_TYPO_ID_IDENTIFIER):
@@ -321,7 +321,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.vocab_typos_path,i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(util.read_sei_file(self.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == VOCAB_INCORRECT_TYPO_ID_IDENTIFIER):
@@ -329,7 +329,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.vocab_incorrect_typos_path,i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(util.read_sei_file(self.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
                     
 
@@ -346,7 +346,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.vocab_path, i+1, CSEP_ID_INDEX_LOCATION))
+                    ids.append(util.read_sei_file(self.vocab_csep_path, i+1, CSEP_ID_INDEX_LOCATION))
                     i+=1
 
         ids =  [int(x) for x in ids]

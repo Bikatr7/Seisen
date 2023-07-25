@@ -446,7 +446,7 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Reset Storage\n2. See Score Ratings\n3. Set Up New Database\n4. Restore Backup\n5. Add Vocab\n"
+        settings_menu_message = "1. Vocab Settings\n2. See Score Ratings\n3. Set Up New Database\n4. Storage Setting\n5. Restore Backup\n"
 
         print(settings_menu_message)
 
@@ -454,7 +454,7 @@ class Seisen:
 
         ## deletes the local storage and refreshes it with the remote storage, as well as re-loads the testing words
         if(pathing == "1"): 
-            self.localHandler, self.remoteHandler = changeSettings.reset_storage(self.localHandler, self.remoteHandler)
+            self.localHandler = changeSettings.vocab_settings(self.localHandler)
 
         ## prints current word ratings, currently only has kana
         elif(pathing == "2"):
@@ -466,10 +466,10 @@ class Seisen:
 
         ## prompts the user to restore a local backup
         elif(pathing == "4"):
-            self.localHandler, self.remoteHandler = changeSettings.restore_backup(self.localHandler, self.remoteHandler)
+            self.localHandler, self.remoteHandler = changeSettings.reset_storage(self.localHandler, self.remoteHandler)
 
         elif(pathing == "5"):
-            self.localHandler = changeSettings.add_vocab(self.localHandler)
+            self.localHandler, self.remoteHandler = changeSettings.restore_backup(self.localHandler, self.remoteHandler)
             
         ## if no valid option is selected, exit the changeSettings() function
         else:

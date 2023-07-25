@@ -173,6 +173,33 @@ def restore_backup(local_handler:localHandler, remote_handler:remoteHandler) -> 
 
     return local_handler, remote_handler
 
+##--------------------start-of-vocab_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def vocab_settings(local_handler:localHandler) -> localHandler:
+
+    """
+
+    Controls the pathing for all vocab settings as they can get very long and crowded if shoved into one function.\n
+
+    Parameters:\n
+    local_handler (object- localHandler) : the local handler.\n
+
+    Returns:\n
+    local_handler (object - localHandler) : the altered local handler.\n
+
+    """ 
+
+    vocab_message = "What are you trying to do?\n\n1.Add Vocab\n"
+
+    print(vocab_message)
+
+    type_setting = util.input_check(4, str(msvcrt.getch().decode()), 1, vocab_message)
+
+    if(type_setting == "1"):
+        local_handler = add_vocab(local_handler)
+
+    return local_handler
+
 ##--------------------start-of-add_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def add_vocab(local_handler:localHandler) -> localHandler:

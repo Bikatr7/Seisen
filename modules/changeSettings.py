@@ -1,6 +1,7 @@
 ## built-in modules
 import typing
 import msvcrt
+import shutil
 
 ## custom modules
 from modules.localHandler import localHandler
@@ -36,11 +37,11 @@ def reset_storage(local_handler:localHandler, remote_handler:remoteHandler) -> t
 
         util.clear_console()
 
-        reset_message = "How are you resetting storage?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n"
+        reset_message = "How are you resetting storage?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n3.Reset Local & Remote to Default\n"
 
         print(reset_message)
 
-        type_reset = util.input_check(4, str(msvcrt.getch().decode()), 2, reset_message)
+        type_reset = util.input_check(4, str(msvcrt.getch().decode()), 3, reset_message)
 
         if(type_reset == "1"):
         
@@ -57,6 +58,17 @@ def reset_storage(local_handler:localHandler, remote_handler:remoteHandler) -> t
 
             remote_handler.reset_remote_storage()
         
+        elif(type_reset == "3"):
+            
+            shutil.rmtree(local_handler.fileEnsurer.kana_dir)
+            shutil.rmtree(local_handler.fileEnsurer.vocab_dir)
+
+            local_handler.fileEnsurer.ensure_files(local_handler.logger)
+
+            remote_handler.reset_remote_storage()
+
+            local_handler.load_words_from_local_storage()
+
         return local_handler, remote_handler
 
 ##--------------------start-of-print_score_ratings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

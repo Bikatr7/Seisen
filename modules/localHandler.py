@@ -19,6 +19,7 @@ from modules.csep import csep as csep_blueprint
 from modules import util
 
 from modules.logger import logger
+from modules.searcher import searcher
 from modules.fileEnsurer import fileEnsurer
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
@@ -56,6 +57,8 @@ class localHandler():
 
         ## the logger used for Seisen
         self.logger = logger
+
+        self.searcher = searcher()
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 

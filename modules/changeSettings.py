@@ -189,14 +189,16 @@ def vocab_settings(local_handler:localHandler) -> localHandler:
 
     """ 
 
-    vocab_message = "What are you trying to do?\n\n1.Add Vocab\n"
+    vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n"
 
     print(vocab_message)
 
-    type_setting = util.input_check(4, str(msvcrt.getch().decode()), 1, vocab_message)
+    type_setting = util.input_check(4, str(msvcrt.getch().decode()), 2, vocab_message)
 
     if(type_setting == "1"):
         local_handler = add_vocab(local_handler)
+    elif(type_setting == "2"):
+        local_handler = add_csep(local_handler)
 
     return local_handler
 
@@ -261,5 +263,39 @@ def add_vocab(local_handler:localHandler) -> localHandler:
     local_handler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, csep_actual_list_handler, furigana, 0, 0, isKanji))
 
     util.write_sei_line(local_handler.vocab_path, vocab_insert_values)
+
+    return local_handler
+
+##--------------------start-of-add_csep()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def add_csep(local_handler:localHandler) -> localHandler:
+
+    """
+    
+    Adds a user entered csep to an existing vocab in the local handler.\n
+
+    Parameters:\n
+    local_handler (object - localHandler) : the local handler.\n
+
+    Returns:\n
+    local_handler (object - localHandler) : the altered local handler.n
+
+    """
+
+    vocab_term = ""
+    vocab_id = 0
+
+    try:
+        vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to add a csep/answer to.")
+        
+    except:
+        return local_handler
+    
+    if(vocab_term_or_id.isdigit == True):
+        vocab_id = int(vocab_term_or_id)
+        vocab_term = local_handler.searcher.get_term_from_id(local_handler, vocab_id) 
+    else:
+        vocab_term = vocab_term_or_id
+        vocab_id = local_handler.searcher.get_id_from_term(local_handler, vocab_term)
 
     return local_handler

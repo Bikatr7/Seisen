@@ -240,7 +240,7 @@ def write_sei_line(sei_file_path:str, items_to_write:typing.List[str]) -> None:
     line = ",".join(str(item) for item in items_to_write)
     
     with open(sei_file_path, "a+", encoding="utf-8") as file:
-        file.write(line + "," + "\n")
+        file.write(line + ",\n")
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -315,6 +315,31 @@ def read_sei_file(sei_file_path:str, target_line:int, column:int) -> str:
         ii+=1
         
     return file_details[column-1]
+
+##-------------------start-of-delete_sei_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def delete_sei_line(sei_file_path:str, target_line:int) -> None:
+
+    """
+
+    Deletes the specified line from the given sei file.\n
+
+    Parameters:\n
+    sei_file_path (str) : the path to the sei file.\n
+    target_line (int) : the line number to be deleted.\n
+
+    Returns:\n
+    None.\n
+
+    """
+
+    with open(sei_file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+
+    with open(sei_file_path, "w", encoding="utf-8") as file:
+        for i, line in enumerate(lines, 1):
+            if i != target_line:
+                file.write(line)
 
 ##--------------------start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -190,11 +190,11 @@ def vocab_settings(local_handler:localHandler) -> localHandler:
 
     """ 
 
-    vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n"
+    vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Delete Vocab Value\n"
 
     print(vocab_message)
 
-    type_setting = util.input_check(4, str(msvcrt.getch().decode()), 3, vocab_message)
+    type_setting = util.input_check(4, str(msvcrt.getch().decode()), 4, vocab_message)
 
     if(type_setting == "1"):
         local_handler = add_vocab(local_handler)
@@ -202,6 +202,8 @@ def vocab_settings(local_handler:localHandler) -> localHandler:
         local_handler = add_csep(local_handler)
     elif(type_setting == "3"):
         local_handler = replace_vocab_value(local_handler)
+    elif(type_setting == "4"):
+        local_handler = delete_vocab_value(local_handler)
 
     return local_handler
 
@@ -225,7 +227,6 @@ def add_vocab(local_handler:localHandler) -> localHandler:
     new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
 
     csep_value_list = []
-    csep_actual_list_write = []
     csep_actual_list_handler = []
 
     furigana = "0"
@@ -262,7 +263,7 @@ def add_vocab(local_handler:localHandler) -> localHandler:
 
         new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
 
-    vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, furigana, 0, 0, isKanji]
+    vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, furigana, 0, 0]
     local_handler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, csep_actual_list_handler, furigana, 0, 0, isKanji))
 
     util.write_sei_line(local_handler.vocab_path, vocab_insert_values)
@@ -321,9 +322,7 @@ def add_csep(local_handler:localHandler) -> localHandler:
     except util.UserCancelError:
         return local_handler
     
-    for i, vocab in enumerate(local_handler.vocab):
-        if(vocab.word_id == vocab_id):
-            target_index = i
+    target_index = next((i for i, vocab in enumerate(local_handler.vocab) if vocab.word_id == vocab_id))
 
     csep_insert_values = [vocab_id, new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE]
     util.write_sei_line(local_handler.vocab_csep_path, csep_insert_values)
@@ -441,5 +440,59 @@ def replace_vocab_value(local_handler:localHandler) -> localHandler:
         
     ## it's easier to just reload everything than for me to figure out how to juggle csep values in the handler if the user wants to fuck with definitions or answers
     local_handler.load_words_from_local_storage()
+
+    return local_handler
+
+##--------------------start-of-delete_vocab_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def delete_vocab_value(local_handler:localHandler) -> localHandler:
+
+    """
+    
+    Deletes a vocab value.\n
+
+    Parameters:\n
+    local_handler (object - localHandler) : the local handler.\n
+
+    Returns:\n
+    local_handler (object - localHandler) : the altered local handler.\n
+
+    """
+
+    target_csep_lines = []
+    target_csep_line = 0
+
+    try:
+        vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.")
+
+    except:
+        return local_handler
+    
+    if(vocab_term_or_id.isdigit() == True):
+        vocab_id = int(vocab_term_or_id)
+        vocab_term = local_handler.searcher.get_term_from_id(local_handler, vocab_id) 
+    else:
+        vocab_term = vocab_term_or_id
+        vocab_id = local_handler.searcher.get_id_from_term(local_handler, vocab_term)
+
+    try:
+
+        assert vocab_term != "-1"
+        assert vocab_id != -1
+
+    except AssertionError:
+        local_handler.logger.log_action("Invalid id or term.")
+        print("invalid id or term\n")
+        time.sleep(1)
+        return local_handler
+    
+    except util.UserCancelError:
+        return local_handler
+
+    target_vocab_index = next((i for i, vocab in enumerate(local_handler.vocab) if vocab.word_id == vocab_id))
+    
+    local_handler.vocab.pop(target_vocab_index)
+
+    ## to do, implement file deletions
 
     return local_handler

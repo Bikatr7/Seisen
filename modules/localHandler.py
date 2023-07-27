@@ -24,6 +24,8 @@ from modules.fileEnsurer import fileEnsurer
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from modules.csep import csep
+    from modules.vocab import vocab
+    from modules.words import word as kana
 
 class localHandler():
 
@@ -97,10 +99,10 @@ class localHandler():
         self.VOCAB_WORD_TYPE = "3"
 
         ## the kana that seisen will use to test the user
-        self.kana = [] 
+        self.kana: typing.List[kana] = [] 
 
         ## the vocab that will be used to test the user
-        self.vocab = []
+        self.vocab: typing.List[vocab] = []
 
         self.logger.log_action("Local Handler was created")
         

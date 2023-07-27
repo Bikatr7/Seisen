@@ -14,6 +14,38 @@ if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that oc
     from modules.words import word
     from modules.logger import logger
 
+
+##--------------------start-of-UserCancelError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+class UserCancelError(Exception):
+
+    """
+    
+    Is raised when a user cancel's an action\n
+
+    """
+
+
+##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    def __init__(self):
+
+        """
+        
+        Initializes a new UserCancelError Exception.\n
+
+        Parameters:\n
+        None.\n
+
+        Returns:\n
+        None.\n
+
+        """
+
+        self.message = "User Canceled."
+
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def input_check(input_type:int, user_input:str, number_of_choices:int, input_prompt_message:str) -> str:
@@ -165,7 +197,8 @@ def user_confirm(prompt:str) -> str:
         if(user_input == "q"): ## if the user wants to quit do so
             exit()
 
-        assert user_input != "z" ## z is used to skip
+        if(user_input == "z"): ## z is used to skip
+            raise UserCancelError()
 
         clear_console()
 

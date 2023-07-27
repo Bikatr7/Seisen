@@ -2,6 +2,7 @@
 import typing
 import msvcrt
 import shutil
+import time
 
 ## custom modules
 from modules.localHandler import localHandler
@@ -285,17 +286,52 @@ def add_csep(local_handler:localHandler) -> localHandler:
     vocab_term = ""
     vocab_id = 0
 
+    target_index = 0
+
+    new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
+
     try:
         vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to add a csep/answer to.")
-        
+
     except:
         return local_handler
     
-    if(vocab_term_or_id.isdigit == True):
+    if(vocab_term_or_id.isdigit() == True):
         vocab_id = int(vocab_term_or_id)
         vocab_term = local_handler.searcher.get_term_from_id(local_handler, vocab_id) 
     else:
         vocab_term = vocab_term_or_id
         vocab_id = local_handler.searcher.get_id_from_term(local_handler, vocab_term)
+
+    try:
+
+        print(vocab_term)
+        print(vocab_id)
+
+        util.pause_console()
+
+        assert vocab_term != "-1"
+        assert vocab_id != -1
+
+        csep_value = util.user_confirm("Please enter the csep/answer for " + vocab_term + " you would like to add.")
+
+    except AssertionError:
+        local_handler.logger.log_action("Invalid id or term.")
+        print("invalid id or term\n")
+        time.sleep(1)
+        return local_handler
+    
+    except util.UserCancelError:
+        return local_handler
+    
+    for i, vocab in enumerate(local_handler.vocab):
+        if(vocab.word_id == vocab_id):
+            target_index = i
+
+    csep_insert_values = [vocab_id, new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE]
+    util.write_sei_line(local_handler.vocab_csep_path, csep_insert_values)
+    
+    new_csep = csep_blueprint(int(vocab_id), new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE)
+    local_handler.vocab[target_index].testing_material_answer_all.append(new_csep)
 
     return local_handler

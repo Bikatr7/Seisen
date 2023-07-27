@@ -94,7 +94,7 @@ class vocab(words.word):
         ## line returned needs to be incremented by one to match file
         line_to_write_to = vocab_ids.index(str(self.word_id)) + 1
 
-        util.edit_sei_line(handler.vocab_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.correct_count)
+        util.edit_sei_line(handler.vocab_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.correct_count))
 
         handler.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
 
@@ -133,7 +133,7 @@ class vocab(words.word):
         ## line returned needs to be incremented by one to match file
         line_to_write_to = vocab_ids.index(str(self.word_id)) + 1
 
-        util.edit_sei_line(handler.vocab_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , self.incorrect_count)
+        util.edit_sei_line(handler.vocab_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.incorrect_count))
 
         handler.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
 

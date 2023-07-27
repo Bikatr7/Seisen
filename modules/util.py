@@ -244,7 +244,7 @@ def write_sei_line(sei_file_path:str, items_to_write:typing.List[str]) -> None:
 
 ##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:int) -> None:
+def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:str) -> None:
     
     """
 
@@ -267,7 +267,7 @@ def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_re
     line = lines[target_line - 1]
     items = line.split(",")
 
-    items[column_number - 1] = str(value_to_replace_to)
+    items[column_number - 1] = value_to_replace_to
 
     new_line = ",".join(items)
 

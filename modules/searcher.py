@@ -101,7 +101,7 @@ class searcher:
             f"Vocab: {target_vocab.testing_material}\n"
             f"Romaji: {target_vocab.romaji}\n"
             f"Furigana: {target_vocab.furigana}\n"
-            f"Definition {target_vocab.testing_material_answer_main}\n"
+            f"Definition: {target_vocab.testing_material_answer_main}\n"
             f"Incorrect Guesses: {target_vocab.incorrect_count}\n"
             f"Correct Guesses: {target_vocab.correct_count}\n"
             f"ID: {target_vocab.word_id}\n"

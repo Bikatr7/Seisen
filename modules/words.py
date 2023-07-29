@@ -13,6 +13,7 @@ from modules import util
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from modules.localHandler import localHandler
+    from modules.typos import typo, incorrectTypo
 
 class word:
 
@@ -70,10 +71,10 @@ class word:
         self.likelihood = 0.0
 
         ## the known typos of the word
-        self.typos = []
+        self.typos: typing.List[typo] = []
 
         ## the know incorrect typos of the word
-        self.incorrect_typos = []
+        self.incorrect_typos: typing.List[incorrectTypo] = []
 
 ##--------------------start-of-log_correct_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -173,10 +174,10 @@ class word:
         ## gets a new id for the typo
         new_typo_id = util.get_new_id(handler.get_list_of_all_ids(1))
 
-        new_typo = incorrect_typo_blueprint(self.word_id, new_typo_id, typo , self.word_type)
+        new_typo = typo_blueprint(self.word_id, new_typo_id, typo , self.word_type)
 
         ## updates local storage so the typo will be saved
-        util.write_sei_line(handler.kana_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.incorrect_typo_value), str(new_typo.word_type)])
+        util.write_sei_line(handler.kana_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
         self.typos.append(new_typo)

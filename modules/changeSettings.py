@@ -23,7 +23,7 @@ def reset_storage(local_handler:localHandler, remote_handler:remoteHandler) -> t
         """"
         
         Resets storage, either local with remote or remote with local.\n
-        Will do nothing if no database connection is available.\n
+        Will do nothing if no database connection is available for the first two options.\n
 
         Parameters:\n
         local_handler (object - localHandler) : the local handler.\n
@@ -48,8 +48,13 @@ def reset_storage(local_handler:localHandler, remote_handler:remoteHandler) -> t
         
             with open(remote_handler.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
                 last_backup_date = str(file.read().strip()).strip('\x00').strip()
+            
+            if(last_backup_date == ""):
+                last_backup_date = "(NEVER)"
 
-            if(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no) ") == "1"):
+            confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no)\n"))
+
+            if(confirm == "1"):
                 remote_handler.reset_local_storage()
                 local_handler.load_words_from_local_storage()
             else:

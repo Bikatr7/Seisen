@@ -446,7 +446,7 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Vocab Settings\n2. See Score Ratings\n3. Set Up New Database\n4. Storage Setting\n5. Restore Backup\n"
+        settings_menu_message = "1. Vocab Settings\n2. See Score Ratings\n3. Set Up New Database\n4. Storage Settings\n5. Restore Backup\n"
 
         print(settings_menu_message)
 

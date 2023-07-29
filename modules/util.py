@@ -341,6 +341,42 @@ def delete_sei_line(sei_file_path:str, target_line:int) -> None:
             if i != target_line:
                 file.write(line)
 
+##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+def delete_all_occurrences_of_id(file_path:str, id_index:int, id_value:int):
+
+    """
+    
+    Delete all lines that match a given id.\n
+
+    Parameters:\n
+    file_path (str) : the path to the file to search.\n
+    id_index (int) : the index of where the id should be.\n
+    id_value (str) : the id to look for.\n
+
+    Returns:\n
+    None.\n
+
+    """
+
+    i = 0
+
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    line_count = len(lines)
+
+    while i < line_count:
+        if int(read_sei_file(file_path, i + 1, id_index)) == id_value:
+            delete_sei_line(file_path, i + 1)
+            line_count -= 1
+        else:
+            i += 1
+
+        if(i >= line_count):
+            break
+
 ##--------------------start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def get_new_id(id_list:typing.List[int]) -> int:

@@ -459,11 +459,6 @@ def delete_vocab_value(local_handler:localHandler) -> localHandler:
 
     """
 
-    target_csep_lines = []
-    target_csep_line = 0
-
-    i = 0
-
     try:
         vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.")
 
@@ -492,26 +487,18 @@ def delete_vocab_value(local_handler:localHandler) -> localHandler:
         return local_handler
 
     target_vocab_index = next((i for i, vocab in enumerate(local_handler.vocab) if vocab.word_id == vocab_id))
-    
-    local_handler.vocab.pop(target_vocab_index)
 
     target_vocab_line = next((i + 1 for i, line in enumerate(local_handler.vocab_path) if int(util.read_sei_file(local_handler.vocab_path, i + 1, 1)) == vocab_id))
 
+    ## deletes the vocab itself
     util.delete_sei_line(local_handler.vocab_path, target_vocab_line)
+    local_handler.vocab.pop(target_vocab_index)
 
-    with open(local_handler.vocab_csep_path, 'r') as file:
-        lines = file.readlines()
+    ## deletes the csep
+    util.delete_all_occurrences_of_id(local_handler.vocab_csep_path, 1, vocab_id)
 
-    line_count = len(lines)
-
-    while i < line_count:
-        if int(util.read_sei_file(local_handler.vocab_csep_path, i + 1, 1)) == vocab_id:
-            util.delete_sei_line(local_handler.vocab_csep_path, i + 1)
-            line_count -= 1
-        else:
-            i += 1
-
-        if i >= line_count:
-            break
+    ## deletes the typos
+    util.delete_all_occurrences_of_id(local_handler.vocab_incorrect_typos_path, 1, vocab_id)
+    util.delete_all_occurrences_of_id(local_handler.vocab_typos_path, 1, vocab_id)
 
     return local_handler

@@ -1135,7 +1135,7 @@ class remoteHandler():
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
             if(last_backup_date != current_day):
-                archive_dir = util.create_archive_dir(1, self.logger)
+                archive_dir = util.create_archive_dir(1, self.logger) # type: ignore
 
                 self.logger.log_action("Created Daily Remote Backup")
 

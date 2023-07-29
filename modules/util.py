@@ -448,6 +448,34 @@ def levenshtein(string_one:str, string_two:str) -> int:
 
     return distance[sLength1][sLength2]
 
+##--------------------start-of-get_intended_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def get_intended_answer(typo:str, correct_answers:typing.List[str]) -> str:
+
+    """
+    
+    When a typo has been previously encountered, we need to determine what they were trying to type and return that instead.\n
+
+    Parameters:\n
+    typo (str) : the typo the user made.\n
+    correct_answers (list - str) : list of correct answers the typo could match.\n
+
+    Returns:\n
+    closest_string (str) : the string the user was trying to type.\n
+
+    """
+
+    closest_distance = float('inf')
+    closest_string = ""
+
+    for string in correct_answers:
+        distance = levenshtein(typo, string)
+        if(distance < closest_distance):
+            closest_distance = distance
+            closest_string = string
+
+    return closest_string
+
 ##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> str:  
@@ -470,9 +498,13 @@ def check_typo(word:word, user_guess:str, prompt:str, handler:localHandler) -> s
     min_distance = 3
     final_answer = user_guess
 
-    if(user_guess in word.typos):
-        return [item for item in word.typos if item == user_guess][0]
-    elif(user_guess in word.incorrect_typos):
+    typos = [typo.typo_value for typo in word.typos]
+    incorrect_typos = [incorrect_typo.incorrect_typo_value for incorrect_typo in word.incorrect_typos]
+
+    if(user_guess in typos):
+        possible_intended_answers = [csep.csep_value for csep in word.testing_material_answer_all]
+        return get_intended_answer(user_guess, possible_intended_answers )
+    elif(user_guess in incorrect_typos):
         return user_guess
 
     for correct_answer in word.testing_material_answer_all:

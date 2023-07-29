@@ -218,7 +218,9 @@ class localHandler():
 
                     self.vocab.append(vocab_blueprint(int(values[0]), values[1], values[2], values[3], csep_values, values[4], int(values[5]), int(values[6]), kanji_flag))
 
-                    self.logger.log_action("Loaded vocab - (" + values[0] + "," + values[1] + values[2] + "," + values[3] + ","  + values[4] + "," + values[5] + "," + str(kanji_flag) + "," + ") with the following cseps - " + str(csep_values))
+                    csep_log_value = [csep.csep_value for csep in csep_values]
+
+                    self.logger.log_action("Loaded vocab - (" + values[0] + "," + values[1] + values[2] + "," + values[3] + ","  + values[4] + "," + values[5] + "," + str(kanji_flag) + "," + ") with the following cseps - " + str(csep_log_value))
 
             with open(self.vocab_typos_path, "r", encoding="utf-8") as file:
 

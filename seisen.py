@@ -446,7 +446,7 @@ class Seisen:
 
         util.clear_console()
 
-        settings_menu_message = "1. Vocab Settings\n2. See Score Ratings\n3. Set Up New Database\n4. Storage Setting\n5. Restore Backup\n"
+        settings_menu_message = "1. Vocab Settings\n2. Storage Setting\n3. See Score Ratings\n\4. Restore Backup\n5. Set Up New Database"
 
         print(settings_menu_message)
 
@@ -456,21 +456,21 @@ class Seisen:
         if(pathing == "1"): 
             self.localHandler = changeSettings.vocab_settings(self.localHandler)
 
-        ## prints current word ratings, currently only has kana
-        elif(pathing == "2"):
-            changeSettings.print_score_ratings(self.word_rater, self.localHandler)
-
-        ## tries to set up a new database, WILL replace any existing database
-        elif(pathing == "3"):
-            self.remoteHandler = changeSettings.set_up_new_database(self.remoteHandler)
-
         ## prompts the user to restore a local backup
-        elif(pathing == "4"):
+        elif(pathing == "2"):
             self.localHandler, self.remoteHandler = changeSettings.reset_storage(self.localHandler, self.remoteHandler)
 
-        elif(pathing == "5"):
+        ## prints current word ratings, currently only has kana
+        elif(pathing == "3"):
+            changeSettings.print_score_ratings(self.word_rater, self.localHandler)
+
+        elif(pathing == "4"):
             self.localHandler, self.remoteHandler = changeSettings.restore_backup(self.localHandler, self.remoteHandler)
-            
+
+        ## tries to set up a new database, WILL replace any existing database
+        elif(pathing == "5"):
+            self.remoteHandler = changeSettings.set_up_new_database(self.remoteHandler)
+
         ## if no valid option is selected, exit the changeSettings() function
         else:
             self.current_mode = -1

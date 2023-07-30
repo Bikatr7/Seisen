@@ -499,7 +499,7 @@ def delete_vocab_value(local_handler:localHandler) -> localHandler:
     util.delete_sei_line(local_handler.vocab_path, target_vocab_line)
     local_handler.vocab.pop(target_vocab_index)
 
-    ## deletes the csep
+    ## deletes the cseps
     util.delete_all_occurrences_of_id(local_handler.vocab_csep_path, 1, vocab_id)
 
     ## deletes the typos

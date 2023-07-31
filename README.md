@@ -4,7 +4,9 @@
 - [Notes](#notes)
 - [Dependencies](#dependencies)
 - [Quick Start](#quickstart)
-- [Settings](#settings)
+- [Settings Menu](#settings)
+- [Vocab Settings](#vocab-settings)
+- [Storage Settings](#storage-settings)
 - [Setting Up A MySQL Database](#SUAMSD)
 - [License](#license)
 - [Contact](#contact)
@@ -41,23 +43,39 @@ Once at the main menu, press 1 and begin to quiz yourself on kana or 2 to quiz y
 The average user will have no need to use the settings options unless they want to see the score ratings.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
-**Settings**<a name="settings"></a>
+**Settings Menu**<a name="settings"></a>
 
-pressing 3 will enter the settings menu. The settings are as follows.
+pressing 3 will enter the settings menu. The settings are as follows:
 
-1. Reset Local Storage - this will reset your Local Storage with your Remote Storage (database), will do nothing if no database is present.
-2. Reset Remote Storage - this will reset your Remote Storage with your Local Storage, will do nothing if no database is present.
-3. See Score Ratings - this will print the likelihood of each kana being tested.
-4. Add New Database - this will cause Seisen to prompt for a new database.
-5. Restore Local Backup - this will cause Seisen to prompt the user to select an old Seisen Local Backup
-6. Restore Remote Backup - this will cause Seisen to prompt the user to select an old Seisen Remote Backup
+1. Vocab Settings - Enters vocab settings
+2. Storage Settings - Enters storage settings
+3. See Score Ratings - this will print the likelihood of each kana/vocab being tested.
+4. Restore Backup - this will prompt the user to restore an existing local/remote backup
+5. Set Up New Database - - this will cause Seisen to prompt for a new database.
    
+---------------------------------------------------------------------------------------------------------------------------------------------------
+**Vocab Settings**<a name="vocab-settings"></a>
+
+Vocab Settings are as follows:
+
+1. Add Vocab - Adds a custom vocab to the testing deck
+2. Add CSEP/Answer to Vocab - Adds a answer (CSEP) to an existing vocab
+3. Replace Vocab Value - Edits a vocab value
+4. Delete Vocab Value - Deletes a vocab value
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+**Storage Settings**<a name="#storage-settings"></a>
+
+1. Reset Local with Remote - Resets Local Storage with the Database (will do nothing if no connection)
+2. Reset Remote with Local - Resets Remote Storage with the Local Storage (will do nothing if no connection)
+3. Reset Local & Remote to Default - Resets all storage to default settings
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Setting Up A MySQL Database**<a name="SUAMSD"></a>
 
 Seisen uses a backup data method using MySQL, once Seisen is opened for the first time it will prompt for A database name and password, if you have these already feel free to enter these and Seisen will take care of the rest.
 
-If not, you can always set this up latter in settings by typing 3 and then press 4.
+If not, you can always set this up latter in settings by typing 3 and then press 5.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **License**<a name="license"></a>

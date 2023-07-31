@@ -681,7 +681,7 @@ def check_update(logger:logger) -> bool:
 
         clear_console()
     
-        CURRENT_VERSION = "v1.1.0" 
+        CURRENT_VERSION = "v1.2.0" 
 
         response = requests.get("https://api.github.com/repos/Seinuve/Seisen/releases/latest")
         latest_version = response.json()["tag_name"]

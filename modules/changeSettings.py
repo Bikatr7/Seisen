@@ -155,7 +155,7 @@ def restore_backup(local_handler:localHandler, remote_handler:remoteHandler) -> 
     local_handler (object - localHandler) : the altered local handler object.\n
     remote_handler (object - remoteHandler) : the altered remote handler object.\n
     
-    """  
+    """ 
 
     util.clear_console()
 
@@ -194,6 +194,8 @@ def vocab_settings(local_handler:localHandler) -> localHandler:
     local_handler (object - localHandler) : the altered local handler.\n
 
     """ 
+
+    local_handler.logger.log_action("User is changing vocab settings")
 
     vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Delete Vocab Value\n"
 
@@ -248,8 +250,10 @@ def add_vocab(local_handler:localHandler) -> localHandler:
             util.clear_stream()
             csep_value_list.append(util.user_confirm("Please enter " + testing_material + "'s additional answers"))
 
+        kana = [value.testing_material for value in local_handler.kana]
+
         for character in testing_material:
-            if(character not in local_handler.kana):
+            if(character not in kana):
                 local_handler.logger.log_action(character + " is kanji")
                 furigana = util.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling")
                 isKanji = True
@@ -257,7 +261,6 @@ def add_vocab(local_handler:localHandler) -> localHandler:
     
     except:
         return local_handler
-
 
     for csep_value in csep_value_list:
         csep_insert_values = [new_vocab_id, new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE]
@@ -465,7 +468,7 @@ def delete_vocab_value(local_handler:localHandler) -> localHandler:
     """
 
     try:
-        vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.")
+        vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to delete.")
 
     except:
         return local_handler

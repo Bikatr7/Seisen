@@ -444,9 +444,11 @@ class Seisen:
 
         """  
 
+        self.logger.log_action("--------------------------------------------------------------")
+
         util.clear_console()
 
-        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n\4. Restore Backup\n5. Set Up New Database"
+        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Restore Backup\n5. Set Up New Database"
 
         print(settings_menu_message)
 
@@ -474,6 +476,10 @@ class Seisen:
         ## if no valid option is selected, exit the changeSettings() function
         else:
             self.current_mode = -1
+
+        self.logger.log_action("--------------------------------------------------------------")
+
+        self.localHandler.logger.push_batch()
 
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

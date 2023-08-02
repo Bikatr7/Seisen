@@ -3,14 +3,7 @@ from datetime import datetime
 
 import os
 import time
-import typing
 import shutil
-import base64
-
-## third party modules
-from mysql.connector import pooling
-
-import mysql.connector 
 
 ## custom modules
 from modules.typos import typo as typo_blueprint
@@ -26,11 +19,13 @@ from modules import util
 from modules.logger import logger
 from modules.fileEnsurer import fileEnsurer
 
+from modules.connectionHandler import connectionHandler
+
 class remoteHandler():
 
     """
     
-    The handler that handles the connection to the database and all interactions with it.\n
+    The handler that handles all interactions with the remote storage.\n
 
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -57,6 +52,8 @@ class remoteHandler():
 
         self.logger = logger
 
+        self.connection_handler = connectionHandler(self.fileEnsurer, self.logger)
+
         ##----------------------------------------------------------------dir----------------------------------------------------------------
 
         ## lib files for remoteHandler.py
@@ -72,9 +69,6 @@ class remoteHandler():
         self.local_remote_archives_dir = os.path.join(self.archives_dir, "LocalRemote")
 
         ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-        ## the path to the file that stores the password
-        self.credentials_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
 
         ## the paths to the file that stores the kana words and its typos
         self.kana_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Kana"), "kana.txt")
@@ -119,300 +113,7 @@ class remoteHandler():
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         self.logger.log_action("Remote Handler has been created")
-
-        ## the database connection, can either be itself or none
-        self.connection = self.initialize_database_connection()
-
-##--------------------start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def execute_query(self, query:str) -> None:
-
-        """
-
-        Executes a query to the database\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        query (str) : The query to be executed.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        if(self.connection == None):
-            return
-
-        self.logger.log_action("--------------------------------------------------------------")
     
-        self.cursor.execute(query)
-        
-        self.connection.commit()
-
-        self.logger.log_action("The following query was sent and accepted by the database : ")
-        self.logger.log_action(query.strip())
-
-        self.logger.log_action("--------------------------------------------------------------")
-
-##--------------------start-of-read_single_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def read_single_column_query(self, query:str) -> typing.List[str]:
-
-        """
-
-        reads a single column query from the database.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        query (str) : The query to be executed.\n
-
-        Returns:\n
-        results_actual (list - string) : The results of the query.\n
-
-        """
-        
-        results_actual = []
-
-        self.cursor.execute(query)
-        results = self.cursor.fetchall()
-
-        results_actual = [str(i[0]) for i in results]
-
-        return results_actual
-    
-##--------------------start-of-insert_into_table()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def insert_into_table(self, table_name, data) -> None:
-
-        """
-        
-        inserts data into a table.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        table_name (str) : The name of the table.\n
-        data (dict) : The data to be inserted.\n
-
-        Returns:\n
-        None\n
-
-        """
-
-        columns = ", ".join(data.keys())
-        values = ", ".join([f"'{value}'" for value in data.values()])
-
-        query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
-
-        self.execute_query(query)
-
-##--------------------start-of-read_multi_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def read_multi_column_query(self, query:str) -> typing.List[typing.List[str]]:
-
-        """
-
-        reads a multi column query from the database.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        query (str) : The query to be executed.\n
-
-        Returns:\n
-        results_by_column (list - list) : The results of the query.\n
-
-        """
-
-        self.cursor.execute(query)
-
-        results = self.cursor.fetchall()
-
-        if(len(results) == 0):
-            return [[]] * self.cursor.description.__len__() if self.cursor.description else [[]]
-
-        results_by_column = [[] for i in range(len(results[0]))]
-        
-        for row in results:
-            for i, value in enumerate(row):
-                results_by_column[i].append(str(value))
-
-        return results_by_column
-    
-##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def create_database_connection(self, host_name:str, user_name:str, db_name:str, user_password:str) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection]:
-
-        """
-
-        Creates a connection to the database.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        host_name (str) : The host name of the database.\n
-        user_name (str) : The user name of the database.\n
-        db_name (str) : The name of the database.\n
-        user_password (str) : The password of the database.\n
-
-        Returns:\n
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
-
-        """
-
-        connection = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            database= db_name,
-            passwd=user_password)
-
-        self.logger.log_action("Successfully connected to the " + db_name + " database")
-
-        return connection
-
-##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def initialize_database_connection(self) -> typing.Union[mysql.connector.connection.MySQLConnection, pooling.PooledMySQLConnection, None]:
-
-        """
-
-        Sets up the database connection. If the user has already entered the password for the database, the program will use the saved password. If not, the program will ask the user for the password.\n
-
-        Parameters:\n
-        None.\n
-
-        Returns:\n
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
-
-        """
-        
-        with open(self.database_connection_failed_path, "r+", encoding="utf-8") as file:
-            if(file.read().strip() == "true"):
-                self.logger.log_action("Database connection has failed previously.... skipping connection initialization")
-                return None
-            
-        self.start_marked_succeeded_database_connection()
-
-        try:
-
-            with open(self.credentials_path, 'r', encoding='utf-8') as file:  ## get saved connection credentials if exists
-                credentials = file.readlines()
-
-                database_name = base64.b64decode((credentials[0].strip()).encode('utf-8')).decode('utf-8')
-                password = base64.b64decode((credentials[1].strip()).encode('utf-8')).decode('utf-8')
-
-            connection = self.create_database_connection("localhost", "root", database_name, password)
-            self.cursor = connection.cursor()
-
-            self.logger.log_action("Used saved credentials in " + self.credentials_path)
-
-        except: ## else try to get credentials manually
-
-            try: ## if valid save the credentials
-
-                database_name = util.user_confirm("Please enter the name of the database you have")
-
-                util.clear_console()
-
-                password = util.user_confirm("Please enter the root password for your local database you have")
-
-                credentials = [
-                    base64.b64encode(database_name.encode('utf-8')).decode('utf-8'),
-                        base64.b64encode(password.encode('utf-8')).decode('utf-8')]
-                
-                connection = self.create_database_connection("localhost", "root", database_name, password)
-                self.cursor = connection.cursor()
-                            
-                util.standard_create_file(self.credentials_path, self.logger) 
-
-                time.sleep(0.1)
-
-                credentials = [x + '\n' for x  in credentials]
-
-                with open(self.credentials_path, "w+",encoding='utf-8') as file:
-                    file.writelines(credentials)
-
-            except AssertionError:
-                
-                util.clear_console()
-
-                self.start_marked_failed_database_connection()
-
-                connection = None
-
-            except Exception as e: ## if invalid exit
-                        
-                util.clear_console()
-
-                print(str(e))
-                print("Error with creating connection object, please double check your password and database name\n")
-
-                self.start_marked_failed_database_connection()
-
-                connection = None
-
-                util.pause_console()
-            
-        return connection
-    
-##--------------------start-of-mark_failed_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def start_marked_failed_database_connection(self) -> None:
-         
-        """
-        
-        Marks a file in lib that the most recently attempted database connection has failed to connect.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
-            file.write("true")
-            
-        self.logger.log_action("Database Connection Failed")
-
-##--------------------start-of-mark_succeeded_database_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def start_marked_succeeded_database_connection(self) -> None:
-         
-        """
-        
-        Marks a file in lib that the most recently attempted database connection has succeeded.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
-            file.write("false")
-
-        self.logger.log_action("Database Connection Succeeded")
-
-##--------------------start-of-clear_credentials_File()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def clear_credentials_file(self):
-
-        """
-        
-        Clears the credentials file.\n
-
-        Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        with open(self.credentials_path, "w+", encoding="utf-8") as file: ## clears the credentials file allowing for a different database connection to be added if the current one is valid
-            file.truncate()
-
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def reset_local_storage(self) -> None:
@@ -474,10 +175,10 @@ class remoteHandler():
             self.kana_incorrect_typos.clear()
             self.kana_csep.clear()
 
-            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
-            kana_id_list, csep_id_list, csep_value_list, word_type_list = self.read_multi_column_query("select kana_id, kana_csep_id, kana_csep_value, word_type from kana_csep")
+            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.connection_handler.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.connection_handler.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.connection_handler.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
+            kana_id_list, csep_id_list, csep_value_list, word_type_list = self.connection_handler.read_multi_column_query("select kana_id, kana_csep_id, kana_csep_value, word_type from kana_csep")
 
             self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
             self.kana_typos = [typo_blueprint(int(typo_word_id_list[i]), int(typo_id_list[i]), typo_value_list[i], typo_word_type_list[i]) for i in range(len(typo_word_id_list))]
@@ -525,10 +226,10 @@ class remoteHandler():
             self.vocab_typos.clear()
             self.vocab_incorrect_typos.clear()
 
-            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
-            vocab_id_list, csep_id_list, csep_value_list, word_type_list = self.read_multi_column_query("select vocab_id, vocab_csep_id, vocab_csep_value, word_type from vocab_csep")
+            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.connection_handler.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.connection_handler.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.connection_handler.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
+            vocab_id_list, csep_id_list, csep_value_list, word_type_list = self.connection_handler.read_multi_column_query("select vocab_id, vocab_csep_id, vocab_csep_value, word_type from vocab_csep")
 
             self.vocab = [vocab_blueprint(int(word_id_list[i]), vocab_list[i], romaji_list[i], answer_list[i], [], furigana_list[i], int(pValue_list[i]), int(cValue_list[i]), bool(isKanji_list[i])) for i in range(len(word_id_list))]
             self.vocab_typos = [typo_blueprint(int(typo_word_id_list[i]), int(typo_id_list[i]), typo_value_list[i], typo_word_type_list[i]) for i in range(len(typo_word_id_list))]
@@ -572,8 +273,7 @@ class remoteHandler():
         ##----------------------------------------------------------------main()----------------------------------------------------------------
 
         ## local storage does not reset if there is no valid database connection
-        if(self.connection == None): 
-            self.logger.log_action("No database connection, skipping local storage reset")
+        if(self.connection_handler.check_connection_validity("local storage reset") == False):
             return
         
         self.logger.log_action("--------------------------------------------------------------")
@@ -611,10 +311,9 @@ class remoteHandler():
         """
 
         ## we do not reset remote if there is no valid database connection
-        if(self.connection == None): 
-            self.logger.log_action("No database connection, skipping remote reset")
+        if(self.connection_handler.check_connection_validity("remote storage reset") == False):
             return
-
+        
         with open(self.last_local_remote_backup_accurate_path, 'w+', encoding="utf-8") as file:
 
             last_overwrite_date_accurate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -682,15 +381,15 @@ class remoteHandler():
 
         ##----------------------------------------------------------------calls----------------------------------------------------------------
 
-        self.execute_query(delete_kana_csep_query)
-        self.execute_query(delete_kana_typos_query)
-        self.execute_query(delete_kana_incorrect_typos_query)
-        self.execute_query(delete_kana_query)
+        self.connection_handler.execute_query(delete_kana_csep_query)
+        self.connection_handler.execute_query(delete_kana_typos_query)
+        self.connection_handler.execute_query(delete_kana_incorrect_typos_query)
+        self.connection_handler.execute_query(delete_kana_query)
 
-        self.execute_query(delete_vocab_csep_query)
-        self.execute_query(delete_vocab_typos_query)
-        self.execute_query(delete_vocab_incorrect_typos_query)
-        self.execute_query(delete_vocab_query)
+        self.connection_handler.execute_query(delete_vocab_csep_query)
+        self.connection_handler.execute_query(delete_vocab_typos_query)
+        self.connection_handler.execute_query(delete_vocab_incorrect_typos_query)
+        self.connection_handler.execute_query(delete_vocab_query)
 
 ##--------------------start-of-create_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -807,15 +506,15 @@ class remoteHandler():
 
         ##----------------------------------------------------------------queries----------------------------------------------------------------
 
-        self.execute_query(create_kana_query)
-        self.execute_query(create_kana_typos_query)
-        self.execute_query(create_kana_incorrect_typos_query)
-        self.execute_query(create_kana_csep_query)
+        self.connection_handler.execute_query(create_kana_query)
+        self.connection_handler.execute_query(create_kana_typos_query)
+        self.connection_handler.execute_query(create_kana_incorrect_typos_query)
+        self.connection_handler.execute_query(create_kana_csep_query)
 
-        self.execute_query(create_vocab_query)
-        self.execute_query(create_vocab_typos_query)
-        self.execute_query(create_vocab_incorrect_typos_query)
-        self.execute_query(create_vocab_csep_query)
+        self.connection_handler.execute_query(create_vocab_query)
+        self.connection_handler.execute_query(create_vocab_typos_query)
+        self.connection_handler.execute_query(create_vocab_incorrect_typos_query)
+        self.connection_handler.execute_query(create_vocab_csep_query)
 
 ##--------------------start-of-fill_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -854,7 +553,7 @@ class remoteHandler():
                     "word_type": 2
                     }
 
-                    self.insert_into_table(table_name, insert_dict)
+                    self.connection_handler.insert_into_table(table_name, insert_dict)
 
         def fill_kana_typos():
 
@@ -874,7 +573,7 @@ class remoteHandler():
                         "typo_value": values[2],
                         "word_type": values[3]
                     }
-                    self.insert_into_table(table_name, insert_dict)
+                    self.connection_handler.insert_into_table(table_name, insert_dict)
         
         def fill_kana_incorrect_typos():
 
@@ -895,7 +594,7 @@ class remoteHandler():
                         "word_type": values[3]
                         }
 
-                        self.insert_into_table(table_name, insert_dict)
+                        self.connection_handler.insert_into_table(table_name, insert_dict)
 
         def fill_kana_csep():
                                 
@@ -916,7 +615,7 @@ class remoteHandler():
                         "word_type": values[3]
                         }
 
-                        self.insert_into_table(table_name, insert_dict)
+                        self.connection_handler.insert_into_table(table_name, insert_dict)
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
@@ -947,7 +646,7 @@ class remoteHandler():
                     "isKanji": isKanji
                     }
 
-                    self.insert_into_table(table_name, insert_dict)
+                    self.connection_handler.insert_into_table(table_name, insert_dict)
 
         def fill_vocab_typos():
 
@@ -967,7 +666,7 @@ class remoteHandler():
                         "typo_value": values[2],
                         "word_type": values[3]
                     }
-                    self.insert_into_table(table_name, insert_dict)
+                    self.connection_handler.insert_into_table(table_name, insert_dict)
         
         def fill_vocab_incorrect_typos():
 
@@ -988,7 +687,7 @@ class remoteHandler():
                         "word_type": values[3]
                         }
 
-                        self.insert_into_table(table_name, insert_dict)
+                        self.connection_handler.insert_into_table(table_name, insert_dict)
 
         def fill_vocab_csep():
                                 
@@ -1009,7 +708,7 @@ class remoteHandler():
                         "word_type": values[3]
                         }
 
-                        self.insert_into_table(table_name, insert_dict)
+                        self.connection_handler.insert_into_table(table_name, insert_dict)
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
@@ -1054,10 +753,10 @@ class remoteHandler():
 
             util.standard_create_directory(remote_archive_kana_dir, self.logger)
 
-            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
-            kana_id_list, csep_id_list, csep_value_list, word_type_list = self.read_multi_column_query("select kana_id, kana_csep_id, kana_csep_value, word_type from kana_csep")
+            word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.connection_handler.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.connection_handler.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.connection_handler.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
+            kana_id_list, csep_id_list, csep_value_list, word_type_list = self.connection_handler.read_multi_column_query("select kana_id, kana_csep_id, kana_csep_value, word_type from kana_csep")
 
             self.kana = [kana_blueprint(int(word_id_list[i]), jValue_list[i], eValue_list[i], list_of_all_accepted_answers, int(pValue_list[i]), int(cValue_list[i])) for i in range(len(word_id_list))]
             self.kana_typos = [typo_blueprint(int(typo_word_id_list[i]), int(typo_id_list[i]), typo_value_list[i], typo_word_type_list[i]) for i in range(len(typo_word_id_list))]
@@ -1094,10 +793,10 @@ class remoteHandler():
 
             util.standard_create_directory(remote_archive_vocab_dir, self.logger)
 
-            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
-            vocab_id_list, csep_id_list, csep_value_list, word_type_list = self.read_multi_column_query("select vocab_id, vocab_csep_id, vocab_csep_value, word_type from vocab_csep")
+            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.connection_handler.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
+            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.connection_handler.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
+            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = self.connection_handler.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
+            vocab_id_list, csep_id_list, csep_value_list, word_type_list = self.connection_handler.read_multi_column_query("select vocab_id, vocab_csep_id, vocab_csep_value, word_type from vocab_csep")
 
             self.vocab = [vocab_blueprint(int(word_id_list[i]), vocab_list[i], romaji_list[i], answer_list[i], [], furigana_list[i], int(pValue_list[i]), int(cValue_list[i]), bool(isKanji_list[i])) for i in range(len(word_id_list))]
             self.vocab_typos = [typo_blueprint(int(typo_word_id_list[i]), int(typo_id_list[i]), typo_value_list[i], typo_word_type_list[i]) for i in range(len(typo_word_id_list))]
@@ -1123,10 +822,9 @@ class remoteHandler():
         ##----------------------------------------------------------------main----------------------------------------------------------------
 
         ## we do not create a remote storage backup if there is no valid database connection
-        if(self.connection == None): 
-            self.logger.log_action("No database connection, skipping remote storage backup")
+        if(self.connection_handler.check_connection_validity("remote storage backup creation") == False):
             return
-
+        
         with open(self.last_remote_backup_path, 'r+', encoding="utf-8") as file:
 
             last_backup_date = str(file.read().strip())
@@ -1210,8 +908,7 @@ class remoteHandler():
     def local_remote_overwrite(self) -> None:
 
         ## we do not overwrite remote with local if there is no valid database connection
-        if(self.connection == None): 
-            self.logger.log_action("No database connection, skipping local-remote overwrite")
+        if(self.connection_handler.check_connection_validity("local-remote backup") == False):
             return
         
         with open(self.last_local_remote_backup_path, 'r+', encoding="utf-8") as file:

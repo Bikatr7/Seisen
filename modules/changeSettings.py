@@ -127,10 +127,10 @@ def set_up_new_database(remote_handler:remoteHandler) -> remoteHandler:
     """
 
     ## causes the remoteHandler to attempt a database connection upon next startup
-    remote_handler.start_marked_succeeded_database_connection()
+    remote_handler.connection_handler.start_marked_succeeded_database_connection()
     
     ## clears the credentials file
-    remote_handler.clear_credentials_file()
+    remote_handler.connection_handler.clear_credentials_file()
 
     ## creates a new handler
     new_handler = remoteHandler(remote_handler.fileEnsurer, remote_handler.logger)

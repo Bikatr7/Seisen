@@ -655,7 +655,7 @@ def create_archive_dir(type_of_archive:int, logger:logger):
         2: local_archives_dir
     }
 
-    archive_directory = os.path.join(filePaths[type_of_archive], current_day)
+    archive_directory = os.path.join(filePaths[type_of_archive], current_day) # type: ignore
 
     standard_create_directory(archive_directory, logger)
 

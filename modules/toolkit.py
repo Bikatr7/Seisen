@@ -65,7 +65,7 @@ class toolkit():
         while(True):
 
             if(user_input == 'q'):
-                exit()
+                self.exit_seisen()
 
             elif(user_input == 'v' and input_type != 1):
                 return new_user_input
@@ -189,7 +189,7 @@ class toolkit():
             user_input = input(prompt + options)
             
             if(user_input == "q"): ## if the user wants to quit do so
-                exit()
+                self.exit_seisen()
 
             if(user_input == "z"): ## z is used to skip
                 raise self.UserCancelError()
@@ -258,6 +258,26 @@ class toolkit():
                     
             return False
     
+##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def exit_seisen(self):
+
+        """
+        
+        Pushes the log batch to the log and exits.\n
+
+        Parameters:\n
+        self (object - toolkit) : the toolkit object.\n
+
+        Returns:\n
+        None.\n
+
+        """
+
+        self.logger.push_batch()
+
+        exit()
+
 ##--------------------start-of-UserCancelError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 

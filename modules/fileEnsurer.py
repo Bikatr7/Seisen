@@ -113,8 +113,6 @@ class fileEnsurer:
 
       self.ensure_archive_files()
 
-      self.logger.push_batch()
-
 ##--------------------start-of-create_needed_base_directories()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    def create_needed_base_directories(self) -> None:

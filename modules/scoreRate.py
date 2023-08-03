@@ -372,7 +372,7 @@ class scoreRate:
         answers = [value.csep_value for value in word.testing_material_answer_all]
 
         if(user_guess == 'q'): # if the user wants to quit the program do so
-            exit()
+            self.toolkit.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
             user_guess = self.check_typo(word, user_guess, prompt, handler)

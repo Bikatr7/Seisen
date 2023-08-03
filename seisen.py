@@ -87,8 +87,6 @@ class Seisen:
         self.hasValidConnection = self.toolkit.check_update()
 
         ##----------------------------------------------------------------start----------------------------------------------------------------
-
-        self.fileEnsurer.logger.push_batch()
         
 ##--------------------start-of-bootup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -108,9 +106,6 @@ class Seisen:
 
         ## overwrites remote with local
         self.remoteHandler.local_remote_overwrite()
-
-        ## push logging batch
-        self.fileEnsurer.logger.push_batch()
 
 ##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -292,8 +287,6 @@ class Seisen:
 
         self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
 
-        self.fileEnsurer.logger.push_batch()
-
 ##--------------------start-of-test_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def test_vocab(self) -> None:
@@ -423,8 +416,6 @@ class Seisen:
 
         self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
 
-        self.fileEnsurer.logger.push_batch()
-
 ##--------------------start-of-change_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def change_settings(self) -> None:
@@ -476,7 +467,6 @@ class Seisen:
 
         self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
 
-        self.localHandler.logger.push_batch()
 
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -494,9 +484,11 @@ except Exception as e:
     #@ if crash, catch and log, then throw
     client.fileEnsurer.logger.log_action("--------------------------------------------------------------")
     client.fileEnsurer.logger.log_action("Seisen has crashed")
+
     traceback_str = traceback.format_exc()
+    
     client.fileEnsurer.logger.log_action(traceback_str)
 
-    client.fileEnsurer.logger.push_batch()
+    client.toolkit.exit_seisen()
 
     raise e

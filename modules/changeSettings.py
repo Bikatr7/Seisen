@@ -14,7 +14,7 @@ from modules.vocab import vocab as vocab_blueprint
 
 from modules.csep import csep as csep_blueprint
 
-from modules import util
+from modules.toolkit import toolkit
 
 ##--------------------start-of-reset_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -36,13 +36,13 @@ def reset_storage(local_handler:localHandler, remote_handler:remoteHandler) -> t
 
         """
 
-        util.clear_console()
+        local_handler.toolkit.clear_console()
 
         reset_message = "How are you resetting storage?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n3.Reset Local & Remote to Default\n"
 
         print(reset_message)
 
-        type_reset = util.input_check(4, str(msvcrt.getch().decode()), 3, reset_message)
+        type_reset = local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 3, reset_message)
 
         if(type_reset == "1"):
         
@@ -94,13 +94,13 @@ def print_score_ratings(word_rater:scoreRate, local_handler:localHandler) -> Non
         
         """
         
-        util.clear_console()
+        local_handler.toolkit.clear_console()
 
         score_message = "1.Kana\n2.Vocab\n"
 
         print(score_message)
 
-        type_print = util.input_check(4, str(msvcrt.getch().decode()), 2, score_message)
+        type_print = local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 2, score_message)
 
         if(type_print == "1"):
             kana_to_test, display_list = word_rater.get_kana_to_test(local_handler.kana)
@@ -112,7 +112,7 @@ def print_score_ratings(word_rater:scoreRate, local_handler:localHandler) -> Non
         for item in display_list:
             print(item)
 
-        util.pause_console()
+        local_handler.toolkit.pause_console()
 
 ##--------------------start-of-set_up_new_database()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ def set_up_new_database(remote_handler:remoteHandler) -> remoteHandler:
     remote_handler.connection_handler.clear_credentials_file()
 
     ## creates a new handler
-    new_handler = remoteHandler(remote_handler.fileEnsurer, remote_handler.logger)
+    new_handler = remoteHandler(remote_handler.fileEnsurer, remote_handler.logger, remote_handler.toolkit)
 
     new_handler.logger.log_action("Remote Handler has been reset...")
 
@@ -157,13 +157,13 @@ def restore_backup(local_handler:localHandler, remote_handler:remoteHandler) -> 
     
     """ 
 
-    util.clear_console()
+    local_handler.toolkit.clear_console()
 
     backup_message = "Which backup do you wish to restore?\n\n1.Local\n2.Remote\n"
 
     print(backup_message)
 
-    type_backup = util.input_check(4, str(msvcrt.getch().decode()), 2, backup_message)
+    type_backup = local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 2, backup_message)
 
     if(type_backup == "1"):
 
@@ -201,7 +201,7 @@ def vocab_settings(local_handler:localHandler) -> localHandler:
 
     print(vocab_message)
 
-    type_setting = util.input_check(4, str(msvcrt.getch().decode()), 4, vocab_message)
+    type_setting = local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 4, vocab_message)
 
     if(type_setting == "1"):
         local_handler = add_vocab(local_handler)
@@ -230,8 +230,8 @@ def add_vocab(local_handler:localHandler) -> localHandler:
 
     """
 
-    new_vocab_id = util.get_new_id(local_handler.get_list_of_all_ids(5))
-    new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
+    new_vocab_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(5))
+    new_csep_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(6))
 
     csep_value_list = []
     csep_actual_list_handler = []
@@ -240,22 +240,22 @@ def add_vocab(local_handler:localHandler) -> localHandler:
     isKanji = False
 
     try:
-        testing_material = util.user_confirm("Please enter a vocab term")
-        romaji = util.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation")
-        definition = util.user_confirm("Please enter " + testing_material + "'s definition/main answer")
+        testing_material = local_handler.toolkit.user_confirm("Please enter a vocab term")
+        romaji = local_handler.toolkit.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation")
+        definition = local_handler.toolkit.user_confirm("Please enter " + testing_material + "'s definition/main answer")
 
         csep_value_list.append(definition)
 
         while(input("Enter 1 if " + testing_material + " has any additional answers :\n") == "1"):
-            util.clear_stream()
-            csep_value_list.append(util.user_confirm("Please enter " + testing_material + "'s additional answers"))
+            local_handler.toolkit.clear_stream()
+            csep_value_list.append(local_handler.toolkit.user_confirm("Please enter " + testing_material + "'s additional answers"))
 
         kana = [value.testing_material for value in local_handler.kana]
 
         for character in testing_material:
             if(character not in kana):
                 local_handler.logger.log_action(character + " is kanji")
-                furigana = util.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling")
+                furigana = local_handler.toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling")
                 isKanji = True
                 break
     
@@ -267,14 +267,14 @@ def add_vocab(local_handler:localHandler) -> localHandler:
         
         csep_actual_list_handler.append(csep_blueprint(new_vocab_id, new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE))
 
-        util.write_sei_line(local_handler.vocab_csep_path, csep_insert_values)
+        local_handler.fileEnsurer.file_handler.write_sei_line(local_handler.vocab_csep_path, csep_insert_values)
 
-        new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
+        new_csep_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(6))
 
     vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, furigana, 0, 0]
     local_handler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, csep_actual_list_handler, furigana, 0, 0, isKanji))
 
-    util.write_sei_line(local_handler.vocab_path, vocab_insert_values)
+    local_handler.fileEnsurer.file_handler.write_sei_line(local_handler.vocab_path, vocab_insert_values)
 
     return local_handler
 
@@ -299,10 +299,10 @@ def add_csep(local_handler:localHandler) -> localHandler:
 
     target_index = 0
 
-    new_csep_id = util.get_new_id(local_handler.get_list_of_all_ids(6))
+    new_csep_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(6))
 
     try:
-        vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to add a csep/answer to.")
+        vocab_term_or_id = local_handler.toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a csep/answer to.")
 
     except:
         return local_handler
@@ -319,7 +319,7 @@ def add_csep(local_handler:localHandler) -> localHandler:
         assert vocab_term != "-1"
         assert vocab_id != -1
 
-        csep_value = util.user_confirm("Please enter the csep/answer for " + vocab_term + " you would like to add.")
+        csep_value = local_handler.toolkit.user_confirm("Please enter the csep/answer for " + vocab_term + " you would like to add.")
 
     except AssertionError:
         local_handler.logger.log_action("Invalid id or term.")
@@ -327,13 +327,13 @@ def add_csep(local_handler:localHandler) -> localHandler:
         time.sleep(1)
         return local_handler
     
-    except util.UserCancelError:
+    except local_handler.toolkit.UserCancelError:
         return local_handler
     
     target_index = next((i for i, vocab in enumerate(local_handler.vocab) if vocab.word_id == vocab_id))
 
     csep_insert_values = [vocab_id, new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE]
-    util.write_sei_line(local_handler.vocab_csep_path, csep_insert_values)
+    local_handler.fileEnsurer.file_handler.write_sei_line(local_handler.vocab_csep_path, csep_insert_values)
     
     new_csep = csep_blueprint(int(vocab_id), new_csep_id, csep_value, local_handler.VOCAB_WORD_TYPE)
     local_handler.vocab[target_index].testing_material_answer_all.append(new_csep)
@@ -374,7 +374,7 @@ def replace_vocab_value(local_handler:localHandler) -> localHandler:
     ATTRIBUTE_CORRECT_COUNT = 7
 
     try:
-        vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.")
+        vocab_term_or_id = local_handler.toolkit.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.")
 
     except:
         return local_handler
@@ -397,7 +397,7 @@ def replace_vocab_value(local_handler:localHandler) -> localHandler:
         time.sleep(1)
         return local_handler
     
-    except util.UserCancelError:
+    except local_handler.toolkit.UserCancelError:
         return local_handler
     
     target_index = next((i for i, vocab in enumerate(local_handler.vocab) if vocab.word_id == vocab_id), -1)
@@ -410,7 +410,7 @@ def replace_vocab_value(local_handler:localHandler) -> localHandler:
 
     print(type_replacement_message)
 
-    type_value = util.input_check(4, str(msvcrt.getch().decode()), 6, type_replacement_message)
+    type_value = local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 6, type_replacement_message)
 
     attributes_map = {
         "1": (target_vocab.testing_material, ATTRIBUTE_TESTING_MATERIAL),
@@ -424,7 +424,7 @@ def replace_vocab_value(local_handler:localHandler) -> localHandler:
     value_to_replace, index_to_replace = attributes_map[type_value]
 
     try:
-        replacement_value = util.user_confirm("What are you replacing " + str(value_to_replace) + " with?")
+        replacement_value = local_handler.toolkit.user_confirm("What are you replacing " + str(value_to_replace) + " with?")
 
     except:
         return local_handler
@@ -434,17 +434,17 @@ def replace_vocab_value(local_handler:localHandler) -> localHandler:
 
         csep_id = next((csep.csep_id for csep in target_vocab.testing_material_answer_all if csep.csep_value == value_to_replace))
 
-        target_csep_line = next((i + 1 for i, line in enumerate(local_handler.vocab_csep_path) if int(util.read_sei_file(local_handler.vocab_csep_path, i + 1, 2)) == csep_id))
+        target_csep_line = next((i + 1 for i, line in enumerate(local_handler.vocab_csep_path) if int(local_handler.fileEnsurer.file_handler.read_sei_file(local_handler.vocab_csep_path, i + 1, 2)) == csep_id))
 
-        util.edit_sei_line(local_handler.vocab_csep_path, target_csep_line, 3, str(replacement_value))
+        local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.vocab_csep_path, target_csep_line, 3, str(replacement_value))
     
     else:
         pass
 
-    target_vocab_line = next((i + 1 for i, line in enumerate(local_handler.vocab_path) if int(util.read_sei_file(local_handler.vocab_path, i + 1, 1)) == vocab_id))
+    target_vocab_line = next((i + 1 for i, line in enumerate(local_handler.vocab_path) if int(local_handler.fileEnsurer.file_handler.read_sei_file(local_handler.vocab_path, i + 1, 1)) == vocab_id))
 
     ## edits the vocab word
-    util.edit_sei_line(local_handler.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
+    local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
         
     ## it's easier to just reload everything than for me to figure out how to juggle csep values in the handler if the user wants to fuck with definitions or answers
     local_handler.load_words_from_local_storage()
@@ -468,7 +468,7 @@ def delete_vocab_value(local_handler:localHandler) -> localHandler:
     """
 
     try:
-        vocab_term_or_id = util.user_confirm("Please enter the vocab or vocab id that you want to delete.")
+        vocab_term_or_id = local_handler.toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete.")
 
     except:
         return local_handler
@@ -491,22 +491,22 @@ def delete_vocab_value(local_handler:localHandler) -> localHandler:
         time.sleep(1)
         return local_handler
     
-    except util.UserCancelError:
+    except local_handler.toolkit.UserCancelError:
         return local_handler
 
     target_vocab_index = next((i for i, vocab in enumerate(local_handler.vocab) if vocab.word_id == vocab_id))
 
-    target_vocab_line = next((i + 1 for i, line in enumerate(local_handler.vocab_path) if int(util.read_sei_file(local_handler.vocab_path, i + 1, 1)) == vocab_id))
+    target_vocab_line = next((i + 1 for i, line in enumerate(local_handler.vocab_path) if int(local_handler.fileEnsurer.file_handler.read_sei_file(local_handler.vocab_path, i + 1, 1)) == vocab_id))
 
     ## deletes the vocab itself
-    util.delete_sei_line(local_handler.vocab_path, target_vocab_line)
+    local_handler.fileEnsurer.file_handler.delete_sei_line(local_handler.vocab_path, target_vocab_line)
     local_handler.vocab.pop(target_vocab_index)
 
     ## deletes the cseps
-    util.delete_all_occurrences_of_id(local_handler.vocab_csep_path, 1, vocab_id)
+    local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(local_handler.vocab_csep_path, 1, vocab_id)
 
     ## deletes the typos
-    util.delete_all_occurrences_of_id(local_handler.vocab_incorrect_typos_path, 1, vocab_id)
-    util.delete_all_occurrences_of_id(local_handler.vocab_typos_path, 1, vocab_id)
+    local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(local_handler.vocab_incorrect_typos_path, 1, vocab_id)
+    local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(local_handler.vocab_typos_path, 1, vocab_id)
 
     return local_handler

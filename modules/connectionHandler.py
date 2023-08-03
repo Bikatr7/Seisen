@@ -11,7 +11,7 @@ from mysql.connector import cursor
 import mysql.connector 
 
 ## custom modules
-from modules import util
+from modules.toolkit import toolkit
 
 from modules.logger import logger
 from modules.fileEnsurer import fileEnsurer
@@ -26,7 +26,7 @@ class connectionHandler():
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, file_ensurer:fileEnsurer, logger:logger) -> None:
+    def __init__(self, file_ensurer:fileEnsurer, logger:logger, toolkit:toolkit) -> None:
 
         """
         
@@ -47,6 +47,8 @@ class connectionHandler():
         self.fileEnsurer = file_ensurer
 
         self.logger = logger
+
+        self.toolkit = toolkit
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
@@ -137,11 +139,11 @@ class connectionHandler():
 
             try: ## if valid save the credentials
 
-                database_name = util.user_confirm("Please enter the name of the database you have")
+                database_name = self.toolkit.user_confirm("Please enter the name of the database you have")
 
-                util.clear_console()
+                self.toolkit.clear_console()
 
-                password = util.user_confirm("Please enter the root password for your local database you have")
+                password = self.toolkit.user_confirm("Please enter the root password for your local database you have")
 
                 credentials = [
                     base64.b64encode(database_name.encode('utf-8')).decode('utf-8'),
@@ -150,7 +152,7 @@ class connectionHandler():
                 connection = self.create_database_connection("localhost", "root", database_name, password)
                 cursor = connection.cursor()
                             
-                util.standard_create_file(self.credentials_path, self.logger) 
+                self.fileEnsurer.file_handler.standard_create_file(self.credentials_path) 
 
                 time.sleep(0.1)
 
@@ -161,20 +163,20 @@ class connectionHandler():
 
             except AssertionError:
                 
-                util.clear_console()
+                self.toolkit.clear_console()
 
                 self.start_marked_failed_database_connection()
 
             except Exception as e: ## if invalid exit
                         
-                util.clear_console()
+                self.toolkit.clear_console()
 
                 print(str(e))
                 print("Error with creating connection object, please double check your password and database name\n")
 
                 self.start_marked_failed_database_connection()
 
-                util.pause_console()
+                self.toolkit.pause_console()
             
         return connection, cursor
     

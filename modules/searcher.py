@@ -5,42 +5,11 @@ import typing
 import msvcrt
 
 ## custom modules
-from modules import util
+from modules.toolkit import toolkit
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from modules.localHandler import localHandler
 
-##--------------------start-of-IDNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-class IDNotFoundError(Exception):
-
-    """
-    
-    Is raised when an id is not found.\n
-
-    """
-
-
-##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-    def __init__(self, id_value:int):
-
-        """
-        
-        Initializes a new IDNotFoundError Exception.\n
-
-        Parameters:\n
-        id_value (int) : The id value that wasn't found.\n
-        None.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        self.message = f"ID '{id_value}' not found."
 
 ##--------------------start-of-searcher------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -54,7 +23,7 @@ class searcher:
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self):
+    def __init__(self, toolkit:toolkit):
 
         """
         
@@ -68,6 +37,8 @@ class searcher:
         None.\n
 
         """
+
+        self.toolkit = toolkit
 
 ##--------------------start-of-get_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -176,9 +147,40 @@ class searcher:
 
         id_print_message += "\n\nWhich vocab are you looking for? (Enter position 1-" + str(len(matching_ids)) + ")"
 
-        target_index = int(util.input_check(4, str(msvcrt.getch().decode()), len(matching_ids), id_print_message)) - 1
+        target_index = int(self.toolkit.input_check(4, str(msvcrt.getch().decode()), len(matching_ids), id_print_message)) - 1
 
         final_id = matching_ids[target_index]
 
         return final_id
         
+##--------------------start-of-IDNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+class IDNotFoundError(Exception):
+
+    """
+    
+    Is raised when an id is not found.\n
+
+    """
+
+
+##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+    def __init__(self, id_value:int):
+
+        """
+        
+        Initializes a new IDNotFoundError Exception.\n
+
+        Parameters:\n
+        id_value (int) : The id value that wasn't found.\n
+        None.\n
+
+        Returns:\n
+        None.\n
+
+        """
+
+        self.message = f"ID '{id_value}' not found."

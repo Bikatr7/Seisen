@@ -16,7 +16,7 @@ from modules.vocab import vocab as vocab_blueprint
 
 from modules.csep import csep as csep_blueprint
 
-from modules import util
+from modules.toolkit import toolkit
 
 from modules.logger import logger
 from modules.searcher import searcher
@@ -37,7 +37,7 @@ class localHandler():
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, file_ensurer:fileEnsurer, logger:logger) -> None:
+    def __init__(self, file_ensurer:fileEnsurer, logger:logger, toolkit:toolkit) -> None:
 
         """
         
@@ -60,7 +60,9 @@ class localHandler():
         ## the logger used for Seisen
         self.logger = logger
 
-        self.searcher = searcher()
+        self.toolkit = toolkit
+
+        self.searcher = searcher(self.toolkit)
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
@@ -312,7 +314,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == KANA_INCORRECT_TYPO_ID_IDENTIFIER):
@@ -320,7 +322,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == VOCAB_TYPO_ID_IDENTIFIER):
@@ -328,7 +330,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == VOCAB_INCORRECT_TYPO_ID_IDENTIFIER):
@@ -336,7 +338,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
                     
 
@@ -345,7 +347,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.vocab_path, i+1, VOCAB_ID_INDEX_LOCATION))
+                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_path, i+1, VOCAB_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == CSEP_ID_IDENTIFIER):
@@ -353,7 +355,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(util.read_sei_file(self.vocab_csep_path, i+1, CSEP_ID_INDEX_LOCATION))
+                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_csep_path, i+1, CSEP_ID_INDEX_LOCATION))
                     i+=1
 
         ids =  [int(x) for x in ids]
@@ -385,7 +387,7 @@ W
 
             if(last_backup_date != current_day):
                 
-                archive_dir = util.create_archive_dir(2, self.logger)
+                archive_dir = self.fileEnsurer.file_handler.create_archive_dir(2)
 
                 self.logger.log_action("Created Daily Local Backup")
 
@@ -419,7 +421,7 @@ W
 
         backup_to_restore_prompt = ""
         
-        util.clear_console()
+        self.toolkit.clear_console()
         
         print("Please select a backup to restore:\n")
         
@@ -436,10 +438,10 @@ W
 
         try: ## user confirm will throw an assertion error if  the user wants to cancel the backup restore.
 
-            backup_to_restore = util.user_confirm(backup_to_restore_prompt)
+            backup_to_restore = self.toolkit.user_confirm(backup_to_restore_prompt)
 
             if(backup_to_restore in valid_backups):
-                util.clear_console()
+                self.toolkit.clear_console()
 
                 shutil.rmtree(self.fileEnsurer.kana_dir)
                 shutil.rmtree(self.fileEnsurer.vocab_dir)

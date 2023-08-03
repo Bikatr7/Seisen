@@ -2,8 +2,8 @@
 from datetime import datetime
 
 import os
-import time
 import shutil
+import time
 
 ## custom modules
 from modules.typos import typo as typo_blueprint
@@ -14,7 +14,7 @@ from modules.csep import csep as csep_blueprint
 from modules.words import word as kana_blueprint
 from modules.vocab import vocab as vocab_blueprint
 
-from modules import util
+from modules.toolkit import toolkit
 
 from modules.logger import logger
 from modules.fileEnsurer import fileEnsurer
@@ -30,7 +30,7 @@ class remoteHandler():
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, file_ensurer:fileEnsurer, logger:logger) -> None:
+    def __init__(self, file_ensurer:fileEnsurer, logger:logger, toolkit:toolkit) -> None:
 
         """
         
@@ -39,6 +39,7 @@ class remoteHandler():
         Parameters:\n
         self (object - remoteHandler) : The handler object.\n
         logger (object - logger) : The logger object.\n
+        toolkit (object - toolkit) : The toolkit object.\n
 
         Returns:\n
         None.\n
@@ -52,7 +53,9 @@ class remoteHandler():
 
         self.logger = logger
 
-        self.connection_handler = connectionHandler(self.fileEnsurer, self.logger)
+        self.toolkit = toolkit
+
+        self.connection_handler = connectionHandler(self.fileEnsurer, self.logger, self.toolkit)
 
         ##----------------------------------------------------------------dir----------------------------------------------------------------
 
@@ -188,19 +191,19 @@ class remoteHandler():
 
             for kana in self.kana:
                 word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                util.write_sei_line(self.kana_path, word_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.kana_path, word_values)
 
             for typo in self.kana_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                util.write_sei_line(self.kana_typos_path, typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.kana_typos_path, typo_values)
 
             for incorrect_typo in self.kana_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                util.write_sei_line(self.kana_incorrect_typos_path, incorrect_typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.kana_incorrect_typos_path, incorrect_typo_values)
 
             for csep in self.kana_csep:
                 csep_values = [csep.word_id, csep.csep_id, csep.csep_value, csep.word_type]
-                util.write_sei_line(self.kana_csep_path, csep_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.kana_csep_path, csep_values)
 
             for kana in self.kana:
                 for typo in self.kana_typos:
@@ -238,19 +241,19 @@ class remoteHandler():
 
             for vocab in self.vocab:
                 vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
-                util.write_sei_line(self.vocab_path, vocab_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.vocab_path, vocab_values)
 
             for typo in self.vocab_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                util.write_sei_line(self.vocab_typos_path, typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.vocab_typos_path, typo_values)
 
             for incorrect_typo in self.vocab_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                util.write_sei_line(self.vocab_incorrect_typos_path, incorrect_typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.vocab_incorrect_typos_path, incorrect_typo_values)
 
             for csep in self.vocab_csep:
                 csep_values = [csep.word_id, csep.csep_id, csep.csep_value, csep.word_type]
-                util.write_sei_line(self.vocab_csep_path, csep_values)
+                self.fileEnsurer.file_handler.write_sei_line(self.vocab_csep_path, csep_values)
 
             for vocab in self.vocab:
 
@@ -751,7 +754,7 @@ class remoteHandler():
             remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana incorrect typos.txt")
             remote_archive_kana_csep_path = os.path.join(remote_archive_kana_dir, "kana csep.txt")
 
-            util.standard_create_directory(remote_archive_kana_dir, self.logger)
+            self.fileEnsurer.file_handler.standard_create_directory(remote_archive_kana_dir)
 
             word_id_list, jValue_list, eValue_list, pValue_list, cValue_list = self.connection_handler.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
             typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.connection_handler.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
@@ -766,19 +769,19 @@ class remoteHandler():
 
             for kana in self.kana:
                 word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                util.write_sei_line(remote_archive_kana_path, word_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_kana_path, word_values)
 
             for typo in self.kana_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                util.write_sei_line(remote_archive_kana_typos_path, typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_kana_typos_path, typo_values)
 
             for incorrect_typo in self.kana_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                util.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
 
             for csep in self.kana_csep:
                 csep_values = [csep.word_id, csep.csep_id, csep.csep_value, csep.word_type]
-                util.write_sei_line(remote_archive_kana_csep_path, csep_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_kana_csep_path, csep_values)
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
@@ -791,7 +794,7 @@ class remoteHandler():
             remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab incorrect typos.txt")
             remote_archive_vocab_csep_path = os.path.join(remote_archive_vocab_dir, "vocab csep.txt")
 
-            util.standard_create_directory(remote_archive_vocab_dir, self.logger)
+            self.fileEnsurer.file_handler.standard_create_directory(remote_archive_vocab_dir)
 
             word_id_list, vocab_list, romaji_list, answer_list, furigana_list, pValue_list, cValue_list, isKanji_list = self.connection_handler.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, isKanji from vocab")
             typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = self.connection_handler.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
@@ -805,19 +808,19 @@ class remoteHandler():
 
             for vocab in self.vocab:
                 vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
-                util.write_sei_line(remote_archive_vocab_path, vocab_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_vocab_path, vocab_values)
 
             for typo in self.vocab_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                util.write_sei_line(remote_archive_vocab_typos_path, typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_vocab_typos_path, typo_values)
 
             for incorrect_typo in self.vocab_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                util.write_sei_line(remote_archive_vocab_incorrect_typos_path, incorrect_typo_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_vocab_incorrect_typos_path, incorrect_typo_values)
 
             for csep in self.vocab_csep:
                 csep_values = [csep.word_id, csep.csep_id, csep.csep_value, csep.word_type]
-                util.write_sei_line(remote_archive_vocab_csep_path, csep_values)
+                self.fileEnsurer.file_handler.write_sei_line(remote_archive_vocab_csep_path, csep_values)
 
         ##----------------------------------------------------------------main----------------------------------------------------------------
 
@@ -833,7 +836,7 @@ class remoteHandler():
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
             if(last_backup_date != current_day):
-                archive_dir = util.create_archive_dir(1, self.logger) # type: ignore
+                archive_dir = self.fileEnsurer.file_handler.create_archive_dir(1) 
 
                 self.logger.log_action("Created Daily Remote Backup")
 
@@ -867,7 +870,7 @@ class remoteHandler():
 
         backup_to_restore_prompt = ""
         
-        util.clear_console()
+        self.toolkit.clear_console()
         
         print("Please select a backup to restore:\n")
         
@@ -884,10 +887,10 @@ class remoteHandler():
 
         try: ## user confirm will throw an assertion error if the user wants to cancel the backup restore.
 
-            backup_to_restore = util.user_confirm(backup_to_restore_prompt)
+            backup_to_restore = self.toolkit.user_confirm(backup_to_restore_prompt)
 
             if(backup_to_restore in valid_backups):
-                util.clear_console()
+                self.toolkit.clear_console()
 
                 shutil.rmtree(self.fileEnsurer.kana_dir)
                 shutil.rmtree(self.fileEnsurer.vocab_dir)

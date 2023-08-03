@@ -3,7 +3,9 @@ import os
 import shutil
 
 ## custom modules
-from modules import util
+from modules.fileHandler import fileHandler
+
+from modules.toolkit import toolkit
 
 from modules.logger import logger
 
@@ -30,6 +32,7 @@ class fileEnsurer:
       None\n
 
       """
+   
 
       ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
@@ -68,6 +71,16 @@ class fileEnsurer:
       ## make log path
       with open(self.log_path, "w+", encoding="utf-8") as file:
          file.truncate()
+
+      ##----------------------------------------------------------------objects----------------------------------------------------------------
+
+      ## logger for all actions taken by Seisen.\n
+      self.logger = logger(self.log_path)
+
+      self.logger.log_action("Initialization")
+      self.logger.log_action("--------------------------------------------------------------")
+
+      self.file_handler = fileHandler(self.logger)
 
 ##--------------------start-of-ensure_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -118,11 +131,11 @@ class fileEnsurer:
       
       """
 
-      util.standard_create_directory(self.logins_dir, self.logger)
-      util.standard_create_directory(self.lib_dir, self.logger)
-      util.standard_create_directory(self.kana_dir, self.logger)
-      util.standard_create_directory(self.vocab_dir, self.logger)
-      util.standard_create_directory(self.remote_lib_dir, self.logger)
+      self.file_handler.standard_create_directory(self.logins_dir)
+      self.file_handler.standard_create_directory(self.lib_dir)
+      self.file_handler.standard_create_directory(self.kana_dir)
+      self.file_handler.standard_create_directory(self.vocab_dir)
+      self.file_handler.standard_create_directory(self.remote_lib_dir)
                
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -152,9 +165,9 @@ class fileEnsurer:
    
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_directory(loop_data_dir, self.logger)
+      self.file_handler.standard_create_directory(loop_data_dir)
 
-      util.modified_create_file(loop_data_path, "0,0,0,0,", self.logger)
+      self.file_handler.modified_create_file(loop_data_path, "0,0,0,0,")
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -182,9 +195,9 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_file(kana_typos_path, self.logger)
+      self.file_handler.standard_create_file(kana_typos_path)
 
-      util.standard_create_file(kana_incorrect_typos_path, self.logger)
+      self.file_handler.standard_create_file(kana_incorrect_typos_path)
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -212,9 +225,9 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_file(vocab_typos_path, self.logger)
+      self.file_handler.standard_create_file(vocab_typos_path)
 
-      util.standard_create_file(vocab_incorrect_typos_path, self.logger)
+      self.file_handler.standard_create_file(vocab_incorrect_typos_path)
 
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -280,7 +293,7 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.modified_create_file(database_connection_failed_path, "false", self.logger)
+      self.file_handler.modified_create_file(database_connection_failed_path, "false")
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -352,7 +365,7 @@ class fileEnsurer:
          if(i not in black_list_indexes):
             kana_csep_insert_values = [str(i), str(i), csep.rstrip(',\n'), "2"]
 
-            util.write_sei_line(kana_csep_actual_path, kana_csep_insert_values)
+            self.file_handler.write_sei_line(kana_csep_actual_path, kana_csep_insert_values)
 
 ##--------------------start-of-ensure_vocab_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -442,12 +455,13 @@ z
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      util.standard_create_directory(archives_dir, self.logger)
-      util.standard_create_directory(database_archives_dir, self.logger)
-      util.standard_create_directory(local_archives_dir, self.logger)
-      util.standard_create_directory(local_remote_archives_dir, self.logger)
+      self.file_handler.standard_create_directory(archives_dir)
+      self.file_handler.standard_create_directory(database_archives_dir)
+      self.file_handler.standard_create_directory(local_archives_dir)
+      self.file_handler.standard_create_directory(local_remote_archives_dir)
 
-      util.standard_create_file(last_local_backup_file, self.logger)
-      util.standard_create_file(last_remote_backup_file, self.logger)
-      util.standard_create_file(last_local_remote_backup_file, self.logger)
-      util.standard_create_file(last_local_remote_backup_accurate_path, self.logger)
+      self.file_handler.standard_create_file(last_local_backup_file)
+      self.file_handler.standard_create_file(last_remote_backup_file)
+      self.file_handler.standard_create_file(last_local_remote_backup_file)
+      self.file_handler.standard_create_file(last_local_remote_backup_accurate_path)
+

@@ -1,12 +1,14 @@
 ## built-in modules
 import random
 import typing
+import msvcrt
 
 ## custom modules
 from modules.words import word
 from modules.vocab import vocab
 from modules.localHandler import localHandler
 from modules.logger import logger
+from modules.toolkit import toolkit
 
 class scoreRate:
 
@@ -16,7 +18,7 @@ class scoreRate:
 
     ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, handler:localHandler, logger:logger) -> None:
+    def __init__(self, handler:localHandler, logger:logger, toolkit:toolkit) -> None:
 
         """
 
@@ -34,6 +36,8 @@ class scoreRate:
         self.handler = handler
 
         self.logger = logger
+
+        self.toolkit = toolkit
 
 ##--------------------start-of-calculate_score()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -215,3 +219,170 @@ class scoreRate:
         self.logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
 
         return vocab_to_test, display_item_list
+    
+##--------------------start-of-levenshtein()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def levenshtein(self, string_one:str, string_two:str) -> int:
+
+        """
+
+        Compares two strings for similarity.\n
+
+        Parameters:\n
+        self (object - scoreRate): The scoreRate class object.\n
+        string_one (str) : the first string to compare.\n
+        string_two (str) : the second string to compare.\n
+
+        Returns:\n
+        distance[sLength1][sLength2] (int) : the minimum number of single-character edits required to transform string_one into string_two.\n
+
+        """
+
+        sLength1, sLength2 = len(string_one), len(string_two)
+        distance = [[0] * (sLength2 + 1) for _ in range(sLength1 + 1)]
+        
+        for i in range(sLength1 + 1):
+            distance[i][0] = i
+
+        for ii in range(sLength2 + 1):
+            distance[0][ii] = ii
+
+        for i in range(1, sLength1 + 1):
+            for ii in range(1, sLength2 + 1):
+
+                if(string_one[i - 1] == string_two[ii - 1]):
+                    cost = 0
+                else:
+                    cost = 1
+
+                distance[i][ii] = min(distance[i - 1][ii] + 1, distance[i][ii- 1] + 1, distance[i - 1][ii - 1] + cost)
+
+                if(i > 1 and ii > 1 and string_one[i-1] == string_two[ii-2] and string_one[i-2] == string_two[ii-1]):
+                    distance[i][ii] = min(distance[i][ii], distance[i-2][ii-2] + cost)
+
+        return distance[sLength1][sLength2]
+
+##--------------------start-of-get_intended_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def get_intended_answer(self, typo:str, correct_answers:typing.List[str]) -> str:
+
+        """
+        
+        When a typo has been previously encountered, we need to determine what they were trying to type and return that instead.\n
+
+        Parameters:\n
+        self (object - scoreRate): The scoreRate class object.\n
+        typo (str) : the typo the user made.\n
+        correct_answers (list - str) : list of correct answers the typo could match.\n
+
+        Returns:\n
+        closest_string (str) : the string the user was trying to type.\n
+
+        """
+
+        closest_distance = float('inf')
+        closest_string = ""
+
+        for string in correct_answers:
+            distance = self.levenshtein(typo, string)
+            if(distance < closest_distance):
+                closest_distance = distance
+                closest_string = string
+
+        return closest_string
+
+##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def check_typo(self, word:word, user_guess:str, prompt:str, handler:localHandler) -> str:  
+
+        """
+
+        checks if a user_guess is a typo or not\n
+
+        Parameters:\n
+        self (object - scoreRate): The scoreRate class object.\n
+        word (object - word) : the word we're checking typos for.\n
+        user_guess (str) : the user's guess.\n
+        prompt (str) : the prompt that was given to the user.\n
+        handler (object - localHandler) : the localHandler object.\n
+        
+        Returns:\n
+        final_answer (string) the user's final answer after being corrected for typos.\n
+
+        """
+
+        min_distance = 3
+        final_answer = user_guess
+
+        typos = [typo.typo_value for typo in word.typos]
+        incorrect_typos = [incorrect_typo.incorrect_typo_value for incorrect_typo in word.incorrect_typos]
+
+        if(user_guess in typos):
+            possible_intended_answers = [csep.csep_value for csep in word.testing_material_answer_all]
+            return self.get_intended_answer(user_guess, possible_intended_answers )
+        elif(user_guess in incorrect_typos):
+            return user_guess
+
+        for correct_answer in word.testing_material_answer_all:
+
+            distance = self.levenshtein(user_guess, correct_answer.csep_value)
+
+            if(distance < min_distance):
+
+                print("\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n")
+            
+                userA = int(self.toolkit.input_check(1 ,str(msvcrt.getch().decode()), 2, prompt + "\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n"))
+            
+                self.toolkit.clear_console()
+
+                if(userA == 1):
+
+                    final_answer = correct_answer.csep_value
+
+                    word.log_new_typo(user_guess, handler)
+
+                    return final_answer
+            
+                else:
+                    word.log_new_incorrect_typo(user_guess, handler)
+        
+        return final_answer
+    
+##--------------------start-of-check_answers_word()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def check_answers_word(self, word:word, user_guess:str, prompt:str, handler:localHandler) -> tuple[bool | None, str]: 
+
+        """
+        
+        Checks if the user_guess is correct or incorrect.\n
+
+        Parameters:\n
+        self (object - scoreRate): The scoreRate class object.\n
+        word (object - word) : the word we're checking answers for.\n
+        user_guess (str) : the user's guess.\n
+        prompt (str) : the prompt that was given to the user.\n
+        handler (object - localHandler) : the localHandler object.
+
+        Returns:\n
+        bool or None : if the user's guess is correct or incorrect, or a None value iof the user decided to skip the question.\n 
+        user_guess (str) : the user's guess after being corrected for typos.\n
+
+        """
+
+        answers = [value.csep_value for value in word.testing_material_answer_all]
+
+        if(user_guess == 'q'): # if the user wants to quit the program do so
+            exit()
+        
+        if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
+            user_guess = self.check_typo(word, user_guess, prompt, handler)
+
+        if(user_guess in answers): 
+            return True, user_guess
+        
+        elif(user_guess != 'z'): 
+            return False, user_guess
+        
+        else: ## z indicates the user is skipping the word
+            return None, user_guess
+    

@@ -10,7 +10,7 @@ from modules.remoteHandler import remoteHandler
 
 from modules.scoreRate import scoreRate
 
-from modules.vocab import vocab as vocab_blueprint
+from modules.vocab import vocab as vocab_blueprint 
 
 from modules.csep import csep as csep_blueprint
 

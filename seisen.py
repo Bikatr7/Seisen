@@ -431,7 +431,7 @@ class Seisen:
         None\n
 
         """  
-
+ 
         self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
 
         self.toolkit.clear_console()

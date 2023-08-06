@@ -59,11 +59,11 @@ class vocabSettingsHandler():
 
         self.local_handler.toolkit.logger.log_action("User is changing vocab settings")
 
-        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Delete Vocab Value\n"
+        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Delete Vocab Value\n5.Delete CSEP/Answer to Vocab\n"
 
         print(vocab_message)
 
-        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 4, vocab_message)
+        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 5, vocab_message)
 
         if(type_setting == "1"):
             self.add_vocab()
@@ -73,6 +73,8 @@ class vocabSettingsHandler():
             self.replace_vocab_value()
         elif(type_setting == "4"):
             self.delete_vocab_value()
+        elif(type_setting == "5"):
+            self.delete_csep_value()
     
 ##--------------------start-of-add_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -256,11 +258,11 @@ class vocabSettingsHandler():
         except self.local_handler.toolkit.UserCancelError:
             return
         
-        target_index = next((i for i, vocab in enumerate(self.local_handler.vocab) if vocab.word_id == vocab_id), -1)
+        target_index = next((i for i, vocab in enumerate(self.local_handler.vocab) if vocab.word_id == vocab_id))
 
         target_vocab = self.local_handler.vocab[target_index]
 
-        type_replacement_message = self.local_handler.searcher.get_print_item_from_id(self.local_handler, vocab_id)
+        type_replacement_message = self.local_handler.searcher.get_vocab_print_item_from_id(self.local_handler, vocab_id)
 
         type_replacement_message += "\n\nWhat value would you like to replace? (1-6) (select index)"
 
@@ -362,3 +364,67 @@ class vocabSettingsHandler():
         ## deletes the typos
         self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_incorrect_typos_path, 1, vocab_id)
         self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_typos_path, 1, vocab_id)
+
+##--------------------start-of-delete_csep_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def delete_csep_value(self):
+
+        """
+        
+        Deletes a csep value.\n
+
+        Parameters:\n
+        self (object - vocabSettingsHandler) : The vocab settings handler object.\n
+
+        Returns:\n
+        None.\n
+
+        """ 
+
+        try:
+            vocab_term_or_id = self.local_handler.toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete a csep from.")
+
+        except:
+            return
+        
+        if(vocab_term_or_id.isdigit() == True):
+            vocab_id = int(vocab_term_or_id)
+            vocab_term = self.local_handler.searcher.get_term_from_id(self.local_handler, vocab_id) 
+        else:
+            vocab_term = vocab_term_or_id
+            vocab_id = self.local_handler.searcher.get_id_from_term(self.local_handler, vocab_term)
+
+        try:
+
+            assert vocab_term != "-1"
+            assert vocab_id != -1
+
+        except AssertionError:
+            self.local_handler.toolkit.logger.log_action("Invalid id or term.")
+            print("invalid id or term\n")
+            time.sleep(1)
+            return 
+        
+        except self.local_handler.toolkit.UserCancelError:
+            return
+        
+        ## gets target vocab from local handler directly
+        target_index = next((i for i, vocab in enumerate(self.local_handler.vocab) if vocab.word_id == vocab_id))
+        target_vocab = self.local_handler.vocab[target_index]
+
+        ## gets csep print items
+        valid_cseps = self.local_handler.searcher.get_csep_print_items_from_id(self.local_handler, vocab_id)
+
+        for csep_item in valid_cseps:
+            print(csep_item)
+
+        target_csep_id = int(input("\nPlease enter the CSEP ID for the csep you would like to delete:\n"))
+
+        ## pops the matching csep in the handler if exists, will do nothing if id is invalid or incorrect
+        for i, csep in enumerate(target_vocab.testing_material_answer_all):
+            
+            if(csep.csep_id == target_csep_id):
+                target_vocab.testing_material_answer_all.pop(i)
+
+        ## same thing but for the file
+        self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_csep_path, id_index=2, id_value=target_csep_id)

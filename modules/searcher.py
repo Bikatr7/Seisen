@@ -40,9 +40,9 @@ class searcher:
 
         self.toolkit = toolkit
 
-##--------------------start-of-get_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_vocab_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_print_item_from_id(self, local_handler:localHandler, vocab_id:int):
+    def get_vocab_print_item_from_id(self, local_handler:localHandler, vocab_id:int):
 
         """
         
@@ -80,6 +80,49 @@ class searcher:
         )
 
         return print_item
+    
+##--------------------start-of-get_vocab_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def get_csep_print_items_from_id(self, local_handler:localHandler, vocab_id:int):
+
+        """
+        
+        Gets a print item for a vocab given an id.\n
+
+        Parameters:\n
+        self (object - searcher) : the searcher object.\n
+        local_handler (object - localHandler) : the localHandler object.\n
+        vocab_id (int) : the id of the vocab we are getting a print item for.\n
+
+        Returns:\n
+        print_item (str) : the print item for the id.\n
+        
+        """
+            
+        target_vocab = None
+        print_items = []
+
+        for vocab in local_handler.vocab:
+            if(vocab.word_id == vocab_id):
+                target_vocab = vocab
+
+        if(target_vocab == None):
+            raise IDNotFoundError(vocab_id)
+        
+        for csep in target_vocab.testing_material_answer_all:
+
+            print_item = (
+                f"---------------------------------\n"
+                f"CSEP: {csep.csep_value}\n"
+                f"CSEP ID: {csep.csep_id}\n"
+                f"VOCAB ID {csep.word_id}\n"
+                f"WORD TYPE: {csep.word_type}\n"
+                f"---------------------------------\n"
+            )
+
+            print_items.append(print_item)
+
+        return print_items
 
 ##--------------------start-of-get_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -143,7 +186,7 @@ class searcher:
             return final_id
         
         for id in matching_ids:
-            id_print_message += self.get_print_item_from_id(local_handler, id)
+            id_print_message += self.get_vocab_print_item_from_id(local_handler, id)
 
         id_print_message += "\n\nWhich vocab are you looking for? (Enter position 1-" + str(len(matching_ids)) + ")"
 

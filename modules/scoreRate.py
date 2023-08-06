@@ -7,8 +7,6 @@ import msvcrt
 from modules.words import word
 from modules.vocab import vocab
 from modules.localHandler import localHandler
-from modules.logger import logger
-from modules.toolkit import toolkit
 
 class scoreRate:
 
@@ -18,7 +16,7 @@ class scoreRate:
 
     ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, handler:localHandler, logger:logger, toolkit:toolkit) -> None:
+    def __init__(self, handler:localHandler) -> None:
 
         """
 
@@ -34,10 +32,6 @@ class scoreRate:
         """
 
         self.handler = handler
-
-        self.logger = logger
-
-        self.toolkit = toolkit
 
 ##--------------------start-of-calculate_score()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -85,7 +79,7 @@ class scoreRate:
 
         """
 
-        self.logger.log_action("Getting Kana to test...")
+        self.handler.fileEnsurer.logger.log_action("Getting Kana to test...")
 
         raw_score_list = []
         kana_scores = []
@@ -138,7 +132,7 @@ class scoreRate:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        self.logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
+        self.handler.fileEnsurer.logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
 
         return kana_to_test, display_item_list
     
@@ -160,7 +154,7 @@ class scoreRate:
         
         """
 
-        self.logger.log_action("Getting Vocab to test...")
+        self.handler.fileEnsurer.logger.log_action("Getting Vocab to test...")
 
         raw_score_list = []
         vocab_scores = []
@@ -216,7 +210,7 @@ class scoreRate:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        self.logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
+        self.handler.fileEnsurer.logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
 
         return vocab_to_test, display_item_list
     
@@ -331,9 +325,9 @@ class scoreRate:
 
                 print("\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n")
             
-                userA = int(self.toolkit.input_check(1 ,str(msvcrt.getch().decode()), 2, prompt + "\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n"))
+                userA = int(self.handler.toolkit.input_check(1 ,str(msvcrt.getch().decode()), 2, prompt + "\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n"))
             
-                self.toolkit.clear_console()
+                self.handler.toolkit.clear_console()
 
                 if(userA == 1):
 
@@ -372,7 +366,7 @@ class scoreRate:
         answers = [value.csep_value for value in word.testing_material_answer_all]
 
         if(user_guess == 'q'): # if the user wants to quit the program do so
-            self.toolkit.exit_seisen()
+            self.handler.toolkit.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
             user_guess = self.check_typo(word, user_guess, prompt, handler)

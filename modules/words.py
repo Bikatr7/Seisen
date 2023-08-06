@@ -111,7 +111,7 @@ class word:
 
         local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.kana_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.correct_count))
 
-        local_handler.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.fileEnsurer.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -149,7 +149,7 @@ class word:
 
         local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.kana_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.incorrect_count))
 
-        local_handler.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.fileEnsurer.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -180,7 +180,7 @@ class word:
         ## updates the current session with the typo
         self.typos.append(new_typo)
 
-        local_handler.logger.log_action("Logged a typo : " + typo + " for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.fileEnsurer.logger.log_action("Logged a typo : " + typo + " for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -208,5 +208,5 @@ class word:
         ## updates the current session with the incorrect typo
         self.incorrect_typos.append(new_incorrect_typo)
 
-        local_handler.logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.fileEnsurer.logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + self.testing_material + ", id : " + str(self.word_id))
     

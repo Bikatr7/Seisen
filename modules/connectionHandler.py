@@ -26,7 +26,7 @@ class connectionHandler():
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, file_ensurer:fileEnsurer, logger:logger, toolkit:toolkit) -> None:
+    def __init__(self, file_ensurer:fileEnsurer, toolkit:toolkit) -> None:
 
         """
         
@@ -45,8 +45,6 @@ class connectionHandler():
         ##----------------------------------------------------------------objects----------------------------------------------------------------
 
         self.fileEnsurer = file_ensurer
-
-        self.logger = logger
 
         self.toolkit = toolkit
 
@@ -91,7 +89,7 @@ class connectionHandler():
             isValid = False
             log_message = "Checking connection for reason: " + reason_for_check + ", Connection is invalid, skipping."
         
-        self.logger.log_action(log_message)
+        self.fileEnsurer.logger.log_action(log_message)
 
         return isValid
 
@@ -117,7 +115,7 @@ class connectionHandler():
         
         with open(self.database_connection_failed_path, "r+", encoding="utf-8") as file:
             if(file.read().strip() == "true"):
-                self.logger.log_action("Database connection has failed previously.... skipping connection initialization")
+                self.fileEnsurer.logger.log_action("Database connection has failed previously.... skipping connection initialization")
                 return connection, cursor
 
         self.start_marked_succeeded_database_connection()
@@ -133,7 +131,7 @@ class connectionHandler():
             connection = self.create_database_connection("localhost", "root", database_name, password)
             cursor = connection.cursor()
 
-            self.logger.log_action("Used saved credentials in " + self.credentials_path)
+            self.fileEnsurer.logger.log_action("Used saved credentials in " + self.credentials_path)
 
         except: ## else try to get credentials manually
 
@@ -199,7 +197,7 @@ class connectionHandler():
         with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
             file.write("true")
             
-        self.logger.log_action("Database Connection Failed")
+        self.fileEnsurer.logger.log_action("Database Connection Failed")
 
 ##--------------------start-of-mark_succeeded_database_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -220,7 +218,7 @@ class connectionHandler():
         with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
             file.write("false")
 
-        self.logger.log_action("Database Connection Succeeded")
+        self.fileEnsurer.logger.log_action("Database Connection Succeeded")
 
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -248,7 +246,7 @@ class connectionHandler():
             database= db_name,
             passwd=user_password)
 
-        self.logger.log_action("Successfully connected to the " + db_name + " database")
+        self.fileEnsurer.logger.log_action("Successfully connected to the " + db_name + " database")
 
         return connection
     
@@ -288,16 +286,16 @@ class connectionHandler():
 
         """
 
-        self.logger.log_action("--------------------------------------------------------------")
+        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
     
         self.cursor.execute(query) ## type: ignore
         
         self.connection.commit() ## type: ignore
 
-        self.logger.log_action("The following query was sent and accepted by the database : ")
-        self.logger.log_action(query.strip())
+        self.fileEnsurer.logger.log_action("The following query was sent and accepted by the database : ")
+        self.fileEnsurer.logger.log_action(query.strip())
 
-        self.logger.log_action("--------------------------------------------------------------")
+        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
 
 ##--------------------start-of-read_single_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

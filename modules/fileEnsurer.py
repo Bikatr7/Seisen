@@ -54,10 +54,16 @@ class fileEnsurer:
       ## lib files for remoteHandler.py
       self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
 
+      ## the folder for all loop data related files are located
+      self.loop_data_dir = os.path.join(self.config_dir, "Loop Data")
+
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## log file
       self.log_path = os.path.join(self.config_dir, "log.txt")
+
+      ## the loop data file path itself
+      self.loop_data_path = os.path.join(self.loop_data_dir, "loopData.txt")
 
       ##----------------------------------------------------------------functions----------------------------------------------------------------
 
@@ -84,7 +90,7 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_files(self, logger:logger) -> None:
+   def ensure_files(self) -> None:
 
       """
 
@@ -92,14 +98,11 @@ class fileEnsurer:
       
       Parameters:\n
       self (object - fileEnsurer) : the fileEnsurer object.\n
-      logger (object - logger) : the logger object.\n
 
       Returns:\n
       None\n
       
       """
-
-      self.logger = logger
 
       self.create_needed_base_directories()
 
@@ -151,21 +154,9 @@ class fileEnsurer:
 
       """
 
-      ##----------------------------------------------------------------dirs----------------------------------------------------------------
+      self.file_handler.standard_create_directory(self.loop_data_dir)
 
-      ## the folder for all loop data related files are located
-      loop_data_dir = os.path.join(self.config_dir, "Loop Data")
-
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-      ## the loop data file path itself
-      loop_data_path = os.path.join(loop_data_dir, "loopData.txt")
-   
-      ##----------------------------------------------------------------other things----------------------------------------------------------------
-
-      self.file_handler.standard_create_directory(loop_data_dir)
-
-      self.file_handler.modified_create_file(loop_data_path, "0,0,0,0,")
+      self.file_handler.modified_create_file(self.loop_data_path, "0,0,0,0,")
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

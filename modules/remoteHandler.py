@@ -30,7 +30,7 @@ class remoteHandler():
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, file_ensurer:fileEnsurer, logger:logger, toolkit:toolkit) -> None:
+    def __init__(self, file_ensurer:fileEnsurer, toolkit:toolkit) -> None:
 
         """
         
@@ -51,11 +51,9 @@ class remoteHandler():
         ## the file_ensurer used for paths here
         self.fileEnsurer = file_ensurer
 
-        self.logger = logger
-
         self.toolkit = toolkit
 
-        self.connection_handler = connectionHandler(self.fileEnsurer, self.logger, self.toolkit)
+        self.connection_handler = connectionHandler(self.fileEnsurer, self.toolkit)
 
         ##----------------------------------------------------------------dir----------------------------------------------------------------
 
@@ -115,7 +113,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
-        self.logger.log_action("Remote Handler has been created")
+        self.fileEnsurer.logger.log_action("Remote Handler has been created")
     
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -209,17 +207,17 @@ class remoteHandler():
                 for typo in self.kana_typos:
                     if(typo.word_type == kana.word_type and typo.word_id == kana.word_id):
                         kana.typos.append(typo)
-                        self.logger.log_action("Added Typo " + typo.typo_value + " to Kana " + kana.testing_material)        
+                        self.fileEnsurer.logger.log_action("Added Typo " + typo.typo_value + " to Kana " + kana.testing_material)        
 
                 for incorrect_typo in self.kana_incorrect_typos:
                     if(incorrect_typo.word_type == kana.word_type and incorrect_typo.word_id == kana.word_id):
                         kana.incorrect_typos.append(incorrect_typo)
-                        self.logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Kana " + kana.testing_material)
+                        self.fileEnsurer.logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Kana " + kana.testing_material)
 
                 for csep in self.kana_csep:
                     if(csep.word_id == kana.word_id and csep.word_type == kana.word_type):
                         kana.testing_material_answer_all.append(csep)
-                        self.logger.log_action("Added CSEP " + csep.csep_value + " to Kana " + kana.testing_material)
+                        self.fileEnsurer.logger.log_action("Added CSEP " + csep.csep_value + " to Kana " + kana.testing_material)
 
         ##----------------------------------------------------------------reset_vocab_relations()----------------------------------------------------------------
                 
@@ -260,17 +258,17 @@ class remoteHandler():
                 for typo in self.vocab_typos:
                     if(typo.word_type == vocab.word_type and typo.word_id == vocab.word_id):
                         vocab.typos.append(typo)        
-                        self.logger.log_action("Added Typo" + typo.typo_value + " to Vocab " + vocab.testing_material)    
+                        self.fileEnsurer.logger.log_action("Added Typo" + typo.typo_value + " to Vocab " + vocab.testing_material)    
 
                 for incorrect_typo in self.vocab_incorrect_typos:
                     if(incorrect_typo.word_type == vocab.word_type and incorrect_typo.word_id == vocab.word_id):
                         vocab.incorrect_typos.append(incorrect_typo)
-                        self.logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Vocab " + vocab.testing_material)
+                        self.fileEnsurer.logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Vocab " + vocab.testing_material)
 
                 for csep in self.vocab_csep:
                     if(csep.word_id == vocab.word_id and csep.word_type == vocab.word_type):
                         vocab.testing_material_answer_all.append(csep)
-                        self.logger.log_action("Added CSEP " + csep.csep_value + " to Vocab " + vocab.testing_material)
+                        self.fileEnsurer.logger.log_action("Added CSEP " + csep.csep_value + " to Vocab " + vocab.testing_material)
 
 
         ##----------------------------------------------------------------main()----------------------------------------------------------------
@@ -279,19 +277,19 @@ class remoteHandler():
         if(self.connection_handler.check_connection_validity("local storage reset") == False):
             return
         
-        self.logger.log_action("--------------------------------------------------------------")
-        self.logger.log_action("Clearing Local Storage...")
+        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.fileEnsurer.logger.log_action("Clearing Local Storage...")
 
         clear_local_kana()
         clear_local_vocab()
 
-        self.logger.log_action("--------------------------------------------------------------")
-        self.logger.log_action("Resetting Kana Relations...")
+        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.fileEnsurer.logger.log_action("Resetting Kana Relations...")
 
         reset_kana_relations()
 
-        self.logger.log_action("--------------------------------------------------------------")
-        self.logger.log_action("Resetting Vocab Relations...")
+        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.fileEnsurer.logger.log_action("Resetting Vocab Relations...")
 
         reset_vocab_relations()
       
@@ -323,8 +321,8 @@ class remoteHandler():
 
             file.write(last_overwrite_date_accurate)
 
-        self.logger.log_action("--------------------------------------------------------------")
-        self.logger.log_action("Resetting Remote Storage...")
+        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.fileEnsurer.logger.log_action("Resetting Remote Storage...")
 
         self.delete_remote_storage()
         self.create_remote_storage()
@@ -838,7 +836,7 @@ class remoteHandler():
             if(last_backup_date != current_day):
                 archive_dir = self.fileEnsurer.file_handler.create_archive_dir(1) 
 
-                self.logger.log_action("Created Daily Remote Backup")
+                self.fileEnsurer.logger.log_action("Created Daily Remote Backup")
 
                 file.truncate(0)
 
@@ -895,7 +893,7 @@ class remoteHandler():
                 shutil.rmtree(self.fileEnsurer.kana_dir)
                 shutil.rmtree(self.fileEnsurer.vocab_dir)
 
-                self.logger.log_action("Restored the " + backup_to_restore + " remote backup")
+                self.fileEnsurer.logger.log_action("Restored the " + backup_to_restore + " remote backup")
 
                 shutil.copytree(os.path.join(self.remote_archives_dir, backup_to_restore), self.fileEnsurer.config_dir, dirs_exist_ok=True)
 
@@ -922,7 +920,7 @@ class remoteHandler():
 
             if(last_backup_date != current_day):
 
-                self.logger.log_action("Overwriting Remote with Local")
+                self.fileEnsurer.logger.log_action("Overwriting Remote with Local")
         
                 file.truncate(0)
                 

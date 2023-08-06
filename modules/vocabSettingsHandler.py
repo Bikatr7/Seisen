@@ -41,7 +41,7 @@ class vocabSettingsHandler():
 
         self.remote_handler = remote_handler
 
-##--------------------start-of-vocab_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-change_vocab_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def change_vocab_settings(self) -> None:
 
@@ -57,7 +57,7 @@ class vocabSettingsHandler():
 
         """ 
 
-        self.local_handler.logger.log_action("User is changing vocab settings")
+        self.local_handler.toolkit.logger.log_action("User is changing vocab settings")
 
         vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Delete Vocab Value\n"
 
@@ -114,7 +114,7 @@ class vocabSettingsHandler():
 
             for character in testing_material:
                 if(character not in kana):
-                    self.local_handler.logger.log_action(character + " is kanji")
+                    self.local_handler.toolkit.logger.log_action(character + " is kanji")
                     furigana = self.local_handler.toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling")
                     isKanji = True
                     break
@@ -180,7 +180,7 @@ class vocabSettingsHandler():
             csep_value = self.local_handler.toolkit.user_confirm("Please enter the csep/answer for " + vocab_term + " you would like to add.")
 
         except AssertionError:
-            self.local_handler.logger.log_action("Invalid id or term.")
+            self.local_handler.toolkit.logger.log_action("Invalid id or term.")
             print("invalid id or term\n")
             time.sleep(1)
             return
@@ -248,7 +248,7 @@ class vocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            self.local_handler.logger.log_action("Invalid id or term.")
+            self.local_handler.toolkit.logger.log_action("Invalid id or term.")
             print("invalid id or term\n")
             time.sleep(1)
             return 
@@ -340,7 +340,7 @@ class vocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            self.local_handler.logger.log_action("Invalid id or term.")
+            self.local_handler.toolkit.logger.log_action("Invalid id or term.")
             print("invalid id or term\n")
             time.sleep(1)
             return

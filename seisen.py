@@ -8,15 +8,12 @@ import traceback
 from modules.localHandler import localHandler
 from modules.remoteHandler import remoteHandler
 
+from modules.settingsHandler import settingsHandler
+
 from modules.fileEnsurer import fileEnsurer
 from modules.scoreRate import scoreRate
-from modules.logger import logger
 
 from modules.toolkit import toolkit
-
-from modules import changeSettings
-
-## note to self, add a kana cseps file to solve that issue
 
 class Seisen:
 
@@ -50,14 +47,16 @@ class Seisen:
         self.toolkit = toolkit(self.fileEnsurer.logger)
 
         ## ensures files needed by Seisen are created
-        self.fileEnsurer.ensure_files(self.fileEnsurer.logger)
+        self.fileEnsurer.ensure_files()
         
         ## sets up the handlers for Seisen data
-        self.localHandler = localHandler(self.fileEnsurer, self.fileEnsurer.logger, self.toolkit)
-        self.remoteHandler = remoteHandler(self.fileEnsurer, self.fileEnsurer.logger, self.toolkit)
+        self.localHandler = localHandler(self.fileEnsurer, self.toolkit)
+        self.remoteHandler = remoteHandler(self.fileEnsurer, self.toolkit)
 
         ## sets up the word_rater
-        self.word_rater = scoreRate(self.localHandler, self.fileEnsurer.logger, self.toolkit)
+        self.word_rater = scoreRate(self.localHandler)
+
+        self.settings_handler = settingsHandler(self.localHandler, self.remoteHandler, self.word_rater)
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
@@ -71,9 +70,6 @@ class Seisen:
 
         ## the path to the file that stores if remoteHandler failed to make a database connection
         self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
-
-        ## path for the loop_data file
-        self.loop_data_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Loop Data"), "loopData.txt")
 
         ##----------------------------------------------------------------variables----------------------------------------------------------------
 
@@ -139,7 +135,7 @@ class Seisen:
                 self.test_vocab()
         
             elif(self.current_mode == 3):
-                self.change_settings()
+                self.settings_handler.change_settings()
 
             elif(self.current_mode != -1): ## if invalid input, clear screen and print error
                 self.toolkit.clear_console()
@@ -148,6 +144,8 @@ class Seisen:
             if(self.current_mode not in valid_modes): ## if invalid mode, change mode
                 self.change_mode()
 
+            self.current_mode = int(self.localHandler.fileEnsurer.file_handler.read_sei_file(self.fileEnsurer.loop_data_path, target_line=1,column=1))
+            
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def change_mode(self) -> None: 
@@ -173,6 +171,7 @@ class Seisen:
         old_mode = self.current_mode
         
         self.current_mode = int(self.toolkit.input_check(1, str(msvcrt.getch().decode()), 3, main_menu_message))
+        self.localHandler.fileEnsurer.file_handler.edit_sei_line(self.fileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to=str(self.current_mode))
         
         self.fileEnsurer.logger.log_action("Current mode changed to " + str(self.current_mode) + " was " + str(old_mode))
 
@@ -206,8 +205,8 @@ class Seisen:
         ## uses the word rater to get the kana we are gonna test, as well as the display list, but that is not used here
         kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
 
-        total_number_of_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
-        number_of_correct_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        total_number_of_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.fileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.fileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds, 2)) if total_number_of_rounds != 0 else "0.0"
 
         self.fileEnsurer.logger.log_action("Testing Kana... Round " + str(total_number_of_rounds))
@@ -282,8 +281,8 @@ class Seisen:
             
         self.toolkit.clear_console()
 
-        self.fileEnsurer.file_handler.edit_sei_line(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
-        self.fileEnsurer.file_handler.edit_sei_line(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
+        self.fileEnsurer.file_handler.edit_sei_line(self.fileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
+        self.fileEnsurer.file_handler.edit_sei_line(self.fileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
 
         self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
 
@@ -315,8 +314,8 @@ class Seisen:
         ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
         vocab_to_test, display_list = self.word_rater.get_vocab_to_test(self.localHandler.vocab)
 
-        total_number_of_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
-        number_of_correct_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        total_number_of_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.fileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(self.fileEnsurer.file_handler.read_sei_file(self.fileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
         self.fileEnsurer.logger.log_action("Testing Vocab... Round " + str(total_number_of_rounds))
@@ -411,62 +410,10 @@ class Seisen:
             
         self.toolkit.clear_console()
 
-        self.fileEnsurer.file_handler.edit_sei_line(self.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
-        self.fileEnsurer.file_handler.edit_sei_line(self.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
+        self.fileEnsurer.file_handler.edit_sei_line(self.fileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
+        self.fileEnsurer.file_handler.edit_sei_line(self.fileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
 
         self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
-
-##--------------------start-of-change_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def change_settings(self) -> None:
-
-        """
-        
-        Used to change the settings of Seisen, and do things unrelated to testing.\n
-
-        Parameters:\n
-        self (object - Seisen) : The Seisen object.\n
-
-        Returns:\n
-        None\n
-
-        """  
- 
-        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
-
-        self.toolkit.clear_console()
-
-        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Restore Backup\n5. Set Up New Database"
-
-        print(settings_menu_message)
-
-        pathing = self.toolkit.input_check(4, str(msvcrt.getch().decode()), 5, settings_menu_message)
-
-        ## deletes the local storage and refreshes it with the remote storage, as well as re-loads the testing words
-        if(pathing == "1"): 
-            self.localHandler = changeSettings.vocab_settings(self.localHandler)
-
-        ## prompts the user to restore a local backup
-        elif(pathing == "2"):
-            self.localHandler, self.remoteHandler = changeSettings.reset_storage(self.localHandler, self.remoteHandler)
-
-        ## prints current word ratings, currently only has kana
-        elif(pathing == "3"):
-            changeSettings.print_score_ratings(self.word_rater, self.localHandler)
-
-        elif(pathing == "4"):
-            self.localHandler, self.remoteHandler = changeSettings.restore_backup(self.localHandler, self.remoteHandler)
-
-        ## tries to set up a new database, WILL replace any existing database
-        elif(pathing == "5"):
-            self.remoteHandler = changeSettings.set_up_new_database(self.remoteHandler)
-
-        ## if no valid option is selected, exit the changeSettings() function
-        else:
-            self.current_mode = -1
-
-        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
-
 
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

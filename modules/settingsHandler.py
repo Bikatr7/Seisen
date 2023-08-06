@@ -148,14 +148,14 @@ class settingsHandler():
         """  
         
 
-        ## causes the remoteHandler to attempt a database connection upon next startup
+        ## forces the remoteHandler to not skip a database connection upon next prompt
         self.remote_handler.connection_handler.start_marked_succeeded_database_connection()
         
-        ## clears the credentials file
+        ## clears the credentials file so that if a valid login exists, it's not used
         self.remote_handler.connection_handler.clear_credentials_file()
 
-        ## creates a new handler
-        self.remote_handler = remoteHandler(self.remote_handler.fileEnsurer, self.remote_handler.toolkit)
+        ## reinitializes the database connection 
+        self.remote_handler.connection_handler.initialize_database_connection()
 
-        self.remote_handler.fileEnsurer.logger.log_action("Remote Handler has been reset...")
+        self.remote_handler.fileEnsurer.logger.log_action("Database connection has been reset...")
 

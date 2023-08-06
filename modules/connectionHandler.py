@@ -159,7 +159,7 @@ class connectionHandler():
                 with open(self.credentials_path, "w+",encoding='utf-8') as file:
                     file.writelines(credentials)
 
-            except AssertionError:
+            except toolkit.UserCancelError:
                 
                 self.toolkit.clear_console()
 
@@ -170,7 +170,7 @@ class connectionHandler():
                 self.toolkit.clear_console()
 
                 print(str(e))
-                print("Error with creating connection object, please double check your password and database name\n")
+                print("\nError with creating connection object, please double check your password and database name\n")
 
                 self.start_marked_failed_database_connection()
 

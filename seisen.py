@@ -428,7 +428,7 @@ try:
 
 except Exception as e:
 
-    #@ if crash, catch and log, then throw
+    ## if crash, catch and log, then throw
     client.fileEnsurer.logger.log_action("--------------------------------------------------------------")
     client.fileEnsurer.logger.log_action("Seisen has crashed")
 

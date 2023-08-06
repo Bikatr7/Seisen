@@ -126,10 +126,26 @@ class storageSettingsHandler():
 
         """
 
-        shutil.rmtree(self.local_handler.fileEnsurer.kana_dir)
-        shutil.rmtree(self.local_handler.fileEnsurer.vocab_dir)
+        try:
 
-        self.local_handler.fileEnsurer.ensure_files()
+            shutil.rmtree(self.local_handler.fileEnsurer.kana_dir)
+            shutil.rmtree(self.local_handler.fileEnsurer.vocab_dir)
+
+        ## added this for you Seinu.. you retard
+        except PermissionError:
+
+            self.local_handler.toolkit.clear_console()
+
+            print("Permission error, you likely have the config folder/files open. Please close all of that and try again. If issue persists contact support.\n")
+
+            self.local_handler.toolkit.pause_console()
+
+            return
+        
+        ## either way files are likely fucked so....
+        finally:
+
+            self.local_handler.fileEnsurer.ensure_files()
 
         self.remote_handler.reset_remote_storage()
 

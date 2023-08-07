@@ -6,6 +6,8 @@ import time
 from modules.localHandler import localHandler
 from modules.remoteHandler import remoteHandler
 
+from modules.searcher import searcher
+
 from modules.vocab import vocab as vocab_blueprint 
 
 from modules.csep import csep as csep_blueprint
@@ -40,6 +42,8 @@ class vocabSettingsHandler():
         self.local_handler = local_handler
 
         self.remote_handler = remote_handler
+
+        self.searcher = searcher(local_handler)
 
 ##--------------------start-of-change_vocab_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -169,10 +173,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.local_handler.searcher.get_term_from_id(self.local_handler, vocab_id) 
+            vocab_term = self.searcher.get_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.local_handler.searcher.get_id_from_term(self.local_handler, vocab_term)
+            vocab_id = self.searcher.get_id_from_term(vocab_term)
 
         try:
 
@@ -239,10 +243,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.local_handler.searcher.get_term_from_id(self.local_handler, vocab_id) 
+            vocab_term = self.searcher.get_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.local_handler.searcher.get_id_from_term(self.local_handler, vocab_term)
+            vocab_id = self.searcher.get_id_from_term(vocab_term)
 
         try:
 
@@ -262,7 +266,7 @@ class vocabSettingsHandler():
 
         target_vocab = self.local_handler.vocab[target_index]
 
-        type_replacement_message = self.local_handler.searcher.get_vocab_print_item_from_id(self.local_handler, vocab_id)
+        type_replacement_message = self.searcher.get_vocab_print_item_from_id(vocab_id)
 
         type_replacement_message += "\n\nWhat value would you like to replace? (1-6) (select index)"
 
@@ -331,10 +335,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.local_handler.searcher.get_term_from_id(self.local_handler, vocab_id) 
+            vocab_term = self.searcher.get_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.local_handler.searcher.get_id_from_term(self.local_handler, vocab_term)
+            vocab_id = self.searcher.get_id_from_term(vocab_term)
 
         try:
 
@@ -389,10 +393,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.local_handler.searcher.get_term_from_id(self.local_handler, vocab_id) 
+            vocab_term = self.searcher.get_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.local_handler.searcher.get_id_from_term(self.local_handler, vocab_term)
+            vocab_id = self.searcher.get_id_from_term(vocab_term)
 
         try:
 
@@ -413,7 +417,7 @@ class vocabSettingsHandler():
         target_vocab = self.local_handler.vocab[target_index]
 
         ## gets csep print items
-        valid_cseps = self.local_handler.searcher.get_csep_print_items_from_id(self.local_handler, vocab_id)
+        valid_cseps = self.searcher.get_csep_print_items_from_id(vocab_id)
 
         for csep_item in valid_cseps:
             print(csep_item)

@@ -23,7 +23,7 @@ class searcher:
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, toolkit:toolkit):
+    def __init__(self, local_handler:localHandler):
 
         """
         
@@ -38,11 +38,11 @@ class searcher:
 
         """
 
-        self.toolkit = toolkit
+        self.local_handler = local_handler
 
 ##--------------------start-of-get_vocab_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_vocab_print_item_from_id(self, local_handler:localHandler, vocab_id:int):
+    def get_vocab_print_item_from_id(self, vocab_id:int):
 
         """
         
@@ -60,7 +60,7 @@ class searcher:
             
         target_vocab = None
 
-        for vocab in local_handler.vocab:
+        for vocab in self.local_handler.vocab:
             if(vocab.word_id == vocab_id):
                 target_vocab = vocab
 
@@ -83,7 +83,7 @@ class searcher:
     
 ##--------------------start-of-get_vocab_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_csep_print_items_from_id(self, local_handler:localHandler, vocab_id:int):
+    def get_csep_print_items_from_id(self, vocab_id:int):
 
         """
         
@@ -102,7 +102,7 @@ class searcher:
         target_vocab = None
         print_items = []
 
-        for vocab in local_handler.vocab:
+        for vocab in self.local_handler.vocab:
             if(vocab.word_id == vocab_id):
                 target_vocab = vocab
 
@@ -126,7 +126,7 @@ class searcher:
 
 ##--------------------start-of-get_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_term_from_id(self, local_handler:localHandler, vocab_id:int):
+    def get_term_from_id(self, vocab_id:int):
 
         """
         
@@ -144,7 +144,7 @@ class searcher:
 
         term = "-1"
         
-        for vocab in local_handler.vocab:
+        for vocab in self.local_handler.vocab:
             if(vocab.word_id == vocab_id):
                 term = vocab.testing_material
 
@@ -152,7 +152,7 @@ class searcher:
     
 ##--------------------start-of-get_id_from_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_id_from_term(self, local_handler:localHandler, term:str):
+    def get_id_from_term(self, term:str):
 
         """
         
@@ -175,7 +175,7 @@ class searcher:
 
         final_id = -1
 
-        for vocab in local_handler.vocab:
+        for vocab in self.local_handler.vocab:
             if(vocab.testing_material == term):
                 matching_ids.append(vocab.word_id)
 
@@ -186,11 +186,11 @@ class searcher:
             return final_id
         
         for id in matching_ids:
-            id_print_message += self.get_vocab_print_item_from_id(local_handler, id)
+            id_print_message += self.get_vocab_print_item_from_id(id)
 
         id_print_message += "\n\nWhich vocab are you looking for? (Enter position 1-" + str(len(matching_ids)) + ")"
 
-        target_index = int(self.toolkit.input_check(4, str(msvcrt.getch().decode()), len(matching_ids), id_print_message)) - 1
+        target_index = int(self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), len(matching_ids), id_print_message)) - 1
 
         final_id = matching_ids[target_index]
 

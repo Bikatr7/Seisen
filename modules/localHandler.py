@@ -59,8 +59,6 @@ class localHandler():
 
         self.toolkit = toolkit
 
-        self.searcher = searcher(self.toolkit)
-
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
         ## archives for previous versions of Seisen txt files

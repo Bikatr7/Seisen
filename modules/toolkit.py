@@ -115,7 +115,7 @@ class toolkit():
 
 ##-------------------start-of-pause_console()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def pause_console(self, message:str="Press enter to continue . . .") -> None:
+    def pause_console(self, message:str="Press any key to continue...") -> None:
 
         """
 
@@ -130,11 +130,28 @@ class toolkit():
 
         """
 
+        print(message)  # Print the custom message
+        
         if(os.name == 'nt'):  ## Windows
-            os.system('pause /P f{message}')
-        else: ## Linux
-            input(message)
+            
+            msvcrt.getch() 
 
+        else:  ## Linux, No idea if any of this works lmao
+
+            import termios
+
+            ## Save terminal settings
+            old_settings = termios.tcgetattr(0)
+
+            try:
+                new_settings = termios.tcgetattr(0)
+                new_settings[3] = new_settings[3] & ~termios.ICANON
+                termios.tcsetattr(0, termios.TCSANOW, new_settings)
+                os.read(0, 1)  ## Wait for any key press
+
+            finally:
+
+                termios.tcsetattr(0, termios.TCSANOW, old_settings)
 ##--------------------start-of-clear_stream()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def clear_stream(self) -> None: 

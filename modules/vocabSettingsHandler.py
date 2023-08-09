@@ -63,11 +63,11 @@ class vocabSettingsHandler():
 
         self.local_handler.toolkit.logger.log_action("User is changing vocab settings")
 
-        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Replace CSEP/Answer Value\n5.Delete Vocab Value\n6.Delete CSEP/Answer to Vocab\n"
+        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Replace CSEP/Answer Value\n5.Delete Vocab Value\n6.Delete CSEP/Answer to Vocab\n7.Search Vocab\n"
 
         print(vocab_message)
 
-        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 6, vocab_message)
+        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 7, vocab_message)
 
         if(type_setting == "1"):
             self.add_vocab()
@@ -81,6 +81,8 @@ class vocabSettingsHandler():
             self.delete_vocab_value()
         elif(type_setting == "6"):
             self.delete_csep_value()
+        elif(type_setting == "7"):
+            self.search_vocab()
     
 ##--------------------start-of-add_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -175,10 +177,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.searcher.get_term_from_id(vocab_id) 
+            vocab_term = self.searcher.get_vocab_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.searcher.get_id_from_term(vocab_term)
+            vocab_id = self.searcher.get_id_from_vocab_term(vocab_term)
 
         try:
 
@@ -245,10 +247,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.searcher.get_term_from_id(vocab_id) 
+            vocab_term = self.searcher.get_vocab_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.searcher.get_id_from_term(vocab_term)
+            vocab_id = self.searcher.get_id_from_vocab_term(vocab_term)
 
         try:
 
@@ -339,10 +341,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.searcher.get_term_from_id(vocab_id) 
+            vocab_term = self.searcher.get_vocab_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.searcher.get_id_from_term(vocab_term)
+            vocab_id = self.searcher.get_id_from_vocab_term(vocab_term)
 
         try:
 
@@ -363,7 +365,7 @@ class vocabSettingsHandler():
         target_vocab = self.local_handler.vocab[target_index]
 
         ## gets csep print items
-        valid_cseps = self.searcher.get_csep_print_items_from_id(vocab_id)
+        valid_cseps = self.searcher.get_csep_print_items_from_vocab_id(vocab_id)
 
         for csep_item in valid_cseps:
             print(csep_item)
@@ -412,10 +414,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.searcher.get_term_from_id(vocab_id) 
+            vocab_term = self.searcher.get_vocab_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.searcher.get_id_from_term(vocab_term)
+            vocab_id = self.searcher.get_id_from_vocab_term(vocab_term)
 
         try:
 
@@ -470,10 +472,10 @@ class vocabSettingsHandler():
         
         if(vocab_term_or_id.isdigit() == True):
             vocab_id = int(vocab_term_or_id)
-            vocab_term = self.searcher.get_term_from_id(vocab_id) 
+            vocab_term = self.searcher.get_vocab_term_from_id(vocab_id) 
         else:
             vocab_term = vocab_term_or_id
-            vocab_id = self.searcher.get_id_from_term(vocab_term)
+            vocab_id = self.searcher.get_id_from_vocab_term(vocab_term)
 
         try:
 
@@ -494,7 +496,7 @@ class vocabSettingsHandler():
         target_vocab = self.local_handler.vocab[target_index]
 
         ## gets csep print items
-        valid_cseps = self.searcher.get_csep_print_items_from_id(vocab_id)
+        valid_cseps = self.searcher.get_csep_print_items_from_vocab_id(vocab_id)
 
         for csep_item in valid_cseps:
             print(csep_item)
@@ -509,3 +511,90 @@ class vocabSettingsHandler():
 
         ## same thing but for the file
         self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_csep_path, id_index=2, id_value=target_csep_id)
+
+##--------------------start-of-search_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def search_vocab(self) -> None:
+
+        """
+        
+        Searches throughout all of vocab for a search term.\n
+
+        Parameters:\n
+        self (object - vocabSettingsHandler) : The vocab settings handler object.\n
+
+        Returns:\n
+        None.\n
+
+        """
+
+        matching_vocab_ids = []
+        matching_csep_ids = []
+
+        csep_search_result = ""
+
+        match_found_vocab = False
+        match_found_csep = False
+
+        try:
+            search_term = self.local_handler.toolkit.user_confirm("Please enter search term.")
+
+        except:
+            return
+        
+        ## if search term is an id
+        if(search_term.isnumeric()):
+
+            matching_vocab_ids.append(int(search_term))
+            matching_csep_ids.append(int(search_term))
+
+        ## if search term is not an id/number and not japanese
+        elif(all(ord(char) < 128 for char in search_term)):
+
+            self.local_handler.toolkit.pause_console()
+            
+            matching_vocab_ids, matching_csep_ids = self.searcher.get_ids_from_alpha_term(search_term)
+
+        ## if search term is japanese
+        else:
+            matching_vocab_ids = self.searcher.get_ids_from_japanese(search_term)
+
+        ## print vocab matches as they are found
+        for id in matching_vocab_ids:
+
+            try:
+                print_item = self.searcher.get_vocab_print_item_from_id(id)
+
+                print("Vocab with the id of " + str(id) + '\n')
+
+                print(print_item)
+
+                match_found_vocab = True
+
+            except self.searcher.IDNotFoundError:
+                pass
+
+        ## cseps have to be handled differently, determine if they exist before doing anything with them
+        for id in matching_csep_ids:
+
+            try:
+                print_item = self.searcher.get_csep_print_item_from_id(id)
+
+                csep_search_result += "CSEP with the id of " + str(id) + '\n'
+
+                csep_search_result += print_item
+
+                match_found_csep = True
+
+            except self.searcher.IDNotFoundError:
+                pass
+
+        ## no need to pause if no vocab results were found
+        if(match_found_vocab and match_found_csep):  
+            self.local_handler.toolkit.pause_console("Press any key to see matching CSEP results")
+            self.local_handler.toolkit.clear_console()
+
+        ## print cseps if exist or vocab exist otherwise no matches
+        print(csep_search_result if(csep_search_result or match_found_vocab) else "No Matches\n")
+
+        self.local_handler.toolkit.pause_console()

@@ -20,7 +20,6 @@ class logger:
         Initializes a new logger object.\n
 
         Parameters:\n
-        self (object - logger) : The csep object to be initialized.\n
         incoming_log_file_path (str) : The path to the log file.\n
 
         Returns:\n
@@ -38,16 +37,15 @@ class logger:
 
         """
         
-        gets the time stamp for a logging action taken.\n
+        Gets the time stamp for a logging action taken.\n
 
         Parameters:\n
         self (object - logger) : The logger object.\n
 
         Returns:\n
-        time_stamp
+        time_stamp (str) : The time stamp for the logging action.\n
 
         """
-
 
         current_date = datetime.date.today().strftime("%Y-%m-%d")
 

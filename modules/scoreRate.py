@@ -344,7 +344,7 @@ class scoreRate:
     
 ##--------------------start-of-check_answers_word()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_answers_word(self, word:word, user_guess:str, prompt:str, handler:localHandler) -> tuple[bool | None, str]: 
+    def check_answers_word(self, word:word, user_guess:str, prompt:str, handler:localHandler) -> typing.Tuple[typing.Union[bool ,None], str]: 
 
         """
         

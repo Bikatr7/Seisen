@@ -131,6 +131,18 @@ class vocabSettingsHandler():
         
         except:
             return
+        
+        ## checks if inc vocab is a duplicate
+        for vocab in self.local_handler.vocab:
+            
+            if(vocab.testing_material == testing_material and vocab.romaji == romaji and vocab.furigana == furigana):
+
+                self.local_handler.toolkit.clear_console()
+
+                print(testing_material + " is in vocab already.\n")
+                time.sleep(1)
+                
+                return
 
         for csep_value in csep_value_list:
             csep_insert_values = [new_vocab_id, new_csep_id, csep_value, self.local_handler.VOCAB_WORD_TYPE]

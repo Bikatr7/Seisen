@@ -449,5 +449,5 @@ W
                 print("Invalid Backup\n")
                 time.sleep(1)
 
-        except AssertionError:
+        except self.toolkit.UserCancelError or AssertionError:
             pass

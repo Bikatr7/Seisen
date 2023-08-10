@@ -58,11 +58,11 @@ class storageSettingsHandler():
 
         self.local_handler.toolkit.clear_console()
 
-        storage_message = "What are you trying to do?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n3.Reset Local & Remote to Default\n4.Restore Backup\n5.Export Vocab Deck"
+        storage_message = "What are you trying to do?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n3.Reset Local & Remote to Default\n4.Restore Backup\n5.Export Vocab Deck\n6.Import Vocab Deck"
 
         print(storage_message)
 
-        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 5, storage_message)
+        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 6, storage_message)
 
         if(type_setting == "1"):
             
@@ -82,6 +82,8 @@ class storageSettingsHandler():
         elif(type_setting == "5"):
             self.export_deck()
             
+        elif(type_setting == "6"):
+            self.import_deck()
 
 ##--------------------start-of-reset_local_with_remote()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -190,7 +192,7 @@ class storageSettingsHandler():
             self.local_handler.fileEnsurer.ensure_files()
             self.local_handler.load_words_from_local_storage()
 
-##--------------------start-of-restore_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-export_deck()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def export_deck(self) -> None:
 
@@ -208,7 +210,7 @@ class storageSettingsHandler():
 
         write_string_list = []
 
-        file_name = "exported deck-" + str(datetime.today().strftime('%Y-%m-%d')) + ".seisen"
+        file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d')) + ".seisen"
 
         export_path = os.path.join(self.local_handler.fileEnsurer.main_script_dir, file_name)
 
@@ -233,3 +235,89 @@ class storageSettingsHandler():
         print(file_name + " has been placed in the script directory\n")
 
         self.local_handler.toolkit.pause_console()
+
+##--------------------start-of-import_deck()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def import_deck(self) -> None:
+
+        """
+        
+        Imports an external vocab deck into Seisen.\n
+
+        Parameters:\n 
+        self (object - storageSettingsHandler) : The storage settings handler object.\n
+
+        Returns:\n
+        None.\n
+        
+        """
+
+        valid_import_paths = []
+        valid_import_names = []
+
+        import_deck = []
+
+        vocab_portion_write = []
+        csep_portion_write = []
+
+        metBreak = False
+
+        target_index = -1
+
+        deck_to_import_prompt = ""
+
+        for file_name in os.listdir(self.local_handler.fileEnsurer.main_script_dir):
+
+            if(file_name.endswith(".seisen")): ## If the file is a backup file, then act accordingly
+
+                file_path = os.path.join(self.local_handler.fileEnsurer.main_script_dir, file_name)
+                file_name = file_name.replace(".seisen", "")
+
+                valid_import_paths.append(file_path)
+                valid_import_names.append(file_name)
+
+                deck_to_import_prompt += file_name + "\n" 
+
+        deck_to_import_prompt += "\nWhat deck would you like to import?"
+
+        try: ## user confirm will throw an assertion error if the user wants to cancel the backup restore.
+
+            assert len(valid_import_names) > 0
+
+            deck_to_import = self.local_handler.toolkit.user_confirm(deck_to_import_prompt)
+
+            if(deck_to_import in valid_import_names):
+                self.local_handler.toolkit.clear_console()
+
+                target_index = valid_import_names.index(deck_to_import)
+
+            else:
+                print("Invalid Deck\n")
+                time.sleep(1)
+                return
+
+        except self.local_handler.toolkit.UserCancelError or AssertionError:
+            return
+        
+        with open(valid_import_paths[target_index], 'r', encoding="utf-8") as file:
+            import_deck = file.readlines()
+
+        for line in import_deck:
+
+            if(line == "---\n"):
+                metBreak = True
+
+            elif(metBreak == False):
+                vocab_portion_write.append(line)
+            
+            else:
+                csep_portion_write.append(line)
+
+        
+        with open(self.local_handler.vocab_path, 'w+', encoding="utf-8") as file:
+            file.writelines(vocab_portion_write)
+
+        with open(self.local_handler.vocab_csep_path, 'w+', encoding="utf-8") as file:
+            file.writelines(csep_portion_write)
+
+        self.local_handler.fileEnsurer.logger.log_action("Imported the " + deck_to_import + " vocab deck")

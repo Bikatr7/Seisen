@@ -13,7 +13,6 @@ import mysql.connector
 ## custom modules
 from modules.toolkit import toolkit
 
-from modules.logger import logger
 from modules.fileEnsurer import fileEnsurer
 
 
@@ -44,22 +43,22 @@ class connectionHandler():
 
         ##----------------------------------------------------------------objects----------------------------------------------------------------
 
-        self.fileEnsurer = file_ensurer
+        self.file_ensurer = file_ensurer
 
         self.toolkit = toolkit
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
-        ## lib files for remoteHandler.py
-        self.remote_lib_dir = os.path.join(self.fileEnsurer.lib_dir, "remote")
+        ## remote lib files for remoteHandler.py
+        self.remote_lib_dir = os.path.join(self.file_ensurer.lib_dir, "remote")
 
         ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## if remoteHandler failed to make a database connection
         self.database_connection_failed_path = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
 
-        ## the path to the file that stores the password
-        self.credentials_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
+        ## the path to the file that stores the database credentials
+        self.credentials_path = os.path.join(os.path.join(self.file_ensurer.config_dir, "Logins"), "credentials.txt")
 
         ##----------------------------------------------------------------other----------------------------------------------------------------
 
@@ -76,9 +75,10 @@ class connectionHandler():
 
         Parameters:\n
         self (object - connectionHandler) : The connection handler object.\n
+        reason_for_check (str) : Why we are checking connection validity.\n
 
         Returns:\n
-        isValid (bool) : True if valid, False otherwise
+        isValid (bool) : True if valid, False otherwise.\n
 
         """
 
@@ -89,7 +89,7 @@ class connectionHandler():
             isValid = False
             log_message = "Checking connection for reason: " + reason_for_check + ", Connection is invalid, skipping."
         
-        self.fileEnsurer.logger.log_action(log_message)
+        self.file_ensurer.logger.log_action(log_message)
 
         return isValid
 
@@ -100,13 +100,14 @@ class connectionHandler():
 
         """
 
-        Sets up the database connection. If the user has already entered the password for the database, the program will use the saved password. If not, the program will ask the user for the password.\n
+        Sets up the database connection. If the user has already entered the credentials for the database, the program will use them. If not, the program will prompt the user for them.\n
 
         Parameters:\n
-        None.\n
+        self (object - connectionHandler) : The connection handler object.\n
 
         Returns:\n
         connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.\n
+        cursor (object - mysql.connector.cursor.MySqlCursor) or None : The connection cursor.\n
 
         """
 
@@ -115,14 +116,16 @@ class connectionHandler():
         
         with open(self.database_connection_failed_path, "r+", encoding="utf-8") as file:
             if(file.read().strip() == "true"):
-                self.fileEnsurer.logger.log_action("Database connection has failed previously.... skipping connection initialization")
+                self.file_ensurer.logger.log_action("Database connection has failed previously.... skipping connection initialization")
                 return connection, cursor
 
+        ## program assumes connection will suceed
         self.start_marked_succeeded_database_connection()
 
         try:
 
-            with open(self.credentials_path, 'r', encoding='utf-8') as file:  ## get saved connection credentials if exists
+            ## get saved connection credentials if exists
+            with open(self.credentials_path, 'r', encoding='utf-8') as file:  
                 credentials = file.readlines()
 
                 database_name = base64.b64decode((credentials[0].strip()).encode('utf-8')).decode('utf-8')
@@ -131,11 +134,13 @@ class connectionHandler():
             connection = self.create_database_connection("localhost", "root", database_name, password)
             cursor = connection.cursor()
 
-            self.fileEnsurer.logger.log_action("Used saved credentials in " + self.credentials_path)
+            self.file_ensurer.logger.log_action("Used saved credentials in " + self.credentials_path)
 
-        except: ## else try to get credentials manually
+        ## else try to get credentials manually
+        except: 
 
-            try: ## if valid save the credentials
+            ## if valid save the credentials
+            try:
 
                 database_name = self.toolkit.user_confirm("Please enter the name of the database you have")
 
@@ -150,7 +155,7 @@ class connectionHandler():
                 connection = self.create_database_connection("localhost", "root", database_name, password)
                 cursor = connection.cursor()
                             
-                self.fileEnsurer.file_handler.standard_create_file(self.credentials_path) 
+                self.file_ensurer.file_handler.standard_create_file(self.credentials_path) 
 
                 time.sleep(0.1)
 
@@ -159,13 +164,15 @@ class connectionHandler():
                 with open(self.credentials_path, "w+",encoding='utf-8') as file:
                     file.writelines(credentials)
 
+            ## if user presses z and cancels
             except toolkit.UserCancelError:
                 
                 self.toolkit.clear_console()
 
                 self.start_marked_failed_database_connection()
 
-            except Exception as e: ## if invalid exit
+            ## if invalid break
+            except Exception as e: 
                         
                 self.toolkit.clear_console()
 
@@ -187,7 +194,7 @@ class connectionHandler():
         Marks a file in lib that the most recently attempted database connection has failed to connect.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
 
         Returns:\n
         None.\n
@@ -197,7 +204,7 @@ class connectionHandler():
         with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
             file.write("true")
             
-        self.fileEnsurer.logger.log_action("Database Connection Failed")
+        self.file_ensurer.logger.log_action("Database Connection Failed")
 
 ##--------------------start-of-mark_succeeded_database_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -208,7 +215,7 @@ class connectionHandler():
         Marks a file in lib that the most recently attempted database connection has succeeded.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
 
         Returns:\n
         None.\n
@@ -218,7 +225,7 @@ class connectionHandler():
         with open(self.database_connection_failed_path, "w+", encoding="utf-8") as file:
             file.write("false")
 
-        self.fileEnsurer.logger.log_action("Database Connection Succeeded")
+        self.file_ensurer.logger.log_action("Database Connection Succeeded")
 
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -229,7 +236,7 @@ class connectionHandler():
         Creates a connection to the database.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
         host_name (str) : The host name of the database.\n
         user_name (str) : The user name of the database.\n
         db_name (str) : The name of the database.\n
@@ -246,7 +253,7 @@ class connectionHandler():
             database= db_name,
             passwd=user_password)
 
-        self.fileEnsurer.logger.log_action("Successfully connected to the " + db_name + " database")
+        self.file_ensurer.logger.log_action("Successfully connected to the " + db_name + " database")
 
         return connection
     
@@ -259,7 +266,7 @@ class connectionHandler():
         Clears the credentials file.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
 
         Returns:\n
         None.\n
@@ -275,10 +282,10 @@ class connectionHandler():
 
         """
 
-        Executes a query to the database\n
+        Executes a query to the database.n\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
         query (str) : The query to be executed.\n
 
         Returns:\n
@@ -286,16 +293,18 @@ class connectionHandler():
 
         """
 
-        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
     
+        ## execute_query won't ever be called if the connection isn't valid, thus these type ignores are merely to make vscode stfu.
+
         self.cursor.execute(query) ## type: ignore
         
         self.connection.commit() ## type: ignore
 
-        self.fileEnsurer.logger.log_action("The following query was sent and accepted by the database : ")
-        self.fileEnsurer.logger.log_action(query.strip())
+        self.file_ensurer.logger.log_action("The following query was sent and accepted by the database : ")
+        self.file_ensurer.logger.log_action(query.strip())
 
-        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
 
 ##--------------------start-of-read_single_column_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -306,7 +315,7 @@ class connectionHandler():
         reads a single column query from the database.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
         query (str) : The query to be executed.\n
 
         Returns:\n
@@ -315,6 +324,8 @@ class connectionHandler():
         """
         
         results_actual = []
+
+        ## read_single_column_query won't ever be called if the connection isn't valid, thus these type ignores are merely to make vscode stfu.
 
         self.cursor.execute(query) ## type: ignore
         results = self.cursor.fetchall() ## type: ignore
@@ -332,7 +343,7 @@ class connectionHandler():
         inserts data into a table.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
         table_name (str) : The name of the table.\n
         data (dict) : The data to be inserted.\n
 
@@ -357,13 +368,15 @@ class connectionHandler():
         reads a multi column query from the database.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
+        self (object - connectionHandler) : The connection handler object.\n
         query (str) : The query to be executed.\n
 
         Returns:\n
         results_by_column (list - list) : The results of the query.\n
 
         """
+
+        ## read_multi_column_query won't ever be called if the connection isn't valid, thus these type ignores are merely to make vscode stfu.
 
         self.cursor.execute(query) ## type: ignore
 

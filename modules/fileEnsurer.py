@@ -5,8 +5,6 @@ import shutil
 ## custom modules
 from modules.fileHandler import fileHandler
 
-from modules.toolkit import toolkit
-
 from modules.logger import logger
 
 class fileEnsurer:
@@ -26,10 +24,10 @@ class fileEnsurer:
       Initializes the fileEnsurer class.\n
 
       Parameters:\n
-      None\n
+      None.\n
 
       Returns:\n
-      None\n
+      None.\n
 
       """
    
@@ -39,6 +37,7 @@ class fileEnsurer:
       ## the folder where all the config files are located
       self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
 
+      ## where Seisen.py's directory is located
       self.main_script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
       ## the folder for all login related files are located
@@ -53,7 +52,7 @@ class fileEnsurer:
       ## the folder for all vocab-related files are located
       self.vocab_dir = os.path.join(self.config_dir, "Vocab")
 
-      ## lib files for remoteHandler.py
+      ## remote lib files for remoteHandler.py
       self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
 
       ## the folder for all loop data related files are located
@@ -102,7 +101,7 @@ class fileEnsurer:
       self (object - fileEnsurer) : the fileEnsurer object.\n
 
       Returns:\n
-      None\n
+      None.\n
       
       """
 
@@ -130,7 +129,7 @@ class fileEnsurer:
       self (object - fileEnsurer) : the fileEnsurer object.\n
 
       Returns:\n
-      None\n
+      None.\n
       
       """
 
@@ -146,13 +145,13 @@ class fileEnsurer:
 
       """
       
-      ensure that the files located in the loop data directory are present and ready to be used.\n
+      Ensures that the files located in the loop data directory are present and ready to be used.\n
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
 
       Returns:\n
-      None\n
+      None.\n
 
       """
 
@@ -166,10 +165,10 @@ class fileEnsurer:
 
       """"
       
-      Ensures that the kana files are present and read to be used.\n
+      Ensures that the kana files are present and ready to be used.\n
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
 
       Returns:\n
       None.\n
@@ -196,7 +195,7 @@ class fileEnsurer:
 
       """"
       
-      Ensures that the vocab files are present and read to be used.\n
+      Ensures that the vocab files are present and ready to be used.\n
 
       Parameters:\n
       self (object - fileEnsurer) : the fileEnsurer object\n
@@ -226,13 +225,13 @@ class fileEnsurer:
 
       """
 
-      ensures that the lib files are present and ready to be used.\n
+      Ensures that the lib files are present and ready to be used.\n
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
 
       Returns:\n
-      None\n
+      None.\n
       
 
       """
@@ -242,21 +241,25 @@ class fileEnsurer:
       ## the path where the actual kana file is located, the one used for testing
       kana_actual_path = os.path.join(self.kana_dir, "kana.txt")
 
+      ## the path where the actual kana csep file is located, the one used for testing
       kana_csep_actual_path = os.path.join(self.kana_dir, "kana csep.txt")
 
       ## the path where the actual vocab file is located, the one used for testing
       vocab_actual_path = os.path.join(self.vocab_dir, "vocab.txt")
 
+      ## the path where the actual vocab csep file is located, the one used for testing
       vocab_csep_actual_path = os.path.join(self.vocab_dir, "vocab csep.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       self.ensure_remote_lib_files()
 
+      ## if kana testing files are damaged or empty, then repair them
       if(os.path.exists(kana_actual_path) == False or os.path.getsize(kana_actual_path) == 0 or os.path.exists(kana_csep_actual_path) == False or os.path.getsize(kana_csep_actual_path) == 0):
          self.ensure_kana_local_lib_files(kana_actual_path, kana_csep_actual_path)
 
-      if(os.path.exists(vocab_actual_path) == False or os.path.getsize(vocab_actual_path) == 0):
+      ## if vocab testing files are damaged or empty, then repair them
+      if(os.path.exists(vocab_actual_path) == False or os.path.getsize(vocab_actual_path) == 0 or os.path.exists(vocab_csep_actual_path) == False or os.path.getsize(vocab_csep_actual_path) == 0):
          self.ensure_vocab_local_lib_files(vocab_actual_path, vocab_csep_actual_path)
 
 ##--------------------start-of-ensure_remote_lib_files()------- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -265,13 +268,13 @@ class fileEnsurer:
 
       """
 
-      ensures that the lib files for the remote handler are present and ready to be used\n
+      Ensures that the remote lib files for the remote handler are present and ready to be used.\n
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
 
       Returns:\n
-      None\n
+      None .\n
       
       """
 
@@ -284,6 +287,7 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
+      ## needs to be false so that connectionHandler.py will attempt to connect
       self.file_handler.modified_create_file(database_connection_failed_path, "false")
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -292,11 +296,12 @@ class fileEnsurer:
 
       """
       
-      ensure that the local lib kana files are present and ready to be used.\n
+      Ensures that the local lib kana files are present and ready to be used.\n
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
-      kana_actual_path (str) : the path to the kana.txt file that is used for testing purposes\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
+      kana_actual_path (str) : the path to the kana.txt file that is used for testing purposes.\n
+      kana_csep_actual_path (str) : the path to the kana csep.txt file that is used for testing purposes.\n
 
       Returns:\n
       None\n
@@ -319,12 +324,14 @@ class fileEnsurer:
       ## the readings for the kana in the file path above
       kana_filter_path_readings = os.path.join(local_kana_lib_dir_path, "kana readings.txt")
 
+      ## the answers for the kana in file path above
       kana_csep_path = os.path.join(local_kana_lib_dir_path, "kana csep.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       self.logger.log_action("Local kana files were reset to default using local lib")
 
+      ## kana black list, small kana and symbols
       black_list_characters_kana = ['ヶ', 'ョ', 'ゃ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ァ', 'ゅ', 'ょ', 'ぉ', '-', 'ヱ', 'ゐ', 'ヰ', 'ー', 'ッ','っ']
 
       black_list_indexes = []
@@ -337,6 +344,7 @@ class fileEnsurer:
          kana_readings = file.readlines()
 
       with open(kana_filter_path_kana, 'r', encoding="utf-8") as file:
+
          for line in file:
             i+=1
             if(line.strip() not in black_list_characters_kana):
@@ -364,15 +372,15 @@ class fileEnsurer:
 
       """
       
-      ensure that the local lib vocab files are present and ready to be used.\n
+      Ensures that the local lib vocab files are present and ready to be used.\n
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
-      vocab_actual_path (str) : the path to the vocab.txt file that is used for testing purposes\n
-      vocab_csep_actual_path (str) : the path to the vocab csep.txt file that is used for testing purposes\n
+      self (object - fileEnsurer) : the fileEnsurer object.\n
+      vocab_actual_path (str) : the path to the vocab.txt file that is used for testing purposes.\n
+      vocab_csep_actual_path (str) : the path to the vocab csep.txt file that is used for testing purposes.\n
 
       Returns:\n
-      None\n
+      None.\n
 
       """
 
@@ -386,14 +394,17 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
+      ## path to the starter vocab.txt file that is used for testing purposes
       local_vocab_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab.txt")
 
+      ## path to the starter vocab csep.txt file that is used for testing purposes
       local_vocab_csep_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab csep.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       self.logger.log_action("Local vocab files were reset using to default using local lib")
 
+      ## directly copy the files from the local lib to the actual files
       shutil.copy2(local_vocab_lib_path, vocab_actual_path)
       shutil.copy2(local_vocab_csep_lib_path, vocab_csep_actual_path)
 
@@ -403,13 +414,13 @@ class fileEnsurer:
       
       """
       
-      ensure that the files located in the archives directory are present and ready to be used.\n
+      Ensures that the files located in the archives directory are present and ready to be used.\n
 z
       Parameters:\n
       self (object - fileEnsurer) : the fileEnsurer object\n
 
       Returns:\n
-      None\n
+      None.\n
 
       """
 
@@ -427,7 +438,7 @@ z
       ## archives for the database files
       remote_archives_dir = os.path.join(archives_dir, "Database")
 
-      ## archives for the local-Database files
+      ## archives for the local-remote files
       local_remote_archives_dir = os.path.join(archives_dir, "LocalRemote")
 
       ##----------------------------------------------------------------paths----------------------------------------------------------------

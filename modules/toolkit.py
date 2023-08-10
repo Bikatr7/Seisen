@@ -73,10 +73,10 @@ class toolkit():
             elif(input_type == 1 and (str(user_input).isdigit() == False or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q'\n"
 
-            elif(input_type == 4 and (str(user_input).isdigit() == False or int(user_input) > number_of_choices)):
+            elif(input_type == 4 and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
 
-            elif(input_type == 5 and (str(user_input).isdigit() == False or int(user_input) > number_of_choices)):
+            elif(input_type == 5 and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
 
             else:

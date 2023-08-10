@@ -306,6 +306,10 @@ class scoreRate:
         """
 
         min_distance = 3
+        lowest_distance = 3
+
+        closest_match = None
+
         final_answer = user_guess
 
         typos = [typo.typo_value for typo in word.typos]
@@ -319,26 +323,35 @@ class scoreRate:
 
         for correct_answer in word.testing_material_answer_all:
 
-            distance = self.levenshtein(user_guess, correct_answer.csep_value)
+            new_distance = self.levenshtein(user_guess, correct_answer.csep_value)
 
-            if(distance < min_distance):
+            if(new_distance < min_distance and new_distance < lowest_distance):
+                lowest_distance = new_distance
+                closest_match = correct_answer.csep_value
 
-                print("\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n")
-            
-                userA = int(self.handler.toolkit.input_check(1 ,str(msvcrt.getch().decode()), 2, prompt + "\nDid you mean : " + correct_answer.csep_value + "? Press 1 to Confirm or 2 to Decline.\n"))
-            
-                self.handler.toolkit.clear_console()
+        if(closest_match is not None):
 
-                if(userA == 1):
+            handler.toolkit.clear_console()
 
-                    final_answer = correct_answer.csep_value
+            prompt += "\nDid you mean : " + closest_match + "? Press 1 to Confirm or 2 to Decline.\n"
+        
+            print(prompt)
 
-                    word.log_new_typo(user_guess, handler)
+            userA = int(self.handler.toolkit.input_check(4 ,str(msvcrt.getch().decode()), 2, prompt))
+        
+            self.handler.toolkit.clear_console()
 
-                    return final_answer
-            
-                else:
-                    word.log_new_incorrect_typo(user_guess, handler)
+            if(userA == 1):
+
+                final_answer = closest_match
+
+                word.log_new_typo(user_guess, handler)
+
+                return final_answer
+        
+            else:
+                word.log_new_incorrect_typo(user_guess, handler)
+
         
         return final_answer
     

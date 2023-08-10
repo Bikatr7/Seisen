@@ -5,8 +5,6 @@ import typing
 import msvcrt
 
 ## custom modules
-from modules.toolkit import toolkit
-
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from modules.localHandler import localHandler
 
@@ -23,14 +21,14 @@ class searcher:
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, local_handler:localHandler):
+    def __init__(self, local_handler:localHandler) -> None:
 
         """
         
         Initializes a new searcher object.\n
 
         Parameters:\n
-        inc_local_handler (object - localHandler) : the local handler.\n
+        local_handler (object - localHandler) : the local handler.\n
         None.\n
 
         Returns:\n
@@ -50,7 +48,6 @@ class searcher:
 
         Parameters:\n
         self (object - searcher) : the searcher object.\n
-        local_handler (object - localHandler) : the localHandler object.\n
         vocab_id (int) : the id of the vocab we are getting a print item for.\n
 
         Returns:\n
@@ -84,7 +81,7 @@ class searcher:
 
         return print_item
     
-##--------------------start-of-get_vocab_print_item_from_vocab_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_csep_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def get_csep_print_item_from_id(self, csep_id:int) -> str:
 
@@ -125,7 +122,7 @@ class searcher:
 
         return print_item
     
-##--------------------start-of-get_vocab_print_item_from_vocab_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_csep_print_items_from_vocab_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def get_csep_print_items_from_vocab_id(self, vocab_id:int) -> typing.List[str]:
 
@@ -135,7 +132,6 @@ class searcher:
 
         Parameters:\n
         self (object - searcher) : the searcher object.\n
-        local_handler (object - localHandler) : the localHandler object.\n
         vocab_id (int) : the id of the vocab we are getting a print item for.\n
 
         Returns:\n
@@ -168,9 +164,9 @@ class searcher:
 
         return print_items
 
-##--------------------start-of-get_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_vocab_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_vocab_term_from_id(self, vocab_id:int):
+    def get_vocab_term_from_id(self, vocab_id:int) -> str:
 
         """
         
@@ -178,7 +174,6 @@ class searcher:
 
         Parameters:\n
         self (object - searcher) : the searcher object.\n
-        local_handler (object - localHandler) : the localHandler we are searching in.\n
         vocab_id (int) : the id for the term we are searching for.\n
 
         Returns:\n
@@ -196,7 +191,7 @@ class searcher:
     
 ##--------------------start-of-get_id_from_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_id_from_vocab_term(self, term:str):
+    def get_id_from_vocab_term(self, term:str) -> int:
 
         """
         
@@ -204,7 +199,6 @@ class searcher:
 
         Parameters:\n
         self (object - searcher) : the searcher object.\n
-        local_handler (object - localHandler) : the localHandler we are searching in.\n
         tern (str) : the term for the id we are searching for.\n 
 
         Returns:\n
@@ -327,7 +321,6 @@ class searcher:
 
             Parameters:\n
             id_value (int) : The id value that wasn't found.\n
-            None.\n
 
             Returns:\n
             None.\n

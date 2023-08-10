@@ -545,6 +545,9 @@ class vocabSettingsHandler():
 
         csep_search_result = ""
 
+        vocab_match_msg = ""
+        csep_match_msg = ""
+
         match_found_vocab = False
         match_found_csep = False
 
@@ -560,16 +563,22 @@ class vocabSettingsHandler():
             matching_vocab_ids.append(int(search_term))
             matching_csep_ids.append(int(search_term))
 
+            vocab_match_msg = "Vocab with the id of " + str(search_term) + ':\n'
+            csep_match_msg = "CSEP with the id of " + str(search_term) + ':\n\n'
+
         ## if search term is not an id/number and not japanese
         elif(all(ord(char) < 128 for char in search_term)):
-
-            self.local_handler.toolkit.pause_console()
             
             matching_vocab_ids, matching_csep_ids = self.searcher.get_ids_from_alpha_term(search_term)
+
+            vocab_match_msg = "Vocab that contain " + str(search_term) + ':\n'
+            csep_match_msg = "CSEP that contain " + str(search_term) + ':\n\n'
 
         ## if search term is japanese
         else:
             matching_vocab_ids = self.searcher.get_ids_from_japanese(search_term)
+
+            vocab_match_msg = "Vocab that contain " + str(search_term) + ':\n'
 
         ## print vocab matches as they are found
         for id in matching_vocab_ids:
@@ -577,7 +586,7 @@ class vocabSettingsHandler():
             try:
                 print_item = self.searcher.get_vocab_print_item_from_id(id)
 
-                print("Vocab with the id of " + str(id) + '\n')
+                print(vocab_match_msg)
 
                 print(print_item)
 
@@ -592,7 +601,7 @@ class vocabSettingsHandler():
             try:
                 print_item = self.searcher.get_csep_print_item_from_id(id)
 
-                csep_search_result += "CSEP with the id of " + str(id) + '\n'
+                csep_search_result += csep_match_msg
 
                 csep_search_result += print_item
 

@@ -14,7 +14,7 @@ class settingsHandler():
 
     """
     
-    The handler that handles all of Seisen's settings
+    The handler that handles all of Seisen's settings.\n
     
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -26,9 +26,9 @@ class settingsHandler():
         Initializes the settingsHandler class.\n
 
         Parameters:\n
-        self (object - settingsHandler) : The settings handler object.\n
         local_handler (object - localHandler) : The local handler object.\n
         remote_handler (object - remoteHandler) : The remote handler object.\n
+        score_rater (object - scoreRate) : The score rate object.\n
 
         Returns:\n
         None.\n
@@ -63,7 +63,7 @@ class settingsHandler():
 
         """  
  
-        self.local_handler.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.local_handler.file_ensurer.logger.log_action("--------------------------------------------------------------")
 
         self.local_handler.toolkit.clear_console()
 
@@ -76,23 +76,20 @@ class settingsHandler():
         if(pathing == "1"): 
             self.vocab_settings_handler.change_vocab_settings()
 
-        ## prompts the user to restore a local backup
         elif(pathing == "2"):
             self.storage_settings_handler.change_storage_settings()
 
-        ## prints current word ratings, currently only has kana
         elif(pathing == "3"):
             self.print_score_ratings()
 
-        ## tries to set up a new database, WILL replace any existing database
         elif(pathing == "4"):
             self.set_up_new_database()
 
         ## if no valid option is selected, exit back to seisen.
         else:
-            self.local_handler.fileEnsurer.file_handler.edit_sei_line(self.local_handler.fileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to="-1")
+            self.local_handler.file_ensurer.file_handler.edit_sei_line(self.local_handler.file_ensurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to="-1")
 
-        self.local_handler.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.local_handler.file_ensurer.logger.log_action("--------------------------------------------------------------")
 
 
 ##--------------------start-of-print_score_ratings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -147,7 +144,6 @@ class settingsHandler():
 
         """  
         
-
         ## forces the remoteHandler to not skip a database connection upon next prompt
         self.remote_handler.connection_handler.start_marked_succeeded_database_connection()
         

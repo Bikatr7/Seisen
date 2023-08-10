@@ -868,6 +868,12 @@ class remoteHandler():
 
         """
 
+        ## we do fuck w/ remote if there is no valid database connection
+        if(self.connection_handler.check_connection_validity("restore remote storage backup") == False):
+            print("No valid database connection skipping remote portion.\n")
+            time.sleep(1)
+            return
+
         valid_backups = []
 
         backup_to_restore_prompt = ""

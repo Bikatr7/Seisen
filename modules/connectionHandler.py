@@ -32,7 +32,6 @@ class connectionHandler():
         Initializes the connectionHandler class.\n
 
         Parameters:\n
-        self (object - connectionHandler) : The handler object.\n
         file_ensurer (object - fileEnsurer) : The file ensurer object.\n
         logger (object - logger) : The logger object.\n
 

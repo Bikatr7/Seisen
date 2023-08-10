@@ -16,7 +16,6 @@ from modules.vocab import vocab as vocab_blueprint
 
 from modules.toolkit import toolkit
 
-from modules.logger import logger
 from modules.fileEnsurer import fileEnsurer
 
 from modules.connectionHandler import connectionHandler
@@ -37,8 +36,7 @@ class remoteHandler():
         Initializes the remoteHandler class.\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object.\n
-        logger (object - logger) : The logger object.\n
+        file_ensurer (object - fileEnsurer) : The fileEnsurer object.\n
         toolkit (object - toolkit) : The toolkit object.\n
 
         Returns:\n
@@ -48,7 +46,6 @@ class remoteHandler():
 
         ##----------------------------------------------------------------objects----------------------------------------------------------------
 
-        ## the file_ensurer used for paths here
         self.fileEnsurer = file_ensurer
 
         self.toolkit = toolkit
@@ -121,21 +118,21 @@ class remoteHandler():
 
         """
         
-        loads the words from the database and replaces the local storage with it.\n
+        Loads the words from the database and replaces the local storage with it.\n
         Note that this will reset all the words locally stored on this device.\n
         Use carefully!\n
 
         Parameters:\n
-        self (object - remoteHandler) : The handler object\n
+        self (object - remoteHandler) : The handler object.\n
 
         Returns:\n
-        None\n
+        None.\n
 
         """
 
         ##----------------------------------------------------------------clear_local_kana()----------------------------------------------------------------
 
-        def clear_local_kana():
+        def clear_local_kana() -> None:
 
             with open(self.kana_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
@@ -151,7 +148,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------clear_local_vocab()----------------------------------------------------------------
 
-        def clear_local_vocab():
+        def clear_local_vocab() -> None:
 
             with open(self.vocab_path, "w", encoding="utf-8") as file:
                 file.truncate(0)
@@ -167,7 +164,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------reset_kana_relations()----------------------------------------------------------------
 
-        def reset_kana_relations():
+        def reset_kana_relations() -> None:
             
             list_of_all_accepted_answers = []
 
@@ -221,7 +218,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------reset_vocab_relations()----------------------------------------------------------------
                 
-        def reset_vocab_relations():
+        def reset_vocab_relations() -> None:
 
             self.vocab.clear()
             self.vocab_typos.clear()
@@ -295,11 +292,11 @@ class remoteHandler():
       
 ##--------------------start-of-reset_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def reset_remote_storage(self):
+    def reset_remote_storage(self) -> None:
 
         """
         
-        resets the remote storage with the local storage.\n
+        Resets the remote storage with the local storage.\n
         Note that this will reset all the words remotely stored on the connected database.\n
         Use Carefully!\n
 
@@ -336,7 +333,7 @@ class remoteHandler():
 
         """
         
-        resets the remote storage.\n
+        Deletes the remote storage.\n
 
         Parameters:\n
         self (object - remoteHandler) : The handler object.\n
@@ -400,7 +397,7 @@ class remoteHandler():
 
         """
         
-        creates the tables for the remote storage.\n
+        Creates the tables for the remote storage.\n
 
         Parameters:\n
         self (object - remoteHandler) : The handler object.\n
@@ -525,7 +522,7 @@ class remoteHandler():
 
         """
         
-        fills the tables in remote storage with the local data.\n
+        Fills the tables in remote storage with the local data.\n
 
         Parameters:\n
         self (object - remoteHandler) : The handler object.\n
@@ -538,7 +535,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------kana----------------------------------------------------------------
 
-        def fill_kana():
+        def fill_kana() -> None:
 
             with open(self.kana_path, "r", encoding="utf-8") as file:
 
@@ -558,7 +555,7 @@ class remoteHandler():
 
                     self.connection_handler.insert_into_table(table_name, insert_dict)
 
-        def fill_kana_typos():
+        def fill_kana_typos() -> None:
 
             with open(self.kana_typos_path, "r", encoding="utf-8") as file:
 
@@ -578,7 +575,7 @@ class remoteHandler():
                     }
                     self.connection_handler.insert_into_table(table_name, insert_dict)
         
-        def fill_kana_incorrect_typos():
+        def fill_kana_incorrect_typos() -> None:
 
                 with open(self.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
 
@@ -599,7 +596,7 @@ class remoteHandler():
 
                         self.connection_handler.insert_into_table(table_name, insert_dict)
 
-        def fill_kana_csep():
+        def fill_kana_csep() -> None:
                                 
                 with open(self.kana_csep_path, "r", encoding="utf-8") as file:
 
@@ -622,7 +619,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
-        def fill_vocab():
+        def fill_vocab() -> None:
 
             with open(self.vocab_path, "r", encoding="utf-8") as file:
 
@@ -653,7 +650,7 @@ class remoteHandler():
 
                     self.connection_handler.insert_into_table(table_name, insert_dict)
 
-        def fill_vocab_typos():
+        def fill_vocab_typos() -> None:
 
             with open(self.vocab_typos_path, "r", encoding="utf-8") as file:
 
@@ -673,7 +670,7 @@ class remoteHandler():
                     }
                     self.connection_handler.insert_into_table(table_name, insert_dict)
         
-        def fill_vocab_incorrect_typos():
+        def fill_vocab_incorrect_typos() -> None:
 
                 with open(self.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
 
@@ -694,7 +691,7 @@ class remoteHandler():
 
                         self.connection_handler.insert_into_table(table_name, insert_dict)
 
-        def fill_vocab_csep():
+        def fill_vocab_csep() -> None:
                                 
                 with open(self.vocab_csep_path, "r", encoding="utf-8") as file:
 
@@ -745,7 +742,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------kana----------------------------------------------------------------
 
-        def backup_kana():
+        def backup_kana() -> None:
 
             list_of_all_accepted_answers = []
 
@@ -787,7 +784,7 @@ class remoteHandler():
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
-        def backup_vocab():
+        def backup_vocab() -> None:
 
             remote_archive_vocab_dir = os.path.join(archive_dir, "Vocab")
 
@@ -868,7 +865,7 @@ class remoteHandler():
 
         """
 
-        ## we do fuck w/ remote if there is no valid database connection
+        ## we do not fuck w/ remote if there is no valid database connection
         if(self.connection_handler.check_connection_validity("restore remote storage backup") == False):
             print("No valid database connection skipping remote portion.\n")
             time.sleep(1)
@@ -893,7 +890,7 @@ class remoteHandler():
         
         backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
 
-        try: ## user confirm will throw an assertion error if the user wants to cancel the backup restore.
+        try: ## user confirm will throw an assertion/user confirm error if the user wants to cancel the backup restore.
 
             backup_to_restore = self.toolkit.user_confirm(backup_to_restore_prompt)
 
@@ -917,6 +914,18 @@ class remoteHandler():
 ##--------------------start-of-local_remote_overwrite()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def local_remote_overwrite(self) -> None:
+        
+        """
+
+        Overwrites the remote storage with the local storage.\n
+
+        Parameters:\n
+        self (object - remoteHandler) : the handler object\n
+
+        Returns:\n
+        None.\n
+
+        """
 
         ## we do not overwrite remote with local if there is no valid database connection
         if(self.connection_handler.check_connection_validity("local-remote backup") == False):

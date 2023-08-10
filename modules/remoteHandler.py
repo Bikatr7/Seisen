@@ -313,6 +313,8 @@ class remoteHandler():
 
         ## we do not reset remote if there is no valid database connection
         if(self.connection_handler.check_connection_validity("remote storage reset") == False):
+            print("No valid database connection skipping remote portion.\n")
+            time.sleep(1)
             return
         
         with open(self.last_local_remote_backup_accurate_path, 'w+', encoding="utf-8") as file:

@@ -101,6 +101,12 @@ class storageSettingsHandler():
 
         """
 
+        ## local storage does not reset if there is no valid database connection
+        if(self.remote_handler.connection_handler.check_connection_validity("local storage reset") == False):
+            print("No valid database connection.\n")
+            time.sleep(1)
+            return
+
         with open(self.remote_handler.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
             last_backup_date = str(file.read().strip()).strip('\x00').strip()
         

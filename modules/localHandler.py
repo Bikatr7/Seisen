@@ -18,8 +18,6 @@ from modules.csep import csep as csep_blueprint
 
 from modules.toolkit import toolkit
 
-from modules.logger import logger
-from modules.searcher import searcher
 from modules.fileEnsurer import fileEnsurer
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
@@ -44,8 +42,8 @@ class localHandler():
         Initializes the localHandler class.\n
 
         Parameters:\n
-        self (object - localHandler) : The handler object.\n
-        logger (object - logger) : The logger object.\n
+        file_ensurer (object - fileEnsurer) : The fileEnsurer object.\n
+        toolkit (object - toolkit) : The toolkit object.\n
 
         Returns:\n
         None.\n
@@ -54,15 +52,14 @@ class localHandler():
 
         ##----------------------------------------------------------------objects----------------------------------------------------------------
 
-        ## the file_ensurer used for paths here
-        self.fileEnsurer = file_ensurer
+        self.file_ensurer = file_ensurer
 
         self.toolkit = toolkit
 
         ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
         ## archives for previous versions of Seisen txt files
-        self.archives_dir = os.path.join(self.fileEnsurer.config_dir, "Archives")
+        self.archives_dir = os.path.join(self.file_ensurer.config_dir, "Archives")
 
         ## archives for the local files
         self.local_archives_dir = os.path.join(self.archives_dir, "Local")
@@ -70,19 +67,19 @@ class localHandler():
         ##----------------------------------------------------------------paths----------------------------------------------------------------
 
         ## the path to the file that stores the password
-        self.password_path = os.path.join(os.path.join(self.fileEnsurer.config_dir, "Logins"), "credentials.txt")
+        self.password_path = os.path.join(os.path.join(self.file_ensurer.config_dir, "Logins"), "credentials.txt")
 
         ## the paths for all kana related files
-        self.kana_path = os.path.join(self.fileEnsurer.kana_dir, "kana.txt")
-        self.kana_csep_path = os.path.join(self.fileEnsurer.kana_dir, "kana csep.txt")
-        self.kana_typos_path = os.path.join(self.fileEnsurer.kana_dir, "kana typos.txt")
-        self.kana_incorrect_typos_path = os.path.join(self.fileEnsurer.kana_dir, "kana incorrect typos.txt")
+        self.kana_path = os.path.join(self.file_ensurer.kana_dir, "kana.txt")
+        self.kana_csep_path = os.path.join(self.file_ensurer.kana_dir, "kana csep.txt")
+        self.kana_typos_path = os.path.join(self.file_ensurer.kana_dir, "kana typos.txt")
+        self.kana_incorrect_typos_path = os.path.join(self.file_ensurer.kana_dir, "kana incorrect typos.txt")
 
         ## the paths for all vocab related files
-        self.vocab_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab.txt")
-        self.vocab_csep_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab csep.txt")
-        self.vocab_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab typos.txt")
-        self.vocab_incorrect_typos_path = os.path.join(self.fileEnsurer.vocab_dir, "vocab incorrect typos.txt")
+        self.vocab_path = os.path.join(self.file_ensurer.vocab_dir, "vocab.txt")
+        self.vocab_csep_path = os.path.join(self.file_ensurer.vocab_dir, "vocab csep.txt")
+        self.vocab_typos_path = os.path.join(self.file_ensurer.vocab_dir, "vocab typos.txt")
+        self.vocab_incorrect_typos_path = os.path.join(self.file_ensurer.vocab_dir, "vocab incorrect typos.txt")
 
         ## contains the date of the last local backup
         self.last_local_backup_path = os.path.join(self.local_archives_dir, "last_local_backup.txt")
@@ -101,7 +98,7 @@ class localHandler():
         ## the vocab that will be used to test the user
         self.vocab: typing.List[vocab] = []
 
-        self.fileEnsurer.logger.log_action("Local Handler was created")
+        self.file_ensurer.logger.log_action("Local Handler was created")
         
 ##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -138,7 +135,7 @@ class localHandler():
 
         ##----------------------------------------------------------------load_kana()----------------------------------------------------------------
 
-        def load_kana():
+        def load_kana() -> None:
     
             with open(self.kana_path, "r", encoding="utf-8") as file:
 
@@ -150,7 +147,7 @@ class localHandler():
 
                     self.kana.append(kana_blueprint(int(values[0]), values[1], values[2], csep_values, int(values[3]), int(values[4])))
 
-                    self.fileEnsurer.logger.log_action("Loaded Kana - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + "," + values[4] + ",)")
+                    self.file_ensurer.logger.log_action("Loaded Kana - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + "," + values[4] + ",)")
 
             with open(self.kana_typos_path, "r", encoding="utf-8") as file:
 
@@ -163,7 +160,7 @@ class localHandler():
                             if(kana.word_id == int(values[0])):
                                 kana.typos.append(typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
-                                self.fileEnsurer.logger.log_action("Loaded Kana Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
+                                self.file_ensurer.logger.log_action("Loaded Kana Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
             
             with open(self.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
 
@@ -176,7 +173,7 @@ class localHandler():
                             if(kana.word_id == int(values[0])):
                                 kana.incorrect_typos.append(incorrect_typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
-                                self.fileEnsurer.logger.log_action("Loaded Kana Incorrect Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
+                                self.file_ensurer.logger.log_action("Loaded Kana Incorrect Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
 
         ##----------------------------------------------------------------get_vocab_csep_values()----------------------------------------------------------------
 
@@ -197,7 +194,7 @@ class localHandler():
 
         ##----------------------------------------------------------------load_vocab()----------------------------------------------------------------
 
-        def load_vocab():
+        def load_vocab() -> None:
 
 
             with open(self.vocab_path, "r", encoding="utf-8") as file:
@@ -217,7 +214,7 @@ class localHandler():
 
                     csep_log_value = [csep.csep_value for csep in csep_values]
 
-                    self.fileEnsurer.logger.log_action("Loaded vocab - (" + values[0] + "," + values[1] + values[2] + "," + values[3] + ","  + values[4] + "," + values[5] + "," + str(kanji_flag) + "," + ") with the following cseps - " + str(csep_log_value))
+                    self.file_ensurer.logger.log_action("Loaded vocab - (" + values[0] + "," + values[1] + values[2] + "," + values[3] + ","  + values[4] + "," + values[5] + "," + str(kanji_flag) + "," + ") with the following cseps - " + str(csep_log_value))
 
             with open(self.vocab_typos_path, "r", encoding="utf-8") as file:
 
@@ -230,7 +227,7 @@ class localHandler():
                             if(vocab.word_id == int(values[0])):
                                 vocab.typos.append(typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
-                                self.fileEnsurer.logger.log_action("Loaded Vocab Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
+                                self.file_ensurer.logger.log_action("Loaded Vocab Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
 
             with open(self.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
 
@@ -243,24 +240,24 @@ class localHandler():
                             if(vocab.word_id == int(values[0])):
                                 vocab.incorrect_typos.append(incorrect_typo_blueprint(int(values[0]), int(values[1]), values[2], values[3]))
 
-                                self.fileEnsurer.logger.log_action("Loaded Vocab Incorrect Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
+                                self.file_ensurer.logger.log_action("Loaded Vocab Incorrect Typo - (" + values[0] + "," + values[1] + "," + values[2] + "," + values[3] + ",)")
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         self.kana.clear()
         self.vocab.clear()
 
-        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
-        self.fileEnsurer.logger.log_action("Loading kana from local storage...")
+        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+        self.file_ensurer.logger.log_action("Loading kana from local storage...")
 
         load_kana()
 
-        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
-        self.fileEnsurer.logger.log_action("Loading vocab from local storage...")
+        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+        self.file_ensurer.logger.log_action("Loading vocab from local storage...")
 
         load_vocab()
 
-        self.fileEnsurer.logger.log_action("--------------------------------------------------------------")
+        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
 
 ##--------------------start-of-get_list_of_all_ids()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -268,10 +265,11 @@ class localHandler():
 
         """
 
-        Gets the list of all ids in local storage.\n
+        Gets the list of all ids in local storage given the type of id to query.\n
 
         Parameters:\n
         self (object - localHandler) : The handler object.\n
+        type_of_id_to_query (int) : The type of id to query.\n
 
         Returns:\n
         ids (list - string) : The list of all ids in the database.\n
@@ -307,7 +305,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.file_ensurer.file_handler.read_sei_file(self.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == KANA_INCORRECT_TYPO_ID_IDENTIFIER):
@@ -315,7 +313,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.file_ensurer.file_handler.read_sei_file(self.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == VOCAB_TYPO_ID_IDENTIFIER):
@@ -323,7 +321,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.file_ensurer.file_handler.read_sei_file(self.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == VOCAB_INCORRECT_TYPO_ID_IDENTIFIER):
@@ -331,7 +329,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(self.file_ensurer.file_handler.read_sei_file(self.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
                     
 
@@ -340,7 +338,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_path, i+1, VOCAB_ID_INDEX_LOCATION))
+                    ids.append(self.file_ensurer.file_handler.read_sei_file(self.vocab_path, i+1, VOCAB_ID_INDEX_LOCATION))
                     i+=1
 
         elif(type_of_id_to_query == CSEP_ID_IDENTIFIER):
@@ -348,7 +346,7 @@ class localHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(self.fileEnsurer.file_handler.read_sei_file(self.vocab_csep_path, i+1, CSEP_ID_INDEX_LOCATION))
+                    ids.append(self.file_ensurer.file_handler.read_sei_file(self.vocab_csep_path, i+1, CSEP_ID_INDEX_LOCATION))
                     i+=1
 
         ids =  [int(x) for x in ids]
@@ -380,12 +378,12 @@ W
 
             if(last_backup_date != current_day):
                 
-                archive_dir = self.fileEnsurer.file_handler.create_archive_dir(2)
+                archive_dir = self.file_ensurer.file_handler.create_archive_dir(2)
 
-                self.fileEnsurer.logger.log_action("Created Daily Local Backup")
+                self.file_ensurer.logger.log_action("Created Daily Local Backup")
 
-                shutil.copytree(self.fileEnsurer.kana_dir, os.path.join(archive_dir, "Kana"))
-                shutil.copytree(self.fileEnsurer.vocab_dir, os.path.join(archive_dir, "Vocab"))
+                shutil.copytree(self.file_ensurer.kana_dir, os.path.join(archive_dir, "Kana"))
+                shutil.copytree(self.file_ensurer.vocab_dir, os.path.join(archive_dir, "Vocab"))
 
                 file.truncate(0)
                 
@@ -429,19 +427,19 @@ W
         
         backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
 
-        try: ## user confirm will throw an assertion error if  the user wants to cancel the backup restore.
+        try: ## user confirm will throw an assertion error or a user cancel error if the user cancels.
 
             backup_to_restore = self.toolkit.user_confirm(backup_to_restore_prompt)
 
             if(backup_to_restore in valid_backups):
                 self.toolkit.clear_console()
 
-                shutil.rmtree(self.fileEnsurer.kana_dir)
-                shutil.rmtree(self.fileEnsurer.vocab_dir)
+                shutil.rmtree(self.file_ensurer.kana_dir)
+                shutil.rmtree(self.file_ensurer.vocab_dir)
 
-                self.fileEnsurer.logger.log_action("Restored the " + backup_to_restore + " local backup")
+                self.file_ensurer.logger.log_action("Restored the " + backup_to_restore + " local backup")
 
-                shutil.copytree(os.path.join(self.local_archives_dir, backup_to_restore), self.fileEnsurer.config_dir, dirs_exist_ok=True)
+                shutil.copytree(os.path.join(self.local_archives_dir, backup_to_restore), self.file_ensurer.config_dir, dirs_exist_ok=True)
 
                 self.load_words_from_local_storage()
 

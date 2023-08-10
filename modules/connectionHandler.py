@@ -119,7 +119,7 @@ class connectionHandler():
                 self.file_ensurer.logger.log_action("Database connection has failed previously.... skipping connection initialization")
                 return connection, cursor
 
-        ## program assumes connection will suceed
+        ## program assumes connection will succeed
         self.start_marked_succeeded_database_connection()
 
         try:

@@ -221,7 +221,7 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_lib_files(self):
+   def ensure_lib_files(self) -> None:
 
       """
 
@@ -264,7 +264,7 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_remote_lib_files()------- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_remote_lib_files(self):
+   def ensure_remote_lib_files(self) -> None:
 
       """
 
@@ -292,7 +292,7 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_kana_local_lib_files(self, kana_actual_path:str, kana_csep_actual_path:str):
+   def ensure_kana_local_lib_files(self, kana_actual_path:str, kana_csep_actual_path:str) -> None:
 
       """
       
@@ -368,7 +368,7 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_vocab_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_vocab_local_lib_files(self, vocab_actual_path, vocab_csep_actual_path):
+   def ensure_vocab_local_lib_files(self, vocab_actual_path, vocab_csep_actual_path) -> None:
 
       """
       
@@ -410,7 +410,7 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_archive_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_archive_files(self):
+   def ensure_archive_files(self) -> None:
       
       """
       

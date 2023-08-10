@@ -10,7 +10,7 @@ class csep:
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-    def __init__(self, incoming_word_id:int, incoming_csep_id:int, incoming_csep_value:str, incoming_word_type:str):
+    def __init__(self, incoming_word_id:int, incoming_csep_id:int, incoming_csep_value:str, incoming_word_type:str) -> None:
 
         """
         

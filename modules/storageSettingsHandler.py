@@ -1,14 +1,14 @@
 ## built-in modules
+from datetime import datetime
+
 import msvcrt
+import os
 import shutil
+import time
 
 ## custom modules
 from modules.localHandler import localHandler
 from modules.remoteHandler import remoteHandler
-
-from modules.vocab import vocab as vocab_blueprint 
-
-from modules.csep import csep as csep_blueprint
 
 class storageSettingsHandler():
 
@@ -58,11 +58,11 @@ class storageSettingsHandler():
 
         self.local_handler.toolkit.clear_console()
 
-        storage_message = "What are you trying to do?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n3.Reset Local & Remote to Default\n4.Restore Backup\n"
+        storage_message = "What are you trying to do?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n3.Reset Local & Remote to Default\n4.Restore Backup\n5.Export Vocab Deck"
 
         print(storage_message)
 
-        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 4, storage_message)
+        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 5, storage_message)
 
         if(type_setting == "1"):
             
@@ -78,6 +78,9 @@ class storageSettingsHandler():
 
         elif(type_setting == "4"):
             self.restore_backup()
+
+        elif(type_setting == "5"):
+            self.export_deck()
             
 
 ##--------------------start-of-reset_local_with_remote()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -131,7 +134,7 @@ class storageSettingsHandler():
             shutil.rmtree(self.local_handler.fileEnsurer.kana_dir)
             shutil.rmtree(self.local_handler.fileEnsurer.vocab_dir)
 
-        ## added this for you Seinu.. you retard
+        ## if files are ope, which they usually are when im testing this.
         except PermissionError:
 
             self.local_handler.toolkit.clear_console()
@@ -186,3 +189,47 @@ class storageSettingsHandler():
             self.remote_handler.restore_remote_backup()
             self.local_handler.fileEnsurer.ensure_files()
             self.local_handler.load_words_from_local_storage()
+
+##--------------------start-of-restore_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def export_deck(self) -> None:
+
+        """
+        
+        Exports the current vocab deck to a file in the script directory.\n
+
+        Parameters:\n 
+        self (object - storageSettingsHandler) : The storage settings handler object.\n
+
+        Returns:\n
+        None.\n
+        
+        """ 
+
+        write_string_list = []
+
+        file_name = "exported deck-" + str(datetime.today().strftime('%Y-%m-%d')) + ".seisen"
+
+        export_path = os.path.join(self.local_handler.fileEnsurer.main_script_dir, file_name)
+
+        ## get vocab lines
+        with open(self.local_handler.vocab_path, 'r', encoding="utf-8") as file:
+            write_string_list = file.readlines()
+
+        ## append separator
+        write_string_list.append("---\n") 
+
+        ## get csep lines
+        with open(self.local_handler.vocab_csep_path, 'r', encoding="utf-8") as file:
+            temp = file.readlines()
+            write_string_list += temp
+
+        ## creates exported deck file
+        with open(export_path, 'w+', encoding="utf-8") as file:
+            file.writelines(write_string_list)
+        
+        self.local_handler.toolkit.clear_console()
+
+        print(file_name + " has been placed in the script directory\n")
+
+        self.local_handler.toolkit.pause_console()

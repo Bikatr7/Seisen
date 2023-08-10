@@ -39,11 +39,13 @@ class fileEnsurer:
       ## the folder where all the config files are located
       self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
 
+      self.main_script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+
       ## the folder for all login related files are located
       self.logins_dir = os.path.join(self.config_dir, "Logins")
 
       ## the directory where all the lib files are located.
-      self.lib_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "lib")
+      self.lib_dir = os.path.join(self.main_script_dir, "lib")
 
       ## the folder for all kana-related files are located
       self.kana_dir = os.path.join(self.config_dir, "Kana")

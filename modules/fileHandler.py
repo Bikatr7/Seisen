@@ -1,16 +1,10 @@
 ## built-in modules
-import os
-import time
-import typing
-import base64
-
 from datetime import datetime
 
-## third party modules
+import os
+import typing
 
 ## custom modules
-from modules import toolkit
-
 from modules.logger import logger
 
 
@@ -30,7 +24,7 @@ class fileHandler():
         Initializes the fileHandler class.\n
 
         Parameters:\n
-        self (object - connectionHandler) : The handler object.\n
+        self (object - fileHandler) : the fileHandler object.\n
         logger (object - logger) : The logger object.\n
 
         Returns:\n
@@ -42,7 +36,7 @@ class fileHandler():
 
 ##--------------------start-of-standard_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def standard_create_directory(self, directory_path:str):
+    def standard_create_directory(self, directory_path:str) -> None:
 
         """
 
@@ -63,7 +57,7 @@ class fileHandler():
 
 ##--------------------start-of-modified_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def modified_create_directory(self, directory_path:str, path_to_check:str):
+    def modified_create_directory(self, directory_path:str, path_to_check:str) -> None:
 
         """
 
@@ -85,7 +79,7 @@ class fileHandler():
 
 ##--------------------start-of-standard_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def standard_create_file(self, file_path:str):
+    def standard_create_file(self, file_path:str) -> None:
 
         """
 
@@ -107,7 +101,7 @@ class fileHandler():
 
 ##--------------------start-of-modified_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def modified_create_file(self, file_path:str, content_to_write:str):
+    def modified_create_file(self, file_path:str, content_to_write:str) -> None:
 
         """
 
@@ -130,7 +124,7 @@ class fileHandler():
 
 ##--------------------start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def create_archive_dir(self ,type_of_archive:int):
+    def create_archive_dir(self ,type_of_archive:int) -> str:
 
         """
         
@@ -168,6 +162,7 @@ class fileHandler():
             2: local_archives_dir
         }
 
+        ## not really sure why it's flagged by pylance.
         archive_directory = os.path.join(filePaths[type_of_archive], current_day) # type: ignore
 
         self.standard_create_directory(archive_directory)
@@ -301,7 +296,7 @@ class fileHandler():
 
 ##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def delete_all_occurrences_of_id(self, file_path:str, id_index:int, id_value:int):
+    def delete_all_occurrences_of_id(self, file_path:str, id_index:int, id_value:int) -> None:
 
         """
         

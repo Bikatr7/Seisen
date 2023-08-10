@@ -633,6 +633,8 @@ class remoteHandler():
                     else:
                         isKanji = 1
                     
+                    values[3] = values[3].replace('\\', '\\\\')  ## Replace single backslash with double backslash
+                    values[3] = values[3].replace("'", "\\'")    ## Escape single quotes with a backslash
 
                     table_name = "vocab"
                     insert_dict = {

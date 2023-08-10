@@ -11,7 +11,9 @@ from modules.localHandler import localHandler
 class scoreRate:
 
     """
+
     The scoreRate class is used to determine which "word" will be given to the user based on a multitude of factors, such as number of answers, the number of correct answers, the number of incorrect answers, etc.
+    
     """
 
     ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,7 +26,6 @@ class scoreRate:
 
         Parameters:\n
         handler (object - localHandler) : the local handler.\n
-        logger (object - logger) : the logger object.\n
 
         Returns:\n
         None.\n
@@ -79,7 +80,7 @@ class scoreRate:
 
         """
 
-        self.handler.fileEnsurer.logger.log_action("Getting Kana to test...")
+        self.handler.file_ensurer.logger.log_action("Getting Kana to test...")
 
         raw_score_list = []
         kana_scores = []
@@ -132,7 +133,7 @@ class scoreRate:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        self.handler.fileEnsurer.logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
+        self.handler.file_ensurer.logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
 
         return kana_to_test, display_item_list
     
@@ -154,7 +155,7 @@ class scoreRate:
         
         """
 
-        self.handler.fileEnsurer.logger.log_action("Getting Vocab to test...")
+        self.handler.file_ensurer.logger.log_action("Getting Vocab to test...")
 
         raw_score_list = []
         vocab_scores = []
@@ -210,7 +211,7 @@ class scoreRate:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        self.handler.fileEnsurer.logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
+        self.handler.file_ensurer.logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
 
         return vocab_to_test, display_item_list
     
@@ -265,7 +266,7 @@ class scoreRate:
         When a typo has been previously encountered, we need to determine what they were trying to type and return that instead.\n
 
         Parameters:\n
-        self (object - scoreRate): The scoreRate class object.\n
+        self (object - scoreRate) : The scoreRate class object.\n
         typo (str) : the typo the user made.\n
         correct_answers (list - str) : list of correct answers the typo could match.\n
 
@@ -378,7 +379,7 @@ class scoreRate:
 
         answers = [value.csep_value for value in word.testing_material_answer_all]
 
-        if(user_guess == 'q'): # if the user wants to quit the program do so
+        if(user_guess == 'q'): ## if the user wants to quit the program do so
             self.handler.toolkit.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo

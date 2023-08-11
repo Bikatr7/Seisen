@@ -16,7 +16,7 @@ class vocabSettingsHandler():
 
     """
     
-    The handler that handles all of Seisen's vocab settings
+    The handler that handles all of Seisen's vocab settings.\n
     
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -100,8 +100,9 @@ class vocabSettingsHandler():
 
         """ 
 
-        new_vocab_id = self.local_handler.fileEnsurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(5))
-        new_csep_id = self.local_handler.fileEnsurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(6))
+        ## gets new ids
+        new_vocab_id = self.local_handler.file_ensurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(5))
+        new_csep_id = self.local_handler.file_ensurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(6))
 
         csep_value_list = []
         csep_actual_list_handler = []
@@ -109,6 +110,7 @@ class vocabSettingsHandler():
         furigana = "0"
         isKanji = False
 
+        ## gets vocab and csep details
         try:
             testing_material = self.local_handler.toolkit.user_confirm("Please enter a vocab term")
             romaji = self.local_handler.toolkit.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation")
@@ -144,19 +146,25 @@ class vocabSettingsHandler():
                 
                 return
 
+        ## inserts cseps first
         for csep_value in csep_value_list:
+
             csep_insert_values = [new_vocab_id, new_csep_id, csep_value, self.local_handler.VOCAB_WORD_TYPE]
             
+            ## adds csep to local handler
             csep_actual_list_handler.append(csep_blueprint(new_vocab_id, new_csep_id, csep_value, self.local_handler.VOCAB_WORD_TYPE))
 
-            self.local_handler.fileEnsurer.file_handler.write_sei_line(self.local_handler.vocab_csep_path, csep_insert_values)
+            ## writes csep to local
+            self.local_handler.file_ensurer.file_handler.write_sei_line(self.local_handler.vocab_csep_path, csep_insert_values)
 
-            new_csep_id = self.local_handler.fileEnsurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(6))
+            new_csep_id = self.local_handler.file_ensurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(6))
 
+        ## writes vocab to local
         vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, furigana, 0, 0]
-        self.local_handler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, csep_actual_list_handler, furigana, 0, 0, isKanji))
+        self.local_handler.file_ensurer.file_handler.write_sei_line(self.local_handler.vocab_path, vocab_insert_values)
 
-        self.local_handler.fileEnsurer.file_handler.write_sei_line(self.local_handler.vocab_path, vocab_insert_values)
+        ## updates local handler with new vocab
+        self.local_handler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, csep_actual_list_handler, furigana, 0, 0, isKanji))
     
 ##--------------------start-of-add_csep()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -179,7 +187,8 @@ class vocabSettingsHandler():
 
         target_index = 0
 
-        new_csep_id = self.local_handler.fileEnsurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(6))
+        ## gets new id
+        new_csep_id = self.local_handler.file_ensurer.file_handler.get_new_id(self.local_handler.get_list_of_all_ids(6))
 
         try:
             vocab_term_or_id = self.local_handler.toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a csep/answer to.")
@@ -202,7 +211,6 @@ class vocabSettingsHandler():
             csep_value = self.local_handler.toolkit.user_confirm("Please enter the csep/answer for " + vocab_term + " you would like to add.")
 
         except AssertionError:
-            self.local_handler.toolkit.logger.log_action("Invalid id or term.")
             print("invalid id or term\n")
             time.sleep(1)
             return
@@ -210,11 +218,14 @@ class vocabSettingsHandler():
         except self.local_handler.toolkit.UserCancelError:
             return
         
+        ## gets index of vocab in local handler
         target_index = next((i for i, vocab in enumerate(self.local_handler.vocab) if vocab.word_id == vocab_id))
 
+        ## adds csep to local storage
         csep_insert_values = [vocab_id, new_csep_id, csep_value, self.local_handler.VOCAB_WORD_TYPE]
-        self.local_handler.fileEnsurer.file_handler.write_sei_line(self.local_handler.vocab_csep_path, csep_insert_values)
+        self.local_handler.file_ensurer.file_handler.write_sei_line(self.local_handler.vocab_csep_path, csep_insert_values)
         
+        ## adds csep to local handler/current session
         new_csep = csep_blueprint(int(vocab_id), new_csep_id, csep_value, self.local_handler.VOCAB_WORD_TYPE)
         self.local_handler.vocab[target_index].testing_material_answer_all.append(new_csep)
 
@@ -270,7 +281,6 @@ class vocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            self.local_handler.toolkit.logger.log_action("Invalid id or term.")
             print("invalid id or term\n")
             time.sleep(1)
             return 
@@ -278,6 +288,7 @@ class vocabSettingsHandler():
         except self.local_handler.toolkit.UserCancelError:
             return
         
+        ## gets index of target vocab in local handler
         target_index = next((i for i, vocab in enumerate(self.local_handler.vocab) if vocab.word_id == vocab_id))
 
         target_vocab = self.local_handler.vocab[target_index]
@@ -312,17 +323,17 @@ class vocabSettingsHandler():
 
             csep_id = next((csep.csep_id for csep in target_vocab.testing_material_answer_all if csep.csep_value == value_to_replace))
 
-            target_csep_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_csep_path) if int(self.local_handler.fileEnsurer.file_handler.read_sei_file(self.local_handler.vocab_csep_path, i + 1, 2)) == csep_id))
+            target_csep_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_csep_path) if int(self.local_handler.file_ensurer.file_handler.read_sei_file(self.local_handler.vocab_csep_path, i + 1, 2)) == csep_id))
 
-            self.local_handler.fileEnsurer.file_handler.edit_sei_line(self.local_handler.vocab_csep_path, target_csep_line, 3, str(replacement_value))
+            self.local_handler.file_ensurer.file_handler.edit_sei_line(self.local_handler.vocab_csep_path, target_csep_line, 3, str(replacement_value))
         
         else:
             pass
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_path) if int(self.local_handler.fileEnsurer.file_handler.read_sei_file(self.local_handler.vocab_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_path) if int(self.local_handler.file_ensurer.file_handler.read_sei_file(self.local_handler.vocab_path, i + 1, 1)) == vocab_id))
 
         ## edits the vocab word
-        self.local_handler.fileEnsurer.file_handler.edit_sei_line(self.local_handler.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
+        self.local_handler.file_ensurer.file_handler.edit_sei_line(self.local_handler.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
             
         ## it's easier to just reload everything than for me to figure out how to juggle csep values in the handler if the user wants to fuck with definitions or answers
         self.local_handler.load_words_from_local_storage()
@@ -393,9 +404,9 @@ class vocabSettingsHandler():
 
                     csep.csep_value = replace_value
 
-                    target_csep_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_csep_path) if int(self.local_handler.fileEnsurer.file_handler.read_sei_file(self.local_handler.vocab_csep_path, i + 1, 2)) == csep.csep_id))
+                    target_csep_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_csep_path) if int(self.local_handler.file_ensurer.file_handler.read_sei_file(self.local_handler.vocab_csep_path, i + 1, 2)) == csep.csep_id))
 
-                    self.local_handler.fileEnsurer.file_handler.edit_sei_line(self.local_handler.vocab_csep_path, target_csep_line, CSEP_VALUE_COLUMN_NUMBER, replace_value)
+                    self.local_handler.file_ensurer.file_handler.edit_sei_line(self.local_handler.vocab_csep_path, target_csep_line, CSEP_VALUE_COLUMN_NUMBER, replace_value)
 
                     break
 
@@ -447,18 +458,18 @@ class vocabSettingsHandler():
 
         target_vocab_index = next((i for i, vocab in enumerate(self.local_handler.vocab) if vocab.word_id == vocab_id))
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_path) if int(self.local_handler.fileEnsurer.file_handler.read_sei_file(self.local_handler.vocab_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = next((i + 1 for i, line in enumerate(self.local_handler.vocab_path) if int(self.local_handler.file_ensurer.file_handler.read_sei_file(self.local_handler.vocab_path, i + 1, 1)) == vocab_id))
 
         ## deletes the vocab itself
-        self.local_handler.fileEnsurer.file_handler.delete_sei_line(self.local_handler.vocab_path, target_vocab_line)
+        self.local_handler.file_ensurer.file_handler.delete_sei_line(self.local_handler.vocab_path, target_vocab_line)
         self.local_handler.vocab.pop(target_vocab_index)
 
         ## deletes the cseps
-        self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_csep_path, 1, vocab_id)
+        self.local_handler.file_ensurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_csep_path, 1, vocab_id)
 
         ## deletes the typos
-        self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_incorrect_typos_path, 1, vocab_id)
-        self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_typos_path, 1, vocab_id)
+        self.local_handler.file_ensurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_incorrect_typos_path, 1, vocab_id)
+        self.local_handler.file_ensurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_typos_path, 1, vocab_id)
 
 ##--------------------start-of-delete_csep_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -522,7 +533,7 @@ class vocabSettingsHandler():
                 target_vocab.testing_material_answer_all.pop(i)
 
         ## same thing but for the file
-        self.local_handler.fileEnsurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_csep_path, id_index=2, id_value=target_csep_id)
+        self.local_handler.file_ensurer.file_handler.delete_all_occurrences_of_id(self.local_handler.vocab_csep_path, id_index=2, id_value=target_csep_id)
 
 ##--------------------start-of-search_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

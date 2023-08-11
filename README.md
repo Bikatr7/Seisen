@@ -14,13 +14,13 @@
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Notes**<a name="notes"></a>
 
+DEVELOPMENT IS PAUSED UNTIL OCTOBER 2023 (Outside of critical bug fixes)
+
 Built for Windows, Should work on Linux/MacOS but is untested.
 
 Python Version: 3.8+
 
-Tests the user on Japanese Kana.
-
-Plans are in place to expand the program greatly.
+Tests the user on Japanese Kana and Vocabulary.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Dependencies**<a name="dependencies"></a>
@@ -40,7 +40,7 @@ Upon opening the file, you will be prompted to enter database credentials, if yo
 
 Once at the main menu, press 1 and begin to quiz yourself on kana or 2 to quiz yourself on vocab.
 
-The average user will have no need to use the settings options unless they want to see the score ratings.
+All Japanese Kana and 7 Vocab words are included by default. You can add more vocab in the settings menu.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Settings Menu**<a name="settings"></a>
@@ -50,8 +50,7 @@ pressing 3 will enter the settings menu. The settings are as follows:
 1. Vocab Settings - Enters vocab settings
 2. Storage Settings - Enters storage settings
 3. See Score Ratings - this will print the likelihood of each kana/vocab being tested.
-4. Restore Backup - this will prompt the user to restore an existing local/remote backup
-5. Set Up New Database - - this will cause Seisen to prompt for a new database.
+4. Set Up New Database - - this will cause Seisen to prompt for a new database.
    
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Vocab Settings**<a name="vocab-settings"></a>
@@ -61,14 +60,20 @@ Vocab Settings are as follows:
 1. Add Vocab - Adds a custom vocab to the testing deck
 2. Add CSEP/Answer to Vocab - Adds a answer (CSEP) to an existing vocab
 3. Replace Vocab Value - Edits a vocab value
-4. Delete Vocab Value - Deletes a vocab value
+4. Replace CSEP/Answer - Edits a CSEP/Answer
+5. Delete Vocab Value - Deletes a vocab value
+6. Delete CSEP/Answer - Deletes a CSEP/Answer from a vocab
+7. Search Vocab - Searches for a vocab, given a term (can be numeric, alphabetic, or japanese)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Storage Settings**<a name="#storage-settings"></a>
 
 1. Reset Local with Remote - Resets Local Storage with the Database (will do nothing if no connection)
 2. Reset Remote with Local - Resets Remote Storage with the Local Storage (will do nothing if no connection)
-3. Reset Local & Remote to Default - Resets all storage to default settings
+3. Reset Local & Remote to Default - Resets all storage to default settings (remote will be unaffected if no connection)
+4. Restore Backup - Prompts the user to restore either a local or remote backup
+5. Export Vocab Deck - Exports the vocab deck to a .seisen file that can be imported by another user or yourself later
+6. Import Vocab Deck - Imports a .seisen file that was exported by Seisen into the current deck (replaces current deck)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Setting Up A MySQL Database**<a name="SUAMSD"></a>

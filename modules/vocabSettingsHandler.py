@@ -63,7 +63,7 @@ class vocabSettingsHandler():
 
         self.local_handler.toolkit.logger.log_action("User is changing vocab settings")
 
-        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Replace CSEP/Answer Value\n5.Delete Vocab Value\n6.Delete CSEP/Answer to Vocab\n7.Search Vocab\n"
+        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Replace CSEP/Answer Value\n5.Delete Vocab Value\n6.Delete CSEP/Answer from Vocab\n7.Search Vocab\n"
 
         print(vocab_message)
 

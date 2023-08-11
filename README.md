@@ -12,9 +12,11 @@
 - [Contact](#contact)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
-**Notes**<a name="notes"></a>
 
-DEVELOPMENT IS PAUSED UNTIL OCTOBER 2023 (Outside of critical bug fixes)
+## DEVELOPMENT IS PAUSED UNTIL OCTOBER 2023 (Outside of critical bug fixes)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+**Notes**<a name="notes"></a>
 
 Built for Windows, Should work on Linux/MacOS but is untested.
 
@@ -66,7 +68,7 @@ Vocab Settings are as follows:
 7. Search Vocab - Searches for a vocab, given a term (can be numeric, alphabetic, or japanese)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
-**Storage Settings**<a name="#storage-settings"></a>
+**Storage Settings**<a name="storage-settings"></a>
 
 1. Reset Local with Remote - Resets Local Storage with the Database (will do nothing if no connection)
 2. Reset Remote with Local - Resets Remote Storage with the Local Storage (will do nothing if no connection)
@@ -80,7 +82,7 @@ Vocab Settings are as follows:
 
 Seisen uses a backup data method using MySQL, once Seisen is opened for the first time it will prompt for A database name and password, if you have these already feel free to enter these and Seisen will take care of the rest.
 
-If not, you can always set this up latter in settings by typing 3 and then press 5.
+If not, you can always set this up latter in settings by typing 3 and then press 4.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **License**<a name="license"></a>

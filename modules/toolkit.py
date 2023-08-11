@@ -251,7 +251,7 @@ class toolkit():
 
             self.clear_console()
         
-            CURRENT_VERSION = "v1.2.0" 
+            CURRENT_VERSION = "v2.0.0" 
 
             response = requests.get("https://api.github.com/repos/Seinuve/Seisen/releases/latest")
             latest_version = response.json()["tag_name"]

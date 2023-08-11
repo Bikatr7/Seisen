@@ -373,6 +373,8 @@ class Seisen:
 
         self.toolkit.clear_console()
 
+        self.current_question_prompt = self.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
+
         if(isCorrect == True):
             number_of_correct_rounds+=1
             self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is correct.\n"

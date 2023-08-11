@@ -14,7 +14,7 @@ class storageSettingsHandler():
 
     """
     
-    The handler that handles all of Seisen's vocab settings
+    The handler that handles all of Seisen's vocab settings.\n
     
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -139,10 +139,10 @@ class storageSettingsHandler():
 
         try:
 
-            shutil.rmtree(self.local_handler.fileEnsurer.kana_dir)
-            shutil.rmtree(self.local_handler.fileEnsurer.vocab_dir)
+            shutil.rmtree(self.local_handler.file_ensurer.kana_dir)
+            shutil.rmtree(self.local_handler.file_ensurer.vocab_dir)
 
-        ## if files are ope, which they usually are when im testing this.
+        ## if files are open, which they usually are when im testing this.
         except PermissionError:
 
             self.local_handler.toolkit.clear_console()
@@ -154,9 +154,10 @@ class storageSettingsHandler():
             return
         
         ## either way files are likely fucked so....
+        ## mainly because it's easier just to delete local storage, reset it and then reset remote with it.. idk if thats good practice but meh.
         finally:
 
-            self.local_handler.fileEnsurer.ensure_files()
+            self.local_handler.file_ensurer.ensure_files()
 
         self.remote_handler.reset_remote_storage()
 
@@ -189,13 +190,13 @@ class storageSettingsHandler():
         if(type_backup == "1"):
 
             self.local_handler.restore_local_backup()
-            self.local_handler.fileEnsurer.ensure_files()
+            self.local_handler.file_ensurer.ensure_files()
             self.local_handler.load_words_from_local_storage()
 
         elif(type_backup == "2"):
 
             self.remote_handler.restore_remote_backup()
-            self.local_handler.fileEnsurer.ensure_files()
+            self.local_handler.file_ensurer.ensure_files()
             self.local_handler.load_words_from_local_storage()
 
 ##--------------------start-of-export_deck()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -218,7 +219,7 @@ class storageSettingsHandler():
 
         file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d')) + ".seisen"
 
-        export_path = os.path.join(self.local_handler.fileEnsurer.main_script_dir, file_name)
+        export_path = os.path.join(self.local_handler.file_ensurer.main_script_dir, file_name)
 
         ## get vocab lines
         with open(self.local_handler.vocab_path, 'r', encoding="utf-8") as file:
@@ -272,11 +273,11 @@ class storageSettingsHandler():
 
         deck_to_import_prompt = ""
 
-        for file_name in os.listdir(self.local_handler.fileEnsurer.main_script_dir):
+        for file_name in os.listdir(self.local_handler.file_ensurer.main_script_dir):
 
             if(file_name.endswith(".seisen")): ## If the file is a backup file, then act accordingly
 
-                file_path = os.path.join(self.local_handler.fileEnsurer.main_script_dir, file_name)
+                file_path = os.path.join(self.local_handler.file_ensurer.main_script_dir, file_name)
                 file_name = file_name.replace(".seisen", "")
 
                 valid_import_paths.append(file_path)
@@ -286,7 +287,7 @@ class storageSettingsHandler():
 
         deck_to_import_prompt += "\nWhat deck would you like to import?"
 
-        try: ## user confirm will throw an assertion error if the user wants to cancel the backup restore.
+        try: ## user confirm will throw an assertion/user cancel error if the user wants to cancel the backup restore.
 
             assert len(valid_import_names) > 0
 
@@ -326,4 +327,4 @@ class storageSettingsHandler():
         with open(self.local_handler.vocab_csep_path, 'w+', encoding="utf-8") as file:
             file.writelines(csep_portion_write)
 
-        self.local_handler.fileEnsurer.logger.log_action("Imported the " + deck_to_import + " vocab deck")
+        self.local_handler.file_ensurer.logger.log_action("Imported the " + deck_to_import + " vocab deck")

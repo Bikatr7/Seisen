@@ -15,7 +15,7 @@ class toolkit():
 
     """
     
-    class for a bunch of utility functions used throughout Seisen.\n
+    The class for a bunch of utility functions used throughout Seisen.\n
 
     """
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -27,7 +27,6 @@ class toolkit():
         Initializes the toolkit class.\n
 
         Parameters:\n
-        self (object - toolkit) : The toolkit object.\n
         logger (object - logger) : The logger object.\n
 
         Returns:\n
@@ -60,7 +59,7 @@ class toolkit():
         new_user_input = str(user_input)
         input_issue_message = ""
 
-        os.system('cls')
+        self.clear_console()
 
         while(True):
 
@@ -152,6 +151,7 @@ class toolkit():
             finally:
 
                 termios.tcsetattr(0, termios.TCSANOW, old_settings)
+                
 ##--------------------start-of-clear_stream()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def clear_stream(self) -> None: 

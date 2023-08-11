@@ -31,7 +31,6 @@ class word:
         Initializes the word class\n
 
         Parameters:\n
-        self (object - word) : the object being initialized.\n
         incoming_id (int) : the id of the word.\n
         incoming_testing_material (str) : the testing material of the word.\n
         incoming_testing_material_answer_main (str) : the main answer of the testing material.\n
@@ -84,6 +83,7 @@ class word:
 
         Parameters:\n
         self (object - word) : the word being tested.\n
+        local_handler (object - localHandler) : the localHandler object.\n
 
         Returns:\n
         None.\n
@@ -104,14 +104,14 @@ class word:
             kana_lines = file.readlines()
 
         for i, line in enumerate(kana_lines):
-            kana_ids.append(local_handler.fileEnsurer.file_handler.read_sei_file(local_handler.kana_path, i+1, KANA_ID_FILE_INDEX_LOCATION))
+            kana_ids.append(local_handler.file_ensurer.file_handler.read_sei_file(local_handler.kana_path, i+1, KANA_ID_FILE_INDEX_LOCATION))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = kana_ids.index(str(self.word_id)) + 1
 
-        local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.kana_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.correct_count))
+        local_handler.file_ensurer.file_handler.edit_sei_line(local_handler.kana_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.correct_count))
 
-        local_handler.fileEnsurer.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -123,6 +123,7 @@ class word:
 
         Parameters:\n
         self (object - word) : the object being tested.\n
+        local_handler (object - localHandler) : the localHandler object.\n
 
         Returns:\n
         None.\n
@@ -142,14 +143,14 @@ class word:
             kana_lines = file.readlines()
 
         for i, line in enumerate(kana_lines):
-            kana_ids.append(local_handler.fileEnsurer.file_handler.read_sei_file(local_handler.kana_path, i+1,1))
+            kana_ids.append(local_handler.file_ensurer.file_handler.read_sei_file(local_handler.kana_path, i+1,1))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = kana_ids.index(str(self.word_id)) + 1
 
-        local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.kana_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.incorrect_count))
+        local_handler.file_ensurer.file_handler.edit_sei_line(local_handler.kana_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.incorrect_count))
 
-        local_handler.fileEnsurer.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -170,17 +171,17 @@ class word:
         """
 
         ## gets a new id for the typo
-        new_typo_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(1))
+        new_typo_id = local_handler.file_ensurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(1))
 
         new_typo = typo_blueprint(self.word_id, new_typo_id, typo , self.word_type)
 
         ## updates local storage so the typo will be saved
-        local_handler.fileEnsurer.file_handler.write_sei_line(local_handler.kana_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        local_handler.file_ensurer.file_handler.write_sei_line(local_handler.kana_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
         self.typos.append(new_typo)
 
-        local_handler.fileEnsurer.logger.log_action("Logged a typo : " + typo + " for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged a typo : " + typo + " for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -198,15 +199,15 @@ class word:
         """
 
         ## gets a new id for the incorrect typo
-        new_incorrect_typo_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(2))
+        new_incorrect_typo_id = local_handler.file_ensurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(2))
 
         new_incorrect_typo = incorrect_typo_blueprint(self.word_id, new_incorrect_typo_id, incorrect_typo , self.word_type)
 
         ## updates local storage so the incorrect typo will be saved
-        local_handler.fileEnsurer.file_handler.write_sei_line(local_handler.kana_incorrect_typos_path, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+        local_handler.file_ensurer.file_handler.write_sei_line(local_handler.kana_incorrect_typos_path, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
 
         ## updates the current session with the incorrect typo
         self.incorrect_typos.append(new_incorrect_typo)
 
-        local_handler.fileEnsurer.logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + self.testing_material + ", id : " + str(self.word_id))
     

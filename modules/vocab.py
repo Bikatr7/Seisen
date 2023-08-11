@@ -31,7 +31,6 @@ class vocab(words.word):
         Initializes the vocab class\n
 
         Parameters:\n
-        self (object - word) : the object being initialized.\n
         incoming_id (int) : the id of the vocab.\n
         incoming_testing_material (str) : the testing material of the vocab.\n
         incoming_romaji (str) : the romaji of the vocab.\n
@@ -67,6 +66,7 @@ class vocab(words.word):
 
         Parameters:\n
         self (object - vocab) : the vocab being tested.\n
+        local_handler (object - localHandler) : the local handler object.\n
 
         Returns:\n
         None.\n
@@ -87,14 +87,14 @@ class vocab(words.word):
             vocab_lines = file.readlines()
 
         for i, line in enumerate(vocab_lines):
-            vocab_ids.append(local_handler.fileEnsurer.file_handler.read_sei_file(local_handler.vocab_path, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
+            vocab_ids.append(local_handler.file_ensurer.file_handler.read_sei_file(local_handler.vocab_path, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = vocab_ids.index(str(self.word_id)) + 1
 
-        local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.vocab_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.correct_count))
+        local_handler.file_ensurer.file_handler.edit_sei_line(local_handler.vocab_path, line_to_write_to, CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.correct_count))
 
-        local_handler.fileEnsurer.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged a correct answer for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -106,6 +106,7 @@ class vocab(words.word):
 
         Parameters:\n
         self (object - vocab) : the vocab being tested.\n
+        local_handler (object - localHandler) : the local handler object.\n
 
         Returns:\n
         None.\n
@@ -126,14 +127,14 @@ class vocab(words.word):
             vocab_lines = file.readlines()
 
         for i, line in enumerate(vocab_lines):
-            vocab_ids.append(local_handler.fileEnsurer.file_handler.read_sei_file(local_handler.vocab_path, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
+            vocab_ids.append(local_handler.file_ensurer.file_handler.read_sei_file(local_handler.vocab_path, i+1, VOCAB_ID_FILE_INDEX_LOCATION))
                             
         ## line returned needs to be incremented by one to match file
         line_to_write_to = vocab_ids.index(str(self.word_id)) + 1
 
-        local_handler.fileEnsurer.file_handler.edit_sei_line(local_handler.vocab_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.incorrect_count))
+        local_handler.file_ensurer.file_handler.edit_sei_line(local_handler.vocab_path, line_to_write_to, INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION , str(self.incorrect_count))
 
-        local_handler.fileEnsurer.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged an incorrect answer for " + self.testing_material + ", id : " + str(self.word_id))
 
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -154,17 +155,17 @@ class vocab(words.word):
         """
 
         ## gets a new id for the typo
-        new_typo_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(3))
+        new_typo_id = local_handler.file_ensurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(3))
 
         new_typo = typo_blueprint(self.word_id, new_typo_id, typo, self.word_type)
 
         ## updates local storage so the typo will be saved
-        local_handler.fileEnsurer.file_handler.write_sei_line(local_handler.vocab_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        local_handler.file_ensurer.file_handler.write_sei_line(local_handler.vocab_typos_path, [str(self.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
         self.typos.append(new_typo)
 
-        local_handler.fileEnsurer.logger.log_action("Logged a typo : " + typo + " for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged a typo : " + typo + " for " + self.testing_material + ", id : " + str(self.word_id))
 
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -183,15 +184,15 @@ class vocab(words.word):
         """
 
         ## gets a new id for the incorrect typo
-        new_incorrect_typo_id = local_handler.fileEnsurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(4))
+        new_incorrect_typo_id = local_handler.file_ensurer.file_handler.get_new_id(local_handler.get_list_of_all_ids(4))
 
         new_incorrect_typo = incorrect_typo_blueprint(self.word_id, new_incorrect_typo_id, incorrect_typo, self.word_type)
 
         ## updates local storage so the incorrect typo will be saved
-        local_handler.fileEnsurer.file_handler.write_sei_line(local_handler.vocab_incorrect_typos_path, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+        local_handler.file_ensurer.file_handler.write_sei_line(local_handler.vocab_incorrect_typos_path, [str(self.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
 
         ## updates the current session with the incorrect typo
         self.incorrect_typos.append(new_incorrect_typo)
 
-        local_handler.fileEnsurer.logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + self.testing_material + ", id : " + str(self.word_id))
+        local_handler.file_ensurer.logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + self.testing_material + ", id : " + str(self.word_id))
 

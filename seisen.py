@@ -313,6 +313,7 @@ class Seisen:
         NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
 
         displayOther = False
+        romaTriggered = False
 
         ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
         vocab_to_test, display_list = self.word_rater.get_vocab_to_test(self.localHandler.vocab)
@@ -352,6 +353,8 @@ class Seisen:
 
             self.current_user_guess = str(input(self.current_question_prompt)).lower()
 
+            romaTriggered = True
+
             ## if the user wants to change the mode do so
             if(self.current_user_guess == "v"):
 
@@ -373,7 +376,8 @@ class Seisen:
 
         self.toolkit.clear_console()
 
-        self.current_question_prompt = self.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
+        if(vocab_to_test.furigana != "0" and romaTriggered == False):
+            self.current_question_prompt = self.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
 
         if(isCorrect == True):
             number_of_correct_rounds+=1

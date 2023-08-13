@@ -118,7 +118,7 @@ class toolkit():
 
         """
 
-        pauses the console.\n
+        Pauses the console.\n
 
         Parameters:\n
         self (object - toolkit) : The toolkit object.\n

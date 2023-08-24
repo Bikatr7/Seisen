@@ -3,6 +3,7 @@ import os
 import msvcrt
 import time
 import traceback
+import ctypes
 
 ## custom modules
 from modules.localHandler import localHandler
@@ -103,6 +104,12 @@ class Seisen:
 
         ## overwrites remote with local
         self.remoteHandler.local_remote_overwrite()
+
+        # Get the handle of the console window
+        hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+
+        # Maximize the console window
+        ctypes.windll.user32.ShowWindow(hwnd, 3)
 
 ##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

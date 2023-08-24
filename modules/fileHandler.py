@@ -351,6 +351,8 @@ class fileHandler():
 
         id_list = [id for id in id_list]
 
+        id_list.sort()
+
         new_id = 1
 
         for num in id_list:

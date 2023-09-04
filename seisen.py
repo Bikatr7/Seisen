@@ -4,6 +4,8 @@ import msvcrt
 import time
 import traceback
 import ctypes
+import threading
+
 
 ## custom modules
 from modules.localHandler import localHandler
@@ -85,6 +87,31 @@ class Seisen:
         self.hasValidConnection = self.toolkit.check_update()
 
         ##----------------------------------------------------------------start----------------------------------------------------------------
+
+##--------------------start-of-handle_intensive_db_operations()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    def handle_intensive_db_operations(self) -> None:
+
+        """
+
+        Handles intensive database operations. This is called in a separate thread to the main loop.\n
+
+        Parameters:\n
+        self (object - Seisen) : The Seisen object.\n
+
+        Returns:\n
+        None.\n
+
+        """
+
+        ## creates the daily local backup
+        self.localHandler.create_daily_local_backup()
+
+        ## creates the daily remote backup
+        self.remoteHandler.create_daily_remote_backup()
+
+        ## overwrites remote with local
+        self.remoteHandler.local_remote_overwrite()
         
 ##--------------------start-of-bootup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -95,15 +122,6 @@ class Seisen:
 
         ## loads the words currently in local storage.
         self.localHandler.load_words_from_local_storage()
-
-        ## creates the daily local backup
-        self.localHandler.create_daily_local_backup()
-
-        ## creates the daily remote backup
-        self.remoteHandler.create_daily_remote_backup()
-
-        ## overwrites remote with local
-        self.remoteHandler.local_remote_overwrite()
 
         # Get the handle of the console window
         hwnd = ctypes.windll.kernel32.GetConsoleWindow()
@@ -440,8 +458,13 @@ client = Seisen()
 
 try:
 
-    ## ruin seisen
+    ## run seisen
     client.bootup()
+
+    ## Start the intensive DB operations in a separate thread after bootup
+    db_thread = threading.Thread(target=client.handle_intensive_db_operations)
+    db_thread.start()
+
     client.commence_main_loop()
 
 except Exception as e:

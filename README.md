@@ -98,6 +98,6 @@ Please note that this information is a brief summary of the GPL. For a detailed 
 
 If you have any questions, comments, or concerns, please feel free to contact me at [Tetralon07@gmail.com](mailto:Tetralon07@gmail.com).
 
-For any bugs or suggestions please use the issues tab [here](https://github.com/Bikatr7/Seisen/issues).
+For any bugs or suggestions please use this issues tab [here](https://github.com/Bikatr7/Seisen/issues).
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------

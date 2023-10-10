@@ -318,7 +318,7 @@ class scoreRate:
 
         if(user_guess in typos):
             possible_intended_answers = [csep.csep_value for csep in word.testing_material_answer_all]
-            return self.get_intended_answer(user_guess, possible_intended_answers )
+            return self.get_intended_answer(user_guess, possible_intended_answers)
         elif(user_guess in incorrect_typos):
             return user_guess
 

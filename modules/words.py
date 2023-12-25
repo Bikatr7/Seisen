@@ -10,7 +10,7 @@ from modules.typos import incorrectTypo as incorrect_typo_blueprint
 from modules.csep import csep
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
-    from modules.localHandler import localHandler
+    from handlers.localHandler import localHandler
     from modules.typos import typo, incorrectTypo
 
 class word:

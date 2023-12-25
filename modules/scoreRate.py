@@ -6,7 +6,7 @@ import msvcrt
 ## custom modules
 from modules.words import word
 from modules.vocab import vocab
-from modules.localHandler import localHandler
+from handlers.localHandler import localHandler
 
 class scoreRate:
 

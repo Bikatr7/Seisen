@@ -2,13 +2,13 @@
 import msvcrt
 
 ## custom modules
-from modules.localHandler import localHandler
-from modules.remoteHandler import remoteHandler
+from handlers.localHandler import localHandler
+from handlers.remoteHandler import remoteHandler
 
 from modules.scoreRate import scoreRate
 
-from modules.vocabSettingsHandler import vocabSettingsHandler
-from modules.storageSettingsHandler import storageSettingsHandler
+from handlers.vocabSettingsHandler import vocabSettingsHandler
+from handlers.storageSettingsHandler import storageSettingsHandler
 
 class settingsHandler():
 

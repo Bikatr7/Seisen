@@ -7,8 +7,8 @@ import shutil
 import time
 
 ## custom modules
-from modules.localHandler import localHandler
-from modules.remoteHandler import remoteHandler
+from handlers.localHandler import localHandler
+from handlers.remoteHandler import remoteHandler
 
 class storageSettingsHandler():
 

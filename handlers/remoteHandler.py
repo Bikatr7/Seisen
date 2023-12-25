@@ -18,7 +18,7 @@ from modules.toolkit import toolkit
 
 from modules.fileEnsurer import fileEnsurer
 
-from modules.connectionHandler import connectionHandler
+from handlers.connectionHandler import connectionHandler
 
 class remoteHandler():
 

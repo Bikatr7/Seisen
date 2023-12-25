@@ -8,10 +8,10 @@ import threading
 
 
 ## custom modules
-from modules.localHandler import localHandler
-from modules.remoteHandler import remoteHandler
+from handlers.localHandler import localHandler
+from handlers.remoteHandler import remoteHandler
 
-from modules.settingsHandler import settingsHandler
+from handlers.settingsHandler import settingsHandler
 
 from modules.fileEnsurer import fileEnsurer
 from modules.scoreRate import scoreRate

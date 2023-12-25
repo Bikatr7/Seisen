@@ -1,280 +1,199 @@
-## built-in modules
+## built-in libraries
 import os
 import shutil
 
 ## custom modules
-from handlers.fileHandler import fileHandler
+from handlers.fileHandler import FileHandler
 
-from modules.logger import logger
+from modules.logger import Logger
 
-class fileEnsurer:
+class FileEnsurer:
 
    """
    
-   The fileEnsurer class is used to ensure that the files needed to run the program are present and ready to be used.\n
+   The FileEnsurer class is used to ensure that the files needed to run the program are present and ready to be used.
 
    """
 
-##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-   def __init__(self) -> None:
-
-      """
+   ## main dirs
+   if(os.name == 'nt'):  ## Windows
+      config_dir = os.path.join(os.environ['USERPROFILE'],"KudasaiConfig")
+   else:  ## Linux
+      config_dir = os.path.join(os.path.expanduser("~"), "KudasaiConfig")
       
-      Initializes the fileEnsurer class.\n
+   script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-      Parameters:\n
-      None.\n
+   log_path = os.path.join(config_dir, "log.txt")
 
-      Returns:\n
-      None.\n
+   ##----------------------------------/
 
-      """
-   
+   ## sub dirs
+   logins_dir = os.path.join(config_dir, "Logins")
+   kana_dir = os.path.join(config_dir, "Kana")
+   vocab_dir = os.path.join(config_dir, "Vocab")
+   loop_data_dir = os.path.join(config_dir, "Loop Data")
 
-      ##----------------------------------------------------------------dirs----------------------------------------------------------------
+   lib_dir = os.path.join(script_dir, "lib")
 
-      ## the folder where all the config files are located
-      self.config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
+   remote_lib_dir = os.path.join(lib_dir, "remote")
 
-      ## where Seisen.py's directory is located
-      self.main_script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+   ##----------------------------------/
 
-      ## the folder for all login related files are located
-      self.logins_dir = os.path.join(self.config_dir, "Logins")
-
-      ## the directory where all the lib files are located.
-      self.lib_dir = os.path.join(self.main_script_dir, "lib")
-
-      ## the folder for all kana-related files are located
-      self.kana_dir = os.path.join(self.config_dir, "Kana")
-
-      ## the folder for all vocab-related files are located
-      self.vocab_dir = os.path.join(self.config_dir, "Vocab")
-
-      ## remote lib files for remoteHandler.py
-      self.remote_lib_dir = os.path.join(self.lib_dir, "remote")
-
-      ## the folder for all loop data related files are located
-      self.loop_data_dir = os.path.join(self.config_dir, "Loop Data")
-
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-      ## log file
-      self.log_path = os.path.join(self.config_dir, "log.txt")
-
-      ## the loop data file path itself
-      self.loop_data_path = os.path.join(self.loop_data_dir, "loopData.txt")
-
-      ##----------------------------------------------------------------functions----------------------------------------------------------------
-
-      ## makes config dir where log sits, if not already there
-
-      try:
-         os.mkdir(self.config_dir)
-      except:
-         pass
-
-      ## make log path
-      with open(self.log_path, "w+", encoding="utf-8") as file:
-         file.truncate()
-
-      ##----------------------------------------------------------------objects----------------------------------------------------------------
-
-      ## logger for all actions taken by Seisen.\n
-      self.logger = logger(self.log_path)
-
-      self.logger.log_action("Initialization")
-      self.logger.log_action("--------------------------------------------------------------")
-
-      self.file_handler = fileHandler(self.logger)
+   ## paths
+   loop_data_path = os.path.join(loop_data_dir, "loopData.txt")
 
 ##--------------------start-of-ensure_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_files(self) -> None:
+   @staticmethod
+   def ensure_files() -> None:
 
       """
 
-      This function ensures that the files needed to run the program are present and ready to be used.\n
-      
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-
-      Returns:\n
-      None.\n
-      
+      This function ensures that the files needed to run the program are present and ready to be used.
+            
       """
 
-      self.create_needed_base_directories()
+      
 
-      self.ensure_loop_data_files()
+      FileEnsurer.create_needed_base_directories()
 
-      self.ensure_kana_files()
+      FileEnsurer.ensure_loop_data_files()
 
-      self.ensure_vocab_files()
+      FileEnsurer.ensure_kana_files()
 
-      self.ensure_lib_files()
+      FileEnsurer.ensure_vocab_files()
 
-      self.ensure_archive_files()
+      FileEnsurer.ensure_lib_files()
+
+      FileEnsurer.ensure_archive_files()
 
 ##--------------------start-of-create_needed_base_directories()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def create_needed_base_directories(self) -> None:
+   @staticmethod
+   def create_needed_base_directories() -> None:
 
       """
       
-      Creates the needed base directories.\n
+      Creates the needed base directories.
 
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-
-      Returns:\n
-      None.\n
-      
       """
 
-      self.file_handler.standard_create_directory(self.logins_dir)
-      self.file_handler.standard_create_directory(self.lib_dir)
-      self.file_handler.standard_create_directory(self.kana_dir)
-      self.file_handler.standard_create_directory(self.vocab_dir)
-      self.file_handler.standard_create_directory(self.remote_lib_dir)
+      FileHandler.standard_create_directory(FileEnsurer.logins_dir)
+      FileHandler.standard_create_directory(FileEnsurer.lib_dir)
+      FileHandler.standard_create_directory(FileEnsurer.kana_dir)
+      FileHandler.standard_create_directory(FileEnsurer.vocab_dir)
+      FileHandler.standard_create_directory(FileEnsurer.remote_lib_dir)
                
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_loop_data_files(self) -> None:
+   @staticmethod
+   def ensure_loop_data_files() -> None:
 
       """
       
-      Ensures that the files located in the loop data directory are present and ready to be used.\n
-
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-
-      Returns:\n
-      None.\n
+      Ensures that the files located in the loop data directory are present and ready to be used.
 
       """
 
-      self.file_handler.standard_create_directory(self.loop_data_dir)
+      FileHandler.standard_create_directory(FileEnsurer.loop_data_dir)
 
-      self.file_handler.modified_create_file(self.loop_data_path, "0,0,0,0,")
+      FileHandler.modified_create_file(FileEnsurer.loop_data_path, "0,0,0,0,")
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_kana_files(self) -> None:
+   @staticmethod
+   def ensure_kana_files() -> None:
 
       """"
       
-      Ensures that the kana files are present and ready to be used.\n
-
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-
-      Returns:\n
-      None.\n
+      Ensures that the kana files are present and ready to be used.
 
       """
 
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## the path to where the typos for the kana file are located
-      kana_typos_path = os.path.join(self.kana_dir, "kana typos.txt")
+      kana_typos_path = os.path.join(FileEnsurer.kana_dir, "kana typos.txt")
 
       ## the path to where the incorrect typos for the kana file are located
-      kana_incorrect_typos_path = os.path.join(self.kana_dir, "kana incorrect typos.txt")
+      kana_incorrect_typos_path = os.path.join(FileEnsurer.kana_dir, "kana incorrect typos.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      self.file_handler.standard_create_file(kana_typos_path)
+      FileHandler.standard_create_file(kana_typos_path)
 
-      self.file_handler.standard_create_file(kana_incorrect_typos_path)
+      FileHandler.standard_create_file(kana_incorrect_typos_path)
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_vocab_files(self) -> None:
+   @staticmethod
+   def ensure_vocab_files() -> None:
 
       """"
       
-      Ensures that the vocab files are present and ready to be used.\n
-
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
-
-      Returns:\n
-      None.\n
+      Ensures that the vocab files are present and ready to be used.
 
       """
 
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## the path to where the typos for the vocab file are located
-      vocab_typos_path = os.path.join(self.vocab_dir, "vocab typos.txt")
+      vocab_typos_path = os.path.join(FileEnsurer.vocab_dir, "vocab typos.txt")
 
       ## the path to where the incorrect typos for the vocab file are located
-      vocab_incorrect_typos_path = os.path.join(self.vocab_dir, "vocab incorrect typos.txt")
+      vocab_incorrect_typos_path = os.path.join(FileEnsurer.vocab_dir, "vocab incorrect typos.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      self.file_handler.standard_create_file(vocab_typos_path)
+      FileHandler.standard_create_file(vocab_typos_path)
 
-      self.file_handler.standard_create_file(vocab_incorrect_typos_path)
+      FileHandler.standard_create_file(vocab_incorrect_typos_path)
 
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_lib_files(self) -> None:
+   @staticmethod
+   def ensure_lib_files() -> None:
 
       """
 
       Ensures that the lib files are present and ready to be used.\n
-
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-
-      Returns:\n
-      None.\n
-      
 
       """
 
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## the path where the actual kana file is located, the one used for testing
-      kana_actual_path = os.path.join(self.kana_dir, "kana.txt")
+      kana_actual_path = os.path.join(FileEnsurer.kana_dir, "kana.txt")
 
       ## the path where the actual kana csep file is located, the one used for testing
-      kana_csep_actual_path = os.path.join(self.kana_dir, "kana csep.txt")
+      kana_csep_actual_path = os.path.join(FileEnsurer.kana_dir, "kana csep.txt")
 
       ## the path where the actual vocab file is located, the one used for testing
-      vocab_actual_path = os.path.join(self.vocab_dir, "vocab.txt")
+      vocab_actual_path = os.path.join(FileEnsurer.vocab_dir, "vocab.txt")
 
       ## the path where the actual vocab csep file is located, the one used for testing
-      vocab_csep_actual_path = os.path.join(self.vocab_dir, "vocab csep.txt")
+      vocab_csep_actual_path = os.path.join(FileEnsurer.vocab_dir, "vocab csep.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      self.ensure_remote_lib_files()
+      FileEnsurer.ensure_remote_lib_files()
 
       ## if kana testing files are damaged or empty, then repair them
       if(os.path.exists(kana_actual_path) == False or os.path.getsize(kana_actual_path) == 0 or os.path.exists(kana_csep_actual_path) == False or os.path.getsize(kana_csep_actual_path) == 0):
-         self.ensure_kana_local_lib_files(kana_actual_path, kana_csep_actual_path)
+         FileEnsurer.ensure_kana_local_lib_files(kana_actual_path, kana_csep_actual_path)
 
       ## if vocab testing files are damaged or empty, then repair them
       if(os.path.exists(vocab_actual_path) == False or os.path.getsize(vocab_actual_path) == 0 or os.path.exists(vocab_csep_actual_path) == False or os.path.getsize(vocab_csep_actual_path) == 0):
-         self.ensure_vocab_local_lib_files(vocab_actual_path, vocab_csep_actual_path)
+         FileEnsurer.ensure_vocab_local_lib_files(vocab_actual_path, vocab_csep_actual_path)
 
 ##--------------------start-of-ensure_remote_lib_files()------- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_remote_lib_files(self) -> None:
+   @staticmethod
+   def ensure_remote_lib_files() -> None:
 
       """
 
-      Ensures that the remote lib files for the remote handler are present and ready to be used.\n
-
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-
-      Returns:\n
-      None .\n
+      Ensures that the remote lib files for the remote handler are present and ready to be used.
       
       """
 
@@ -283,35 +202,32 @@ class fileEnsurer:
       ##----------------------------------------------------------------paths----------------------------------------------------------------
 
       ## if remoteHandler failed to make a database connection
-      database_connection_failed_path = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
+      database_connection_failed_path = os.path.join(FileEnsurer.remote_lib_dir, "isConnectionFailed.txt")
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       ## needs to be false so that connectionHandler.py will attempt to connect
-      self.file_handler.modified_create_file(database_connection_failed_path, "false")
+      FileHandler.modified_create_file(database_connection_failed_path, "false")
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_kana_local_lib_files(self, kana_actual_path:str, kana_csep_actual_path:str) -> None:
+   @staticmethod
+   def ensure_kana_local_lib_files(kana_actual_path:str, kana_csep_actual_path:str) -> None:
 
       """
       
-      Ensures that the local lib kana files are present and ready to be used.\n
+      Ensures that the local lib kana files are present and ready to be used.
 
       Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-      kana_actual_path (str) : the path to the kana.txt file that is used for testing purposes.\n
-      kana_csep_actual_path (str) : the path to the kana csep.txt file that is used for testing purposes.\n
-
-      Returns:\n
-      None\n
+      kana_actual_path (str) : the path to the kana.txt file that is used for testing purposes.
+      kana_csep_actual_path (str) : the path to the kana csep.txt file that is used for testing purposes.
 
       """
 
       ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
       ## where the lib files for the local handler are located
-      local_lib_dir_path = os.path.join(self.lib_dir, "local")
+      local_lib_dir_path = os.path.join(FileEnsurer.lib_dir, "local")
 
       ## where the local kana files are located
       local_kana_lib_dir_path = os.path.join(local_lib_dir_path, "kana")
@@ -329,7 +245,7 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      self.logger.log_action("Local kana files were reset to default using local lib")
+      Logger.log_action("Local kana files were reset to default using local lib")
 
       ## kana black list, small kana and symbols
       black_list_characters_kana = ['ヶ', 'ョ', 'ゃ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ァ', 'ゅ', 'ょ', 'ぉ', '-', 'ヱ', 'ゐ', 'ヰ', 'ー', 'ッ','っ']
@@ -364,30 +280,27 @@ class fileEnsurer:
          if(i not in black_list_indexes):
             kana_csep_insert_values = [str(i), str(i), csep.rstrip(',\n'), "2"]
 
-            self.file_handler.write_sei_line(kana_csep_actual_path, kana_csep_insert_values)
+            FileHandler.write_sei_line(kana_csep_actual_path, kana_csep_insert_values)
 
 ##--------------------start-of-ensure_vocab_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_vocab_local_lib_files(self, vocab_actual_path, vocab_csep_actual_path) -> None:
+   @staticmethod
+   def ensure_vocab_local_lib_files(vocab_actual_path, vocab_csep_actual_path) -> None:
 
       """
       
-      Ensures that the local lib vocab files are present and ready to be used.\n
+      Ensures that the local lib vocab files are present and ready to be used.
 
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object.\n
-      vocab_actual_path (str) : the path to the vocab.txt file that is used for testing purposes.\n
-      vocab_csep_actual_path (str) : the path to the vocab csep.txt file that is used for testing purposes.\n
-
-      Returns:\n
-      None.\n
+      Parameters:
+      vocab_actual_path (str) : the path to the vocab.txt file that is used for testing purposes.
+      vocab_csep_actual_path (str) : the path to the vocab csep.txt file that is used for testing purposes.
 
       """
 
       ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
       ## where the lib files for the local handler are located
-      local_lib_dir_path = os.path.join(self.lib_dir, "local")
+      local_lib_dir_path = os.path.join(FileEnsurer.lib_dir, "local")
 
       ## where the local kana files are located
       local_vocab_lib_dir_path = os.path.join(local_lib_dir_path, "vocab")
@@ -402,7 +315,7 @@ class fileEnsurer:
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      self.logger.log_action("Local vocab files were reset using to default using local lib")
+      Logger.log_action("Local vocab files were reset using to default using local lib")
 
       ## directly copy the files from the local lib to the actual files
       shutil.copy2(local_vocab_lib_path, vocab_actual_path)
@@ -410,24 +323,19 @@ class fileEnsurer:
 
 ##--------------------start-of-ensure_archive_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-   def ensure_archive_files(self) -> None:
+   @staticmethod
+   def ensure_archive_files() -> None:
       
       """
       
-      Ensures that the files located in the archives directory are present and ready to be used.\n
-z
-      Parameters:\n
-      self (object - fileEnsurer) : the fileEnsurer object\n
-
-      Returns:\n
-      None.\n
+      Ensures that the files located in the archives directory are present and ready to be used.
 
       """
 
       ##----------------------------------------------------------------dirs----------------------------------------------------------------
 
       ## archives for previous versions of Seisen txt files
-      archives_dir = os.path.join(self.config_dir, "Archives")
+      archives_dir = os.path.join(FileEnsurer.config_dir, "Archives")
 
       ## archives for the database files
       database_archives_dir = os.path.join(archives_dir, "Database")
@@ -457,13 +365,13 @@ z
 
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
-      self.file_handler.standard_create_directory(archives_dir)
-      self.file_handler.standard_create_directory(database_archives_dir)
-      self.file_handler.standard_create_directory(local_archives_dir)
-      self.file_handler.standard_create_directory(local_remote_archives_dir)
+      FileHandler.standard_create_directory(archives_dir)
+      FileHandler.standard_create_directory(database_archives_dir)
+      FileHandler.standard_create_directory(local_archives_dir)
+      FileHandler.standard_create_directory(local_remote_archives_dir)
 
-      self.file_handler.standard_create_file(last_local_backup_file)
-      self.file_handler.standard_create_file(last_remote_backup_file)
-      self.file_handler.standard_create_file(last_local_remote_backup_file)
-      self.file_handler.standard_create_file(last_local_remote_backup_accurate_path)
+      FileHandler.standard_create_file(last_local_backup_file)
+      FileHandler.standard_create_file(last_remote_backup_file)
+      FileHandler.standard_create_file(last_local_remote_backup_file)
+      FileHandler.standard_create_file(last_local_remote_backup_accurate_path)
 

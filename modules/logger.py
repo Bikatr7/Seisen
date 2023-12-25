@@ -1,98 +1,102 @@
-## built-in imports
-import datetime
-import os
+## custom modules
+from modules.toolkit import Toolkit
 
-class logger:
+class Logger:
 
-    '''
+    """
+    
+    The logger class is used to log actions taken by Kudasai.
 
-    The logger class is used to log actions taken by Seisen.\n
-        
-    '''
+    """
 
-##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    log_file_path = ""
 
-
-    def __init__(self, incoming_log_file_path:str):
-
-        """
-        
-        Initializes a new logger object.\n
-
-        Parameters:\n
-        incoming_log_file_path (str) : The path to the log file.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        self.log_file_path = incoming_log_file_path
-
-        self.batch = ""
-
-##--------------------start-of-get_time_stamp()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def get_time_stamp(self):
-
-        """
-        
-        Gets the time stamp for a logging action taken.\n
-
-        Parameters:\n
-        self (object - logger) : The logger object.\n
-
-        Returns:\n
-        time_stamp (str) : The time stamp for the logging action.\n
-
-        """
-
-        current_date = datetime.date.today().strftime("%Y-%m-%d")
-
-        current_time = datetime.datetime.now().time().strftime("%H:%M:%S")
-
-        time_stamp = "(" + current_date + " " + current_time + ") : "
-
-        return time_stamp
+    current_batch = ""
     
 ##--------------------start-of-log_action()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def log_action(self, action:str):
+    @staticmethod
+    def log_action(action:str, output:bool=False, omit_timestamp:bool=False, is_error:bool=False) -> str:
 
         """
         
-        Logs an action.\n
+        Logs an action.
 
-        Parameters:\n
-        self (object - logger) : the logger object.\n
-        action (str) : the action being logged.\n
-
-        Returns:\n
-        None.\n
+        Parameters:
+        action (str) : the action being logged.
+        output (bool | optional | defaults to false) : whether or not to output the action to the console.
+        omit_timestamp (bool | optional | defaults to false) : whether or not to omit the timestamp from the action.
+        is_error (bool | optional | defaults to false) : whether or not the action is an error.
  
         """
 
-        time_stamp = self.get_time_stamp()
+        timestamp = Toolkit.get_timestamp() 
 
-        self.batch += time_stamp + action + "\n"
+        log_line = timestamp + action + "\n"
+
+        Logger.current_batch += log_line
+
+        if(omit_timestamp):
+            log_line = action
+
+        if(output):
+            print(log_line)
+
+        if(is_error):
+            return timestamp + log_line
+        
+        return ""
+
+##--------------------start-of-log_barrier()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def log_barrier() -> None:
+            
+        """
+        
+        Logs a barrier.
+
+        """
+    
+        Logger.log_action("-------------------------")
 
 ##--------------------start-of-push_batch()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def push_batch(self):
+    @staticmethod
+    def push_batch() -> None:
 
         """
         
-        Pushes all stored actions to the file.\n
+        Pushes all stored actions to the log file.
 
-        Parameters:\n
-        None.\n
+        """
 
-        Returns:\n
-        None.\n
+        with open(Logger.log_file_path, 'a+', encoding="utf-8") as file:
+            file.write(Logger.current_batch)
+
+##--------------------start-of-clear_batch()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def clear_batch() -> None:
+
+        """
+        
+        Clears the current batch.
+
+        """
+
+        Logger.current_batch = ""
+        
+##--------------------start-of-clear_log_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def clear_log_file() -> None:
+
+        """
+        
+        Clears the log file.
         
         """
 
-        with open(self.log_file_path, 'a+', encoding="utf-8") as file:
-            file.write(self.batch)
-
-        self.batch = ""
+        with open(Logger.log_file_path, 'w+', encoding="utf-8") as file:
+            file.truncate(0)

@@ -1,70 +1,57 @@
 ## built-in modules
 from __future__ import annotations ## used for cheating the circular import issue that occurs when i need to type check some things
+from datetime import datetime
 
 import os
 import msvcrt
 import time
 import typing
-import requests
+import platform
+import subprocess
 
 ## custom modules
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
-    from modules.logger import logger
+    from modules.logger import Logger
 
-class toolkit():
+class Toolkit():
 
     """
     
-    The class for a bunch of utility functions used throughout Seisen.\n
+    The class for a bunch of utility functions used throughout Seisen.
 
     """
-##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, logger:logger) -> None:
-
-        """
-        
-        Initializes the toolkit class.\n
-
-        Parameters:\n
-        logger (object - logger) : The logger object.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        self.logger = logger
+    CURRENT_VERSION = "v2.0.0"
 
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def input_check(self, input_type:int, user_input:str, number_of_choices:int, input_prompt_message:str) -> str:
+    @staticmethod
+    def input_check(input_type:int, user_input:str, number_of_choices:int, input_prompt_message:str) -> str:
 
         """
 
-        Checks the user's input to make sure it is valid for the given input type.\n
+        Checks the user's input to make sure it is valid for the given input type.
 
-        Parameters:\n
-        self (object - toolkit) : The toolkit object.\n
-        input_type (int) : the type of input we are checking.\n
-        user_input (str) : the user's input.\n
-        number_of_choices (int) : the number of choices the user has.\n
-        input_prompt_message (str)  : the prompt to be displayed to the user.\n
+        Parameters:
+        input_type (int) : the type of input we are checking.
+        user_input (str) : the user's input.
+        number_of_choices (int) : the number of choices the user has.
+        input_prompt_message (str)  : the prompt to be displayed to the user.
 
-        Returns:\n
-        new_user_input (str) : the user's input.\n
+        Returns:
+        new_user_input (str) : the user's input.
 
         """
 
         new_user_input = str(user_input)
         input_issue_message = ""
 
-        self.clear_console()
+        Toolkit.clear_console()
 
         while(True):
 
             if(user_input == 'q'):
-                self.exit_seisen()
+                Toolkit.exit_seisen()
 
             elif(user_input == 'v' and input_type != 1):
                 return new_user_input
@@ -89,24 +76,19 @@ class toolkit():
                 print(input_issue_message + "\n" + input_prompt_message)
                 user_input = str(msvcrt.getch().decode())
 
-            self.clear_console()
-            self.clear_stream()
+            Toolkit.clear_console()
+            Toolkit.clear_stream()
 
             new_user_input = str(user_input)
 
 ##-------------------start-of-clear_console()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def clear_console(self) -> None:
+    @staticmethod
+    def clear_console() -> None:
 
         """
 
-        clears the console.\n
-
-        Parameters:\n
-        self (object - toolkit) : The toolkit object.\n
-
-        Returns:\n
-        None.\n
+        Clears the console.
 
         """
 
@@ -114,57 +96,116 @@ class toolkit():
 
 ##-------------------start-of-pause_console()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def pause_console(self, message:str="Press any key to continue...") -> None:
+    @staticmethod
+    def pause_console(message:str="Press any key to continue...") -> None:
 
         """
 
-        Pauses the console.\n
+        Pauses the console.
+        Requires msvcrt on Windows and termios on Linux/Mac, will do nothing if neither are present.
 
-        Parameters:\n
-        self (object - toolkit) : The toolkit object.\n
-        message (str - optional) : the message that will be displayed when the console is paused.\n
-
-        Returns:\n
-        None\n
+        Parameters:
+        message (string | optional) : The custom message to be displayed to the user.
 
         """
 
-        print(message)  # Print the custom message
+        try:
+
+            print(message)
+
+            ## Windows
+            if(os.name == 'nt'):
+
+                import msvcrt
+
+                msvcrt.getch()
+
+                ## Linux and Mac
+            elif(os.name == 'posix'):
+
+                import termios
+
+                ## Save terminal settings
+                old_settings = termios.tcgetattr(0)
+
+                try:
+                    new_settings = termios.tcgetattr(0)
+                    new_settings[3] = new_settings[3] & ~termios.ICANON
+                    termios.tcsetattr(0, termios.TCSANOW, new_settings)
+                    os.read(0, 1)  ## Wait for any key press
+
+                finally:
+
+                    termios.tcsetattr(0, termios.TCSANOW, old_settings)
+
+        except ImportError:
+
+            pass
+
+##-------------------start-of-maximize_window()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def maximize_window():
+
+        """
         
-        if(os.name == 'nt'):  ## Windows
-            
-            msvcrt.getch() 
+        Maximizes the console window.
 
-        else:  ## Linux, No idea if any of this works lmao
+        """
 
-            import termios
+        try:
 
-            ## Save terminal settings
-            old_settings = termios.tcgetattr(0)
+            system_name = platform.system()
 
-            try:
-                new_settings = termios.tcgetattr(0)
-                new_settings[3] = new_settings[3] & ~termios.ICANON
-                termios.tcsetattr(0, termios.TCSANOW, new_settings)
-                os.read(0, 1)  ## Wait for any key press
+            if(system_name == "Windows"):
+                os.system('mode con: cols=140 lines=40')
 
-            finally:
+            elif(system_name == "Linux"):
+                print("\033[8;40;140t")
 
-                termios.tcsetattr(0, termios.TCSANOW, old_settings)
+            elif(system_name == "Darwin"):
+                subprocess.call(["printf", "'\\e[8;40;140t'"])
+
+        except:
+            pass
+
+##-------------------start-of-minimize_window()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def minimize_window():
+
+        """
+        
+        Minimizes the console window.
+
+        """
+
+        try:
+
+            system_name = platform.system()
+
+            if(system_name == "Windows"):
+                os.system('mode con: cols=80 lines=25')
+
+            elif(system_name == "Linux"):
+                print("\033[8;25;80t")
+
+            elif(system_name == "Darwin"):
+                subprocess.call(["printf", "'\\e[8;25;80t'"])
+
+        except:
+            pass
                 
 ##--------------------start-of-clear_stream()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def clear_stream(self) -> None: 
+    @staticmethod
+    def clear_stream() -> None: 
 
         """
 
-        Clears the console stream.\n
+        Clears the console stream.
 
-        Parameters:\n
-        self (object - toolkit) : The toolkit object.\n
-
-        Returns:\n
-        None.\n
+        ## need to make this work on linux and mac
 
         """
         
@@ -175,18 +216,18 @@ class toolkit():
 
 ##--------------------start-of-user_confirm()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def user_confirm(self, prompt:str) -> str:
+    @staticmethod
+    def user_confirm(prompt:str) -> str:
 
         """
 
-        Prompts the user to confirm their input.\n
+        Prompts the user to confirm their input.
 
-        Parameters:\n
-        self (object - toolkit) : The toolkit object.\n
+        Parameters:
         prompt (str) : the prompt to be displayed to the user.\n
 
-        Returns:\n
-        user_input (str) : the user's input.\n
+        Returns:
+        user_input (str) : the user's input.
 
         """
 
@@ -199,113 +240,133 @@ class toolkit():
 
         while(entry_confirmed == False):
 
-            self.clear_console()
+            Toolkit.clear_console()
             
-            self.clear_stream()
+            Toolkit.clear_stream()
             
             user_input = input(prompt + options)
             
             if(user_input == "q"): ## if the user wants to quit do so
-                self.exit_seisen()
+                Toolkit.exit_seisen()
 
             if(user_input == "z"): ## z is used to skip
-                raise self.UserCancelError()
+                raise Toolkit.UserCancelError()
 
-            self.clear_console()
+            Toolkit.clear_console()
 
             output = confirmation + user_input + options
             
             print(output)
             
-            self.clear_stream()
+            Toolkit.clear_stream()
             
-            if(int(self.input_check(4, str(msvcrt.getch().decode()), 2 , output)) == 1):
+            if(int(Toolkit.input_check(4, str(msvcrt.getch().decode()), 2 , output)) == 1):
                     entry_confirmed = True
             else:
 
-                self.clear_console()
+                Toolkit.clear_console()
 
                 print(prompt)
         
-        self.clear_console()
+        Toolkit.clear_console()
 
         return user_input
 
 ##-------------------start-of-check_update()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_update(self) -> bool:
+    @staticmethod
+    def check_update() -> typing.Tuple[bool, str]:
 
         """
 
-        determines if Seisen has a new latest release, and confirms if an internet connection is present or not.\n
+        Determines if Seisen has a new latest release, and confirms if an internet connection is present or not.
+        If requests is not installed, it will return is_connection as False.
 
-        Parameters:\n
-        self (object - toolkit) : The toolkit object.\n
-
-        Returns:\n
-        True if the user has an internet connection, False if the user does not.\n
+        Returns:
+        is_connection (bool) : Whether or not the user has an internet connection.
+        update_prompt (str) : The update prompt to be displayed to the user, can either be blank if there is no update or contain the update prompt if there is an update.
 
         """
-        
+
+        update_prompt = ""
+        is_connection = True
+
         try:
 
-            self.clear_console()
-        
-            CURRENT_VERSION = "v2.0.0" 
+            import requests
 
-            response = requests.get("https://api.github.com/repos/Seinuve/Seisen/releases/latest")
+            response = requests.get("https://api.github.com/repos/Bikatr7/Seisen/releases/latest")
             latest_version = response.json()["tag_name"]
             release_notes = response.json()["body"]
 
-            self.logger.log_action("Current Version: " + CURRENT_VERSION)
-
-            if(latest_version != CURRENT_VERSION):
-                print("There is a new update for Seisen (" + latest_version + ") Currently on (" + CURRENT_VERSION + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Seinuve/Seisen/releases/latest \n")
-                self.logger.log_action("Prompted Update Request for " + latest_version)
+            if(latest_version != Toolkit.CURRENT_VERSION):
+                update_prompt += "There is a new update for Kudasai (" + latest_version + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Bikatr7/Seisen/releases/latest \n"
 
                 if(release_notes):
-                    print("Release notes:\n\n" + release_notes + '\n')
+                    update_prompt += "\nRelease notes:\n\n" + release_notes + '\n'
 
-                self.pause_console()
-                self.clear_console()
+            return is_connection, update_prompt
 
-            return True
+        ## used to determine if user lacks an internet connection or possesses another issue that would cause the automated mtl to fail.
+        except ImportError:
 
-        except: ## used to determine if user lacks an internet connection or possesses another issue that would cause any internet related functionalities to fail
-                    
-            return False
+            print("Requests is not installed, please install it using the following command:\npip install requests")
+
+            Toolkit.pause_console()
+
+            is_connection = False
+
+            return is_connection, update_prompt
+
+
+        except Exception as e:
+
+            is_connection = False
+
+            return is_connection, update_prompt
     
 ##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def exit_seisen(self):
+    @staticmethod
+    def exit_seisen():
 
         """
         
-        Pushes the log batch to the log and exits.\n
-
-        Parameters:\n
-        self (object - toolkit) : the toolkit object.\n
-
-        Returns:\n
-        None.\n
+        Pushes the log batch to the log and exits.
 
         """
 
-        self.logger.push_batch()
+        Logger.push_batch()
 
         exit()
 
-##--------------------start-of-UserCancelError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-get_timestamp()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    @staticmethod
+    def get_timestamp() -> str:
+
+        """
+        
+        Generates a timestamp for an action taken by Kudasai.
+
+        Returns:
+        time_stamp (string) : The timestamp for the action.        
+        
+        """
+
+        time_stamp = "[" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] "
+
+        return time_stamp
+
+##--------------------start-of-UserCancelError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     class UserCancelError(Exception):
 
         """
         
-        Is raised when a user cancel's an action\n
+        Is raised when a user cancel's an action.
 
         """
-
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -314,13 +375,7 @@ class toolkit():
 
             """
             
-            Initializes a new UserCancelError Exception.\n
-
-            Parameters:\n
-            None.\n
-
-            Returns:\n
-            None.\n
+            Initializes a new UserCancelError Exception.
 
             """
 

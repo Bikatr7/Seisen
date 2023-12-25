@@ -42,6 +42,21 @@ class FileEnsurer:
    ## paths
    loop_data_path = os.path.join(loop_data_dir, "loopData.txt")
 
+##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+   @staticmethod
+   def exit_seisen():
+
+      """
+      
+      Pushes the log batch to the log and exits.
+
+      """
+
+      Logger.push_batch()
+
+      exit()
+
 ##--------------------start-of-ensure_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    @staticmethod
@@ -52,8 +67,6 @@ class FileEnsurer:
       This function ensures that the files needed to run the program are present and ready to be used.
             
       """
-
-      
 
       FileEnsurer.create_needed_base_directories()
 

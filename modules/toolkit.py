@@ -1,5 +1,4 @@
 ## built-in modules
-from __future__ import annotations ## used for cheating the circular import issue that occurs when i need to type check some things
 from datetime import datetime
 
 import os
@@ -10,8 +9,7 @@ import platform
 import subprocess
 
 ## custom modules
-if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
-    from modules.logger import Logger
+from modules.fileEnsurer import FileEnsurer
 
 class Toolkit():
 
@@ -51,7 +49,7 @@ class Toolkit():
         while(True):
 
             if(user_input == 'q'):
-                Toolkit.exit_seisen()
+                FileEnsurer.exit_seisen()
 
             elif(user_input == 'v' and input_type != 1):
                 return new_user_input
@@ -247,7 +245,7 @@ class Toolkit():
             user_input = input(prompt + options)
             
             if(user_input == "q"): ## if the user wants to quit do so
-                Toolkit.exit_seisen()
+                FileEnsurer.exit_seisen()
 
             if(user_input == "z"): ## z is used to skip
                 raise Toolkit.UserCancelError()
@@ -325,21 +323,6 @@ class Toolkit():
 
             return is_connection, update_prompt
     
-##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def exit_seisen():
-
-        """
-        
-        Pushes the log batch to the log and exits.
-
-        """
-
-        Logger.push_batch()
-
-        exit()
-
 ##-------------------start-of-get_timestamp()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod

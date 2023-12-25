@@ -5,7 +5,7 @@ class Logger:
 
     """
     
-    The logger class is used to log actions taken by Kudasai.
+    The logger class is used to log actions taken by Seisen.
 
     """
 

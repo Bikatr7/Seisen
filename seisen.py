@@ -13,8 +13,8 @@ from handlers.remoteHandler import remoteHandler
 
 from handlers.settingsHandler import settingsHandler
 
-from modules.fileEnsurer import fileEnsurer
-from modules.scoreRate import scoreRate
+from modules.file_ensurer import fileEnsurer
+from modules.score_rater import scoreRate
 
 from modules.toolkit import toolkit
 

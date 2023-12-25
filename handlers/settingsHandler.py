@@ -5,7 +5,7 @@ import msvcrt
 from handlers.localHandler import localHandler
 from handlers.remoteHandler import remoteHandler
 
-from modules.scoreRate import scoreRate
+from modules.score_rater import scoreRate
 
 from handlers.vocabSettingsHandler import vocabSettingsHandler
 from handlers.storageSettingsHandler import storageSettingsHandler

@@ -18,7 +18,7 @@ from entities.csep import csep as csep_blueprint
 
 from modules.toolkit import toolkit
 
-from modules.fileEnsurer import fileEnsurer
+from modules.file_ensurer import fileEnsurer
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from entities.csep import csep

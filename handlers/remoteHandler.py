@@ -16,7 +16,7 @@ from entities.vocab import vocab as vocab_blueprint
 
 from modules.toolkit import toolkit
 
-from modules.fileEnsurer import fileEnsurer
+from modules.file_ensurer import fileEnsurer
 
 from handlers.connectionHandler import connectionHandler
 

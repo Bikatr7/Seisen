@@ -13,7 +13,7 @@ import mysql.connector
 ## custom modules
 from modules.toolkit import toolkit
 
-from modules.fileEnsurer import fileEnsurer
+from modules.file_ensurer import fileEnsurer
 
 
 class connectionHandler():

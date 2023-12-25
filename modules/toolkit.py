@@ -9,7 +9,7 @@ import platform
 import subprocess
 
 ## custom modules
-from modules.fileEnsurer import FileEnsurer
+from modules.file_ensurer import FileEnsurer
 
 class Toolkit():
 

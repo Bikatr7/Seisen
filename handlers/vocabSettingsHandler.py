@@ -8,9 +8,9 @@ from handlers.remoteHandler import remoteHandler
 
 from modules.searcher import searcher
 
-from modules.vocab import vocab as vocab_blueprint 
+from entities.vocab import vocab as vocab_blueprint 
 
-from modules.csep import csep as csep_blueprint
+from entities.csep import csep as csep_blueprint
 
 class vocabSettingsHandler():
 

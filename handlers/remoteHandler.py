@@ -6,13 +6,13 @@ import shutil
 import time
 
 ## custom modules
-from modules.typos import typo as typo_blueprint
-from modules.typos import incorrectTypo as incorrect_typo_blueprint
+from entities.typos import typo as typo_blueprint
+from entities.typos import incorrectTypo as incorrect_typo_blueprint
 
-from modules.csep import csep as csep_blueprint
+from entities.csep import csep as csep_blueprint
 
-from modules.words import word as kana_blueprint
-from modules.vocab import vocab as vocab_blueprint
+from entities.words import word as kana_blueprint
+from entities.vocab import vocab as vocab_blueprint
 
 from modules.toolkit import toolkit
 

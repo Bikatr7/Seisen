@@ -8,22 +8,22 @@ import shutil
 import time
 
 ## custom modules
-from modules.typos import typo as typo_blueprint
-from modules.typos import incorrectTypo as incorrect_typo_blueprint
+from entities.typos import typo as typo_blueprint
+from entities.typos import incorrectTypo as incorrect_typo_blueprint
 
-from modules.words import word as kana_blueprint
-from modules.vocab import vocab as vocab_blueprint
+from entities.words import word as kana_blueprint
+from entities.vocab import vocab as vocab_blueprint
 
-from modules.csep import csep as csep_blueprint
+from entities.csep import csep as csep_blueprint
 
 from modules.toolkit import toolkit
 
 from modules.fileEnsurer import fileEnsurer
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
-    from modules.csep import csep
-    from modules.vocab import vocab
-    from modules.words import word as kana
+    from entities.csep import csep
+    from entities.vocab import vocab
+    from entities.words import word as kana
 
 class localHandler():
 

@@ -4,8 +4,8 @@ import typing
 import msvcrt
 
 ## custom modules
-from modules.words import word
-from modules.vocab import vocab
+from entities.words import word
+from entities.vocab import vocab
 from handlers.localHandler import localHandler
 
 class scoreRate:

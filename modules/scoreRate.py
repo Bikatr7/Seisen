@@ -1,4 +1,4 @@
-## built-in modules
+## built-in libaries
 import random
 import typing
 import msvcrt
@@ -6,9 +6,10 @@ import msvcrt
 ## custom modules
 from entities.words import word
 from entities.vocab import vocab
-from handlers.localHandler import localHandler
 
-class scoreRate:
+from modules.logger import Logger
+
+class ScoreRater:
 
     """
 
@@ -16,37 +17,19 @@ class scoreRate:
     
     """
 
-    ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def __init__(self, handler:localHandler) -> None:
-
-        """
-
-        This method is used to initialize the scoreRate class.\n
-
-        Parameters:\n
-        handler (object - localHandler) : the local handler.\n
-
-        Returns:\n
-        None.\n
-        
-        """
-
-        self.handler = handler
-
 ##--------------------start-of-calculate_score()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def calculate_score(self, total_answer:int, correct_count:int) -> float:
+    @staticmethod
+    def calculate_score(total_answer:int, correct_count:int) -> float:
 
         """
         
-        Parameters:\n
-        self (object - scoreRate) : the scoreRate object.\n
-        total_answers (int) : total number of answers for the word.\n
-        correct_count (int) : total number of correct answers for the word.\n
+        Parameters:
+        total_answers (int) : total number of answers for the word.
+        correct_count (int) : total number of correct answers for the word.
 
-        Returns:\n
-        selection_weight (float) : the chance of the word getting selected.\n
+        Returns:
+        selection_weight (float) : the chance of the word getting selected.
  
         """
 
@@ -64,23 +47,23 @@ class scoreRate:
     
 ##--------------------start-of-get_kana_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_kana_to_test(self, kana_list:typing.List[word]) -> typing.Tuple[word, typing.List[str]]:
+    @staticmethod
+    def get_kana_to_test(kana_list:typing.List[word]) -> typing.Tuple[word, typing.List[str]]:
 
         """
 
-        This method is used to determine which "kana" will be given to the user based on a multitude of factors, such as the number of answers, the number of correct answers, the number of incorrect answers, etc.\n
+        This method is used to determine which "kana" will be given to the user based on a multitude of factors, such as the number of answers, the number of correct answers, the number of incorrect answers, etc.
 
-        Parameters:\n
-        self (object - scoreRate): The scoreRate class object.\n
-        kana_list (list - word): The list of kana we can test.\n
+        Parameters:
+        kana_list (list - word): The list of kana we can test.
 
-        Returns:\n
-        kana_to_test (word): The kana we want to test.\n
-        display_item_list (list - str): The list of display items. I.E. all the kana, their likelihoods, number of incorrect/correct answers.\n
+        Returns:
+        kana_to_test (word): The kana we want to test.
+        display_item_list (list - str): The list of display items. I.E. all the kana, their likelihoods, number of incorrect/correct answers.
 
         """
 
-        self.handler.file_ensurer.logger.log_action("Getting Kana to test...")
+        Logger.log_action("Getting Kana to test...")
 
         raw_score_list = []
         kana_scores = []
@@ -104,7 +87,7 @@ class scoreRate:
             total_answer_score = raw_score / (raw_score + 1)
             kana_score *= (1.0 - total_answer_score)  ## Invert the score here
 
-            kana_score += self.calculate_score(raw_score, kana_item.correct_count) 
+            kana_score += ScoreRater.calculate_score(raw_score, kana_item.correct_count) 
 
             kana_scores.append(kana_score + 1.0)
 
@@ -133,29 +116,29 @@ class scoreRate:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        self.handler.file_ensurer.logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
+        Logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
 
         return kana_to_test, display_item_list
     
 ##--------------------start-of-get_vocab_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_vocab_to_test(self, vocab_list:typing.List[vocab]) -> typing.Tuple[vocab, typing.List[str]]:
+    @staticmethod
+    def get_vocab_to_test(vocab_list:typing.List[vocab]) -> typing.Tuple[vocab, typing.List[str]]:
         
         """
 
-        This method is used to determine which "vocab" will be given to the user based on a multitude of factors, such as the number of answers, the number of correct answers, the number of incorrect answers, etc.\n
+        This method is used to determine which "vocab" will be given to the user based on a multitude of factors, such as the number of answers, the number of correct answers, the number of incorrect answers, etc.
 
-        Parameters:\n
-        self (object - scoreRate): The scoreRate class object.\n
-        vocab_list (list - vocab): The list of vocab we can test.\n
+        Parameters:
+        vocab_list (list - vocab): The list of vocab we can test.
 
-        Returns:\n
-        vocab_to_test (vocab): The vocab we want to test.\n
-        display_item_list (list - str): The list of display items. I.E. all the vocab, their likelihoods, number of incorrect/correct answers.\n
+        Returns:
+        vocab_to_test (vocab): The vocab we want to test.
+        display_item_list (list - str): The list of display items. I.E. all the vocab, their likelihoods, number of incorrect/correct answers.
         
         """
 
-        self.handler.file_ensurer.logger.log_action("Getting Vocab to test...")
+        Logger.log_action("Getting Vocab to test...")
 
         raw_score_list = []
         vocab_scores = []
@@ -182,7 +165,7 @@ class scoreRate:
             total_answer_score = raw_score / (raw_score + 1)
             vocab_score *= (1.0 - total_answer_score)  ## Invert the score here
 
-            vocab_score += self.calculate_score(raw_score, vocab_item.correct_count) 
+            vocab_score += ScoreRater.calculate_score(raw_score, vocab_item.correct_count) 
 
             vocab_scores.append(vocab_score + 1.0)
 
@@ -211,25 +194,25 @@ class scoreRate:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        self.handler.file_ensurer.logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
+        Logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
 
         return vocab_to_test, display_item_list
     
 ##--------------------start-of-levenshtein()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def levenshtein(self, string_one:str, string_two:str) -> int:
+    @staticmethod
+    def levenshtein(string_one:str, string_two:str) -> int:
 
         """
 
-        Compares two strings for similarity.\n
+        Compares two strings for similarity.
 
-        Parameters:\n
-        self (object - scoreRate): The scoreRate class object.\n
-        string_one (str) : the first string to compare.\n
-        string_two (str) : the second string to compare.\n
+        Parameters:
+        string_one (str) : the first string to compare.
+        string_two (str) : the second string to compare.
 
-        Returns:\n
-        distance[sLength1][sLength2] (int) : the minimum number of single-character edits required to transform string_one into string_two.\n
+        Returns:
+        distance[sLength1][sLength2] (int) : the minimum number of single-character edits required to transform string_one into string_two.
 
         """
 
@@ -259,19 +242,19 @@ class scoreRate:
 
 ##--------------------start-of-get_intended_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def get_intended_answer(self, typo:str, correct_answers:typing.List[str]) -> str:
+    @staticmethod
+    def get_intended_answer(typo:str, correct_answers:typing.List[str]) -> str:
 
         """
         
-        When a typo has been previously encountered, we need to determine what they were trying to type and return that instead.\n
+        When a typo has been previously encountered, we need to determine what they were trying to type and return that instead.
 
-        Parameters:\n
-        self (object - scoreRate) : The scoreRate class object.\n
-        typo (str) : the typo the user made.\n
-        correct_answers (list - str) : list of correct answers the typo could match.\n
+        Parameters:
+        typo (str) : the typo the user made.
+        correct_answers (list - str) : list of correct answers the typo could match.
 
-        Returns:\n
-        closest_string (str) : the string the user was trying to type.\n
+        Returns:
+        closest_string (str) : the string the user was trying to type.
 
         """
 
@@ -279,7 +262,7 @@ class scoreRate:
         closest_string = ""
 
         for string in correct_answers:
-            distance = self.levenshtein(typo, string)
+            distance = ScoreRater.levenshtein(typo, string)
             if(distance < closest_distance):
                 closest_distance = distance
                 closest_string = string
@@ -288,21 +271,19 @@ class scoreRate:
 
 ##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_typo(self, word:word, user_guess:str, prompt:str, handler:localHandler) -> str:  
+    def check_typo(self, word:word, user_guess:str, prompt:str) -> str:  
 
         """
 
-        checks if a user_guess is a typo or not\n
+        hecks if the user's guess is a typo or not.
 
-        Parameters:\n
-        self (object - scoreRate): The scoreRate class object.\n
-        word (object - word) : the word we're checking typos for.\n
-        user_guess (str) : the user's guess.\n
-        prompt (str) : the prompt that was given to the user.\n
-        handler (object - localHandler) : the localHandler object.\n
+        Parameters:
+        word (object - word) : the word we're checking typos for.
+        user_guess (str) : the user's guess.
+        prompt (str) : the prompt that was given to the user.
         
-        Returns:\n
-        final_answer (string) the user's final answer after being corrected for typos.\n
+        Returns:
+        final_answer (string) the user's final answer after being corrected for typos.
 
         """
 
@@ -332,58 +313,57 @@ class scoreRate:
 
         if(closest_match is not None):
 
-            handler.toolkit.clear_console()
+            Toolkit.clear_console()
 
             prompt += "\nDid you mean : " + closest_match + "? Press 1 to Confirm or 2 to Decline.\n"
         
             print(prompt)
 
-            userA = int(self.handler.toolkit.input_check(4 ,str(msvcrt.getch().decode()), 2, prompt))
+            userA = int(Toolkit.input_check(4 ,str(msvcrt.getch().decode()), 2, prompt))
         
-            self.handler.toolkit.clear_console()
+            Toolkit.clear_console()
 
             if(userA == 1):
 
                 final_answer = closest_match
 
-                word.log_new_typo(user_guess, handler)
+                word.log_new_typo(user_guess)
 
                 return final_answer
         
             else:
-                word.log_new_incorrect_typo(user_guess, handler)
+                word.log_new_incorrect_typo(user_guess)
 
         
         return final_answer
     
 ##--------------------start-of-check_answers_word()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_answers_word(self, word:word, user_guess:str, prompt:str, handler:localHandler) -> typing.Tuple[typing.Union[bool ,None], str]: 
+    def check_answers_word(self, word:word, user_guess:str, prompt:str) -> typing.Tuple[typing.Union[bool ,None], str]: 
 
         """
         
-        Checks if the user_guess is correct or incorrect.\n
+        Checks if the user_guess is correct or incorrect.
 
-        Parameters:\n
-        self (object - scoreRate): The scoreRate class object.\n
-        word (object - word) : the word we're checking answers for.\n
-        user_guess (str) : the user's guess.\n
-        prompt (str) : the prompt that was given to the user.\n
+        Parameters:
+        word (object - word) : the word we're checking answers for.
+        user_guess (str) : the user's guess.
+        prompt (str) : the prompt that was given to the user.
         handler (object - localHandler) : the localHandler object.
 
-        Returns:\n
-        bool or None : if the user's guess is correct or incorrect, or a None value iof the user decided to skip the question.\n 
-        user_guess (str) : the user's guess after being corrected for typos.\n
+        Returns:
+        bool or None : if the user's guess is correct or incorrect, or a None value iof the user decided to skip the question.
+        user_guess (str) : the user's guess after being corrected for typos.
 
         """
 
         answers = [value.csep_value for value in word.testing_material_answer_all]
 
         if(user_guess == 'q'): ## if the user wants to quit the program do so
-            self.handler.toolkit.exit_seisen()
+            Toolkit.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
-            user_guess = self.check_typo(word, user_guess, prompt, handler)
+            user_guess = self.check_typo(word, user_guess, prompt)
 
         if(user_guess in answers): 
             return True, user_guess

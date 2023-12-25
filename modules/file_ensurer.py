@@ -28,19 +28,86 @@ class FileEnsurer:
    ##----------------------------------/
 
    ## sub dirs
-   logins_dir = os.path.join(config_dir, "Logins")
-   kana_dir = os.path.join(config_dir, "Kana")
-   vocab_dir = os.path.join(config_dir, "Vocab")
-   loop_data_dir = os.path.join(config_dir, "Loop Data")
+   logins_dir = os.path.join(config_dir, "logins")
+   kana_dir = os.path.join(config_dir, "kana")
+   vocab_dir = os.path.join(config_dir, "vocab")
+   loop_data_dir = os.path.join(config_dir, "loopdata")
 
    lib_dir = os.path.join(script_dir, "lib")
 
+   local_lib_dir_path = os.path.join(lib_dir, "local")
    remote_lib_dir = os.path.join(lib_dir, "remote")
+
+   archives_dir = os.path.join(config_dir, "Archives")
+
+   local_archives_dir = os.path.join(archives_dir, "local")
+   remote_archives_dir = os.path.join(archives_dir, "remote")
+   local_remote_archives_dir = os.path.join(archives_dir, "localremote")
 
    ##----------------------------------/
 
-   ## paths
-   loop_data_path = os.path.join(loop_data_dir, "loopData.txt")
+   ## loop data
+   loop_data_path = os.path.join(loop_data_dir, "loop_data.txt")
+
+   ## kana
+   kana_actual_path = os.path.join(kana_dir, "kana.txt")
+   kana_csep_actual_path = os.path.join(kana_dir, "kana_csep.txt")
+   kana_typos_path = os.path.join(kana_dir, "kana_typos.txt")
+   kana_incorrect_typos_path = os.path.join(kana_dir, "kana_incorrect_typos.txt")
+
+   ## vocab
+   vocab_actual_path = os.path.join(vocab_dir, "vocab.txt")
+   vocab_csep_actual_path = os.path.join(vocab_dir, "vocab_csep.txt")
+   vocab_typos_path = os.path.join(vocab_dir, "vocab_typos.txt")
+   vocab_incorrect_typos_path = os.path.join(vocab_dir, "vocab_incorrect_typos.txt")
+
+   ##----------------------------------/
+
+   ## kana local lib
+
+   ## where the local kana files are located
+   local_kana_lib_dir_path = os.path.join(local_lib_dir_path, "kana")
+
+   ## the kana seisen uses to determine if a word is kanji or not
+   kana_filter_path_kana = os.path.join(local_kana_lib_dir_path, "kana.txt")
+
+   ## the readings for the kana in the file path above
+   kana_filter_path_readings = os.path.join(local_kana_lib_dir_path, "kana_readings.txt")
+
+   ## the answers for the kana in file path above
+   kana_csep_path = os.path.join(local_kana_lib_dir_path, "kana_csep.txt")
+
+   ##----------------------------------/
+
+   ## vocab local lib
+
+   ## where the local kana files are located
+   local_vocab_lib_dir_path = os.path.join(local_lib_dir_path, "vocab")
+
+   ## path to the starter vocab.txt file that is used for testing purposes
+   local_vocab_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab.txt")
+
+   ## path to the starter vocab csep.txt file that is used for testing purposes
+   local_vocab_csep_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab_csep.txt")
+
+   ##----------------------------------/
+
+   ## contains the date of the last local backup
+   last_local_backup_file = os.path.join(local_archives_dir, "last_local_backup.txt")
+
+   ## contains the date of the last database backup
+   last_remote_backup_file = os.path.join(remote_archives_dir, "last_remote_backup.txt")
+
+   ## contains the date of the last time the database was overwritten with local
+   last_local_remote_backup_file = os.path.join(local_remote_archives_dir, "last_local_remote_backup.txt")
+
+   ## contains a more accurate timestamp of the last time the database was overwritten with local
+   last_local_remote_backup_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_backup_accurate.txt")
+   
+   ##----------------------------------/
+
+   ## remote lib
+   database_connection_failed_path = os.path.join(remote_lib_dir, "has_connection_failed.txt")
 
 ##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -123,19 +190,9 @@ class FileEnsurer:
 
       """
 
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
+      FileHandler.standard_create_file(FileEnsurer.kana_typos_path)
 
-      ## the path to where the typos for the kana file are located
-      kana_typos_path = os.path.join(FileEnsurer.kana_dir, "kana typos.txt")
-
-      ## the path to where the incorrect typos for the kana file are located
-      kana_incorrect_typos_path = os.path.join(FileEnsurer.kana_dir, "kana incorrect typos.txt")
-
-      ##----------------------------------------------------------------other things----------------------------------------------------------------
-
-      FileHandler.standard_create_file(kana_typos_path)
-
-      FileHandler.standard_create_file(kana_incorrect_typos_path)
+      FileHandler.standard_create_file(FileEnsurer.kana_incorrect_typos_path)
 
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -148,19 +205,9 @@ class FileEnsurer:
 
       """
 
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
+      FileHandler.standard_create_file(FileEnsurer.vocab_typos_path)
 
-      ## the path to where the typos for the vocab file are located
-      vocab_typos_path = os.path.join(FileEnsurer.vocab_dir, "vocab typos.txt")
-
-      ## the path to where the incorrect typos for the vocab file are located
-      vocab_incorrect_typos_path = os.path.join(FileEnsurer.vocab_dir, "vocab incorrect typos.txt")
-
-      ##----------------------------------------------------------------other things----------------------------------------------------------------
-
-      FileHandler.standard_create_file(vocab_typos_path)
-
-      FileHandler.standard_create_file(vocab_incorrect_typos_path)
+      FileHandler.standard_create_file(FileEnsurer.vocab_incorrect_typos_path)
 
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -173,31 +220,15 @@ class FileEnsurer:
 
       """
 
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-      ## the path where the actual kana file is located, the one used for testing
-      kana_actual_path = os.path.join(FileEnsurer.kana_dir, "kana.txt")
-
-      ## the path where the actual kana csep file is located, the one used for testing
-      kana_csep_actual_path = os.path.join(FileEnsurer.kana_dir, "kana csep.txt")
-
-      ## the path where the actual vocab file is located, the one used for testing
-      vocab_actual_path = os.path.join(FileEnsurer.vocab_dir, "vocab.txt")
-
-      ## the path where the actual vocab csep file is located, the one used for testing
-      vocab_csep_actual_path = os.path.join(FileEnsurer.vocab_dir, "vocab csep.txt")
-
-      ##----------------------------------------------------------------other things----------------------------------------------------------------
-
       FileEnsurer.ensure_remote_lib_files()
 
       ## if kana testing files are damaged or empty, then repair them
-      if(os.path.exists(kana_actual_path) == False or os.path.getsize(kana_actual_path) == 0 or os.path.exists(kana_csep_actual_path) == False or os.path.getsize(kana_csep_actual_path) == 0):
-         FileEnsurer.ensure_kana_local_lib_files(kana_actual_path, kana_csep_actual_path)
+      if(os.path.exists(FileEnsurer.kana_actual_path) == False or os.path.getsize(FileEnsurer.kana_actual_path) == 0 or os.path.exists(FileEnsurer.kana_csep_actual_path) == False or os.path.getsize(FileEnsurer.kana_csep_actual_path) == 0):
+         FileEnsurer.ensure_kana_local_lib_files(FileEnsurer.kana_actual_path, FileEnsurer.kana_csep_actual_path)
 
       ## if vocab testing files are damaged or empty, then repair them
-      if(os.path.exists(vocab_actual_path) == False or os.path.getsize(vocab_actual_path) == 0 or os.path.exists(vocab_csep_actual_path) == False or os.path.getsize(vocab_csep_actual_path) == 0):
-         FileEnsurer.ensure_vocab_local_lib_files(vocab_actual_path, vocab_csep_actual_path)
+      if(os.path.exists(FileEnsurer.vocab_actual_path) == False or os.path.getsize(FileEnsurer.vocab_actual_path) == 0 or os.path.exists(FileEnsurer.vocab_csep_actual_path) == False or os.path.getsize(FileEnsurer.vocab_csep_actual_path) == 0):
+         FileEnsurer.ensure_vocab_local_lib_files(FileEnsurer.vocab_actual_path, FileEnsurer.vocab_csep_actual_path)
 
 ##--------------------start-of-ensure_remote_lib_files()------- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -210,17 +241,8 @@ class FileEnsurer:
       
       """
 
-      ##----------------------------------------------------------------dirs----------------------------------------------------------------
-
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-      ## if remoteHandler failed to make a database connection
-      database_connection_failed_path = os.path.join(FileEnsurer.remote_lib_dir, "isConnectionFailed.txt")
-
-      ##----------------------------------------------------------------other things----------------------------------------------------------------
-
       ## needs to be false so that connectionHandler.py will attempt to connect
-      FileHandler.modified_create_file(database_connection_failed_path, "false")
+      FileHandler.modified_create_file(FileEnsurer.database_connection_failed_path, "false")
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -237,25 +259,6 @@ class FileEnsurer:
 
       """
 
-      ##----------------------------------------------------------------dirs----------------------------------------------------------------
-
-      ## where the lib files for the local handler are located
-      local_lib_dir_path = os.path.join(FileEnsurer.lib_dir, "local")
-
-      ## where the local kana files are located
-      local_kana_lib_dir_path = os.path.join(local_lib_dir_path, "kana")
-
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-      ## the kana seisen uses to determine if a word is kanji or not
-      kana_filter_path_kana = os.path.join(local_kana_lib_dir_path, "kana.txt")
-
-      ## the readings for the kana in the file path above
-      kana_filter_path_readings = os.path.join(local_kana_lib_dir_path, "kana readings.txt")
-
-      ## the answers for the kana in file path above
-      kana_csep_path = os.path.join(local_kana_lib_dir_path, "kana csep.txt")
-
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       Logger.log_action("Local kana files were reset to default using local lib")
@@ -269,10 +272,10 @@ class FileEnsurer:
       kana_readings = []
       i = 0
 
-      with open(kana_filter_path_readings, 'r', encoding="utf-8") as file:
+      with open(FileEnsurer.kana_filter_path_readings, 'r', encoding="utf-8") as file:
          kana_readings = file.readlines()
 
-      with open(kana_filter_path_kana, 'r', encoding="utf-8") as file:
+      with open(FileEnsurer.kana_filter_path_kana, 'r', encoding="utf-8") as file:
 
          for line in file:
             i+=1
@@ -285,7 +288,7 @@ class FileEnsurer:
          file.write(default_kana_to_write)
          
 
-      with open(kana_csep_path, 'r', encoding="utf-8") as file:
+      with open(FileEnsurer.kana_csep_path, 'r', encoding="utf-8") as file:
          kana_csep = file.readlines()
 
       for i, csep in enumerate(kana_csep,start=1):
@@ -310,29 +313,13 @@ class FileEnsurer:
 
       """
 
-      ##----------------------------------------------------------------dirs----------------------------------------------------------------
-
-      ## where the lib files for the local handler are located
-      local_lib_dir_path = os.path.join(FileEnsurer.lib_dir, "local")
-
-      ## where the local kana files are located
-      local_vocab_lib_dir_path = os.path.join(local_lib_dir_path, "vocab")
-
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-      ## path to the starter vocab.txt file that is used for testing purposes
-      local_vocab_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab.txt")
-
-      ## path to the starter vocab csep.txt file that is used for testing purposes
-      local_vocab_csep_lib_path = os.path.join(local_vocab_lib_dir_path, "vocab csep.txt")
-
       ##----------------------------------------------------------------other things----------------------------------------------------------------
 
       Logger.log_action("Local vocab files were reset using to default using local lib")
 
       ## directly copy the files from the local lib to the actual files
-      shutil.copy2(local_vocab_lib_path, vocab_actual_path)
-      shutil.copy2(local_vocab_csep_lib_path, vocab_csep_actual_path)
+      shutil.copy2(FileEnsurer.local_vocab_lib_path, vocab_actual_path)
+      shutil.copy2(FileEnsurer.local_vocab_csep_lib_path, vocab_csep_actual_path)
 
 ##--------------------start-of-ensure_archive_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -345,46 +332,13 @@ class FileEnsurer:
 
       """
 
-      ##----------------------------------------------------------------dirs----------------------------------------------------------------
+      FileHandler.standard_create_directory(FileEnsurer.archives_dir)
+      FileHandler.standard_create_directory(FileEnsurer.remote_archives_dir)
+      FileHandler.standard_create_directory(FileEnsurer.local_archives_dir)
+      FileHandler.standard_create_directory(FileEnsurer.local_remote_archives_dir)
 
-      ## archives for previous versions of Seisen txt files
-      archives_dir = os.path.join(FileEnsurer.config_dir, "Archives")
-
-      ## archives for the database files
-      database_archives_dir = os.path.join(archives_dir, "Database")
-
-      ## archives for the local files
-      local_archives_dir = os.path.join(archives_dir, "Local")
-
-      ## archives for the database files
-      remote_archives_dir = os.path.join(archives_dir, "Database")
-
-      ## archives for the local-remote files
-      local_remote_archives_dir = os.path.join(archives_dir, "LocalRemote")
-
-      ##----------------------------------------------------------------paths----------------------------------------------------------------
-
-      ## contains the date of the last local backup
-      last_local_backup_file = os.path.join(local_archives_dir, "last_local_backup.txt")
-
-      ## contains the date of the last database backup
-      last_remote_backup_file = os.path.join(remote_archives_dir, "last_remote_backup.txt")
-
-      ## contains the date of the last time the database was overwritten with local
-      last_local_remote_backup_file = os.path.join(local_remote_archives_dir, "last_local_remote_backup.txt")
-
-      ## contains a more accurate timestamp of the last time the database was overwritten with local
-      last_local_remote_backup_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_backup_accurate.txt")
-
-      ##----------------------------------------------------------------other things----------------------------------------------------------------
-
-      FileHandler.standard_create_directory(archives_dir)
-      FileHandler.standard_create_directory(database_archives_dir)
-      FileHandler.standard_create_directory(local_archives_dir)
-      FileHandler.standard_create_directory(local_remote_archives_dir)
-
-      FileHandler.standard_create_file(last_local_backup_file)
-      FileHandler.standard_create_file(last_remote_backup_file)
-      FileHandler.standard_create_file(last_local_remote_backup_file)
-      FileHandler.standard_create_file(last_local_remote_backup_accurate_path)
+      FileHandler.standard_create_file(FileEnsurer.last_local_backup_file)
+      FileHandler.standard_create_file(FileEnsurer.last_remote_backup_file)
+      FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_file)
+      FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_accurate_path)
 

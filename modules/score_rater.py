@@ -8,6 +8,8 @@ from entities.words import word
 from entities.vocab import vocab
 
 from modules.logger import Logger
+from modules.toolkit import Toolkit
+from modules.file_ensurer import FileEnsurer
 
 class ScoreRater:
 
@@ -360,7 +362,7 @@ class ScoreRater:
         answers = [value.csep_value for value in word.testing_material_answer_all]
 
         if(user_guess == 'q'): ## if the user wants to quit the program do so
-            Toolkit.exit_seisen()
+            FileEnsurer.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
             user_guess = self.check_typo(word, user_guess, prompt)

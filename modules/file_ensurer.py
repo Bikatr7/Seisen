@@ -32,13 +32,12 @@ class FileEnsurer:
    kana_dir = os.path.join(config_dir, "kana")
    vocab_dir = os.path.join(config_dir, "vocab")
    loop_data_dir = os.path.join(config_dir, "loopdata")
+   archives_dir = os.path.join(config_dir, "archives")
 
    lib_dir = os.path.join(script_dir, "lib")
 
    local_lib_dir_path = os.path.join(lib_dir, "local")
    remote_lib_dir = os.path.join(lib_dir, "remote")
-
-   archives_dir = os.path.join(config_dir, "archives")
 
    local_archives_dir = os.path.join(archives_dir, "local")
    remote_archives_dir = os.path.join(archives_dir, "remote")

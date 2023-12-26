@@ -92,13 +92,13 @@ class FileEnsurer:
    ##----------------------------------/
 
    ## contains the date of the last local backup
-   last_local_backup_file = os.path.join(local_archives_dir, "last_local_backup.txt")
+   last_local_backup_path = os.path.join(local_archives_dir, "last_local_backup.txt")
 
    ## contains the date of the last database backup
-   last_remote_backup_file = os.path.join(remote_archives_dir, "last_remote_backup.txt")
+   last_remote_backup_path = os.path.join(remote_archives_dir, "last_remote_backup.txt")
 
    ## contains the date of the last time the database was overwritten with local
-   last_local_remote_backup_file = os.path.join(local_remote_archives_dir, "last_local_remote_backup.txt")
+   last_local_remote_backup_path = os.path.join(local_remote_archives_dir, "last_local_remote_backup.txt")
 
    ## contains a more accurate timestamp of the last time the database was overwritten with local
    last_local_remote_backup_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_backup_accurate.txt")
@@ -336,8 +336,8 @@ class FileEnsurer:
       FileHandler.standard_create_directory(FileEnsurer.local_archives_dir)
       FileHandler.standard_create_directory(FileEnsurer.local_remote_archives_dir)
 
-      FileHandler.standard_create_file(FileEnsurer.last_local_backup_file)
-      FileHandler.standard_create_file(FileEnsurer.last_remote_backup_file)
-      FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_file)
+      FileHandler.standard_create_file(FileEnsurer.last_local_backup_path)
+      FileHandler.standard_create_file(FileEnsurer.last_remote_backup_path)
+      FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_path)
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_accurate_path)
 

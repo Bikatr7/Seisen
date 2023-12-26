@@ -12,7 +12,7 @@ from entities.csep import csep as csep
 from entities import words
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
-    from handlers.localHandler import localHandler
+    from handlers.local_handler import localHandler
 
 class vocab(words.word):
 

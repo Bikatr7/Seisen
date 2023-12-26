@@ -3,7 +3,7 @@ import os
 import shutil
 
 ## custom modules
-from handlers.fileHandler import FileHandler
+from handlers.file_handler import FileHandler
 
 from modules.logger import Logger
 

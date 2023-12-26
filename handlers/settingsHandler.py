@@ -2,7 +2,7 @@
 import msvcrt
 
 ## custom modules
-from handlers.localHandler import localHandler
+from handlers.local_handler import localHandler
 from handlers.remoteHandler import remoteHandler
 
 from modules.score_rater import scoreRate

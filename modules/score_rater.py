@@ -7,9 +7,15 @@ import msvcrt
 from entities.words import word
 from entities.vocab import vocab
 
+from entities.typos import typo as typo_blueprint
+from entities.typos import incorrectTypo as incorrect_typo_blueprint
+
 from modules.logger import Logger
 from modules.toolkit import Toolkit
 from modules.file_ensurer import FileEnsurer
+
+from handlers.local_handler import LocalHandler
+from handlers.file_handler import FileHandler
 
 class ScoreRater:
 
@@ -329,12 +335,12 @@ class ScoreRater:
 
                 final_answer = closest_match
 
-                word.log_new_typo(user_guess)
+                ScoreRater.log_new_typo(word, typo=user_guess)
 
                 return final_answer
         
             else:
-                word.log_new_incorrect_typo(user_guess)
+                ScoreRater.log_new_incorrect_typo(word, incorrect_typo=user_guess)
 
         
         return final_answer
@@ -376,3 +382,56 @@ class ScoreRater:
         else: ## z indicates the user is skipping the word
             return None, user_guess
     
+##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def log_new_typo(word:word, typo:str) -> None:
+
+        """
+
+        Logs a new typo to the word.
+
+        Parameters:
+        word (object - word) : the word we're logging the typo for.
+        typo (str) : the typo to be logged.
+
+        """
+
+        new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(1))
+
+        new_typo = typo_blueprint(word.word_id, new_typo_id, typo, word.word_type)
+
+        ## updates local storage so the typo will be saved
+        FileHandler.write_sei_line(FileEnsurer.kana_typos_path, [str(word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+
+        ## updates the current session with the typo
+        word.typos.append(new_typo)
+
+        Logger.log_action("Logged a typo : " + typo + " for " + word.testing_material + ", id : " + str(word.word_id))
+
+##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def log_new_incorrect_typo(word:word, incorrect_typo:str) -> None:
+
+        """
+        
+        Logs a new incorrect typo to the word.
+
+        Parameters:
+        word (object - word) : the word we're logging the incorrect typo for.
+        incorrect_typo (str) : the incorrect_typo to be logged.
+        
+        """
+
+        new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(2))
+
+        new_incorrect_typo = incorrect_typo_blueprint(word.word_id, new_incorrect_typo_id, incorrect_typo, word.word_type)
+
+        ## updates local storage so the incorrect typo will be saved
+        FileHandler.write_sei_line(FileEnsurer.kana_incorrect_typos_path, [str(word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+
+        ## updates the current session with the incorrect typo
+        word.incorrect_typos.append(new_incorrect_typo)
+
+        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + word.testing_material + ", id : " + str(word.word_id))

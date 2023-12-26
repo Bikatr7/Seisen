@@ -20,7 +20,7 @@ from modules.toolkit import Toolkit
 from modules.logger import Logger
 from modules.file_ensurer import FileEnsurer
 
-from handlers.fileHandler import FileHandler
+from handlers.file_handler import FileHandler
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from entities.csep import csep

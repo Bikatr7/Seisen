@@ -17,9 +17,9 @@ class FileEnsurer:
 
    ## main dirs
    if(os.name == 'nt'):  ## Windows
-      config_dir = os.path.join(os.environ['USERPROFILE'],"KudasaiConfig")
+      config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
    else:  ## Linux
-      config_dir = os.path.join(os.path.expanduser("~"), "KudasaiConfig")
+      config_dir = os.path.join(os.path.expanduser("~"), "SeisenConfig")
       
    script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
@@ -38,7 +38,7 @@ class FileEnsurer:
    local_lib_dir_path = os.path.join(lib_dir, "local")
    remote_lib_dir = os.path.join(lib_dir, "remote")
 
-   archives_dir = os.path.join(config_dir, "Archives")
+   archives_dir = os.path.join(config_dir, "archives")
 
    local_archives_dir = os.path.join(archives_dir, "local")
    remote_archives_dir = os.path.join(archives_dir, "remote")

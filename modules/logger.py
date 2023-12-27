@@ -1,5 +1,6 @@
-## custom modules
-from modules.toolkit import Toolkit
+## build-in libraries
+from datetime import datetime
+
 
 class Logger:
 
@@ -30,7 +31,7 @@ class Logger:
  
         """
 
-        timestamp = Toolkit.get_timestamp() 
+        timestamp = Logger.get_timestamp() 
 
         log_line = timestamp + action + "\n"
 
@@ -100,3 +101,21 @@ class Logger:
 
         with open(Logger.log_file_path, 'w+', encoding="utf-8") as file:
             file.truncate(0)
+
+##-------------------start-of-get_timestamp()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_timestamp() -> str:
+
+        """
+        
+        Generates a timestamp for an action taken by Kudasai.
+
+        Returns:
+        time_stamp (string) : The timestamp for the action.        
+        
+        """
+
+        time_stamp = "[" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] "
+
+        return time_stamp

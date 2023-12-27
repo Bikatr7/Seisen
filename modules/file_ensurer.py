@@ -1,4 +1,6 @@
 ## built-in libraries
+from datetime import datetime
+
 import os
 import shutil
 
@@ -24,6 +26,8 @@ class FileEnsurer:
    script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
    log_path = os.path.join(config_dir, "log.txt")
+
+   Logger.log_file_path = log_path
 
    ##----------------------------------/
 
@@ -166,6 +170,7 @@ class FileEnsurer:
       FileHandler.standard_create_directory(FileEnsurer.kana_dir)
       FileHandler.standard_create_directory(FileEnsurer.vocab_dir)
       FileHandler.standard_create_directory(FileEnsurer.remote_lib_dir)
+      FileHandler.standard_create_directory(FileEnsurer.archives_dir)
                
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -335,7 +340,6 @@ class FileEnsurer:
 
       """
 
-      FileHandler.standard_create_directory(FileEnsurer.archives_dir)
       FileHandler.standard_create_directory(FileEnsurer.remote_archives_dir)
       FileHandler.standard_create_directory(FileEnsurer.local_archives_dir)
       FileHandler.standard_create_directory(FileEnsurer.local_remote_archives_dir)
@@ -345,3 +349,33 @@ class FileEnsurer:
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_path)
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_accurate_path)
 
+##--------------------start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+   @staticmethod
+   def create_archive_dir(type_of_archive:int) -> str:
+
+      """
+      
+      Creates the archive directory based on the given type of archive.
+
+      Parameters:
+      type_of_archive (int) : The type of archive. 1 for database, 2 for local.
+
+      Returns:
+      archive_directory (str) : The path to the newly created archive directory.
+
+      """
+      
+      current_day = datetime.today().strftime('%Y-%m-%d')
+
+      filePaths = {
+         1: FileEnsurer.remote_archives_dir,
+         2: FileEnsurer.local_archives_dir
+      }
+
+      ## not really sure why it's flagged by pylance.
+      archive_directory = os.path.join(filePaths[type_of_archive], current_day) # type: ignore
+
+      FileHandler.standard_create_directory(archive_directory)
+
+      return archive_directory

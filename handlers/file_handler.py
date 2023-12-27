@@ -100,53 +100,6 @@ class FileHandler():
             did_overwrite = True
 
         return did_overwrite
-
-##--------------------start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def create_archive_dir(type_of_archive:int) -> str:
-
-        """
-        
-        Creates the archive directory based on the given type of archive.
-
-        Parameters:
-        type_of_archive (int) : The type of archive. 1 for database, 2 for local.
-
-        Returns:
-        archive_directory (str) : The path to the newly created archive directory.
-
-        """
-
-        ##----------------------------------------------------------------dirs----------------------------------------------------------------
-
-        ## the folder where all the config files are located
-        config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
-
-        ## archives for previous versions of Seisen txt files
-        archives_dir = os.path.join(config_dir, "Archives")
-
-        ## archives for the database files
-        database_archives_dir = os.path.join(archives_dir, "Database")
-
-        ## archives for the local files
-        local_archives_dir = os.path.join(archives_dir, "Local")
-
-        ##----------------------------------------------------------------other-things----------------------------------------------------------------
-        
-        current_day = datetime.today().strftime('%Y-%m-%d')
-
-        filePaths = {
-            1: database_archives_dir,
-            2: local_archives_dir
-        }
-
-        ## not really sure why it's flagged by pylance.
-        archive_directory = os.path.join(filePaths[type_of_archive], current_day) # type: ignore
-
-        FileHandler.standard_create_directory(archive_directory)
-
-        return archive_directory
     
 ##--------------------start-of-write_sei_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

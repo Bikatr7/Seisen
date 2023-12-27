@@ -12,6 +12,7 @@ from handlers.local_handler import LocalHandler
 from handlers.remote_handler import RemoteHandler
 from handlers.file_handler import FileHandler
 from handlers.settings_handler import SettingsHandler
+from handlers.connection_handler import ConnectionHandler
 
 from modules.file_ensurer import FileEnsurer
 from modules.score_rater import ScoreRater
@@ -63,6 +64,14 @@ class Seisen:
     @staticmethod
     def bootup() -> None:
 
+        """
+
+        Bootup function for Seisen. This is called before the main loop.
+
+        """
+
+        Logger.clear_log_file()
+
         Logger.log_action("--------------------------------------------------------------")
         Logger.log_action("Bootup")
 
@@ -80,7 +89,11 @@ class Seisen:
         ## Maximize the console window
         ctypes.windll.user32.ShowWindow(hwnd, 3)
 
+        FileEnsurer.ensure_files()
+
         Seisen.has_valid_connection, _ = Toolkit.check_update()
+
+        ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
 
 ##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -384,19 +397,16 @@ class Seisen:
 
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## create client
-client = Seisen()
-
 try:
 
     ## run seisen
-    client.bootup()
+    Seisen.bootup()
 
     ## Start the intensive DB operations in a separate thread after bootup
-    db_thread = threading.Thread(target=client.handle_intensive_db_operations)
+    db_thread = threading.Thread(target=Seisen.handle_intensive_db_operations)
     db_thread.start()
 
-    client.commence_main_loop()
+    Seisen.commence_main_loop()
 
 except Exception as e:
 

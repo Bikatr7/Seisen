@@ -347,7 +347,7 @@ class LocalHandler():
 
             if(last_backup_date != current_day):
                 
-                archive_dir = FileHandler.create_archive_dir(2)
+                archive_dir = FileEnsurer.create_archive_dir(2)
 
                 Logger.log_action("Created Daily Local Backup")
 

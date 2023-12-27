@@ -735,7 +735,7 @@ class RemoteHandler():
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
             if(last_backup_date != current_day):
-                archive_dir = FileHandler.create_archive_dir(1) 
+                archive_dir = FileEnsurer.create_archive_dir(1) 
 
                 Logger.log_action("Created Daily Remote Backup")
 
@@ -818,7 +818,7 @@ class RemoteHandler():
         """
 
         ## we do not overwrite remote with local if there is no valid database connection
-        if(ConnectionHandler.check_connection_validity("local-remote backup") == False):
+        if(ConnectionHandler.check_connection_validity("local-remote overwrite") == False):
             return
         
         with open(FileEnsurer.last_local_remote_backup_path, 'r+', encoding="utf-8") as file:

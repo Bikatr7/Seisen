@@ -76,8 +76,8 @@ class VocabSettingsHandler():
         """ 
 
         ## gets new ids
-        new_vocab_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(5))
-        new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(6))
+        new_vocab_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(6))
+        new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
         csep_value_list = []
         csep_actual_list_handler = []
@@ -132,7 +132,7 @@ class VocabSettingsHandler():
             ## writes csep to local
             FileHandler.write_sei_line(FileEnsurer.vocab_csep_actual_path, csep_insert_values)
 
-            new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(6))
+            new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
         ## writes vocab to local
         vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, furigana, 0, 0]
@@ -158,7 +158,7 @@ class VocabSettingsHandler():
         target_index = 0
 
         ## gets new id
-        new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(6))
+        new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
         try:
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a csep/answer to.")

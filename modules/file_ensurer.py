@@ -45,6 +45,10 @@ class FileEnsurer:
 
    ##----------------------------------/
 
+   credentials_path = os.path.join(logins_dir, "credentials.txt")
+
+   ##----------------------------------/
+
    ## loop data
    loop_data_path = os.path.join(loop_data_dir, "loop_data.txt")
 

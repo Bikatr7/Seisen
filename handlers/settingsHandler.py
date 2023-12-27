@@ -8,7 +8,7 @@ from handlers.remote_handler import remoteHandler
 from modules.score_rater import scoreRate
 
 from handlers.vocabSettingsHandler import vocabSettingsHandler
-from handlers.storageSettingsHandler import storageSettingsHandler
+from handlers.storage_settings_handler import storageSettingsHandler
 
 class settingsHandler():
 

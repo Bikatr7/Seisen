@@ -8,15 +8,16 @@ import threading
 
 
 ## custom modules
-from modules.localHandler import localHandler
-from modules.remoteHandler import remoteHandler
+from handlers.local_handler import LocalHandler
+from handlers.remote_handler import RemoteHandler
+from handlers.file_handler import FileHandler
+from handlers.settings_handler import SettingsHandler
+from handlers.connection_handler import ConnectionHandler
 
-from modules.settingsHandler import settingsHandler
-
-from modules.fileEnsurer import fileEnsurer
-from modules.scoreRate import scoreRate
-
-from modules.toolkit import toolkit
+from modules.file_ensurer import FileEnsurer
+from modules.score_rater import ScoreRater
+from modules.toolkit import Toolkit
+from modules.logger import Logger
 
 class Seisen:
 
@@ -25,204 +26,152 @@ class Seisen:
     Seisen is the main class for the Seisen project. Everything is handled by this class, directly or indirectly.\n
 
     """
-##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self) -> None:
+    ## the current mode of seisen, "-1" is invalid and will force seisen to reprompt for a valid mode
+    current_mode = -1
 
-        """
-        
-        Sets up the things needed to run Seisen.\n
+    ## boolean that holds whether the user has a valid internet connection
+    has_valid_connection:bool = False
 
-        Parameters:\n
-        None.\n
+    ## the current question prompt
+    current_question_prompt = ""
 
-        Returns:\n
-        None.\n
-
-        """
-
-        ##----------------------------------------------------------------objects----------------------------------------------------------------
-
-        ## creates the fileEnsurer object
-        self.file_ensurer = fileEnsurer()
-
-        ## the toolkit
-        self.toolkit = toolkit(self.file_ensurer.logger)
-
-        ## ensures files needed by Seisen are created
-        self.file_ensurer.ensure_files()
-        
-        ## sets up the handlers for Seisen data
-        self.localHandler = localHandler(self.file_ensurer, self.toolkit)
-        self.remoteHandler = remoteHandler(self.file_ensurer, self.toolkit)
-
-        ## sets up the word_rater
-        self.word_rater = scoreRate(self.localHandler)
-
-        ## sets up the settings handler
-        self.settings_handler = settingsHandler(self.localHandler, self.remoteHandler, self.word_rater)
-
-        ##----------------------------------------------------------------dirs----------------------------------------------------------------
-
-        ## lib files for remoteHandler.py
-        self.remote_lib_dir = os.path.join(self.file_ensurer.lib_dir, "remote")
-
-        ##----------------------------------------------------------------paths----------------------------------------------------------------
-        
-        ## the path to the file that stores the password/credentials
-        self.password_file = os.path.join(os.path.join(self.file_ensurer.config_dir, "Logins"), "credentials.txt")
-
-        ## the path to the file that stores if remoteHandler failed to make a database connection
-        self.database_connection_failed = os.path.join(self.remote_lib_dir, "isConnectionFailed.txt")
-
-        ##----------------------------------------------------------------variables----------------------------------------------------------------
-
-        ## sets the title of the console window
-        os.system("title " + "Seisen")
-
-        ## the current mode of seisen, "-1" is invalid and will force seisen to reprompt for a valid mode
-        self.current_mode = -1
-
-        ## boolean that holds whether the user has a valid internet connection
-        self.hasValidConnection = self.toolkit.check_update()
-
-        ##----------------------------------------------------------------start----------------------------------------------------------------
+    ## the current user guess
+    current_user_guess = ""
 
 ##--------------------start-of-handle_intensive_db_operations()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def handle_intensive_db_operations(self) -> None:
+    @staticmethod
+    def handle_intensive_db_operations() -> None:
 
         """
 
-        Handles intensive database operations. This is called in a separate thread to the main loop.\n
-
-        Parameters:\n
-        self (object - Seisen) : The Seisen object.\n
-
-        Returns:\n
-        None.\n
+        Handles intensive database operations. This is called in a separate thread to the main loop.
 
         """
 
         ## creates the daily local backup
-        self.localHandler.create_daily_local_backup()
+        LocalHandler.create_daily_local_backup()
 
         ## creates the daily remote backup
-        self.remoteHandler.create_daily_remote_backup()
+        RemoteHandler.create_daily_remote_backup()
 
         ## overwrites remote with local
-        self.remoteHandler.local_remote_overwrite()
+        RemoteHandler.local_remote_overwrite()
         
 ##--------------------start-of-bootup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def bootup(self) -> None:
+    @staticmethod
+    def bootup() -> None:
 
-        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
-        self.file_ensurer.logger.log_action("Bootup")
+        """
+
+        Bootup function for Seisen. This is called before the main loop.
+
+        """
+
+        Logger.clear_log_file()
+
+        Logger.log_action("--------------------------------------------------------------")
+        Logger.log_action("Bootup")
 
         ## loads the words currently in local storage.
-        self.localHandler.load_words_from_local_storage()
+        LocalHandler.load_words_from_local_storage()
+
+        os.system("title " + "Seisen")
+
+        ## todo
+        ## move window resizing to toolkit
 
         # Get the handle of the console window
         hwnd = ctypes.windll.kernel32.GetConsoleWindow()
 
-        # Maximize the console window
+        ## Maximize the console window
         ctypes.windll.user32.ShowWindow(hwnd, 3)
+
+        FileEnsurer.ensure_files()
+
+        Seisen.has_valid_connection, _ = Toolkit.check_update()
+
+        ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
 
 ##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def commence_main_loop(self) -> None:
+    @staticmethod
+    def commence_main_loop() -> None:
 
         """
         
-        The main loop for the Seisen project. Basically everything is done here.\n
-
-        Parameters:\n
-        self (object - Seisen) : The Seisen object.\n
-
-        Returns:\n
-        None\n
+        The main loop for the Seisen project. Basically everything is done here.
 
         """
 
-        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
-        self.file_ensurer.logger.log_action("Main Loop")
-        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+        Logger.log_action("--------------------------------------------------------------")
+        Logger.log_action("Main Loop")
+        Logger.log_action("--------------------------------------------------------------")
 
         ## -1 is a code that forces the input to be changed
         valid_modes = [1, 2, 3]
 
         while True:
 
-            if(self.current_mode == 1):
-                self.test_kana()
+            if(Seisen.current_mode == 1):
+                Seisen.test_kana()
 
-            elif(self.current_mode == 2):
-                self.test_vocab()
+            elif(Seisen.current_mode == 2):
+                Seisen.test_vocab()
         
-            elif(self.current_mode == 3):
-                self.settings_handler.change_settings()
+            elif(Seisen.current_mode == 3):
+                SettingsHandler.change_settings()
 
-            elif(self.current_mode != -1): ## if invalid input, clear screen and print error
-                self.toolkit.clear_console()
+            elif(Seisen.current_mode != -1): ## if invalid input, clear screen and print error
+                Toolkit.clear_console()
                 print("Invalid Input, please enter a valid number choice or 'q' to quit.\n")
 
-            if(self.current_mode not in valid_modes): ## if invalid mode, change mode
-                self.change_mode()
+            if(Seisen.current_mode not in valid_modes): ## if invalid mode, change mode
+                Seisen.change_mode()
 
             ## modules outside seisen are forced to edit the mode in the loop data file when needed as they are unable to access the seisen object
-            self.current_mode = int(self.localHandler.file_ensurer.file_handler.read_sei_file(self.file_ensurer.loop_data_path, target_line=1,column=1))
+            Seisen.current_mode = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, target_line=1,column=1))
             
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def change_mode(self) -> None: 
+    @staticmethod
+    def change_mode() -> None: 
 
         """
 
-        Changes Seisen's active mode.\n
-
-        Parameters:\n
-        self (object - Seisen) : The Seisen object.\n
-
-        Returns:\n
-        None.\n
+        Changes Seisen's active mode.
 
         """
 
         main_menu_message = "Instructions:\nType q in select inputs to exit\nType v in select inputs to change the mode\nType z when entering in data to cancel\n\nPlease choose mode:\n\n1.Kana Practice\n2.Vocab Practice\n3.Settings\n"
 
-        ##os.system('cls')
-
         print(main_menu_message)
 
-        old_mode = self.current_mode
+        old_mode = Seisen.current_mode
         
-        self.current_mode = int(self.toolkit.input_check(1, str(msvcrt.getch().decode()), 3, main_menu_message))
-        self.localHandler.file_ensurer.file_handler.edit_sei_line(self.file_ensurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to=str(self.current_mode))
+        Seisen.current_mode = int(Toolkit.input_check(1, str(msvcrt.getch().decode()), 3, main_menu_message))
+        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to=str(Seisen.current_mode))
         
-        self.file_ensurer.logger.log_action("Current mode changed to " + str(self.current_mode) + " was " + str(old_mode))
+        Logger.log_action("Current mode changed to " + str(Seisen.current_mode) + " was " + str(old_mode))
 
-        os.system('cls')
+        Toolkit.clear_console()
 
 ##--------------------start-of-test_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def test_kana(self) -> None:
+    @staticmethod
+    def test_kana() -> None:
 
         """
         
-        tests the user on kana.\n
-
-        Parameters:\n
-        self (object - Seisen) : The Seisen object.\n
-
-        Returns:\n
-        None.\n
+        Tests the user on kana.
 
         """
         
-        self.toolkit.clear_stream()
+        Toolkit.clear_stream()
 
-        self.toolkit.clear_console()
+        Toolkit.clear_console()
 
         ROUND_COUNT_INDEX_LOCATION = 2
         NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
@@ -230,55 +179,55 @@ class Seisen:
         displayOther = False
 
         ## uses the word rater to get the kana we are gonna test, as well as the display list, but that is not used here
-        kana_to_test, display_list = self.word_rater.get_kana_to_test(self.localHandler.kana)
+        kana_to_test, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
 
         ## gets the total number of rounds and the number of correct rounds, then calculates the ratio
-        total_number_of_rounds = int(self.file_ensurer.file_handler.read_sei_file(self.file_ensurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
-        number_of_correct_rounds = int(self.file_ensurer.file_handler.read_sei_file(self.file_ensurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        total_number_of_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds, 2)) if total_number_of_rounds != 0 else "0.0"
 
-        self.file_ensurer.logger.log_action("Testing Kana... Round " + str(total_number_of_rounds))
+        Logger.log_action("Testing Kana... Round " + str(total_number_of_rounds))
 
-        self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
-        self.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
-        self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
-        self.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material + "?\n"
+        Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
+        Seisen.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
+        Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
+        Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material + "?\n"
 
-        self.current_user_guess = str(input(self.current_question_prompt)).lower()
+        Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
         ## if the user wants to change the mode do so
-        if(self.current_user_guess == "v"): 
+        if(Seisen.current_user_guess == "v"): 
 
-            self.toolkit.clear_console()
+            Toolkit.clear_console()
 
-            self.file_ensurer.logger.log_action("--------------------------------------------------------------")
-            self.file_ensurer.logger.log_action("User chose to change mode")
-            self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+            Logger.log_action("--------------------------------------------------------------")
+            Logger.log_action("User chose to change mode")
+            Logger.log_action("--------------------------------------------------------------")
 
-            self.change_mode()
+            Seisen.change_mode()
             return
         
         total_number_of_rounds += 1
 
         ## checks if the users answer is correct
-        isCorrect, self.current_user_guess = self.word_rater.check_answers_word(kana_to_test, self.current_user_guess, self.current_question_prompt, self.localHandler)
+        isCorrect, Seisen.current_user_guess = ScoreRater.check_answers_word(kana_to_test, Seisen.current_user_guess, Seisen.current_question_prompt)
 
-        self.file_ensurer.logger.log_action("User guessed " + self.current_user_guess + ", isCorrect = " + str(isCorrect))
+        Logger.log_action("User guessed " + Seisen.current_user_guess + ", isCorrect = " + str(isCorrect))
 
-        self.toolkit.clear_console()
+        Toolkit.clear_console()
 
         if(isCorrect == True):
             number_of_correct_rounds+=1
-            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is correct.\n"
-            kana_to_test.log_correct_answer(self.localHandler)              
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is correct.\n"
+            ScoreRater.log_correct_answer(kana_to_test)      
 
         elif(isCorrect == False):
-            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is incorrect, the correct answer was " + kana_to_test.testing_material_answer_main + ".\n"
-            kana_to_test.log_incorrect_answer(self.localHandler)
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, the correct answer was " + kana_to_test.testing_material_answer_main + ".\n"
+            ScoreRater.log_incorrect_answer(kana_to_test)
 
         else:
-            self.current_question_prompt += "\n\nSkipped.\n"
-            kana_to_test.log_incorrect_answer(self.localHandler) 
+            Seisen.current_question_prompt += "\n\nSkipped.\n"
+            ScoreRater.log_incorrect_answer(kana_to_test)
 
         answers = [value.csep_value for value in kana_to_test.testing_material_answer_all]
 
@@ -287,52 +236,47 @@ class Seisen:
             if(len(answers) == 1):
                 break
 
-            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess):
+            if(isCorrect == None or isCorrect == False and answer != Seisen.current_user_guess):
 
                 if(displayOther == False):
-                    self.current_question_prompt += "\nOther Answers include:\n"
+                    Seisen.current_question_prompt += "\nOther Answers include:\n"
 
-                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
 
-            elif(isCorrect == True and answer != self.current_user_guess):
+            elif(isCorrect == True and answer != Seisen.current_user_guess):
 
                 if(displayOther == False):
-                    self.current_question_prompt += "\nOther Answers include:\n"
+                    Seisen.current_question_prompt += "\nOther Answers include:\n"
                     
-                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
 
-        print(self.current_question_prompt)
+        print(Seisen.current_question_prompt)
 
         time.sleep(2)
             
-        self.toolkit.clear_console()
+        Toolkit.clear_console()
 
-        self.file_ensurer.file_handler.edit_sei_line(self.file_ensurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
-        self.file_ensurer.file_handler.edit_sei_line(self.file_ensurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
+        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
+        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
 
-        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+        Logger.log_action("--------------------------------------------------------------")
 
 ##--------------------start-of-test_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def test_vocab(self) -> None:
+    @staticmethod
+    def test_vocab() -> None:
 
         """
         
-        tests the user on vocab.\n
-
-        Parameters:\n
-        self (object - Seisen) : The Seisen object.\n
-
-        Returns:\n
-        None.\n
+        Tests the user on vocab.
 
         """
         
-        self.toolkit.clear_stream()
+        Toolkit.clear_stream()
 
-        self.toolkit.clear_console()
+        Toolkit.clear_console()
 
         ROUND_COUNT_INDEX_LOCATION = 2
         NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
@@ -341,81 +285,81 @@ class Seisen:
         romaTriggered = False
 
         ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
-        vocab_to_test, display_list = self.word_rater.get_vocab_to_test(self.localHandler.vocab)
+        vocab_to_test, display_list = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
 
         ## gets the total number of rounds and the number of correct rounds, and calculates the ratio
-        total_number_of_rounds = int(self.file_ensurer.file_handler.read_sei_file(self.file_ensurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
-        number_of_correct_rounds = int(self.file_ensurer.file_handler.read_sei_file(self.file_ensurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        total_number_of_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
-        self.file_ensurer.logger.log_action("Testing Vocab... Round " + str(total_number_of_rounds))
+        Logger.log_action("Testing Vocab... Round " + str(total_number_of_rounds))
 
-        self.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
-        self.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
-        self.current_question_prompt +=  "\n" + "-" * len(self.current_question_prompt)
-        self.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material + "?\n"
+        Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
+        Seisen.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
+        Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
+        Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material + "?\n"
 
-        self.current_user_guess = str(input(self.current_question_prompt)).lower()
+        Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
         ## if the user wants to change the mode do so
-        if(self.current_user_guess == "v"):
+        if(Seisen.current_user_guess == "v"):
 
-            self.toolkit.clear_console()
+            Toolkit.clear_console()
 
-            self.file_ensurer.logger.log_action("--------------------------------------------------------------")
-            self.file_ensurer.logger.log_action("User chose to change mode")
-            self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+            Logger.log_action("--------------------------------------------------------------")
+            Logger.log_action("User chose to change mode")
+            Logger.log_action("--------------------------------------------------------------")
              
-            self.change_mode()
+            Seisen.change_mode()
             return
         
         ## if the user wants to see the furigana do so
-        elif(self.current_user_guess == "b" and vocab_to_test.furigana != "0"):
+        elif(Seisen.current_user_guess == "b" and vocab_to_test.furigana != "0"):
 
-            self.toolkit.clear_console()
+            Toolkit.clear_console()
 
-            self.current_question_prompt = self.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
 
-            self.current_user_guess = str(input(self.current_question_prompt)).lower()
+            Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
             romaTriggered = True
 
             ## if the user wants to change the mode do so
-            if(self.current_user_guess == "v"):
+            if(Seisen.current_user_guess == "v"):
 
-                self.toolkit.clear_console()
+                Toolkit.clear_console()
                 
-                self.file_ensurer.logger.log_action("--------------------------------------------------------------")
-                self.file_ensurer.logger.log_action("User chose to change mode")
-                self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+                Logger.log_action("--------------------------------------------------------------")
+                Logger.log_action("User chose to change mode")
+                Logger.log_action("--------------------------------------------------------------")
                 
-                self.change_mode()
+                Seisen.change_mode()
                 return
             
         total_number_of_rounds += 1
 
         ## checks if the users answer is correct
-        isCorrect, self.current_user_guess = self.word_rater.check_answers_word(vocab_to_test, self.current_user_guess, self.current_question_prompt, self.localHandler)
+        isCorrect, Seisen.current_user_guess = ScoreRater.check_answers_word(vocab_to_test, Seisen.current_user_guess, Seisen.current_question_prompt)
     
-        self.file_ensurer.logger.log_action("User guessed " + self.current_user_guess + ", isCorrect = " + str(isCorrect))
+        Logger.log_action("User guessed " + Seisen.current_user_guess + ", isCorrect = " + str(isCorrect))
 
-        self.toolkit.clear_console()
+        Toolkit.clear_console()
 
         if(vocab_to_test.furigana != "0" and romaTriggered == False):
-            self.current_question_prompt = self.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
 
         if(isCorrect == True):
             number_of_correct_rounds+=1
-            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is correct.\n"
-            vocab_to_test.log_correct_answer(self.localHandler)              
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is correct.\n"
+            ScoreRater.log_correct_answer(vocab_to_test)           
 
         elif(isCorrect == False):
-            self.current_question_prompt += "\n\nYou guessed " + self.current_user_guess + ", which is incorrect, the correct answer was " + vocab_to_test.testing_material_answer_main + ".\n"
-            vocab_to_test.log_incorrect_answer(self.localHandler)
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, the correct answer was " + vocab_to_test.testing_material_answer_main + ".\n"
+            ScoreRater.log_incorrect_answer(vocab_to_test)
 
         else:
-            self.current_question_prompt += "\n\nSkipped.\n"
-            vocab_to_test.log_incorrect_answer(self.localHandler) 
+            Seisen.current_question_prompt += "\n\nSkipped.\n"
+            ScoreRater.log_incorrect_answer(vocab_to_test)
 
         answers = [value.csep_value for value in vocab_to_test.testing_material_answer_all]
 
@@ -424,59 +368,56 @@ class Seisen:
             if(len(answers) == 1):
                 break
 
-            if(isCorrect == None or isCorrect == False and answer != self.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
+            if(isCorrect == None or isCorrect == False and answer != Seisen.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
 
                 if(displayOther == False):
-                    self.current_question_prompt += "\nOther Answers include:\n"
+                    Seisen.current_question_prompt += "\nOther Answers include:\n"
 
-                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
 
-            elif(isCorrect == True and answer != self.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
+            elif(isCorrect == True and answer != Seisen.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
 
                 if(displayOther == False):
-                    self.current_question_prompt += "\nOther Answers include:\n"
+                    Seisen.current_question_prompt += "\nOther Answers include:\n"
                     
-                self.current_question_prompt +=  "----------\n" + answer + "\n"
+                Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
 
-        print(self.current_question_prompt)
+        print(Seisen.current_question_prompt)
 
         time.sleep(2)
             
-        self.toolkit.clear_console()
+        Toolkit.clear_console()
 
-        self.file_ensurer.file_handler.edit_sei_line(self.file_ensurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
-        self.file_ensurer.file_handler.edit_sei_line(self.file_ensurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
+        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
+        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
 
-        self.file_ensurer.logger.log_action("--------------------------------------------------------------")
+        Logger.log_action("--------------------------------------------------------------")
 
 ##--------------------start-of-main()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-## create client
-client = Seisen()
 
 try:
 
     ## run seisen
-    client.bootup()
+    Seisen.bootup()
 
     ## Start the intensive DB operations in a separate thread after bootup
-    db_thread = threading.Thread(target=client.handle_intensive_db_operations)
+    db_thread = threading.Thread(target=Seisen.handle_intensive_db_operations)
     db_thread.start()
 
-    client.commence_main_loop()
+    Seisen.commence_main_loop()
 
 except Exception as e:
 
     ## if crash, catch and log, then throw
-    client.file_ensurer.logger.log_action("--------------------------------------------------------------")
-    client.file_ensurer.logger.log_action("Seisen has crashed")
+    Logger.log_action("--------------------------------------------------------------")
+    Logger.log_action("Seisen has crashed")
 
     traceback_str = traceback.format_exc()
     
-    client.file_ensurer.logger.log_action(traceback_str)
+    Logger.log_action(traceback_str)
 
-    client.toolkit.logger.push_batch()
+    Logger.push_batch()
 
     raise e

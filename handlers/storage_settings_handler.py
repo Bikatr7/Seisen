@@ -7,107 +7,79 @@ import shutil
 import time
 
 ## custom modules
-from modules.localHandler import localHandler
-from modules.remoteHandler import remoteHandler
+from modules.toolkit import Toolkit
+from modules.file_ensurer import FileEnsurer
+from modules.logger import Logger
 
-class storageSettingsHandler():
+from handlers.local_handler import LocalHandler
+from handlers.remote_handler import RemoteHandler
+from handlers.connection_handler import ConnectionHandler
+
+class StorageSettingsHandler():
 
     """
     
-    The handler that handles all of Seisen's vocab settings.\n
+    The handler that handles all of Seisen's vocab settings.
     
     """
-##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def __init__(self, local_handler:localHandler, remote_handler:remoteHandler) -> None:
-
-        """
-        
-        Initializes the storageSettingsHandler class.\n
-
-        Parameters:\n
-        local_handler (object - localHandler) : The local handler object.\n
-        remote_handler (object - remoteHandler) : The remote handler object.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        ##----------------------------------------------------------------objects----------------------------------------------------------------
-
-        self.local_handler = local_handler
-
-        self.remote_handler = remote_handler
-
 ##--------------------start-of-change_storage_settings()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def change_storage_settings(self) -> None:
+    @staticmethod
+    def change_storage_settings() -> None:
         
         """"
 
-        Controls the pathing for all storage settings.\n
-
-        Parameters:\n
-        self (object - storageSettingsHandler) : The storage settings handler object.\n
-
-        Returns:\n
-        None.\n
+        Controls the pathing for all storage settings.
 
         """
 
-        self.local_handler.toolkit.clear_console()
+        Toolkit.clear_console()
 
         storage_message = "What are you trying to do?\n\n1.Reset Local With Remote\n2.Reset Remote with Local\n3.Reset Local & Remote to Default\n4.Restore Backup\n5.Export Vocab Deck\n6.Import Vocab Deck"
 
         print(storage_message)
 
-        type_setting = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 6, storage_message)
+        type_setting = Toolkit.input_check(4, str(msvcrt.getch().decode()), 6, storage_message)
 
         if(type_setting == "1"):
             
-            self.reset_local_with_remote()
+            StorageSettingsHandler.reset_local_with_remote()
 
         elif(type_setting == "2"):
 
-            self.remote_handler.reset_remote_storage()
+            RemoteHandler.reset_remote_storage()
         
         elif(type_setting == "3"):
 
-            self.reset_local_and_remote_to_default()
+            StorageSettingsHandler.reset_local_and_remote_to_default()
 
         elif(type_setting == "4"):
-            self.restore_backup()
+            StorageSettingsHandler.restore_backup()
 
         elif(type_setting == "5"):
-            self.export_deck()
+            StorageSettingsHandler.export_deck()
             
         elif(type_setting == "6"):
-            self.import_deck()
+            StorageSettingsHandler.import_deck()
 
 ##--------------------start-of-reset_local_with_remote()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def reset_local_with_remote(self) -> None:
+    @staticmethod
+    def reset_local_with_remote() -> None:
 
         """
 
-        Resets local storage with remote storage.\n
-
-        Parameters:\n
-        self (object - storageSettingsHandler) : The storage settings handler object.\n
-
-        Returns:\n
-        None.\n
+        Resets local storage with remote storage.
 
         """
 
         ## local storage does not reset if there is no valid database connection
-        if(self.remote_handler.connection_handler.check_connection_validity("local storage reset") == False):
+        if(ConnectionHandler.check_connection_validity("local storage reset") == False):
             print("No valid database connection.\n")
             time.sleep(1)
             return
 
-        with open(self.remote_handler.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
             last_backup_date = str(file.read().strip()).strip('\x00').strip()
         
         if(last_backup_date == ""):
@@ -116,40 +88,36 @@ class storageSettingsHandler():
         confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no)\n"))
 
         if(confirm == "1"):
-            self.remote_handler.reset_local_storage()
-            self.local_handler.load_words_from_local_storage()
+            RemoteHandler.reset_local_storage()
+            LocalHandler.load_words_from_local_storage()
+
         else:
             pass
 
 ##--------------------start-of-reset_local_and_remote_to_default()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def reset_local_and_remote_to_default(self) -> None:
+    @staticmethod
+    def reset_local_and_remote_to_default() -> None:
 
         """"
 
-        Resets local and remote storage to default.\n
-
-        Parameters:\n
-        self (object - storageSettingsHandler) : The storage settings handler object.\n
-
-        Returns:\n
-        None.\n
+        Resets local and remote storage to default.
 
         """
 
         try:
 
-            shutil.rmtree(self.local_handler.file_ensurer.kana_dir)
-            shutil.rmtree(self.local_handler.file_ensurer.vocab_dir)
+            shutil.rmtree(FileEnsurer.kana_dir)
+            shutil.rmtree(FileEnsurer.vocab_dir)
 
         ## if files are open, which they usually are when im testing this.
         except PermissionError:
 
-            self.local_handler.toolkit.clear_console()
+            Toolkit.clear_console()
 
-            print("Permission error, you likely have the config folder/files open. Please close all of that and try again. If issue persists contact support.\n")
+            print("Permission error, you likely have the config folder/files open. Please close all of that and try again. If issue persists contact Bikatr7 on github.\n")
 
-            self.local_handler.toolkit.pause_console()
+            Toolkit.pause_console()
 
             return
         
@@ -157,61 +125,59 @@ class storageSettingsHandler():
         ## mainly because it's easier just to delete local storage, reset it and then reset remote with it.. idk if thats good practice but meh.
         finally:
 
-            self.local_handler.file_ensurer.ensure_files()
+            FileEnsurer.ensure_files()
 
-        self.remote_handler.reset_remote_storage()
+        RemoteHandler.reset_remote_storage()
 
-        self.local_handler.load_words_from_local_storage()
+        LocalHandler.load_words_from_local_storage()
 
 ##--------------------start-of-restore_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def restore_backup(self) -> None: 
+    @staticmethod
+    def restore_backup() -> None: 
                 
         """
 
-        Restores a local or remote backup.\n
-
-        Parameters:\n
-        self (object - storageSettingsHandler) : The storage settings handler object.\n
-
-        Returns:\n
-        None.\n
+        Restores a local or remote backup.
         
         """ 
 
-        self.local_handler.toolkit.clear_console()
+        Toolkit.clear_console()
 
         backup_message = "Which backup do you wish to restore?\n\n1.Local\n2.Remote\n"
 
         print(backup_message)
 
-        type_backup = self.local_handler.toolkit.input_check(4, str(msvcrt.getch().decode()), 2, backup_message)
+        type_backup = Toolkit.input_check(4, str(msvcrt.getch().decode()), 2, backup_message)
 
         if(type_backup == "1"):
 
-            self.local_handler.restore_local_backup()
-            self.local_handler.file_ensurer.ensure_files()
-            self.local_handler.load_words_from_local_storage()
+            LocalHandler.restore_local_backup()
+
+            print("Local backup restored.")
+
+            Toolkit.pause_console()
 
         elif(type_backup == "2"):
 
-            self.remote_handler.restore_remote_backup()
-            self.local_handler.file_ensurer.ensure_files()
-            self.local_handler.load_words_from_local_storage()
+            RemoteHandler.restore_remote_backup()
+
+            print("Remote backup restored. You will need to reset Local Storage with Remote Storage to see the changes.")
+
+            Toolkit.pause_console()
+
+
+        FileEnsurer.ensure_files()
+        LocalHandler.load_words_from_local_storage()
 
 ##--------------------start-of-export_deck()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def export_deck(self) -> None:
+    @staticmethod
+    def export_deck() -> None:
 
         """
         
-        Exports the current vocab deck to a file in the script directory.\n
-
-        Parameters:\n 
-        self (object - storageSettingsHandler) : The storage settings handler object.\n
-
-        Returns:\n
-        None.\n
+        Exports the current vocab deck to a file in the script directory.
         
         """ 
 
@@ -219,17 +185,17 @@ class storageSettingsHandler():
 
         file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d')) + ".seisen"
 
-        export_path = os.path.join(self.local_handler.file_ensurer.main_script_dir, file_name)
+        export_path = os.path.join(FileEnsurer.script_dir, file_name)
 
         ## get vocab lines
-        with open(self.local_handler.vocab_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_actual_path, 'r', encoding="utf-8") as file:
             write_string_list = file.readlines()
 
         ## append separator
         write_string_list.append("---\n") 
 
         ## get csep lines
-        with open(self.local_handler.vocab_csep_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_csep_actual_path, 'r', encoding="utf-8") as file:
             temp = file.readlines()
             write_string_list += temp
 
@@ -237,25 +203,20 @@ class storageSettingsHandler():
         with open(export_path, 'w+', encoding="utf-8") as file:
             file.writelines(write_string_list)
         
-        self.local_handler.toolkit.clear_console()
+        Toolkit.clear_console()
 
         print(file_name + " has been placed in the script directory\n")
 
-        self.local_handler.toolkit.pause_console()
+        Toolkit.pause_console()
 
 ##--------------------start-of-import_deck()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def import_deck(self) -> None:
+    @staticmethod
+    def import_deck() -> None:
 
         """
         
-        Imports an external vocab deck into Seisen.\n
-
-        Parameters:\n 
-        self (object - storageSettingsHandler) : The storage settings handler object.\n
-
-        Returns:\n
-        None.\n
+        Imports an external vocab deck into Seisen.
         
         """
 
@@ -273,11 +234,11 @@ class storageSettingsHandler():
 
         deck_to_import_prompt = ""
 
-        for file_name in os.listdir(self.local_handler.file_ensurer.main_script_dir):
+        for file_name in os.listdir(FileEnsurer.script_dir):
 
             if(file_name.endswith(".seisen")): ## If the file is a backup file, then act accordingly
 
-                file_path = os.path.join(self.local_handler.file_ensurer.main_script_dir, file_name)
+                file_path = os.path.join(FileEnsurer.script_dir, file_name)
                 file_name = file_name.replace(".seisen", "")
 
                 valid_import_paths.append(file_path)
@@ -291,10 +252,10 @@ class storageSettingsHandler():
 
             assert len(valid_import_names) > 0
 
-            deck_to_import = self.local_handler.toolkit.user_confirm(deck_to_import_prompt)
+            deck_to_import = Toolkit.user_confirm(deck_to_import_prompt)
 
             if(deck_to_import in valid_import_names):
-                self.local_handler.toolkit.clear_console()
+                Toolkit.clear_console()
 
                 target_index = valid_import_names.index(deck_to_import)
 
@@ -303,7 +264,7 @@ class storageSettingsHandler():
                 time.sleep(1)
                 return
 
-        except self.local_handler.toolkit.UserCancelError or AssertionError:
+        except Toolkit.UserCancelError or AssertionError:
             return
         
         with open(valid_import_paths[target_index], 'r', encoding="utf-8") as file:
@@ -320,11 +281,12 @@ class storageSettingsHandler():
             else:
                 csep_portion_write.append(line)
 
-        
-        with open(self.local_handler.vocab_path, 'w+', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_actual_path, 'w+', encoding="utf-8") as file:
             file.writelines(vocab_portion_write)
 
-        with open(self.local_handler.vocab_csep_path, 'w+', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_csep_actual_path, 'w+', encoding="utf-8") as file:
             file.writelines(csep_portion_write)
 
-        self.local_handler.file_ensurer.logger.log_action("Imported the " + deck_to_import + " vocab deck")
+        LocalHandler.load_words_from_local_storage()
+
+        Logger.log_action("Imported the " + deck_to_import + " vocab deck")

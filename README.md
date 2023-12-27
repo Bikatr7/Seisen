@@ -14,7 +14,7 @@
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Notes**<a name="notes"></a>
 
-Built for Windows, Should work on Linux/MacOS but is untested.
+Built for Windows. Linux and Mac are not supported at this time, but may be in the future.
 
 Python Version: 3.8+
 

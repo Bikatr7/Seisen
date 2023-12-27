@@ -8,8 +8,8 @@ import shutil
 import time
 
 ## custom modules
-from entities.typo import typo as typo_blueprint
-from entities.typo import incorrectTypo as incorrect_typo_blueprint
+from entities.typo import Typo as typo_blueprint
+from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
 from entities.words import word as kana_blueprint
 from entities.vocab import vocab as vocab_blueprint
@@ -224,9 +224,13 @@ class LocalHandler():
 
         VOCAB INCORRECT TYPO ID = 4
 
-        VOCAB ID = 5
+        KANA ID = 5
 
-        CSEP ID = 6
+        VOCAB ID = 6
+
+        KANA CSEP ID = 7
+        
+        VOCAB CSEP ID = 8
 
         """
 
@@ -238,13 +242,16 @@ class LocalHandler():
         KANA_INCORRECT_TYPO_ID_IDENTIFIER = 2
         VOCAB_TYPO_ID_IDENTIFIER = 3
         VOCAB_INCORRECT_TYPO_ID_IDENTIFIER = 4
-        VOCAB_ID_IDENTIFIER = 5
-        CSEP_ID_IDENTIFIER = 6
+        KANA_ID_IDENTIFIER = 5
+        VOCAB_ID_IDENTIFIER = 6
+        KANA_CSEP_ID_IDENTIFIER = 7
+        VOCAB_CSEP_ID_IDENTIFIER = 8
 
         TYPO_ID_INDEX_LOCATION = 2
-        VOCAB_ID_INDEX_LOCATION = 1
+        WORD_ID_INDEX_LOCATION = 1
         CSEP_ID_INDEX_LOCATION = 2
 
+        ## 1 = kana typo id
         if(type_of_id_to_query == KANA_TYPO_ID_IDENTIFIER):
             with open(FileEnsurer.kana_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
@@ -253,6 +260,7 @@ class LocalHandler():
                     ids.append(FileHandler.read_sei_file(FileEnsurer.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
+        ## 2 = kana incorrect typo id
         elif(type_of_id_to_query == KANA_INCORRECT_TYPO_ID_IDENTIFIER):
             with open(FileEnsurer.kana_incorrect_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
@@ -261,6 +269,7 @@ class LocalHandler():
                     ids.append(FileHandler.read_sei_file(FileEnsurer.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
+        ## 3 = vocab typo id
         elif(type_of_id_to_query == VOCAB_TYPO_ID_IDENTIFIER):
             with open(FileEnsurer.vocab_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
@@ -269,6 +278,7 @@ class LocalHandler():
                     ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
+        ## 4 = vocab incorrect typo id
         elif(type_of_id_to_query == VOCAB_INCORRECT_TYPO_ID_IDENTIFIER):
             with open(FileEnsurer.vocab_incorrect_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
@@ -276,17 +286,36 @@ class LocalHandler():
                 while(i < len(file_size)):
                     ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
-                    
 
+        ## 5 = kana id
+        elif(type_of_id_to_query == KANA_ID_IDENTIFIER):
+            with open(FileEnsurer.kana_actual_path, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_actual_path, i+1, WORD_ID_INDEX_LOCATION))
+                    i+=1
+                    
+        ## 6 = vocab id
         elif(type_of_id_to_query == VOCAB_ID_IDENTIFIER):
             with open(FileEnsurer.vocab_actual_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_actual_path, i+1, VOCAB_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_actual_path, i+1, WORD_ID_INDEX_LOCATION))
                     i+=1
 
-        elif(type_of_id_to_query == CSEP_ID_IDENTIFIER):
+        ## 7 = kana csep id
+        elif(type_of_id_to_query == KANA_CSEP_ID_IDENTIFIER):
+            with open(FileEnsurer.kana_csep_actual_path, 'r', encoding='utf-8') as file:
+                file_size = file.readlines()
+
+                while(i < len(file_size)):
+                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_csep_actual_path, i+1, CSEP_ID_INDEX_LOCATION))
+                    i+=1
+
+        ## 8 = vocab csep id
+        elif(type_of_id_to_query == VOCAB_CSEP_ID_IDENTIFIER):
             with open(FileEnsurer.vocab_csep_actual_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 

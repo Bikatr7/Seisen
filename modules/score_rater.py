@@ -7,8 +7,8 @@ import msvcrt
 from entities.words import word
 from entities.vocab import vocab
 
-from entities.typo import typo as typo_blueprint
-from entities.typo import incorrectTypo as incorrect_typo_blueprint
+from entities.typo import Typo as typo_blueprint
+from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
 from modules.logger import Logger
 from modules.toolkit import Toolkit
@@ -397,12 +397,18 @@ class ScoreRater:
 
         """
 
-        new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(1))
+        if(isinstance(word, vocab)):
+            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(3))
+            path_to_write_to = FileEnsurer.vocab_typos_path
+
+        else:
+            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(1))
+            path_to_write_to = FileEnsurer.kana_typos_path
 
         new_typo = typo_blueprint(word.word_id, new_typo_id, typo, word.word_type)
 
         ## updates local storage so the typo will be saved
-        FileHandler.write_sei_line(FileEnsurer.kana_typos_path, [str(word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        FileHandler.write_sei_line(path_to_write_to, [str(word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
         word.typos.append(new_typo)
@@ -424,14 +430,102 @@ class ScoreRater:
         
         """
 
-        new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(2))
+        if(isinstance(word, vocab)):
+            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(4))
+            path_to_write_to = FileEnsurer.vocab_incorrect_typos_path
+
+        else:
+            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(2))
+            path_to_write_to = FileEnsurer.kana_incorrect_typos_path
 
         new_incorrect_typo = incorrect_typo_blueprint(word.word_id, new_incorrect_typo_id, incorrect_typo, word.word_type)
 
         ## updates local storage so the incorrect typo will be saved
-        FileHandler.write_sei_line(FileEnsurer.kana_incorrect_typos_path, [str(word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+        FileHandler.write_sei_line(path_to_write_to, [str(word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
 
         ## updates the current session with the incorrect typo
         word.incorrect_typos.append(new_incorrect_typo)
 
         Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + word.testing_material + ", id : " + str(word.word_id))
+
+##--------------------start-of-log_correct_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def log_correct_answer(word:word) -> None:
+
+        """
+
+        Logs a correct answer to the word.
+
+        Parameters:
+        word (object - word) : the word we're logging the correct answer for.
+        
+        """
+
+        ## where the correct count index is in the file
+        KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 5
+        VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 7
+    
+        if(isinstance(word, vocab)):
+            word_ids = LocalHandler.get_list_of_all_ids(6)
+            path_to_write_to = FileEnsurer.vocab_actual_path
+            index_location = VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+        
+        else:
+            word_ids = LocalHandler.get_list_of_all_ids(5)
+            path_to_write_to = FileEnsurer.kana_actual_path
+            index_location = KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+
+        line_to_write_to = 0
+
+        ## current session update
+        word.correct_count += 1
+                            
+        ## line returned needs to be incremented by one to match file
+        line_to_write_to = word_ids.index(word.word_id) + 1
+
+        ## updates local storage so the correct answer will be saved for future sessions
+        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(word.correct_count))
+
+        Logger.log_action("Logged a correct answer for " + word.testing_material + ", id : " + str(word.word_id))
+
+##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def log_incorrect_answer(word:word) -> None:
+
+        """
+        
+        Logs an incorrect answer to the word.
+
+        Parameters:\n
+        word (object - word) : the word we're logging the incorrect answer for.
+        
+        """
+
+        ## where the incorrect count index is in the file
+        KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 4
+        VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 6
+
+        if(isinstance(word, vocab)):
+            word_ids = LocalHandler.get_list_of_all_ids(6)
+            path_to_write_to = FileEnsurer.vocab_actual_path
+            index_location = VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+
+        else:
+            word_ids = LocalHandler.get_list_of_all_ids(5)
+            path_to_write_to = FileEnsurer.kana_actual_path
+            index_location = KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+
+        line_to_write_to = 0
+
+        ## current session update
+        word.incorrect_count += 1
+
+        ## line returned needs to be incremented by one to match file
+        line_to_write_to = word_ids.index(word.word_id) + 1
+
+        ## updates local storage so the incorrect answer will be saved for future sessions
+        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(word.incorrect_count))
+
+        Logger.log_action("Logged an incorrect answer for " + word.testing_material + ", id : " + str(word.word_id))

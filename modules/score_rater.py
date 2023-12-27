@@ -279,7 +279,8 @@ class ScoreRater:
 
 ##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_typo(self, word:word, user_guess:str, prompt:str) -> str:  
+    @staticmethod
+    def check_typo(word:word, user_guess:str, prompt:str) -> str:  
 
         """
 
@@ -307,13 +308,13 @@ class ScoreRater:
 
         if(user_guess in typos):
             possible_intended_answers = [csep.csep_value for csep in word.testing_material_answer_all]
-            return self.get_intended_answer(user_guess, possible_intended_answers)
+            return ScoreRater.get_intended_answer(user_guess, possible_intended_answers)
         elif(user_guess in incorrect_typos):
             return user_guess
 
         for correct_answer in word.testing_material_answer_all:
 
-            new_distance = self.levenshtein(user_guess, correct_answer.csep_value)
+            new_distance = ScoreRater.levenshtein(user_guess, correct_answer.csep_value)
 
             if(new_distance < min_distance and new_distance < lowest_distance):
                 lowest_distance = new_distance
@@ -347,7 +348,8 @@ class ScoreRater:
     
 ##--------------------start-of-check_answers_word()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def check_answers_word(self, word:word, user_guess:str, prompt:str) -> typing.Tuple[typing.Union[bool ,None], str]: 
+    @staticmethod
+    def check_answers_word(word:word, user_guess:str, prompt:str) -> typing.Tuple[typing.Union[bool ,None], str]: 
 
         """
         
@@ -371,7 +373,7 @@ class ScoreRater:
             FileEnsurer.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
-            user_guess = self.check_typo(word, user_guess, prompt)
+            user_guess = ScoreRater.check_typo(word, user_guess, prompt)
 
         if(user_guess in answers): 
             return True, user_guess

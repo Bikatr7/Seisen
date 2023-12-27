@@ -91,7 +91,15 @@ class Seisen:
 
         FileEnsurer.ensure_files()
 
-        Seisen.has_valid_connection, _ = Toolkit.check_update()
+        Seisen.has_valid_connection, update_prompt = Toolkit.check_update()
+
+        if(update_prompt):
+            Toolkit.clear_console()
+
+            print(update_prompt)
+
+            Toolkit.pause_console()
+            Toolkit.clear_console()
 
         ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
 

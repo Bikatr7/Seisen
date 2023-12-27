@@ -4,14 +4,14 @@ from __future__ import annotations ## used for cheating the circular import issu
 import typing
 
 ## custom modules
-from entities.typos import typo as typo_blueprint
-from entities.typos import incorrectTypo as incorrect_typo_blueprint
+from entities.typo import typo as typo_blueprint
+from entities.typo import incorrectTypo as incorrect_typo_blueprint
 
 from entities.csep import csep
 
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from handlers.local_handler import localHandler
-    from entities.typos import typo, incorrectTypo
+    from entities.typo import typo, incorrectTypo
 
 class word:
 

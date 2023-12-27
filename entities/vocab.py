@@ -4,8 +4,8 @@ from __future__ import annotations ## used for cheating the circular import issu
 import typing
 
 ## custom modules
-from entities.typos import typo as typo_blueprint
-from entities.typos import incorrectTypo as incorrect_typo_blueprint
+from entities.typo import typo as typo_blueprint
+from entities.typo import incorrectTypo as incorrect_typo_blueprint
 
 from entities.csep import csep as csep
 

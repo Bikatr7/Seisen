@@ -8,8 +8,8 @@ import shutil
 import time
 
 ## custom modules
-from entities.typos import typo as typo_blueprint
-from entities.typos import incorrectTypo as incorrect_typo_blueprint
+from entities.typo import typo as typo_blueprint
+from entities.typo import incorrectTypo as incorrect_typo_blueprint
 
 from entities.words import word as kana_blueprint
 from entities.vocab import vocab as vocab_blueprint

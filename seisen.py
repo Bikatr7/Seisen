@@ -11,7 +11,7 @@ import threading
 from handlers.local_handler import localHandler
 from handlers.remote_handler import remoteHandler
 
-from handlers.settingsHandler import settingsHandler
+from handlers.settings_handler import settingsHandler
 
 from modules.file_ensurer import fileEnsurer
 from modules.score_rater import scoreRate

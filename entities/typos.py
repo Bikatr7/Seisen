@@ -1,11 +1,11 @@
 
-class typo:
+class Typo:
 
-    '''
+    """
 
-    The typo class is used to represent typos the user makes.\n
+    The Typo class is used to represent typos the user makes when guessing a word.
         
-    '''
+    """
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -14,60 +14,20 @@ class typo:
 
         """
         
-        Initializes a new typo object.\n
+        Initializes a new Typo object.
 
-        Parameters:\n
-        incoming_word_id (int) : The id of the word the typo is for.\n
-        incoming_typo_id (int) : The id of the typo.\n
-        incoming_typo_value (string) : The value of the typo.\n
-        incoming_word_type (string) : The type of the word the typo is for.\n
-
-        Returns:\n
-        None.\n
+        Parameters:
+        incoming_word_id (int) : The id of the word the Typo is for.
+        incoming_typo_id (int) : The id of the Typo.
+        incoming_typo_value (str) : The value of the Typo.
+        incoming_word_type (st) : The type of the word the Typo is for.
 
         """
 
-        self.word_id = incoming_word_id
+        self.word_id:int = incoming_word_id
 
-        self.typo_id  = incoming_typo_id
+        self.typo_id:int = incoming_typo_id
 
-        self.typo_value = incoming_typo_value
+        self.typo_value:str = incoming_typo_value
 
-        self.word_type = incoming_word_type
-
-##--------------------start-of-incorrectTypo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-class incorrectTypo:
-
-    '''
-
-    The incorrectTypo class is used to represent typos the user makes but are not actually typos.\n
-        
-    '''
-
-##--------------------start-of-incorrectTypo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def __init__(self, incoming_word_id:int, incoming_incorrect_typo_id:int, incoming_incorrect_typo_value:str, incoming_word_type:str) -> None:
-
-        """
-        
-        Initializes a new incorrectTypo object.\n
-
-        Parameters:\n
-        incoming_word_id (int) : The id of the word the incorrectTypo is for.\n
-        incoming_incorrect_typo_id (int) : The id of the incorrectTypo.\n
-        incoming_incorrect_typo_value (string) : The value of the incorrectTypo.\n
-        incoming_word_type (string) : The type of the word the incorrectTypo is for.\n
-
-        Returns:\n
-        None.\n
-
-        """
-
-        self.word_id = incoming_word_id
-
-        self.incorrect_typo_id  = incoming_incorrect_typo_id
-
-        self.incorrect_typo_value = incoming_incorrect_typo_value
-
-        self.word_type = incoming_word_type
+        self.word_type:str = incoming_word_type

@@ -296,7 +296,7 @@ class Toolkit():
             release_notes = response.json()["body"]
 
             if(latest_version != Toolkit.CURRENT_VERSION):
-                update_prompt += "There is a new update for Kudasai (" + latest_version + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Bikatr7/Seisen/releases/latest \n"
+                update_prompt += "There is a new update for Seisen (" + latest_version + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Bikatr7/Seisen/releases/latest \n"
 
                 if(release_notes):
                     update_prompt += "\nRelease notes:\n\n" + release_notes + '\n'

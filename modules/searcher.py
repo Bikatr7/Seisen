@@ -1,6 +1,5 @@
 ## built-in libraries
 import typing
-import msvcrt
 
 ## custom modules
 from modules.toolkit import Toolkit
@@ -207,7 +206,7 @@ class Searcher:
 
         id_print_message += "\n\nWhich vocab are you looking for? (Enter position 1-" + str(len(matching_ids)) + ")"
 
-        target_index = int(Toolkit.input_check(4, str(msvcrt.getch().decode()), len(matching_ids), id_print_message)) - 1
+        target_index = int(Toolkit.input_check(4, Toolkit.get_single_key(), len(matching_ids), id_print_message)) - 1
 
         final_id = matching_ids[target_index]
 

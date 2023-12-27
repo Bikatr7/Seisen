@@ -1,10 +1,7 @@
 ## built-in modules
 import os
-import msvcrt
 import time
 import typing
-import platform
-import subprocess
 
 ## custom modules
 from modules.file_ensurer import FileEnsurer
@@ -70,12 +67,48 @@ class Toolkit():
 
             elif(input_type == 4 or input_type == 1):
                 print(input_issue_message + "\n" + input_prompt_message)
-                user_input = str(msvcrt.getch().decode())
+                user_input = Toolkit.get_single_key()
 
             Toolkit.clear_console()
             Toolkit.clear_stream()
 
             new_user_input = str(user_input)
+
+##--------------------start-of-get_user_input()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_single_key() -> str:
+
+        """
+
+        Gets a single key from the user.
+
+        Returns:
+        user_input (str) : the user's input.
+
+        """
+
+        if(os.name == 'nt'):  ## Windows
+
+            import msvcrt
+
+            user_input = str(msvcrt.getch().decode())
+            
+        else:  ## Linux
+
+            import sys
+            import termios
+            import tty
+
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setraw(fd)
+                user_input = sys.stdin.read(1)
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+        return user_input
 
 ##-------------------start-of-clear_console()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -98,45 +131,36 @@ class Toolkit():
         """
 
         Pauses the console.
-        Requires msvcrt on Windows and termios on Linux/Mac, will do nothing if neither are present.
 
         Parameters:
-        message (string | optional) : The custom message to be displayed to the user.
+        message (str | optional) : the message that will be displayed when the console is paused.
 
         """
 
-        try:
+        print(message)  ## Print the custom message
+        
+        if(os.name == 'nt'):  ## Windows
 
-            print(message)
+            import msvcrt
+            
+            msvcrt.getch() 
 
-            ## Windows
-            if(os.name == 'nt'):
+        else:  ## Linux
 
-                import msvcrt
+            import termios
 
-                msvcrt.getch()
+            ## Save terminal settings
+            old_settings = termios.tcgetattr(0)
 
-                ## Linux and Mac
-            elif(os.name == 'posix'):
+            try:
+                new_settings = termios.tcgetattr(0)
+                new_settings[3] = new_settings[3] & ~termios.ICANON
+                termios.tcsetattr(0, termios.TCSANOW, new_settings)
+                os.read(0, 1)  ## Wait for any key press
 
-                import termios
+            finally:
 
-                ## Save terminal settings
-                old_settings = termios.tcgetattr(0)
-
-                try:
-                    new_settings = termios.tcgetattr(0)
-                    new_settings[3] = new_settings[3] & ~termios.ICANON
-                    termios.tcsetattr(0, termios.TCSANOW, new_settings)
-                    os.read(0, 1)  ## Wait for any key press
-
-                finally:
-
-                    termios.tcsetattr(0, termios.TCSANOW, old_settings)
-
-        except ImportError:
-
-            pass
+                termios.tcsetattr(0, termios.TCSANOW, old_settings)
 
 ##-------------------start-of-maximize_window()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -151,16 +175,18 @@ class Toolkit():
 
         try:
 
-            system_name = platform.system()
+            if(os.name == 'nt'):
 
-            if(system_name == "Windows"):
-                os.system('mode con: cols=140 lines=40')
+                import ctypes
 
-            elif(system_name == "Linux"):
+                ## Get the handle of the console window
+                hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+
+                ## Maximize the console window
+                ctypes.windll.user32.ShowWindow(hwnd, 3)
+
+            else:
                 print("\033[8;40;140t")
-
-            elif(system_name == "Darwin"):
-                subprocess.call(["printf", "'\\e[8;40;140t'"])
 
         except:
             pass
@@ -178,16 +204,18 @@ class Toolkit():
 
         try:
 
-            system_name = platform.system()
+            if(os.name == 'nt'):
 
-            if(system_name == "Windows"):
-                os.system('mode con: cols=80 lines=25')
+                import ctypes
+
+                ## Get the handle of the console window
+                hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+
+                ## Maximize the console window
+                ctypes.windll.user32.ShowWindow(hwnd, 9)
 
             elif(system_name == "Linux"):
                 print("\033[8;25;80t")
-
-            elif(system_name == "Darwin"):
-                subprocess.call(["printf", "'\\e[8;25;80t'"])
 
         except:
             pass
@@ -204,11 +232,34 @@ class Toolkit():
         ## need to make this work on linux and mac
 
         """
+
+        try:
+
+            if(os.name == 'nt'):
+
+                import msvcrt
         
-        while msvcrt.kbhit(): ## while a key is waiting to be read
-            msvcrt.getch() ## read the next key and ignore it
-            
-        time.sleep(0.1) 
+                while msvcrt.kbhit(): ## while a key is waiting to be read
+                    msvcrt.getch() ## read the next key and ignore it
+
+            else:
+
+                import sys
+                import termios
+                import tty
+
+                fd = sys.stdin.fileno()
+                old_settings = termios.tcgetattr(fd)
+                try:
+                    tty.setcbreak(fd, termios.TCSANOW)
+                    termios.tcflush(fd, termios.TCIFLUSH)
+                finally:
+                    termios.tcsetattr(fd, termios.TCSANOW, old_settings)
+
+            time.sleep(0.1) 
+
+        except:
+            pass
 
 ##--------------------start-of-user_confirm()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -256,7 +307,7 @@ class Toolkit():
             
             Toolkit.clear_stream()
             
-            if(int(Toolkit.input_check(4, str(msvcrt.getch().decode()), 2 , output)) == 1):
+            if(int(Toolkit.input_check(4, Toolkit.get_single_key(), 2 , output)) == 1):
                     entry_confirmed = True
             else:
 
@@ -313,7 +364,6 @@ class Toolkit():
             is_connection = False
 
             return is_connection, update_prompt
-
 
         except Exception as e:
 

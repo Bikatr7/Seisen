@@ -1,6 +1,3 @@
-## built in modules
-import msvcrt
-
 ## custom modules
 from handlers.local_handler import LocalHandler
 from handlers.connection_handler import ConnectionHandler
@@ -42,7 +39,7 @@ class SettingsHandler():
 
         print(settings_menu_message)
 
-        pathing = Toolkit.input_check(4, str(msvcrt.getch().decode()), 5, settings_menu_message)
+        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 5, settings_menu_message)
 
         if(pathing == "1"): 
             VocabSettingsHandler.change_vocab_settings()
@@ -80,7 +77,7 @@ class SettingsHandler():
 
         print(score_message)
 
-        type_print = Toolkit.input_check(4, str(msvcrt.getch().decode()), 2, score_message)
+        type_print = Toolkit.input_check(4, Toolkit.get_single_key(), 2, score_message)
 
         if(type_print == "1"):
             kana_to_test, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)

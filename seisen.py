@@ -1,11 +1,8 @@
 ## built-in modules
 import os
-import msvcrt
 import time
 import traceback
-import ctypes
 import threading
-
 
 ## custom modules
 from handlers.local_handler import LocalHandler
@@ -28,16 +25,16 @@ class Seisen:
     """
 
     ## the current mode of seisen, "-1" is invalid and will force seisen to reprompt for a valid mode
-    current_mode = -1
+    current_mode:int = -1
 
     ## boolean that holds whether the user has a valid internet connection
     has_valid_connection:bool = False
 
     ## the current question prompt
-    current_question_prompt = ""
+    current_question_prompt:str = ""
 
     ## the current user guess
-    current_user_guess = ""
+    current_user_guess:str = ""
 
 ##--------------------start-of-handle_intensive_db_operations()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -80,14 +77,7 @@ class Seisen:
 
         os.system("title " + "Seisen")
 
-        ## todo
-        ## move window resizing to toolkit
-
-        # Get the handle of the console window
-        hwnd = ctypes.windll.kernel32.GetConsoleWindow()
-
-        ## Maximize the console window
-        ctypes.windll.user32.ShowWindow(hwnd, 3)
+        Toolkit.maximize_window()
 
         FileEnsurer.ensure_files()
 
@@ -159,7 +149,7 @@ class Seisen:
 
         old_mode = Seisen.current_mode
         
-        Seisen.current_mode = int(Toolkit.input_check(1, str(msvcrt.getch().decode()), 3, main_menu_message))
+        Seisen.current_mode = int(Toolkit.input_check(1, Toolkit.get_single_key(), 3, main_menu_message))
         FileHandler.edit_sei_line(FileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to=str(Seisen.current_mode))
         
         Logger.log_action("Current mode changed to " + str(Seisen.current_mode) + " was " + str(old_mode))

@@ -1,6 +1,4 @@
 ## built-in modules
-from datetime import datetime
-
 import os
 import typing
 

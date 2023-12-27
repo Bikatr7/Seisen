@@ -1,7 +1,6 @@
 ## built-in libaries
 import random
 import typing
-import msvcrt
 
 ## custom modules
 from entities.word import word
@@ -328,7 +327,7 @@ class ScoreRater:
         
             print(prompt)
 
-            userA = int(Toolkit.input_check(4 ,str(msvcrt.getch().decode()), 2, prompt))
+            userA = int(Toolkit.input_check(4 ,Toolkit.get_single_key(), 2, prompt))
         
             Toolkit.clear_console()
 

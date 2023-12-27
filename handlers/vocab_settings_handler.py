@@ -1,20 +1,16 @@
 ## built-in modules
-import msvcrt
 import time
 
 ## custom modules
 from handlers.local_handler import LocalHandler
-from handlers.remote_handler import RemoteHandler
 from handlers.file_handler import FileHandler
 
 from modules.searcher import Searcher
 from modules.toolkit import Toolkit
 from modules.logger import Logger
 from modules.file_ensurer import FileEnsurer
-from modules.score_rater import ScoreRater
 
 from entities.vocab import vocab as vocab_blueprint 
-
 from entities.csep import csep as csep_blueprint
 
 class VocabSettingsHandler():
@@ -47,7 +43,7 @@ class VocabSettingsHandler():
 
         print(vocab_message)
 
-        type_setting = Toolkit.input_check(4, str(msvcrt.getch().decode()), 7, vocab_message)
+        type_setting = Toolkit.input_check(4, Toolkit.get_single_key(), 7, vocab_message)
 
         if(type_setting == "1"):
             VocabSettingsHandler.add_vocab()
@@ -264,7 +260,7 @@ class VocabSettingsHandler():
 
         print(type_replacement_message)
 
-        type_value = Toolkit.input_check(4, str(msvcrt.getch().decode()), 6, type_replacement_message)
+        type_value = Toolkit.input_check(4, Toolkit.get_single_key(), 6, type_replacement_message)
 
         attributes_map = {
             "1": (target_vocab.testing_material, ATTRIBUTE_TESTING_MATERIAL),

@@ -11,7 +11,7 @@ from entities.typo import incorrectTypo as incorrect_typo_blueprint
 
 from entities.csep import csep as csep_blueprint
 
-from entities.words import word as kana_blueprint
+from entities.word import word as kana_blueprint
 from entities.vocab import vocab as vocab_blueprint
 
 from modules.file_ensurer import FileEnsurer

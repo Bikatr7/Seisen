@@ -4,7 +4,7 @@ import typing
 import msvcrt
 
 ## custom modules
-from entities.words import word
+from entities.word import word
 from entities.vocab import vocab
 
 from entities.typo import Typo as typo_blueprint

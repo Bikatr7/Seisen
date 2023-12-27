@@ -11,7 +11,7 @@ import time
 from entities.typo import Typo as typo_blueprint
 from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
-from entities.words import word as kana_blueprint
+from entities.word import word as kana_blueprint
 from entities.vocab import vocab as vocab_blueprint
 
 from entities.csep import csep as csep_blueprint
@@ -25,7 +25,7 @@ from handlers.file_handler import FileHandler
 if(typing.TYPE_CHECKING): ## used for cheating the circular import issue that occurs when i need to type check some things
     from entities.csep import csep
     from entities.vocab import vocab
-    from entities.words import word as kana
+    from entities.word import word as kana
 
 class LocalHandler():
 

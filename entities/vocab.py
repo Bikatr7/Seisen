@@ -3,7 +3,7 @@ import typing
 
 ## custom modules
 from entities.csep import csep
-from entities.words import word
+from entities.word import word
 
 class vocab(word):
 

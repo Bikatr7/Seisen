@@ -4,7 +4,7 @@ import time
 
 ## custom modules
 from handlers.local_handler import localHandler
-from handlers.remoteHandler import remoteHandler
+from handlers.remote_handler import remoteHandler
 
 from modules.searcher import searcher
 

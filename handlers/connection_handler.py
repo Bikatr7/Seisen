@@ -1,5 +1,4 @@
 ## built-in modules
-import os
 import time
 import typing
 import base64

@@ -6,8 +6,8 @@ import shutil
 import time
 
 ## custom modules
-from entities.typo import typo as typo_blueprint
-from entities.typo import incorrectTypo as incorrect_typo_blueprint
+from entities.typo import Typo as typo_blueprint
+from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
 from entities.csep import csep as csep_blueprint
 

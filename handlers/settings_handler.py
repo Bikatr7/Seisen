@@ -31,15 +31,15 @@ class SettingsHandler():
 
         """  
  
-        Logger.log_barrier
+        Logger.log_barrier()
 
         Toolkit.clear_console()
 
-        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Set Up New Database"
+        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Set Up New Database\n"
 
         print(settings_menu_message)
 
-        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 5, settings_menu_message)
+        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 4, settings_menu_message)
 
         if(pathing == "1"): 
             VocabSettingsHandler.change_vocab_settings()
@@ -67,7 +67,7 @@ class SettingsHandler():
             
         """
         
-        Prints score ratings for either kana or vocab.
+        Prints score ratings for either Kana or Vocab.
 
         """  
         

@@ -1,12 +1,10 @@
-##--------------------start-of-IncorrectTypo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 class IncorrectTypo:
 
-    '''
+    """
 
-    The IncorrectTypo class is used to represent typos the user makes but are not actually typos.
+    The IncorrectTypo class is used to represent typos the user makes but are not actually typos when guessing a Word.
         
-    '''
+    """
 
 ##--------------------start-of-IncorrectTypo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -17,10 +15,10 @@ class IncorrectTypo:
         Initializes a new IncorrectTypo object.
 
         Parameters:
-        incoming_word_id (int) : The id of the word the IncorrectTypo is for.
+        incoming_word_id (int) : The id of the Word the IncorrectTypo is for.
         incoming_incorrect_typo_id (int) : The id of the IncorrectTypo.
         incoming_incorrect_typo_value (str) : The value of the IncorrectTypo.
-        incoming_word_type (str) : The type of the word the IncorrectTypo is for.
+        incoming_word_type (str) : The type of the Word the IncorrectTypo is for.
 
         """
 

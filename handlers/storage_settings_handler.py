@@ -78,7 +78,7 @@ class StorageSettingsHandler():
             time.sleep(1)
             return
 
-        with open(FileEnsurer.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.last_local_remote_overwrite_accurate_path, 'r', encoding="utf-8") as file:
             last_backup_date = str(file.read().strip()).strip('\x00').strip()
         
         if(last_backup_date == ""):
@@ -165,7 +165,6 @@ class StorageSettingsHandler():
 
             Toolkit.pause_console()
 
-
         FileEnsurer.ensure_files()
         LocalHandler.load_words_from_local_storage()
 
@@ -187,14 +186,14 @@ class StorageSettingsHandler():
         export_path = os.path.join(FileEnsurer.script_dir, file_name)
 
         ## get vocab lines
-        with open(FileEnsurer.vocab_actual_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_path, 'r', encoding="utf-8") as file:
             write_string_list = file.readlines()
 
         ## append separator
         write_string_list.append("---\n") 
 
         ## get csep lines
-        with open(FileEnsurer.vocab_csep_actual_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_synonyms_path, 'r', encoding="utf-8") as file:
             temp = file.readlines()
             write_string_list += temp
 
@@ -204,7 +203,7 @@ class StorageSettingsHandler():
         
         Toolkit.clear_console()
 
-        print(file_name + " has been placed in the script directory\n")
+        print(file_name + " has been placed in the script directory.\n")
 
         Toolkit.pause_console()
 
@@ -280,10 +279,10 @@ class StorageSettingsHandler():
             else:
                 csep_portion_write.append(line)
 
-        with open(FileEnsurer.vocab_actual_path, 'w+', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_path, 'w+', encoding="utf-8") as file:
             file.writelines(vocab_portion_write)
 
-        with open(FileEnsurer.vocab_csep_actual_path, 'w+', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_synonyms_path, 'w+', encoding="utf-8") as file:
             file.writelines(csep_portion_write)
 
         LocalHandler.load_words_from_local_storage()

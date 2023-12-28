@@ -43,7 +43,7 @@ class Searcher:
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
-        mini_csep_print = [str(csep.csep_id) for csep in target_vocab.testing_material_answer_all]
+        mini_synonym_print = [str(synonym.synonym_id) for synonym in target_vocab.testing_material_answer_all]
 
         print_item = (
             f"---------------------------------\n"
@@ -54,23 +54,23 @@ class Searcher:
             f"Incorrect Guesses: {target_vocab.incorrect_count}\n"
             f"Correct Guesses: {target_vocab.correct_count}\n"
             f"ID: {target_vocab.word_id}\n"
-            f"CSEP ID(S): {mini_csep_print}\n"
+            f"Synonym ID(S): {mini_synonym_print}\n"
             f"---------------------------------\n"
         )
 
         return print_item
     
-##--------------------start-of-get_csep_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_synonym_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_csep_print_item_from_id(csep_id:int) -> str:
+    def get_synonym_print_item_from_id(synonym_id:int) -> str:
 
         """
         
-        Gets a print item for a csep given a csep id.
+        Gets a print item for a synonym given a synonym id.
 
         Parameters:
-        csep_id (int) : the id of the vocab we are getting a print item for.
+        synonym_id (int) : The id of the synonym we are getting a print item for.
 
         Returns:
         print_item (str) : the print item for the id.\n
@@ -78,37 +78,37 @@ class Searcher:
         """
         
         target_vocab = None
-        target_csep = None
+        target_synonym = None
 
         for vocab in LocalHandler.vocab:
-            for csep in vocab.testing_material_answer_all:
-                if(csep.csep_id == csep_id):
-                    target_csep = csep
+            for synonym in vocab.testing_material_answer_all:
+                if(synonym.synonym_id == synonym_id):
+                    target_synonym = synonym
                     target_vocab = vocab
 
-        if(target_csep == None or target_vocab == None):
-            raise Searcher.IDNotFoundError(csep_id)
+        if(target_synonym == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(synonym_id)
         
         print_item = (
             f"---------------------------------\n"
-            f"CSEP: {target_csep.csep_value}\n"
-            f"CSEP ID: {target_csep.csep_id}\n"
+            f"Synonym: {target_synonym.synonym_value}\n"
+            f"Synonym ID: {target_synonym.synonym_id}\n"
             f"VOCAB: {target_vocab.testing_material}\n"
-            f"VOCAB ID: {target_csep.word_id}\n"
-            f"WORD TYPE: {target_csep.word_type}\n"
+            f"VOCAB ID: {target_synonym.word_id}\n"
+            f"WORD TYPE: {target_synonym.word_type}\n"
             f"---------------------------------\n"
         )
 
         return print_item
     
-##--------------------start-of-get_csep_print_items_from_vocab_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_synonym_print_items_from_vocab_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_csep_print_items_from_vocab_id(vocab_id:int) -> typing.List[str]:
+    def get_synonym_print_items_from_vocab_id(vocab_id:int) -> typing.List[str]:
 
         """
         
-        Gets a print item for a csep given a vocab id.
+        Gets a print item for a synonym given a vocab id.
 
         Parameters:
         vocab_id (int) : the id of the vocab we are getting a print item for.
@@ -128,14 +128,14 @@ class Searcher:
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
-        for csep in target_vocab.testing_material_answer_all:
+        for synonym in target_vocab.testing_material_answer_all:
 
             print_item = (
                 f"---------------------------------\n"
-                f"CSEP: {csep.csep_value}\n"
-                f"CSEP ID: {csep.csep_id}\n"
-                f"VOCAB ID {csep.word_id}\n"
-                f"WORD TYPE: {csep.word_type}\n"
+                f"Synonym: {synonym.synonym_value}\n"
+                f"Synonym ID: {synonym.synonym_id}\n"
+                f"VOCAB ID {synonym.word_id}\n"
+                f"WORD TYPE: {synonym.word_type}\n"
                 f"---------------------------------\n"
             )
 
@@ -245,14 +245,14 @@ class Searcher:
 
         """
         
-        Gets vocab and csep ids that match a given term.
+        Gets vocab and synonym ids that match a given term.
 
         Parameters:
         term (str) : the term we are searching with.
 
         Returns:
         vocab_ids (list = int) : matching vocab ids.
-        csep_ids (list - int) : matching csep ids.
+        csep_ids (list - int) : matching synonym ids.
 
         """
 
@@ -265,10 +265,10 @@ class Searcher:
             if(vocab.romaji == term or vocab.testing_material_answer_main == term):
                 vocab_ids.append(vocab.word_id)
 
-            for csep in vocab.testing_material_answer_all:
-                if(csep.csep_value == term):
+            for synonym in vocab.testing_material_answer_all:
+                if(synonym.synonym_value == term):
                     vocab_ids.append(vocab.word_id)
-                    csep_ids.append(csep.csep_id)
+                    csep_ids.append(synonym.synonym_id)
             
             
         vocab_ids = [int(id) for id in set(vocab_ids)]

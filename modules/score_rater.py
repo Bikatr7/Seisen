@@ -3,8 +3,8 @@ import random
 import typing
 
 ## custom modules
-from entities.word import word
-from entities.vocab import vocab
+from entities.word import Word
+from entities.vocab import Vocab
 
 from entities.typo import Typo as typo_blueprint
 from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
@@ -20,7 +20,7 @@ class ScoreRater:
 
     """
 
-    The scoreRate class is used to determine which "word" will be given to the user based on a multitude of factors, such as number of answers, the number of correct answers, the number of incorrect answers, etc.
+    The scoreRate class is used to determine which "Word" will be given to the user based on a multitude of factors, such as number of answers, the number of correct answers, the number of incorrect answers, etc.
     
     """
 
@@ -32,11 +32,11 @@ class ScoreRater:
         """
         
         Parameters:
-        total_answers (int) : total number of answers for the word.
-        correct_count (int) : total number of correct answers for the word.
+        total_answers (int) : total number of answers for the Word.
+        correct_count (int) : total number of correct answers for the Word.
 
         Returns:
-        selection_weight (float) : the chance of the word getting selected.
+        selection_weight (float) : the chance of the Word getting selected.
  
         """
 
@@ -55,17 +55,17 @@ class ScoreRater:
 ##--------------------start-of-get_kana_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_kana_to_test(kana_list:typing.List[word]) -> typing.Tuple[word, typing.List[str]]:
+    def get_kana_to_test(kana_list:typing.List[Word]) -> typing.Tuple[Word, typing.List[str]]:
 
         """
 
         This method is used to determine which "kana" will be given to the user based on a multitude of factors, such as the number of answers, the number of correct answers, the number of incorrect answers, etc.
 
         Parameters:
-        kana_list (list - word): The list of kana we can test.
+        kana_list (list - Word): The list of kana we can test.
 
         Returns:
-        kana_to_test (word): The kana we want to test.
+        kana_to_test (Word): The kana we want to test.
         display_item_list (list - str): The list of display items. I.E. all the kana, their likelihoods, number of incorrect/correct answers.
 
         """
@@ -130,18 +130,18 @@ class ScoreRater:
 ##--------------------start-of-get_vocab_to_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_vocab_to_test(vocab_list:typing.List[vocab]) -> typing.Tuple[vocab, typing.List[str]]:
+    def get_vocab_to_test(vocab_list:typing.List[Vocab]) -> typing.Tuple[Vocab, typing.List[str]]:
         
         """
 
-        This method is used to determine which "vocab" will be given to the user based on a multitude of factors, such as the number of answers, the number of correct answers, the number of incorrect answers, etc.
+        This method is used to determine which "Vocab" will be given to the user based on a multitude of factors, such as the number of answers, the number of correct answers, the number of incorrect answers, etc.
 
         Parameters:
-        vocab_list (list - vocab): The list of vocab we can test.
+        vocab_list (list - Vocab): The list of Vocab we can test.
 
         Returns:
-        vocab_to_test (vocab): The vocab we want to test.
-        display_item_list (list - str): The list of display items. I.E. all the vocab, their likelihoods, number of incorrect/correct answers.
+        vocab_to_test (Vocab): The Vocab we want to test.
+        display_item_list (list - str): The list of display items. I.E. all the Vocab, their likelihoods, number of incorrect/correct answers.
         
         """
 
@@ -178,20 +178,20 @@ class ScoreRater:
 
         vocab_to_test = random.choices(vocab_list, weights=vocab_scores)[0]
 
-        for i, vocab in enumerate(vocab_list):
-            vocab.likelihood = round(((vocab_scores[i] / sum(vocab_scores)) * 100), 4)
+        for i, Vocab in enumerate(vocab_list):
+            Vocab.likelihood = round(((vocab_scores[i] / sum(vocab_scores)) * 100), 4)
 
             display_item = (
                 f"\n---------------------------------\n"
-                f"Likelihood: {vocab.likelihood}%\n"
-                f"Vocab: {vocab.testing_material}\n"
-                f"Incorrect Guesses: {vocab.incorrect_count}\n"
-                f"Correct Guesses: {vocab.correct_count}\n"
-                f"ID: {vocab.word_id}\n"
+                f"Likelihood: {Vocab.likelihood}%\n"
+                f"Vocab: {Vocab.testing_material}\n"
+                f"Incorrect Guesses: {Vocab.incorrect_count}\n"
+                f"Correct Guesses: {Vocab.correct_count}\n"
+                f"ID: {Vocab.word_id}\n"
                 f"---------------------------------"
             )
 
-            display_item_list.append((vocab.likelihood, display_item)) 
+            display_item_list.append((Vocab.likelihood, display_item)) 
 
         ## Sort the display_item_list based on the likelihoods (in ascending order)
         display_item_list.sort(key=lambda item: item[0])
@@ -279,14 +279,14 @@ class ScoreRater:
 ##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def check_typo(word:word, user_guess:str, prompt:str) -> str:  
+    def check_typo(Word:Word, user_guess:str, prompt:str) -> str:  
 
         """
 
         hecks if the user's guess is a typo or not.
 
         Parameters:
-        word (object - word) : the word we're checking typos for.
+        Word (object - Word) : the Word we're checking typos for.
         user_guess (str) : the user's guess.
         prompt (str) : the prompt that was given to the user.
         
@@ -302,22 +302,22 @@ class ScoreRater:
 
         final_answer = user_guess
 
-        typos = [typo.typo_value for typo in word.typos]
-        incorrect_typos = [incorrect_typo.incorrect_typo_value for incorrect_typo in word.incorrect_typos]
+        typos = [typo.typo_value for typo in Word.typos]
+        incorrect_typos = [incorrect_typo.incorrect_typo_value for incorrect_typo in Word.incorrect_typos]
 
         if(user_guess in typos):
-            possible_intended_answers = [csep.csep_value for csep in word.testing_material_answer_all]
+            possible_intended_answers = [synonym.synonym_value for synonym in Word.testing_material_answer_all]
             return ScoreRater.get_intended_answer(user_guess, possible_intended_answers)
         elif(user_guess in incorrect_typos):
             return user_guess
 
-        for correct_answer in word.testing_material_answer_all:
+        for correct_answer in Word.testing_material_answer_all:
 
-            new_distance = ScoreRater.levenshtein(user_guess, correct_answer.csep_value)
+            new_distance = ScoreRater.levenshtein(user_guess, correct_answer.synonym_value)
 
             if(new_distance < min_distance and new_distance < lowest_distance):
                 lowest_distance = new_distance
-                closest_match = correct_answer.csep_value
+                closest_match = correct_answer.synonym_value
 
         if(closest_match is not None):
 
@@ -335,12 +335,12 @@ class ScoreRater:
 
                 final_answer = closest_match
 
-                ScoreRater.log_new_typo(word, typo=user_guess)
+                ScoreRater.log_new_typo(Word, typo=user_guess)
 
                 return final_answer
         
             else:
-                ScoreRater.log_new_incorrect_typo(word, incorrect_typo=user_guess)
+                ScoreRater.log_new_incorrect_typo(Word, incorrect_typo=user_guess)
 
         
         return final_answer
@@ -348,14 +348,14 @@ class ScoreRater:
 ##--------------------start-of-check_answers_word()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def check_answers_word(word:word, user_guess:str, prompt:str) -> typing.Tuple[typing.Union[bool ,None], str]: 
+    def check_answers_word(Word:Word, user_guess:str, prompt:str) -> typing.Tuple[typing.Union[bool ,None], str]: 
 
         """
         
         Checks if the user_guess is correct or incorrect.
 
         Parameters:
-        word (object - word) : the word we're checking answers for.
+        Word (object - Word) : the Word we're checking answers for.
         user_guess (str) : the user's guess.
         prompt (str) : the prompt that was given to the user.
         handler (object - localHandler) : the localHandler object.
@@ -366,13 +366,13 @@ class ScoreRater:
 
         """
 
-        answers = [value.csep_value for value in word.testing_material_answer_all]
+        answers = [value.synonym_value for value in Word.testing_material_answer_all]
 
         if(user_guess == 'q'): ## if the user wants to quit the program do so
             FileEnsurer.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
-            user_guess = ScoreRater.check_typo(word, user_guess, prompt)
+            user_guess = ScoreRater.check_typo(Word, user_guess, prompt)
 
         if(user_guess in answers): 
             return True, user_guess
@@ -380,25 +380,25 @@ class ScoreRater:
         elif(user_guess != 'z'): 
             return False, user_guess
         
-        else: ## z indicates the user is skipping the word
+        else: ## z indicates the user is skipping the Word
             return None, user_guess
     
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def log_new_typo(word:word, typo:str) -> None:
+    def log_new_typo(Word:Word, typo:str) -> None:
 
         """
 
-        Logs a new typo to the word.
+        Logs a new typo to the Word.
 
         Parameters:
-        word (object - word) : the word we're logging the typo for.
+        Word (object - Word) : the Word we're logging the typo for.
         typo (str) : the typo to be logged.
 
         """
 
-        if(isinstance(word, vocab)):
+        if(isinstance(Word, Vocab)):
             new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(3))
             path_to_write_to = FileEnsurer.vocab_typos_path
 
@@ -406,32 +406,32 @@ class ScoreRater:
             new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(1))
             path_to_write_to = FileEnsurer.kana_typos_path
 
-        new_typo = typo_blueprint(word.word_id, new_typo_id, typo, word.word_type)
+        new_typo = typo_blueprint(Word.word_id, new_typo_id, typo, Word.word_type)
 
         ## updates local storage so the typo will be saved
-        FileHandler.write_sei_line(path_to_write_to, [str(word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        FileHandler.write_sei_line(path_to_write_to, [str(Word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
-        word.typos.append(new_typo)
+        Word.typos.append(new_typo)
 
-        Logger.log_action("Logged a typo : " + typo + " for " + word.testing_material + ", id : " + str(word.word_id))
+        Logger.log_action("Logged a typo : " + typo + " for " + Word.testing_material + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def log_new_incorrect_typo(word:word, incorrect_typo:str) -> None:
+    def log_new_incorrect_typo(Word:Word, incorrect_typo:str) -> None:
 
         """
         
-        Logs a new incorrect typo to the word.
+        Logs a new incorrect typo to the Word.
 
         Parameters:
-        word (object - word) : the word we're logging the incorrect typo for.
+        Word (object - Word) : the Word we're logging the incorrect typo for.
         incorrect_typo (str) : the incorrect_typo to be logged.
         
         """
 
-        if(isinstance(word, vocab)):
+        if(isinstance(Word, Vocab)):
             new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(4))
             path_to_write_to = FileEnsurer.vocab_incorrect_typos_path
 
@@ -439,27 +439,27 @@ class ScoreRater:
             new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(2))
             path_to_write_to = FileEnsurer.kana_incorrect_typos_path
 
-        new_incorrect_typo = incorrect_typo_blueprint(word.word_id, new_incorrect_typo_id, incorrect_typo, word.word_type)
+        new_incorrect_typo = incorrect_typo_blueprint(Word.word_id, new_incorrect_typo_id, incorrect_typo, Word.word_type)
 
         ## updates local storage so the incorrect typo will be saved
-        FileHandler.write_sei_line(path_to_write_to, [str(word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+        FileHandler.write_sei_line(path_to_write_to, [str(Word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
 
         ## updates the current session with the incorrect typo
-        word.incorrect_typos.append(new_incorrect_typo)
+        Word.incorrect_typos.append(new_incorrect_typo)
 
-        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + word.testing_material + ", id : " + str(word.word_id))
+        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + Word.testing_material + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_correct_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def log_correct_answer(word:word) -> None:
+    def log_correct_answer(Word:Word) -> None:
 
         """
 
-        Logs a correct answer to the word.
+        Logs a correct answer to the Word.
 
         Parameters:
-        word (object - word) : the word we're logging the correct answer for.
+        Word (object - Word) : the Word we're logging the correct answer for.
         
         """
 
@@ -467,40 +467,40 @@ class ScoreRater:
         KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 5
         VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 7
     
-        if(isinstance(word, vocab)):
+        if(isinstance(Word, Vocab)):
             word_ids = LocalHandler.get_list_of_all_ids(6)
-            path_to_write_to = FileEnsurer.vocab_actual_path
+            path_to_write_to = FileEnsurer.vocab_path
             index_location = VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
         
         else:
             word_ids = LocalHandler.get_list_of_all_ids(5)
-            path_to_write_to = FileEnsurer.kana_actual_path
+            path_to_write_to = FileEnsurer.kana_path
             index_location = KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         line_to_write_to = 0
 
         ## current session update
-        word.correct_count += 1
+        Word.correct_count += 1
                             
         ## line returned needs to be incremented by one to match file
-        line_to_write_to = word_ids.index(word.word_id) + 1
+        line_to_write_to = word_ids.index(Word.word_id) + 1
 
         ## updates local storage so the correct answer will be saved for future sessions
-        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(word.correct_count))
+        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(Word.correct_count))
 
-        Logger.log_action("Logged a correct answer for " + word.testing_material + ", id : " + str(word.word_id))
+        Logger.log_action("Logged a correct answer for " + Word.testing_material + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def log_incorrect_answer(word:word) -> None:
+    def log_incorrect_answer(Word:Word) -> None:
 
         """
         
-        Logs an incorrect answer to the word.
+        Logs an incorrect answer to the Word.
 
         Parameters:\n
-        word (object - word) : the word we're logging the incorrect answer for.
+        Word (object - Word) : the Word we're logging the incorrect answer for.
         
         """
 
@@ -508,25 +508,25 @@ class ScoreRater:
         KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 4
         VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 6
 
-        if(isinstance(word, vocab)):
+        if(isinstance(Word, Vocab)):
             word_ids = LocalHandler.get_list_of_all_ids(6)
-            path_to_write_to = FileEnsurer.vocab_actual_path
+            path_to_write_to = FileEnsurer.vocab_path
             index_location = VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         else:
             word_ids = LocalHandler.get_list_of_all_ids(5)
-            path_to_write_to = FileEnsurer.kana_actual_path
+            path_to_write_to = FileEnsurer.kana_path
             index_location = KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         line_to_write_to = 0
 
         ## current session update
-        word.incorrect_count += 1
+        Word.incorrect_count += 1
 
         ## line returned needs to be incremented by one to match file
-        line_to_write_to = word_ids.index(word.word_id) + 1
+        line_to_write_to = word_ids.index(Word.word_id) + 1
 
         ## updates local storage so the incorrect answer will be saved for future sessions
-        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(word.incorrect_count))
+        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(Word.incorrect_count))
 
-        Logger.log_action("Logged an incorrect answer for " + word.testing_material + ", id : " + str(word.word_id))
+        Logger.log_action("Logged an incorrect answer for " + Word.testing_material + ", id : " + str(Word.word_id))

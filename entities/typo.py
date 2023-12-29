@@ -16,8 +16,8 @@ class Typo:
         Initializes a new Typo object.
 
         Parameters:
-        incoming_word_id (int) : The id of the Word the Typo is for.
-        incoming_typo_id (int) : The id of the Typo.
+        incoming_word_id (int) : The ID of the Word the Typo is for.
+        incoming_typo_id (int) : The ID of the Typo.
         incoming_typo_value (str) : The value of the Typo.
         incoming_word_type (st) : The type of the Word the Typo is for.
 

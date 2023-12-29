@@ -24,9 +24,9 @@ class Word:
         Initializes the Word class.
 
         Parameters:
-        incoming_id (int) : The id of the Word.
-        incoming_testing_material (str) : the testing material of the Word.
-        incoming_testing_material_answer_main (str) : the main answer of the testing material.
+        incoming_id (int) : The ID of the Word.
+        incoming_testing_material (str) : The testing material of the Word.
+        incoming_testing_material_answer_main (str) : The main answer of the testing material.
         incoming_testing_material_answer_main_all (list - Synonym) : The list of all answers to the testing material of the Word.
         incoming_incorrect_count (int) : The number of incorrect guesses of the Word.
         incoming_correct_count (int) : The number of correct guesses of the Word.

@@ -22,10 +22,10 @@ class Vocab(Word):
         Initializes the Vocab class.
 
         Parameters:
-        incoming_id (int) : the id of the Vocab.
-        incoming_testing_material (str) : the testing material of the Vocab.
-        incoming_romaji (str) : the romaji of the Vocab.
-        incoming_testing_material_answer_main (str) : the main answer of the testing material.
+        incoming_id (int) : The ID of the Vocab.
+        incoming_testing_material (str) : The testing material of the Vocab.
+        incoming_romaji (str) : The romaji of the Vocab.
+        incoming_testing_material_answer_main (str) : The main answer of the testing material.
         incoming_testing_material_answer_main_all (list - csep) : The list of all answers to the testing material of the Vocab.
         incoming_furigana (str) : The furigana of the Vocab.
         incoming_incorrect_count (int) : The number of incorrect guesses of the Vocab.
@@ -42,4 +42,4 @@ class Vocab(Word):
 
         self.is_kanji:bool = incoming_kanji_flag
 
-        self.word_type:str = "Vocab"
+        self.word_type:str = "vocab"

@@ -1,4 +1,5 @@
 ## built-in libraries
+from re import T
 import typing
 import base64
 
@@ -19,7 +20,7 @@ class ConnectionHandler():
 
     """
     
-    The ConnectionHandler class handles the connection to the database and all interactions with it.
+    The ConnectionHandler class handles the connection to the remote (known as remote) and all interactions with it.
 
     """
     
@@ -33,7 +34,7 @@ class ConnectionHandler():
 
         """
         
-        Determines if we have a valid connection.
+        Determines if Seisen has a valid connection to remote.
 
         Parameters:
         reason_for_check (str) : Why we are checking connection validity.
@@ -61,11 +62,11 @@ class ConnectionHandler():
 
         """
 
-        Sets up the database connection. If the user has already entered the credentials for the database, the program will use them. If not, the program will prompt the user for them.
-        If connection has failed previously, the program will skip the connection initialization. You must use the start_marked_succeeded_database_connection() to reset this.
+        Sets up the remote connection. If the user has already entered the credentials for the remote, Seisen will use them. If not, Seisen will prompt the user for them.
+        If connection has failed previously, Seisen will skip the connection initialization. start_marked_succeeded_remote_connection() must be called to allow Seisen to attempt to connect to the remote again.
 
         Returns:
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.
+        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the remote.
         cursor (object - mysql.connector.cursor.MySqlCursor) or None : The connection cursor.
 
         """
@@ -75,11 +76,11 @@ class ConnectionHandler():
         
         with open(FileEnsurer.has_database_connection_failed_path, "r+", encoding="utf-8") as file:
             if(file.read().strip() == "true"):
-                Logger.log_action("Database connection has failed previously.... skipping connection initialization")
+                Logger.log_action("Database connection has failed previously.... skipping connection initialization", output=True)
                 return connection, cursor
 
         ## program assumes connection will succeed
-        ConnectionHandler.start_marked_succeeded_database_connection()
+        ConnectionHandler.start_marked_succeeded_remote_connection()
 
         try:
 
@@ -101,13 +102,13 @@ class ConnectionHandler():
             ## if valid save the credentials
             try:
 
-                ## to do, adjust so user doesn't have to give root password
+                ## to do, adjust so user doesn't have to give root password, would involve getting ip and username of user
 
-                database_name = Toolkit.user_confirm("Please enter the name of the database you have:")
+                database_name = Toolkit.user_confirm("Please enter the name of the remote you have:")
 
                 Toolkit.clear_console()
 
-                password = Toolkit.user_confirm("Please enter the root password for your local database you have:")
+                password = Toolkit.user_confirm("Please enter the root password for your local remote you have:")
 
                 credentials = [
                     base64.b64encode(database_name.encode('utf-8')).decode('utf-8'),
@@ -122,7 +123,7 @@ class ConnectionHandler():
                 
                 Toolkit.clear_console()
 
-                ConnectionHandler.start_marked_failed_database_connection()
+                ConnectionHandler.start_marked_failed_remote_connection()
 
             ## if invalid break
             except Exception as e: 
@@ -132,43 +133,43 @@ class ConnectionHandler():
                 print(str(e))
                 print("\nError with creating connection object, please double check your password and database name.\n")
 
-                ConnectionHandler.start_marked_failed_database_connection()
+                ConnectionHandler.start_marked_failed_remote_connection()
 
                 Toolkit.pause_console()
             
         return connection, cursor
     
-##--------------------start-of-mark_failed_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-mark_failed_remote_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def start_marked_failed_database_connection() -> None:
+    def start_marked_failed_remote_connection() -> None:
          
         """
         
-        Tells the program that the most recently attempted database connection has failed.
-        This will prevent the program from attempting to connect to the database again until the user has either decided to make a new connection or the program has marked the connection as succeeded.
+        Tells Seisen that the most recently attempted remote connection has failed.
+        This will prevent Seisen from attempting to connect to remote again until the user has either decided to make a new connection or Seisen has marked the connection as succeeded.
 
         """
 
         FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "true", omit=False)
             
-        Logger.log_action("Database Connection Failed")
+        Logger.log_action("Remote Connection Failed.")
 
-##--------------------start-of-mark_succeeded_database_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-mark_succeeded_remote_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def start_marked_succeeded_database_connection() -> None:
+    def start_marked_succeeded_remote_connection() -> None:
          
         """
         
-        Tells the program that the most recently attempted database connection has succeeded.
-        This will allow the program to attempt to connect to the database automatically on the next run.
+        Tells Seisen that the most recently attempted remote connection has succeeded.
+        This will allow Seisen to attempt to connect to remote automatically on the next run.
 
         """
 
         FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "false", omit=False)
 
-        Logger.log_action("Database Connection Succeeded")
+        Logger.log_action("Remote Connection Succeeded.")
 
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -177,7 +178,7 @@ class ConnectionHandler():
 
         """
 
-        Creates a connection to the database.
+        Creates a connection to the database (remote)
 
         Parameters:
         host_name (str) : The host name of the database.
@@ -186,28 +187,28 @@ class ConnectionHandler():
         user_password (str) : The password of the database.
 
         Returns:
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the database.
+        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the remote.
 
         """
 
         connection = mysql.connector.connect(
             host=host_name,
             user=user_name,
-            database= db_name,
+            remote= db_name,
             passwd=user_password)
 
-        Logger.log_action("Successfully connected to the " + db_name + " database")
+        Logger.log_action("Successfully connected to the " + db_name + " database.")
 
         return connection
     
-##--------------------start-of-clear_credentials_File()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-clear_credentials_file()-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def clear_credentials_file() -> None:
 
         """
         
-        Clears the credentials file allowing for a different database connection to be added.
+        Clears the credentials file allowing for a different remote connection to be added.
 
         """
 
@@ -231,7 +232,7 @@ class ConnectionHandler():
     
         ## Never actually gonna happen, but just in case
         if(ConnectionHandler.cursor == None or ConnectionHandler.connection == None):
-            raise Exception("Connection is invalid, please ensure you have a valid connection and try again")
+            raise Exception("Connection is invalid, please ensure you have a valid connection and try again.")
 
         ConnectionHandler.cursor.execute(query) 
         
@@ -263,7 +264,7 @@ class ConnectionHandler():
 
         ## Never actually gonna happen, but just in case
         if(ConnectionHandler.cursor == None or ConnectionHandler.connection == None):
-            raise Exception("Connection is invalid, please ensure you have a valid connection and try again")
+            raise Exception("Connection is invalid, please ensure you have a valid connection and try again.")
 
         ConnectionHandler.cursor.execute(query)
         results = ConnectionHandler.cursor.fetchall() 
@@ -279,7 +280,7 @@ class ConnectionHandler():
 
         """
 
-        Reads a multi column query from the database.
+        Reads a multi column query from the remote.
 
         Parameters:
         query (str) : The query to be executed.
@@ -293,7 +294,7 @@ class ConnectionHandler():
 
         ## Never actually gonna happen, but just in case
         if(ConnectionHandler.cursor == None or ConnectionHandler.connection == None):
-            raise Exception("Connection is invalid, please ensure you have a valid connection and try again")
+            raise Exception("Connection is invalid, please ensure you have a valid connection and try again.")
 
         ConnectionHandler.cursor.execute(query) 
 
@@ -317,7 +318,7 @@ class ConnectionHandler():
 
         """
         
-        inserts data into a table.
+        Inserts data into a table.
 
         Parameters:
         table_name (str) : The name of the table.

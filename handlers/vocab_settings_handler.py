@@ -568,7 +568,7 @@ class VocabSettingsHandler():
         for id in matching_synonym_ids:
 
             try:
-                print_item = Searcher.get_csep_print_item_from_id(id)
+                print_item = Searcher.get_synonym_print_item_from_id(id)
 
                 synonym_search_result += synonym_match_msg
 

@@ -102,8 +102,8 @@ class SettingsHandler():
 
         """  
         
-        ## forces the remoteHandler to not skip a database connection upon next prompt
-        ConnectionHandler.start_marked_succeeded_database_connection()
+        ## forces the remoteHandler to not skip a remote connection upon next startup
+        ConnectionHandler.start_marked_succeeded_remote_connection()
         
         ## clears the credentials file so that if a valid login exists, it's not used
         ConnectionHandler.clear_credentials_file()

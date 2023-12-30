@@ -29,7 +29,7 @@ class FileHandler():
 
         if(os.path.isdir(directory_path) == False):
             os.mkdir(directory_path)
-            Logger.log_action(directory_path + " created due to lack of the folder.")
+            Logger.log_action(directory_path + " was created due to lack of the folder.")
 
 ##--------------------start-of-modified_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ class FileHandler():
         if(os.path.isdir(directory_path) == False or os.path.getsize(path_to_check) == 0 or os.path.exists(path_to_check) == False):
             os.mkdir(directory_path)
 
-            reason = f"was created due to lack of {directory_path}" if os.path.isdir(directory_path) == False else f"was created due to {path_to_check} being blank or empty."
+            reason = f"was created due to lack of {directory_path}." if os.path.isdir(directory_path) == False else f"was created due to {path_to_check} being blank or empty."
 
             Logger.log_action(directory_path + " " + reason)
 
@@ -75,7 +75,7 @@ class FileHandler():
 ##--------------------start-of-modified_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def modified_create_file(file_path:str, content_to_write:str) -> bool:
+    def modified_create_file(file_path:str, content_to_write:str, omit:bool=True) -> bool:
 
         """
 
@@ -84,9 +84,10 @@ class FileHandler():
         Parameters:
         file_path (str) : Path to the file to be created.
         content to write (str) : Content to be written to the file.
+        omit (bool | optional | default = True) : Whether to omit the content written to the file in the log.
 
         Returns:
-        bool : Whether the file was overwritten.
+        did_overwrite (bool) : Whether the file was created.
 
         """
 
@@ -96,6 +97,10 @@ class FileHandler():
             Logger.log_action(file_path + " was created due to lack of the file or because it is blank.")
             with open(file_path, "w+", encoding="utf-8") as file:
                 file.write(content_to_write)
+
+                if(omit):
+                    content_to_write = "(Content was omitted.)"
+                Logger.log_action(file_path + " was written to with the following content: " + content_to_write)
 
             did_overwrite = True
 
@@ -124,7 +129,7 @@ class FileHandler():
             file.write(content_to_write)
 
         if(omit):
-            content_to_write = "(Content was omitted)"
+            content_to_write = "(Content was omitted.)"
         
         Logger.log_action(file_path + " was overwritten with the following content: " + content_to_write)
 
@@ -189,7 +194,7 @@ class FileHandler():
         with open(sei_file_path, "a+", encoding="utf-8") as file:
             file.write(line + ",\n")
 
-##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-edit_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:typing.Any) -> None:
@@ -230,13 +235,13 @@ class FileHandler():
 
         Reads the given sei file and returns the value of the given column.
         
-        Parameters:\n
+        Parameters:
         sei_file_path (str) : The path to the sei file.
         target_line (int) : The line number of the sei file.
         column (int) : The column we are reading.
 
         Returns:
-        file_details[column-1] :Tthe value of the given column.
+        file_details[column-1] : The value of the given column.
 
         """
 
@@ -282,7 +287,7 @@ class FileHandler():
 
         with open(sei_file_path, "w", encoding="utf-8") as file:
             for i, line in enumerate(lines, 1):
-                if i != target_line:
+                if(i != target_line):
                     file.write(line)
 
 ##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -292,12 +297,12 @@ class FileHandler():
 
         """
         
-        Delete all lines that match a given id.
+        Delete all lines that match a given ID.
 
         Parameters:
         file_path (str) : The path to the file to search.
-        id_index (int) : The index of where the id should be.
-        target_id (str) : The id to look for.
+        id_index (int) : The index of where the ID should be.
+        target_id (str) : The ID to look for.
 
         """
 
@@ -327,17 +332,17 @@ class FileHandler():
 
         """
 
-        Generates a new id.
+        Generates a new ID.
 
         Parameters:
         id_list (list - int) : A list of already active ids.
 
         Returns:
-        new_id (int) : A new id that is not in the list.
+        new_id (int) : A new ID that is not in the list.
 
         """
 
-        id_list = [id for id in id_list]
+        id_list = [ID for ID in id_list]
 
         id_list.sort()
 

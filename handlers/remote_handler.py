@@ -24,7 +24,7 @@ class RemoteHandler():
 
     """
     
-    The handler that handles all interactions with the remote storage.
+    The handler that handles all interactions with the remote storage (database).
 
     """
 
@@ -45,7 +45,7 @@ class RemoteHandler():
 
         """
         
-        Loads the words from the database and replaces the local storage with it.
+        Loads the words from remote storage into local storage.
         Note that this will reset all the words locally stored on this device.
         Use carefully!
 
@@ -716,7 +716,7 @@ class RemoteHandler():
             ## resets local storage file-wise
             for vocab in RemoteHandler.vocab:
                 vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
-                FileHandler.write_sei_line(remote_archive_vocab_synonyms_path, vocab_values)
+                FileHandler.write_sei_line(remote_archive_vocab_path, vocab_values)
 
             for typo in RemoteHandler.vocab_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]

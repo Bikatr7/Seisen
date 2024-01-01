@@ -1,5 +1,5 @@
 ## built-in libraries
-from re import T
+import time
 import typing
 import base64
 
@@ -88,10 +88,12 @@ class ConnectionHandler():
             with open(FileEnsurer.credentials_path, 'r', encoding='utf-8') as file:  
                 credentials = file.readlines()
 
-                database_name = base64.b64decode((credentials[0].strip()).encode('utf-8')).decode('utf-8')
-                password = base64.b64decode((credentials[1].strip()).encode('utf-8')).decode('utf-8')
+                ip = base64.b64decode((credentials[0].strip()).encode('utf-8')).decode('utf-8')
+                database_name = base64.b64decode((credentials[1].strip()).encode('utf-8')).decode('utf-8')
+                user_name = base64.b64decode((credentials[2].strip()).encode('utf-8')).decode('utf-8')
+                password = base64.b64decode((credentials[3].strip()).encode('utf-8')).decode('utf-8')
 
-            connection = ConnectionHandler.create_database_connection("localhost", "root", database_name, password)
+            connection = ConnectionHandler.create_database_connection(ip, user_name, database_name, password)
             cursor = connection.cursor()
 
             Logger.log_action("Used saved credentials in " + FileEnsurer.credentials_path)
@@ -102,26 +104,38 @@ class ConnectionHandler():
             ## if valid save the credentials
             try:
 
-                ## to do, adjust so user doesn't have to give root password, would involve getting ip and username of user
+                ip = Toolkit.user_confirm("Please enter the ip address of the database you have:")
 
-                database_name = Toolkit.user_confirm("Please enter the name of the remote you have:")
+                database_name = Toolkit.user_confirm("Please enter the name of the database you have:")
 
                 Toolkit.clear_console()
 
-                password = Toolkit.user_confirm("Please enter the root password for your local remote you have:")
+                user_name = Toolkit.user_confirm("Please enter the username for your local database you have:")
+
+                password = Toolkit.user_confirm("Please enter the password for " + user_name + " you have:")
 
                 credentials = [
+                    base64.b64encode(ip.encode('utf-8')).decode('utf-8'),
                     base64.b64encode(database_name.encode('utf-8')).decode('utf-8'),
-                        base64.b64encode(password.encode('utf-8')).decode('utf-8')]
+                    base64.b64encode(user_name.encode('utf-8')).decode('utf-8'),
+                    base64.b64encode(password.encode('utf-8')).decode('utf-8')]
                 
-                connection = ConnectionHandler.create_database_connection("localhost", "root", database_name, password)
+                connection = ConnectionHandler.create_database_connection(ip, user_name, database_name, password)
                 cursor = connection.cursor()
                             
                 FileHandler.standard_overwrite_file(FileEnsurer.credentials_path, credentials, omit=True)
 
+                Logger.log_action("Connected to the " + database_name + " database.", output=True, omit_timestamp=True)  
+
+                time.sleep(2)
+
             except Toolkit.UserCancelError:
                 
                 Toolkit.clear_console()
+
+                Logger.log_action("User cancelled connection initialization, skipping...", output=True, omit_timestamp=True)
+
+                time.sleep(2)
 
                 ConnectionHandler.start_marked_failed_remote_connection()
 
@@ -153,23 +167,30 @@ class ConnectionHandler():
 
         FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "true", omit=False)
             
-        Logger.log_action("Remote Connection Failed.")
+        Logger.log_action("Remote Connection Failed.", output=True, omit_timestamp=True)
 
-##--------------------start-of-mark_succeeded_remote_connection()---------------------------S---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-mark_succeeded_remote_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def start_marked_succeeded_remote_connection() -> None:
+    def start_marked_succeeded_remote_connection(faux:bool=False) -> None:
          
         """
         
         Tells Seisen that the most recently attempted remote connection has succeeded.
         This will allow Seisen to attempt to connect to remote automatically on the next run.
 
+        Parameters:
+        faux (bool | optional | default=False) : If True, will inform logger that the connection was made for reset purposes.
+
         """
 
         FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "false", omit=False)
 
-        Logger.log_action("Remote Connection Succeeded.")
+        if(not faux):
+            Logger.log_action("Remote Connection Succeeded.", output=True, omit_timestamp=True)
+
+        else:
+            Logger.log_action("Marked remote connection as succeeded for reset purposes.")
 
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -194,8 +215,8 @@ class ConnectionHandler():
         connection = mysql.connector.connect(
             host=host_name,
             user=user_name,
-            remote= db_name,
-            passwd=user_password)
+            database=db_name,
+            password=user_password)
 
         Logger.log_action("Successfully connected to the " + db_name + " database.")
 

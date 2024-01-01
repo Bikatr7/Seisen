@@ -65,7 +65,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    synonym_kana_id, synonym_id, synonym_value, synonym_word_type = line.strip().split(',', maxsplit=4)
+                    synonym_kana_id, synonym_id, synonym_value, synonym_word_type, _ = line.strip().split(',')
                     
                     if(synonym_kana_id == kana_id):
 
@@ -85,7 +85,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    kana_id, testing_material, testing_material_answer_main, incorrect_count, correct_count = line.strip().split(',', maxsplit=5)
+                    kana_id, testing_material, testing_material_answer_main, incorrect_count, correct_count, _ = line.strip().split(',')
 
                     synonyms = get_kana_synonyms(kana_id)
 
@@ -97,7 +97,7 @@ class LocalHandler():
 
                 for line in file:
                     
-                    typo_kana_id, typo_id, typo_value, typo_word_type = line.strip().split(',', maxsplit=4)
+                    typo_kana_id, typo_id, typo_value, typo_word_type, _ = line.strip().split(',')
 
                     if(typo_word_type == LocalHandler.KANA_WORD_TYPE):
                         for kana in LocalHandler.kana:
@@ -116,7 +116,7 @@ class LocalHandler():
 
                 for line in file:
     
-                    incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type = line.strip().split(',', maxsplit=4)
+                    incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type, _ = line.strip().split(',')
 
                     if(incorrect_typo_word_type == LocalHandler.KANA_WORD_TYPE):
                         for kana in LocalHandler.kana:
@@ -140,7 +140,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    synonym_vocab_id, synonym_id, synonym_value, synonym_word_type = line.strip().split(',', maxsplit=4)
+                    synonym_vocab_id, synonym_id, synonym_value, synonym_word_type, _ = line.strip().split(',')
 
                     if(synonym_vocab_id == vocab_id):
 
@@ -161,7 +161,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    vocab_id, testing_material, romaji, testing_material_answer_main, furigana, incorrect_count, correct_count = line.strip().split(',', maxsplit=7)
+                    vocab_id, testing_material, romaji, testing_material_answer_main, furigana, incorrect_count, correct_count, _ = line.strip().split(',')
 
                     if(furigana == "0"):
                         kanji_flag = False
@@ -182,7 +182,7 @@ class LocalHandler():
 
                 for line in file:
                     
-                    typo_vocab_id, typo_id, typo_value, typo_word_type = line.strip().split(',', maxsplit=4)
+                    typo_vocab_id, typo_id, typo_value, typo_word_type, _ = line.strip().split(',')
 
                     if(typo_word_type == LocalHandler.VOCAB_WORD_TYPE):
                         for vocab in LocalHandler.vocab:
@@ -200,7 +200,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    incorrect_typo_vocab_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type = line.strip().split(',', maxsplit=4)
+                    incorrect_typo_vocab_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type, _ = line.strip().split(',')
 
                     if(incorrect_typo_word_type == LocalHandler.VOCAB_WORD_TYPE):
                         for vocab in LocalHandler.vocab:

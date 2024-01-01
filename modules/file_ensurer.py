@@ -339,6 +339,8 @@ class FileEnsurer:
 
       FileHandler.standard_create_file(FileEnsurer.last_local_backup_path)
       FileHandler.standard_create_file(FileEnsurer.last_remote_backup_path)
+
+      FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_path)
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_overwrite_accurate_path)
 
 ##--------------------start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

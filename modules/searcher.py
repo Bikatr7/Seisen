@@ -13,7 +13,7 @@ class Searcher:
 
     '''
 
-    The search class is used to search for things in localHandler.\n
+    The search class is used to search for things in localHandler.
         
     '''
 

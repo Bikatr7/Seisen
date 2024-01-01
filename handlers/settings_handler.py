@@ -80,9 +80,9 @@ class SettingsHandler():
         type_print = Toolkit.input_check(4, Toolkit.get_single_key(), 2, score_message)
 
         if(type_print == "1"):
-            kana_to_test, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
+            _, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
         elif(type_print == "2"):
-            vocab_to_test, display_list = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
+            _, display_list = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
         else:
             return
         
@@ -102,7 +102,7 @@ class SettingsHandler():
 
         """  
         
-        ## forces the remoteHandler to not skip a remote connection upon next startup
+        ## forces the RemoteHandler to not skip a remote connection upon next startup
         ConnectionHandler.start_marked_succeeded_remote_connection()
         
         ## clears the credentials file so that if a valid login exists, it's not used

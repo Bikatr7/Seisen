@@ -440,15 +440,12 @@ class LocalHandler():
 
                 shutil.copytree(os.path.join(FileEnsurer.local_archives_dir, backup_to_restore), FileEnsurer.config_dir, dirs_exist_ok=True)
 
-                Logger.log_action("Restored the " + backup_to_restore + " local backup.", output=True)
+                Logger.log_action("Restored the " + backup_to_restore + " local backup.", output=True, omit_timestamp=True)
 
                 LocalHandler.load_words_from_local_storage()
 
-                Toolkit.clear_console()
-
             else:
                 print("Invalid Backup.\n")
-                time.sleep(1)
 
         except Toolkit.UserCancelError or AssertionError:
-            pass
+            print("Cancelled.\n")

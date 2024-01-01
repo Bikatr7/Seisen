@@ -233,6 +233,8 @@ class RemoteHandler():
         RemoteHandler.create_remote_storage()
         RemoteHandler.fill_remote_storage()
 
+        print("Remote Storage Reset.\n")
+
 ##--------------------start-of-delete_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -811,14 +813,13 @@ class RemoteHandler():
 
                 shutil.copytree(os.path.join(FileEnsurer.remote_archives_dir, backup_to_restore), FileEnsurer.config_dir, dirs_exist_ok=True)
 
-                Logger.log_action("Restored the " + backup_to_restore + " remote backup.")
+                Logger.log_action("Restored the " + backup_to_restore + " remote backup.", omit_timestamp=True, output=True)
 
             else:
                 print("Invalid Backup\n")
-                time.sleep(1)
 
         except Toolkit.UserCancelError or AssertionError:
-            pass
+            print("Canceled.")
 
 ##--------------------start-of-local_remote_overwrite()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

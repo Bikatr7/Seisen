@@ -45,13 +45,19 @@ class StorageSettingsHandler():
             
             StorageSettingsHandler.reset_local_with_remote()
 
+            Toolkit.pause_console()
+
         elif(type_setting == "2"):
 
             RemoteHandler.reset_remote_storage()
+
+            Toolkit.pause_console()
         
         elif(type_setting == "3"):
 
             StorageSettingsHandler.reset_local_and_remote_to_default()
+
+            Toolkit.pause_console()
 
         elif(type_setting == "4"):
             StorageSettingsHandler.restore_backup()
@@ -91,8 +97,10 @@ class StorageSettingsHandler():
             RemoteHandler.reset_local_storage()
             LocalHandler.load_words_from_local_storage()
 
+            Logger.log_action("Local has been reset with remote", output=True, omit_timestamp=True)
+
         else:
-            pass
+            print("Cancelled\n")
 
 ##--------------------start-of-reset_local_and_remote_to_default()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -131,6 +139,8 @@ class StorageSettingsHandler():
 
         LocalHandler.load_words_from_local_storage()
 
+        Logger.log_action("Local & Remote have been reset to default", output=True, omit_timestamp=True)
+
 ##--------------------start-of-restore_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -154,17 +164,15 @@ class StorageSettingsHandler():
 
             LocalHandler.restore_local_backup()
 
-            print("Local backup restored.")
-
             Toolkit.pause_console()
+            Toolkit.clear_console()
 
         elif(type_backup == "2"):
 
             RemoteHandler.restore_remote_backup()
-
-            print("Remote backup restored. You will need to reset Local Storage with Remote Storage to see the changes in your current session.")
-
+            
             Toolkit.pause_console()
+            Toolkit.clear_console()
 
         FileEnsurer.ensure_files()
         LocalHandler.load_words_from_local_storage()
@@ -182,7 +190,7 @@ class StorageSettingsHandler():
 
         write_string_list = []
 
-        file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d-%H-%M-%S')) + ".seisen"
+        file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d_%H-%M-%S')) + ".seisen"
 
         export_path = os.path.join(FileEnsurer.script_dir, file_name)
 

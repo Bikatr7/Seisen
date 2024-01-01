@@ -794,6 +794,11 @@ class RemoteHandler():
         
         backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
 
+        if(len(valid_backups) == 0):
+            print("No backups found.")
+            time.sleep(1)
+            return
+
         try: ## user confirm will throw an assertion/user confirm error if the user wants to cancel the backup restore.
 
             backup_to_restore = Toolkit.user_confirm(backup_to_restore_prompt)

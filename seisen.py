@@ -9,6 +9,7 @@ from handlers.local_handler import LocalHandler
 from handlers.remote_handler import RemoteHandler
 from handlers.file_handler import FileHandler
 from handlers.settings_handler import SettingsHandler
+from handlers.storage_settings_handler import StorageSettingsHandler
 
 try:
     from handlers.connection_handler import ConnectionHandler
@@ -74,11 +75,28 @@ class Seisen:
 
         Logger.clear_log_file()
 
-        Logger.log_action("--------------------------------------------------------------")
+        Logger.log_barrier()
         Logger.log_action("Bootup")
 
-        ## loads the words currently in local storage.
-        LocalHandler.load_words_from_local_storage()
+        try:
+            ## loads the words currently in local storage.
+            LocalHandler.load_words_from_local_storage()
+
+        except:
+
+            Logger.log_action("Error loading local storage, resetting local storage with remote storage.",output=True, omit_timestamp=True)
+
+            try:
+                StorageSettingsHandler.reset_local_with_remote()
+
+                LocalHandler.load_words_from_local_storage()
+
+            except:
+                StorageSettingsHandler.reset_local_and_remote_to_default()
+
+                Logger.log_action("Error resetting local storage, resetting local and remote storage to default.",output=True, omit_timestamp=True)
+
+            Toolkit.pause_console()
 
         os.system("title " + "Seisen")
 

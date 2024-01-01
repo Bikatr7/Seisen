@@ -80,7 +80,7 @@ class ConnectionHandler():
                 return connection, cursor
 
         ## program assumes connection will succeed
-        ConnectionHandler.start_marked_succeeded_remote_connection()
+        ConnectionHandler.start_marked_succeeded_remote_connection(faux=True)
 
         try:
 

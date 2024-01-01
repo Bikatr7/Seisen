@@ -94,7 +94,7 @@ class FileEnsurer:
    ## path to the starter vocab.txt file that is used for testing purposes
    local_vocab_lib_path = os.path.join(local_vocab_lib_dir, "vocab.txt")
 
-   ## path to the starter vocab csep.txt file that is used for testing purposes
+   ## path to the starter vocab synonym.txt file that is used for testing purposes
    local_vocab_synonyms_lib_path = os.path.join(local_vocab_lib_dir, "vocab_synonyms.txt")
 
    ##----------------------------------/
@@ -109,7 +109,7 @@ class FileEnsurer:
    last_local_remote_backup_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite.txt")
 
    ## contains a more accurate timestamp of the last time that remote was overwritten with local
-   last_local_remote_overwrite_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite.txt")
+   last_local_remote_overwrite_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite_accurate.txt")
    
    ##----------------------------------/
 
@@ -293,13 +293,13 @@ class FileEnsurer:
       with open(FileEnsurer.kana_path, 'w+', encoding="utf-8") as file:
          file.write(default_kana_to_write)
       
-      with open(FileEnsurer.kana_synonyms_path, 'r', encoding="utf-8") as file:
-         kana_csep = file.readlines()
+      with open(FileEnsurer.all_kana_readings_path, 'r', encoding="utf-8") as file:
+         kana_synonyms = file.readlines()
 
-      for i, csep in enumerate(kana_csep,start=1):
+      for i, synonym in enumerate(kana_synonyms,start=1):
 
          if(i not in black_list_indexes):
-            kana_csep_insert_values = [str(i), str(i), csep.rstrip(',\n'), "kana"]
+            kana_csep_insert_values = [str(i), str(i), synonym.rstrip(',\n'), "kana"]
 
             FileHandler.write_sei_line(FileEnsurer.kana_synonyms_path, kana_csep_insert_values)
 

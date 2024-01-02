@@ -26,7 +26,7 @@ class Seisen:
 
     """
     
-    Seisen is the main class for the Seisen project. Everything is handled by this class, directly or indirectly.\n
+    Seisen is the main class for the Seisen project. Everything is handled by this class, directly or indirectly.
 
     """
 
@@ -41,6 +41,11 @@ class Seisen:
 
     ## the current user guess
     current_user_guess:str = ""
+
+    ## to do
+    ## change all txt files to .seisen files
+    ## add some ways to better read seisen files
+    ## add way to delay handle intensive db operations until well after bootup
 
 ##--------------------start-of-handle_intensive_db_operations()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -92,9 +97,9 @@ class Seisen:
                 LocalHandler.load_words_from_local_storage()
 
             except:
-                StorageSettingsHandler.reset_local_and_remote_to_default()
-
                 Logger.log_action("Error resetting local storage, resetting local and remote storage to default.",output=True, omit_timestamp=True)
+
+                StorageSettingsHandler.reset_local_and_remote_to_default()
 
             Toolkit.pause_console()
 

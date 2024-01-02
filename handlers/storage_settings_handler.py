@@ -291,6 +291,8 @@ class StorageSettingsHandler():
             print("Invalid Deck, please make sure the .seisen file is a Seisen Vocab Deck.\n")
             time.sleep(2)
             return
+        
+        import_deck.pop(0)
 
         for line in import_deck:
 

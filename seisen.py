@@ -9,7 +9,13 @@ from handlers.local_handler import LocalHandler
 from handlers.remote_handler import RemoteHandler
 from handlers.file_handler import FileHandler
 from handlers.settings_handler import SettingsHandler
-from handlers.connection_handler import ConnectionHandler
+from handlers.storage_settings_handler import StorageSettingsHandler
+
+try:
+    from handlers.connection_handler import ConnectionHandler
+
+except ImportError:
+    pass
 
 from modules.file_ensurer import FileEnsurer
 from modules.score_rater import ScoreRater
@@ -69,11 +75,28 @@ class Seisen:
 
         Logger.clear_log_file()
 
-        Logger.log_action("--------------------------------------------------------------")
+        Logger.log_barrier()
         Logger.log_action("Bootup")
 
-        ## loads the words currently in local storage.
-        LocalHandler.load_words_from_local_storage()
+        try:
+            ## loads the words currently in local storage.
+            LocalHandler.load_words_from_local_storage()
+
+        except:
+
+            Logger.log_action("Error loading local storage, resetting local storage with remote storage.",output=True, omit_timestamp=True)
+
+            try:
+                StorageSettingsHandler.reset_local_with_remote()
+
+                LocalHandler.load_words_from_local_storage()
+
+            except:
+                StorageSettingsHandler.reset_local_and_remote_to_default()
+
+                Logger.log_action("Error resetting local storage, resetting local and remote storage to default.",output=True, omit_timestamp=True)
+
+            Toolkit.pause_console()
 
         os.system("title " + "Seisen")
 
@@ -91,7 +114,11 @@ class Seisen:
             Toolkit.pause_console()
             Toolkit.clear_console()
 
-        ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
+        try:
+            ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
+
+        except ImportError:
+            pass
 
 ##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -110,6 +137,8 @@ class Seisen:
 
         ## -1 is a code that forces the input to be changed
         valid_modes = [1, 2, 3]
+
+        Toolkit.clear_console()
 
         while True:
 
@@ -227,7 +256,7 @@ class Seisen:
             Seisen.current_question_prompt += "\n\nSkipped.\n"
             ScoreRater.log_incorrect_answer(kana_to_test)
 
-        answers = [value.csep_value for value in kana_to_test.testing_material_answer_all]
+        answers = [value.synonym_value for value in kana_to_test.testing_material_answer_all]
 
         for answer in answers: ## prints the other accepted answers 
 
@@ -359,7 +388,7 @@ class Seisen:
             Seisen.current_question_prompt += "\n\nSkipped.\n"
             ScoreRater.log_incorrect_answer(vocab_to_test)
 
-        answers = [value.csep_value for value in vocab_to_test.testing_material_answer_all]
+        answers = [value.synonym_value for value in vocab_to_test.testing_material_answer_all]
 
         for answer in answers: ## prints the other accepted answers 
 
@@ -414,7 +443,7 @@ except Exception as e:
 
     traceback_str = traceback.format_exc()
     
-    Logger.log_action(traceback_str)
+    Logger.log_action(traceback_str, output=True)
 
     Logger.push_batch()
 

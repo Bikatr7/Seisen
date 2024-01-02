@@ -31,15 +31,15 @@ class SettingsHandler():
 
         """  
  
-        Logger.log_barrier
+        Logger.log_barrier()
 
         Toolkit.clear_console()
 
-        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Set Up New Database"
+        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Set Up New Database\n"
 
         print(settings_menu_message)
 
-        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 5, settings_menu_message)
+        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 4, settings_menu_message)
 
         if(pathing == "1"): 
             VocabSettingsHandler.change_vocab_settings()
@@ -67,7 +67,7 @@ class SettingsHandler():
             
         """
         
-        Prints score ratings for either kana or vocab.
+        Prints score ratings for either Kana or Vocab.
 
         """  
         
@@ -80,9 +80,9 @@ class SettingsHandler():
         type_print = Toolkit.input_check(4, Toolkit.get_single_key(), 2, score_message)
 
         if(type_print == "1"):
-            kana_to_test, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
+            _, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
         elif(type_print == "2"):
-            vocab_to_test, display_list = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
+            _, display_list = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
         else:
             return
         
@@ -102,8 +102,8 @@ class SettingsHandler():
 
         """  
         
-        ## forces the remoteHandler to not skip a database connection upon next prompt
-        ConnectionHandler.start_marked_succeeded_database_connection()
+        ## forces the RemoteHandler to not skip a remote connection upon next startup
+        ConnectionHandler.start_marked_succeeded_remote_connection()
         
         ## clears the credentials file so that if a valid login exists, it's not used
         ConnectionHandler.clear_credentials_file()

@@ -1,16 +1,15 @@
-## built-in modules
+## built-in libraries
 import os
 import typing
 
 ## custom modules
 from modules.logger import Logger
 
-
 class FileHandler():
 
     """
     
-    The handler that handles interactions with files.
+    The FileHandler class contains methods for handling files. As well as ID generation and deletion.
 
     """
 
@@ -24,13 +23,13 @@ class FileHandler():
         Creates a directory if it doesn't exist, as well as logs what was created.
 
         Parameters:
-        directory_path (str) : path to the directory to be created.
+        directory_path (str) : Path to the directory to be created.
 
         """
 
         if(os.path.isdir(directory_path) == False):
             os.mkdir(directory_path)
-            Logger.log_action(directory_path + " created due to lack of the folder")
+            Logger.log_action(directory_path + " was created due to lack of the folder.")
 
 ##--------------------start-of-modified_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -42,14 +41,17 @@ class FileHandler():
         Creates a directory if it doesn't exist or if the path provided is blank or empty, as well as logs what was created.
 
         Parameters:
-        directory_path (str) : path to the directory to be created.
-        path_to_check (str) : path to check if it is blank.
+        directory_path (str) : Path to the directory to be created.
+        path_to_check (str) : Path to check if it is blank.
 
         """
 
-        if(os.path.isdir(directory_path) == False or os.path.getsize(path_to_check) == 0):
+        if(os.path.isdir(directory_path) == False or os.path.getsize(path_to_check) == 0 or os.path.exists(path_to_check) == False):
             os.mkdir(directory_path)
-            Logger.log_action(directory_path + " created due to lack of the folder or " + path_to_check + " was blank or empty")
+
+            reason = f"was created due to lack of {directory_path}." if os.path.isdir(directory_path) == False else f"was created due to {path_to_check} being blank or empty."
+
+            Logger.log_action(directory_path + " " + reason)
 
 ##--------------------start-of-standard_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -58,59 +60,132 @@ class FileHandler():
 
         """
 
-        Creates a file if it doesn't exist, truncates it,  as well as logs what was created.
+        Creates a file if it doesn't exist, truncates it, as well as logs what was created.
 
         Parameters:
-        file_path (str) : path to the file to be created.
+        file_path (str) : Path to the file to be created.
 
         """
 
         if(os.path.exists(file_path) == False):
-            Logger.log_action(file_path + " was created due to lack of the file")
+            Logger.log_action(file_path + " was created due to lack of the file.")
             with open(file_path, "w+", encoding="utf-8") as file:
                 file.truncate()
 
 ##--------------------start-of-modified_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def modified_create_file(file_path:str, content_to_write:str) -> bool:
+    def modified_create_file(file_path:str, content_to_write:str, omit:bool=True) -> bool:
 
         """
 
-        Creates a path if it doesn't exist or if it is blank or empty, writes to it, as well as logs what was created.
+        Creates a path if it doesn't exist or if it is blank or empty, writes to it, as well as logs what was created and written.
 
         Parameters:
-        file_path (str) : path to the file to be created.
-        content to write (str) : content to be written to the file.
+        file_path (str) : Path to the file to be created.
+        content to write (str) : Content to be written to the file.
+        omit (bool | optional | default = True) : Whether to omit the content written to the file in the log.
 
         Returns:
-        bool : whether or not the file was overwritten.
+        did_overwrite (bool) : Whether the file was created.
 
         """
 
         did_overwrite = False
 
         if(os.path.exists(file_path) == False or os.path.getsize(file_path) == 0):
-            Logger.log_action(file_path + " was created due to lack of the file or because it is blank")
+            Logger.log_action(file_path + " was created due to lack of the file or because it is blank.")
             with open(file_path, "w+", encoding="utf-8") as file:
                 file.write(content_to_write)
+
+                if(omit):
+                    content_to_write = "(Content was omitted.)"
+                Logger.log_action(file_path + " was written to with the following content: " + content_to_write)
 
             did_overwrite = True
 
         return did_overwrite
     
+##--------------------start-of-standard_overwrite_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def standard_overwrite_file(file_path:str, content_to_write:typing.Union[str, typing.List[str]], omit:bool = True) -> None:
+
+        """
+
+        Writes to a file, creates it if it doesn't exist, overwrites it if it does, as well as logs what was written.
+
+        Parameters:
+        file_path (str) : Path to the file to be overwritten.
+        content to write (str | list - str) : Content to be written to the file.
+        omit (bool | optional | default = True) : Whether to omit the content written to the file in the log.
+
+        """
+
+        if(isinstance(content_to_write, list)):
+            content_to_write = "\n".join(content_to_write)
+
+        with open(file_path, "w+", encoding="utf-8") as file:
+            file.write(content_to_write)
+
+        if(omit):
+            content_to_write = "(Content was omitted.)"
+        
+        Logger.log_action(file_path + " was overwritten with the following content: " + content_to_write)
+
+##--------------------start-of-clear_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def clear_file(file_path:str) -> None:
+
+        """
+
+        Clears a file, as well as logs what was cleared.
+
+        Parameters:
+        file_path (str) : Path to the file to be cleared.
+
+        """
+
+        with open(file_path, "w+", encoding="utf-8") as file:
+            file.truncate()
+
+        Logger.log_action(file_path + " was cleared.")
+
+##--------------------start-of-standard_read_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def standard_read_file(file_path:str) -> str:
+
+        """
+
+        Reads a file and returns its content.
+
+        Parameters:
+        file_path (str) : Path to the file to be read.
+
+        Returns:
+        content (str) : The content of the file.
+
+        """
+
+        with open(file_path, "r", encoding="utf-8") as file:
+            content = file.read()
+
+        return content
+
 ##--------------------start-of-write_sei_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def write_sei_line(sei_file_path:str, items_to_write:typing.List[str]) -> None:
+    def write_sei_line(sei_file_path:str, items_to_write:typing.List[typing.Any]) -> None:
 
         """
         
         Writes the given items to the given sei file.
 
         Parameters:
-        sei_file_path (str) : the path to the sei file.
-        items_to_write (list - str) : the items to be written to the sei file.
+        sei_file_path (str) : The path to the sei file.
+        items_to_write (list - Any) : The items to be written to the sei file.
 
         """
 
@@ -119,10 +194,10 @@ class FileHandler():
         with open(sei_file_path, "a+", encoding="utf-8") as file:
             file.write(line + ",\n")
 
-##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-edit_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:str) -> None:
+    def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:typing.Any) -> None:
         
         """
 
@@ -130,14 +205,14 @@ class FileHandler():
 
         Parameters:
         file_path (str) : The file being edited.
-        target_line (int) : The line number of the file we are editing.
+        target_line (int) : The line number we are editing.
         column_number (int) : The column number we are editing.
-        value_to_replace_to (str) : The value to replace the edit value with.
+        value_to_replace_to (Any) : The value to replace the edit value with.
 
         """
 
-        with open(file_path, "r+", encoding="utf8") as f:
-            lines = f.readlines()
+        with open(file_path, "r+", encoding="utf8") as file:
+            lines = file.readlines()
 
         line = lines[target_line - 1]
         items = line.split(",")
@@ -160,13 +235,13 @@ class FileHandler():
 
         Reads the given sei file and returns the value of the given column.
         
-        Parameters:\n
-        sei_file_path (str) : the path to the sei file.
-        target_line (int) : the line number of the sei file.
-        column (int) : the column we are reading.
+        Parameters:
+        sei_file_path (str) : The path to the sei file.
+        target_line (int) : The line number of the sei file.
+        column (int) : The column we are reading.
 
         Returns:
-        file_details[column-1] : the value of the given column.
+        file_details[column-1] : The value of the given column.
 
         """
 
@@ -202,8 +277,8 @@ class FileHandler():
         Deletes the specified line from the given sei file.
 
         Parameters:
-        sei_file_path (str) : the path to the sei file.
-        target_line (int) : the line number to be deleted.
+        sei_file_path (str) : The path to the sei file.
+        target_line (int) : The line number to be deleted.
 
         """
 
@@ -212,22 +287,22 @@ class FileHandler():
 
         with open(sei_file_path, "w", encoding="utf-8") as file:
             for i, line in enumerate(lines, 1):
-                if i != target_line:
+                if(i != target_line):
                     file.write(line)
 
 ##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def delete_all_occurrences_of_id(file_path:str, id_index:int, id_value:int) -> None:
+    def delete_all_occurrences_of_id(file_path:str, id_index:int, target_id:int) -> None:
 
         """
         
-        Delete all lines that match a given id.
+        Delete all lines that match a given ID.
 
         Parameters:
-        file_path (str) : the path to the file to search.
-        id_index (int) : the index of where the id should be.
-        id_value (str) : the id to look for.
+        file_path (str) : The path to the file to search.
+        id_index (int) : The index of where the ID should be.
+        target_id (str) : The ID to look for.
 
         """
 
@@ -240,7 +315,7 @@ class FileHandler():
 
         while(i < line_count):
 
-            if(int(FileHandler.read_sei_file(file_path, i + 1, id_index)) == id_value):
+            if(int(FileHandler.read_sei_file(file_path, i + 1, id_index)) == target_id):
                 FileHandler.delete_sei_line(file_path, i + 1)
                 line_count -= 1
                 
@@ -257,17 +332,17 @@ class FileHandler():
 
         """
 
-        Generates a new id.
+        Generates a new ID.
 
         Parameters:
-        id_list (list - ints) : a list of already active ids.
+        id_list (list - int) : A list of already active ids.
 
         Returns:
-        new_id (int) : a new id.
+        new_id (int) : A new ID that is not in the list.
 
         """
 
-        id_list = [id for id in id_list]
+        id_list = [ID for ID in id_list]
 
         id_list.sort()
 

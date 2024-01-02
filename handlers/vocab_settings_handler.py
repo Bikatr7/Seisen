@@ -10,8 +10,8 @@ from modules.toolkit import Toolkit
 from modules.logger import Logger
 from modules.file_ensurer import FileEnsurer
 
-from entities.vocab import vocab as vocab_blueprint 
-from entities.csep import csep as csep_blueprint
+from entities.vocab import Vocab as vocab_blueprint 
+from entities.synonym import Synonym as synonym_blueprint
 
 class VocabSettingsHandler():
 
@@ -27,19 +27,13 @@ class VocabSettingsHandler():
 
         """
 
-        Controls the pathing for all vocab settings.\n
-
-        Parameters:\n
-        VocabSettingsHandler (object - vocabSettingsHandler) : The vocab settings handler object.\n
-
-        Returns:\n
-        None.\n
+        Controls the pathing for all vocab settings.
 
         """ 
 
         Logger.log_action("User is changing vocab settings")
 
-        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add CSEP/Answer to Vocab\n3.Replace Vocab Value\n4.Replace CSEP/Answer Value\n5.Delete Vocab Value\n6.Delete CSEP/Answer from Vocab\n7.Search Vocab\n"
+        vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add Synonym/Answer to Vocab\n3.Replace Vocab Value\n4.Replace Synonym/Answer Value\n5.Delete Vocab Value\n6.Delete Synonym/Answer from Vocab\n7.Search Vocab\n"
 
         print(vocab_message)
 
@@ -48,15 +42,15 @@ class VocabSettingsHandler():
         if(type_setting == "1"):
             VocabSettingsHandler.add_vocab()
         elif(type_setting == "2"):
-            VocabSettingsHandler.add_csep()
+            VocabSettingsHandler.add_synonym()
         elif(type_setting == "3"):
             VocabSettingsHandler.replace_vocab_value()
         elif(type_setting == "4"):
-            VocabSettingsHandler.replace_csep_value()
+            VocabSettingsHandler.replace_synonym_value()
         elif(type_setting == "5"):
             VocabSettingsHandler.delete_vocab_value()
         elif(type_setting == "6"):
-            VocabSettingsHandler.delete_csep_value()
+            VocabSettingsHandler.delete_synonym_value()
         elif(type_setting == "7"):
             VocabSettingsHandler.search_vocab() 
     
@@ -73,25 +67,25 @@ class VocabSettingsHandler():
 
         ## gets new ids
         new_vocab_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(6))
-        new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
+        new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
-        csep_value_list = []
-        csep_actual_list_handler = []
+        synonym_value_list = []
+        synonym_actual_list_handler = []
 
         furigana = "0"
-        isKanji = False
+        is_kanji = False
 
-        ## gets vocab and csep details
+        ## gets vocab and Synonym details
         try:
             testing_material = Toolkit.user_confirm("Please enter a vocab term")
             romaji = Toolkit.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation")
             definition = Toolkit.user_confirm("Please enter " + testing_material + "'s definition/main answer")
 
-            csep_value_list.append(definition)
+            synonym_value_list.append(definition)
 
             while(input("Enter 1 if " + testing_material + " has any additional answers :\n") == "1"):
                 Toolkit.clear_stream()
-                csep_value_list.append(Toolkit.user_confirm("Please enter " + testing_material + "'s additional answers"))
+                synonym_value_list.append(Toolkit.user_confirm("Please enter " + testing_material + "'s additional answers"))
 
             kana = [value.testing_material for value in LocalHandler.kana]
 
@@ -99,7 +93,7 @@ class VocabSettingsHandler():
                 if(character not in kana):
                     Logger.log_action(character + " is kanji")
                     furigana = Toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling")
-                    isKanji = True
+                    is_kanji = True
                     break
         
         except:
@@ -118,33 +112,33 @@ class VocabSettingsHandler():
                 return
 
         ## inserts cseps first
-        for csep_value in csep_value_list:
+        for synonym_value in synonym_value_list:
 
-            csep_insert_values = [new_vocab_id, new_csep_id, csep_value, LocalHandler.VOCAB_WORD_TYPE]
+            synonym_insert_values = [new_vocab_id, new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE]
             
-            ## adds csep to local handler
-            csep_actual_list_handler.append(csep_blueprint(new_vocab_id, new_csep_id, csep_value, LocalHandler.VOCAB_WORD_TYPE))
+            ## adds synonym to local handler
+            synonym_actual_list_handler.append(synonym_blueprint(new_vocab_id, new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE))
 
-            ## writes csep to local
-            FileHandler.write_sei_line(FileEnsurer.vocab_csep_actual_path, csep_insert_values)
+            ## writes synonym to local
+            FileHandler.write_sei_line(FileEnsurer.vocab_synonyms_path, synonym_insert_values)
 
-            new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
+            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
         ## writes vocab to local
         vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, furigana, 0, 0]
-        FileHandler.write_sei_line(FileEnsurer.vocab_actual_path, vocab_insert_values)
+        FileHandler.write_sei_line(FileEnsurer.vocab_path, vocab_insert_values)
 
         ## updates local handler with new vocab
-        LocalHandler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, csep_actual_list_handler, furigana, 0, 0, isKanji))
+        LocalHandler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, synonym_actual_list_handler, furigana, 0, 0, is_kanji))
     
-##--------------------start-of-add_csep()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-add_synonym()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def add_csep() -> None:
+    def add_synonym() -> None:
 
         """
         
-        Adds a user entered csep to an existing vocab in the local handler.
+        Adds a user entered Synonym to an existing vocab in the local handler.
 
         """ 
 
@@ -154,10 +148,10 @@ class VocabSettingsHandler():
         target_index = 0
 
         ## gets new id
-        new_csep_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
+        new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a csep/answer to.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a Synonym/Answer to.")
 
         except:
             return
@@ -174,7 +168,7 @@ class VocabSettingsHandler():
             assert vocab_term != "-1"
             assert vocab_id != -1
 
-            csep_value = Toolkit.user_confirm("Please enter the csep/answer for " + vocab_term + " you would like to add.")
+            synonym_value = Toolkit.user_confirm("Please enter the Synonym/Answer for " + vocab_term + " you would like to add.")
 
         except AssertionError:
             print("invalid id or term\n")
@@ -187,13 +181,13 @@ class VocabSettingsHandler():
         ## gets index of vocab in local handler
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
 
-        ## adds csep to local storage
-        csep_insert_values = [vocab_id, new_csep_id, csep_value, LocalHandler.VOCAB_WORD_TYPE]
-        FileHandler.write_sei_line(FileEnsurer.vocab_csep_actual_path, csep_insert_values)
+        ## adds Synonym to local storage
+        synonym_insert_values = [vocab_id, new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE]
+        FileHandler.write_sei_line(FileEnsurer.vocab_synonyms_path, synonym_insert_values)
         
-        ## adds csep to local handler/current session
-        new_csep = csep_blueprint(int(vocab_id), new_csep_id, csep_value, LocalHandler.VOCAB_WORD_TYPE)
-        LocalHandler.vocab[target_index].testing_material_answer_all.append(new_csep)
+        ## adds Synonym to local handler/current session
+        new_synonym = synonym_blueprint(int(vocab_id), new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE)
+        LocalHandler.vocab[target_index].testing_material_answer_all.append(new_synonym)
 
 ##--------------------start-of-replace_vocab_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -210,7 +204,7 @@ class VocabSettingsHandler():
         index_to_replace = 0
 
         target_vocab_line = 0
-        target_csep_line = 0
+        target_synonym_value = 0
 
         target_index = 0
 
@@ -242,7 +236,7 @@ class VocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            print("invalid id or term\n")
+            print("invalid id or term.\n")
             time.sleep(1)
             return 
         
@@ -279,41 +273,41 @@ class VocabSettingsHandler():
         except:
             return 
         
-        ## if the user is changing the main definition, we also need to adjust the csep for it
+        ## if the user is changing the main definition, we also need to adjust the Synonym for it
         if(type_value == "4"):
 
-            csep_id = next((csep.csep_id for csep in target_vocab.testing_material_answer_all if csep.csep_value == value_to_replace))
+            csep_id = next((synonym.synonym_id for synonym in target_vocab.testing_material_answer_all if synonym.synonym_value == value_to_replace))
 
-            target_csep_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_csep_actual_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_csep_actual_path, i + 1, 2)) == csep_id))
+            target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == csep_id))
 
-            FileHandler.edit_sei_line(FileEnsurer.vocab_csep_actual_path, target_csep_line, 3, str(replacement_value))
+            FileHandler.edit_sei_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, 3, str(replacement_value))
         
         else:
             pass
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_actual_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_actual_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
 
         ## edits the vocab word
-        FileHandler.edit_sei_line(FileEnsurer.vocab_actual_path, target_vocab_line, index_to_replace, str(replacement_value))
+        FileHandler.edit_sei_line(FileEnsurer.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
             
-        ## it's easier to just reload everything than for me to figure out how to juggle csep values in the handler if the user wants to fuck with definitions or answers
+        ## it's easier to just reload everything than for me to figure out how to juggle Synonym values in the handler if the user wants to fuck with definitions or answers
         LocalHandler.load_words_from_local_storage()
 
-##--------------------start-of-replace_csep_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-replace_synonym_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def replace_csep_value() -> None:
+    def replace_synonym_value() -> None:
 
         """
         
-        Replaces a value within a csep.
+        Replaces a value within a Synonym.
 
         """
 
-        CSEP_VALUE_COLUMN_NUMBER = 3
+        SYNONYM_VALUE_COLUMN_NUMBER = 3
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that contains the csep you want to edit.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that contains the Synonym you want to edit.")
 
         except:
             return
@@ -343,33 +337,33 @@ class VocabSettingsHandler():
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
         target_vocab = LocalHandler.vocab[target_index]
 
-        ## gets csep print items
-        valid_cseps = Searcher.get_csep_print_items_from_vocab_id(vocab_id)
+        ## gets Synonym print items
+        valid_synonyms = Searcher.get_synonym_print_items_from_vocab_id(vocab_id)
 
-        for csep_item in valid_cseps:
-            print(csep_item)
+        for synonym_item in valid_synonyms:
+            print(synonym_item)
 
-        target_csep_id = int(input("\nPlease enter the CSEP ID for the csep you would like to edit:\n")) 
+        target_synonym_id = int(input("\nPlease enter the Synonym ID for the Synonym you would like to edit:\n")) 
 
-        ## gets the csep to edit, will do nothing if id is invalid or incorrect
-        for i, csep in enumerate(target_vocab.testing_material_answer_all):
+        ## gets the Synonym to edit, will do nothing if id is invalid or incorrect
+        for i, Synonym in enumerate(target_vocab.testing_material_answer_all):
             
-            if(csep.csep_id == target_csep_id):
+            if(Synonym.synonym_id == target_synonym_id):
                 try:
-                    replace_value = Toolkit.user_confirm("What are you replacing " + csep.csep_value + " with?")
+                    replace_value = Toolkit.user_confirm("What are you replacing " + Synonym.synonym_value + " with?")
 
-                    csep.csep_value = replace_value
+                    Synonym.synonym_value = replace_value
 
-                    target_csep_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_csep_actual_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_csep_actual_path, i + 1, 2)) == csep.csep_id))
+                    target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == Synonym.synonym_id))
 
-                    FileHandler.edit_sei_line(FileEnsurer.vocab_csep_actual_path, target_csep_line, CSEP_VALUE_COLUMN_NUMBER, replace_value)
+                    FileHandler.edit_sei_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, SYNONYM_VALUE_COLUMN_NUMBER, replace_value)
 
-                    ## if the csep is the main answer, we also need to change the vocab definition
-                    if(csep.csep_value == target_vocab.testing_material_answer_main):
+                    ## if the Synonym is the main answer, we also need to change the vocab definition
+                    if(Synonym.synonym_value == target_vocab.testing_material_answer_main):
 
-                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_actual_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_actual_path, i + 1, 1)) == vocab_id))
+                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
 
-                        FileHandler.edit_sei_line(FileEnsurer.vocab_actual_path, target_vocab_line, 4, replace_value)
+                        FileHandler.edit_sei_line(FileEnsurer.vocab_path, target_vocab_line, 4, replace_value)
 
                     break
 
@@ -407,7 +401,7 @@ class VocabSettingsHandler():
 
         except AssertionError:
             Logger.log_action("Invalid id or term.")
-            print("invalid id or term\n")
+            print("invalid id or term.\n")
             time.sleep(1)
             return
         
@@ -416,32 +410,32 @@ class VocabSettingsHandler():
 
         target_vocab_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_actual_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_actual_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
 
         ## deletes the vocab itself
-        FileHandler.delete_sei_line(FileEnsurer.vocab_actual_path, target_vocab_line)
+        FileHandler.delete_sei_line(FileEnsurer.vocab_path, target_vocab_line)
         LocalHandler.vocab.pop(target_vocab_index)
 
         ## deletes the cseps
-        FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_csep_actual_path, 1, vocab_id)
+        FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, 1, vocab_id)
 
         ## deletes the typos
         FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_incorrect_typos_path, 1, vocab_id)
         FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_typos_path, 1, vocab_id)
 
-##--------------------start-of-delete_csep_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-delete_synonym_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def delete_csep_value():
+    def delete_synonym_value():
 
         """
         
-        Deletes a csep value.
+        Deletes a Synonym value.
 
         """ 
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete a csep from.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete a Synonym from.")
 
         except:
             return
@@ -471,39 +465,39 @@ class VocabSettingsHandler():
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
         target_vocab = LocalHandler.vocab[target_index]
 
-        ## gets csep print items
-        valid_cseps = Searcher.get_csep_print_items_from_vocab_id(vocab_id)
+        ## gets Synonym print items
+        valid_synonyms = Searcher.get_synonym_print_items_from_vocab_id(vocab_id)
 
-        for csep_item in valid_cseps:
-            print(csep_item)
+        for synonym_item in valid_synonyms:
+            print(synonym_item)
 
-        target_csep_id = int(input("\nPlease enter the CSEP ID for the csep you would like to delete:\n"))
+        target_synonym_id = int(input("\nPlease enter the Synonym ID for the Synonym you would like to delete:\n"))
 
-        ## pops the matching csep in the handler if exists, will do nothing if id is invalid or incorrect
-        for i, csep in enumerate(target_vocab.testing_material_answer_all):
+        ## pops the matching Synonym in the handler if exists, will do nothing if id is invalid or incorrect
+        for i, Synonym in enumerate(target_vocab.testing_material_answer_all):
 
             
-            if(csep.csep_id == target_csep_id):
+            if(Synonym.synonym_id == target_synonym_id):
 
-                ## if it's the only csep, decline to delete
+                ## if it's the only Synonym, decline to delete
                 if(len(target_vocab.testing_material_answer_all) == 1):
-                    print("Cannot delete the only csep.\n")
+                    print("Cannot delete the only Synonym.\n")
                     time.sleep(1)
                     return
                 
-                ## if it's the main csep, change the main csep to the next one
-                elif(csep.csep_value == target_vocab.testing_material_answer_main):
+                ## if it's the main Synonym, change the main Synonym to the next one
+                elif(Synonym.synonym_value == target_vocab.testing_material_answer_main):
                         
-                        target_vocab.testing_material_answer_main = target_vocab.testing_material_answer_all[1].csep_value
+                        target_vocab.testing_material_answer_main = target_vocab.testing_material_answer_all[1].synonym_value
     
-                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_actual_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_actual_path, i + 1, 1)) == vocab_id))
+                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
     
-                        FileHandler.edit_sei_line(FileEnsurer.vocab_actual_path, target_vocab_line, 4, target_vocab.testing_material_answer_main)
+                        FileHandler.edit_sei_line(FileEnsurer.vocab_path, target_vocab_line, 4, target_vocab.testing_material_answer_main)
                 
                 target_vocab.testing_material_answer_all.pop(i)
 
         ## same thing but for the file
-        FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_csep_actual_path, id_index=2, id_value=target_csep_id)
+        FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=2, target_id=target_synonym_id)
 
 ##--------------------start-of-search_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -516,15 +510,15 @@ class VocabSettingsHandler():
         """
 
         matching_vocab_ids = []
-        matching_csep_ids = []
+        matching_synonym_ids = []
 
-        csep_search_result = ""
+        synonym_search_result = ""
 
         vocab_match_msg = ""
-        csep_match_msg = ""
+        synonym_match_msg = ""
 
         match_found_vocab = False
-        match_found_csep = False
+        match_found_synonym = False
 
         try:
             search_term = Toolkit.user_confirm("Please enter search term.")
@@ -536,18 +530,18 @@ class VocabSettingsHandler():
         if(search_term.isnumeric()):
 
             matching_vocab_ids.append(int(search_term))
-            matching_csep_ids.append(int(search_term))
+            matching_synonym_ids.append(int(search_term))
 
             vocab_match_msg = "Vocab with the id of " + str(search_term) + ':\n'
-            csep_match_msg = "CSEP with the id of " + str(search_term) + ':\n\n'
+            synonym_match_msg = "Synonym with the id of " + str(search_term) + ':\n\n'
 
         ## if search term is not an id/number and not japanese
         elif(all(ord(char) < 128 for char in search_term)):
             
-            matching_vocab_ids, matching_csep_ids = Searcher.get_ids_from_alpha_term(search_term)
+            matching_vocab_ids, matching_synonym_ids = Searcher.get_ids_from_alpha_term(search_term)
 
             vocab_match_msg = "Vocab that contain " + str(search_term) + ':\n'
-            csep_match_msg = "CSEP that contain " + str(search_term) + ':\n\n'
+            synonym_match_msg = "Synonym that contain " + str(search_term) + ':\n\n'
 
         ## if search term is japanese
         else:
@@ -571,26 +565,25 @@ class VocabSettingsHandler():
                 pass
 
         ## cseps have to be handled differently, determine if they exist before doing anything with them
-        for id in matching_csep_ids:
+        for id in matching_synonym_ids:
 
             try:
-                print_item = Searcher.get_csep_print_item_from_id(id)
+                print_item = Searcher.get_synonym_print_item_from_id(id)
 
-                csep_search_result += csep_match_msg
+                synonym_search_result += synonym_match_msg
 
-                csep_search_result += print_item
-
-                match_found_csep = True
+                synonym_search_result += print_item         
+                match_found_synonym = True
 
             except Searcher.IDNotFoundError:
                 pass
 
         ## no need to pause if no vocab results were found
-        if(match_found_vocab and match_found_csep):  
-            Toolkit.pause_console("Press any key to see matching CSEP results")
+        if(match_found_vocab and match_found_synonym):  
+            Toolkit.pause_console("Press any key to see matching Synonym results")
             Toolkit.clear_console()
 
-        ## print cseps if exist or vocab exist otherwise no matches
-        print(csep_search_result if(csep_search_result or match_found_vocab) else "No Matches\n")
+        ## print synonym if exist or vocab exist otherwise no matches
+        print(synonym_search_result if(synonym_search_result or match_found_vocab) else "No Matches\n")
 
         Toolkit.pause_console()

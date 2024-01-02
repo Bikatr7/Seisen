@@ -1,9 +1,8 @@
-
 class Typo:
 
     """
 
-    The Typo class is used to represent typos the user makes when guessing a word.
+    The Typo class is used to represent typos the user makes when guessing a Word.
         
     """
 
@@ -17,10 +16,10 @@ class Typo:
         Initializes a new Typo object.
 
         Parameters:
-        incoming_word_id (int) : The id of the word the Typo is for.
-        incoming_typo_id (int) : The id of the Typo.
+        incoming_word_id (int) : The ID of the Word the Typo is for.
+        incoming_typo_id (int) : The ID of the Typo.
         incoming_typo_value (str) : The value of the Typo.
-        incoming_word_type (st) : The type of the word the Typo is for.
+        incoming_word_type (st) : The type of the Word the Typo is for.
 
         """
 

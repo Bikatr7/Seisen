@@ -1,5 +1,6 @@
 ## built-in modules
 from datetime import datetime
+from distutils.log import Log
 
 import os
 import shutil
@@ -44,13 +45,19 @@ class StorageSettingsHandler():
             
             StorageSettingsHandler.reset_local_with_remote()
 
+            Toolkit.pause_console()
+
         elif(type_setting == "2"):
 
             RemoteHandler.reset_remote_storage()
+
+            Toolkit.pause_console()
         
         elif(type_setting == "3"):
 
             StorageSettingsHandler.reset_local_and_remote_to_default()
+
+            Toolkit.pause_console()
 
         elif(type_setting == "4"):
             StorageSettingsHandler.restore_backup()
@@ -78,7 +85,7 @@ class StorageSettingsHandler():
             time.sleep(1)
             return
 
-        with open(FileEnsurer.last_local_remote_backup_accurate_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.last_local_remote_overwrite_accurate_path, 'r', encoding="utf-8") as file:
             last_backup_date = str(file.read().strip()).strip('\x00').strip()
         
         if(last_backup_date == ""):
@@ -90,8 +97,10 @@ class StorageSettingsHandler():
             RemoteHandler.reset_local_storage()
             LocalHandler.load_words_from_local_storage()
 
+            Logger.log_action("Local has been reset with remote", output=True, omit_timestamp=True)
+
         else:
-            pass
+            print("Cancelled\n")
 
 ##--------------------start-of-reset_local_and_remote_to_default()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -130,6 +139,8 @@ class StorageSettingsHandler():
 
         LocalHandler.load_words_from_local_storage()
 
+        Logger.log_action("Local & Remote have been reset to default", output=True, omit_timestamp=True)
+
 ##--------------------start-of-restore_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -153,18 +164,15 @@ class StorageSettingsHandler():
 
             LocalHandler.restore_local_backup()
 
-            print("Local backup restored.")
-
             Toolkit.pause_console()
+            Toolkit.clear_console()
 
         elif(type_backup == "2"):
 
             RemoteHandler.restore_remote_backup()
-
-            print("Remote backup restored. You will need to reset Local Storage with Remote Storage to see the changes.")
-
+            
             Toolkit.pause_console()
-
+            Toolkit.clear_console()
 
         FileEnsurer.ensure_files()
         LocalHandler.load_words_from_local_storage()
@@ -182,19 +190,21 @@ class StorageSettingsHandler():
 
         write_string_list = []
 
-        file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d')) + ".seisen"
+        file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d_%H-%M-%S')) + ".seisen"
 
         export_path = os.path.join(FileEnsurer.script_dir, file_name)
 
+        write_string_list.append("Seisen Vocab Deck\n")
+
         ## get vocab lines
-        with open(FileEnsurer.vocab_actual_path, 'r', encoding="utf-8") as file:
-            write_string_list = file.readlines()
+        with open(FileEnsurer.vocab_path, 'r', encoding="utf-8") as file:
+            write_string_list += file.readlines()
 
         ## append separator
         write_string_list.append("---\n") 
 
         ## get csep lines
-        with open(FileEnsurer.vocab_csep_actual_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_synonyms_path, 'r', encoding="utf-8") as file:
             temp = file.readlines()
             write_string_list += temp
 
@@ -204,7 +214,7 @@ class StorageSettingsHandler():
         
         Toolkit.clear_console()
 
-        print(file_name + " has been placed in the script directory\n")
+        print(file_name + " has been placed in the script directory.\n")
 
         Toolkit.pause_console()
 
@@ -225,7 +235,7 @@ class StorageSettingsHandler():
         import_deck = []
 
         vocab_portion_write = []
-        csep_portion_write = []
+        synonym_portion_write = []
 
         metBreak = False
 
@@ -247,9 +257,15 @@ class StorageSettingsHandler():
 
         deck_to_import_prompt += "\nWhat deck would you like to import?"
 
-        try: ## user confirm will throw an assertion/user cancel error if the user wants to cancel the backup restore.
+        if(len(valid_import_paths) == 0):
+                
+            print("No decks to import.\n")
 
-            assert len(valid_import_names) > 0
+            Toolkit.pause_console()
+
+            return
+
+        try: ## user confirm will throw an assertion/user cancel error if the user wants to cancel the backup restore.
 
             deck_to_import = Toolkit.user_confirm(deck_to_import_prompt)
 
@@ -263,11 +279,18 @@ class StorageSettingsHandler():
                 time.sleep(1)
                 return
 
-        except Toolkit.UserCancelError or AssertionError:
+        except Toolkit.UserCancelError:
+            Logger.log_action("Cancelled deck import", output=True, omit_timestamp=True)
+            time.sleep(2)
             return
         
         with open(valid_import_paths[target_index], 'r', encoding="utf-8") as file:
             import_deck = file.readlines()
+
+        if(import_deck[0] != "Seisen Vocab Deck\n"):
+            print("Invalid Deck, please make sure the .seisen file is a Seisen Vocab Deck.\n")
+            time.sleep(2)
+            return
 
         for line in import_deck:
 
@@ -278,14 +301,16 @@ class StorageSettingsHandler():
                 vocab_portion_write.append(line)
             
             else:
-                csep_portion_write.append(line)
+                synonym_portion_write.append(line)
 
-        with open(FileEnsurer.vocab_actual_path, 'w+', encoding="utf-8") as file:
+        with open(FileEnsurer.vocab_path, 'w+', encoding="utf-8") as file:
             file.writelines(vocab_portion_write)
 
-        with open(FileEnsurer.vocab_csep_actual_path, 'w+', encoding="utf-8") as file:
-            file.writelines(csep_portion_write)
+        with open(FileEnsurer.vocab_synonyms_path, 'w+', encoding="utf-8") as file:
+            file.writelines(synonym_portion_write)
 
         LocalHandler.load_words_from_local_storage()
 
-        Logger.log_action("Imported the " + deck_to_import + " vocab deck")
+        Logger.log_action("Imported the " + deck_to_import + " vocab deck", output=True, omit_timestamp=True)
+
+        time.sleep(2)

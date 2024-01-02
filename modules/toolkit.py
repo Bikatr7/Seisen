@@ -1,10 +1,17 @@
 ## built-in modules
+from enum import Enum
+
 import os
 import time
 import typing
 
 ## custom modules
 from modules.file_ensurer import FileEnsurer
+
+class InputType(Enum):
+    NUMBER_CHOICE_NO_V = 1
+    VALIDATION_WITH_V_TEXT_ENTER = 4
+    VALIDATION_WITH_V_SINGLE_KEY = 5
 
 class Toolkit():
 
@@ -34,6 +41,11 @@ class Toolkit():
         Returns:
         new_user_input (str) : the user's input.
 
+        Input Types:
+        1 : Number Choice No V : the user can only enter a number choice or q.
+        4 : Validation With V Text Enter : the user can enter a number choice, q, or v. User must press enter to confirm their input.
+        5 : Validation With V Single Key : the user can enter a number choice, q, or v. User input is confirmed with a single key press.
+
         """
 
         new_user_input = str(user_input)
@@ -46,26 +58,26 @@ class Toolkit():
             if(user_input == 'q'):
                 FileEnsurer.exit_seisen()
 
-            elif(user_input == 'v' and input_type != 1):
+            elif(user_input == 'v' and input_type != InputType.NUMBER_CHOICE_NO_V.value):
                 return new_user_input
             
-            elif(input_type == 1 and (str(user_input).isdigit() == False or user_input == "0")):
+            elif(input_type == InputType.NUMBER_CHOICE_NO_V.value and (str(user_input).isdigit() == False or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q'\n"
 
-            elif(input_type == 4 and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
+            elif(input_type == InputType.VALIDATION_WITH_V_TEXT_ENTER.value and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
 
-            elif(input_type == 5 and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
+            elif(input_type == InputType.VALIDATION_WITH_V_SINGLE_KEY.value and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
 
             else:
                 return new_user_input
 
-            if(input_type == 5):
+            if(input_type == InputType.VALIDATION_WITH_V_SINGLE_KEY.value):
                 print(input_issue_message + "\n")
                 user_input = input(input_prompt_message)
 
-            elif(input_type == 4 or input_type == 1):
+            elif(input_type == InputType.VALIDATION_WITH_V_TEXT_ENTER.value or input_type == InputType.NUMBER_CHOICE_NO_V.value):
                 print(input_issue_message + "\n" + input_prompt_message)
                 user_input = Toolkit.get_single_key()
 

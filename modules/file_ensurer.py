@@ -116,6 +116,11 @@ class FileEnsurer:
    ## remote lib
    has_database_connection_failed_path = os.path.join(remote_lib_dir, "has_connection_failed.txt")
 
+   kana_filter = []
+
+   with open(all_kana_path, 'r', encoding="utf-8") as file:
+      kana_filter = file.readlines()
+
 ##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    @staticmethod

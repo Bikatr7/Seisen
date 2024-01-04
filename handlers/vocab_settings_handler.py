@@ -87,10 +87,8 @@ class VocabSettingsHandler():
                 Toolkit.clear_stream()
                 synonym_value_list.append(Toolkit.user_confirm("Please enter " + testing_material + "'s additional answers"))
 
-            kana = [value.testing_material for value in LocalHandler.kana]
-
             for character in testing_material:
-                if(character not in kana):
+                if(character not in FileEnsurer.kana_filter):
                     Logger.log_action(character + " is kanji")
                     furigana = Toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling")
                     is_kanji = True

@@ -308,7 +308,7 @@ class FileHandler():
 
         i = 0
 
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding="utf-8") as file:
             lines = file.readlines()
 
         line_count = len(lines)

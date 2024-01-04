@@ -84,6 +84,12 @@ class Seisen:
         Logger.log_action("Bootup")
 
         try:
+            ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
+
+        except ImportError:
+            pass
+
+        try:
             ## loads the words currently in local storage.
             LocalHandler.load_words_from_local_storage()
 
@@ -118,12 +124,6 @@ class Seisen:
 
             Toolkit.pause_console()
             Toolkit.clear_console()
-
-        try:
-            ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
-
-        except ImportError:
-            pass
 
 ##--------------------start-of-commence_main_loop()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

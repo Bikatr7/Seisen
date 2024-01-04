@@ -434,10 +434,14 @@ class VocabSettingsHandler():
 
         """ 
 
+        print_string = ""
+
         try:
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete a Synonym from.")
 
         except:
+            print("Cancelled.")
+            Toolkit.pause_console()
             return
         
         if(vocab_term_or_id.isdigit() == True):
@@ -465,13 +469,31 @@ class VocabSettingsHandler():
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
         target_vocab = LocalHandler.vocab[target_index]
 
+
         ## gets Synonym print items
         valid_synonyms = Searcher.get_synonym_print_items_from_vocab_id(vocab_id)
 
+        ## if it's the only Synonym, decline to delete
+        if(len(target_vocab.testing_material_answer_all) <= 1):
+            print("Cannot delete the only Synonym.\n")
+            time.sleep(2)
+            return
+            
         for synonym_item in valid_synonyms:
-            print(synonym_item)
+            print_string += synonym_item
 
-        target_synonym_id = int(input("\nPlease enter the Synonym ID for the Synonym you would like to delete:\n"))
+        try:
+
+            print_string += "\nPlease enter the Synonym ID for the Synonym you would like to delete:\n"
+
+            target_synonym_id = Toolkit.user_confirm(print_string)
+
+        except:
+            print("Cancelled.")
+            Toolkit.pause_console()
+            return
+        
+        target_synonym_id = int(target_synonym_id)
 
         ## pops the matching Synonym in the handler if exists, will do nothing if id is invalid or incorrect
         for i, Synonym in enumerate(target_vocab.testing_material_answer_all):
@@ -479,14 +501,8 @@ class VocabSettingsHandler():
             
             if(Synonym.synonym_id == target_synonym_id):
 
-                ## if it's the only Synonym, decline to delete
-                if(len(target_vocab.testing_material_answer_all) == 1):
-                    print("Cannot delete the only Synonym.\n")
-                    time.sleep(1)
-                    return
-                
                 ## if it's the main Synonym, change the main Synonym to the next one
-                elif(Synonym.synonym_value == target_vocab.testing_material_answer_main):
+                if(Synonym.synonym_value == target_vocab.testing_material_answer_main):
                         
                         target_vocab.testing_material_answer_main = target_vocab.testing_material_answer_all[1].synonym_value
     
@@ -497,7 +513,7 @@ class VocabSettingsHandler():
                 target_vocab.testing_material_answer_all.pop(i)
 
         ## same thing but for the file
-        FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=2, target_id=target_synonym_id)
+        FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=2, target_id=int(target_synonym_id))
 
 ##--------------------start-of-search_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -204,7 +204,7 @@ class RemoteHandler():
 ##--------------------start-of-reset_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def reset_remote_storage() -> None:
+    def reset_remote_storage(omit_print:bool=False) -> None:
 
         """
         
@@ -233,7 +233,8 @@ class RemoteHandler():
         RemoteHandler.create_remote_storage()
         RemoteHandler.fill_remote_storage()
 
-        print("Remote Storage Reset.\n")
+        if(not omit_print):
+            print("Remote Storage Reset.\n")
 
 ##--------------------start-of-delete_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -850,4 +851,4 @@ class RemoteHandler():
                 
                 file.write(current_day.strip('\x00').strip())
 
-                RemoteHandler.reset_remote_storage()
+                RemoteHandler.reset_remote_storage(omit_print=True)

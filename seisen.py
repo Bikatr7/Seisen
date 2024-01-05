@@ -45,7 +45,6 @@ class Seisen:
     ## to do
     ## change all txt files to .seisen files
     ## add some ways to better read seisen files
-    ## add way to delay handle intensive db operations until well after bootup
 
 ##--------------------start-of-handle_intensive_db_operations()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

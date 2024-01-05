@@ -753,7 +753,7 @@ class RemoteHandler():
 
                 file.truncate(0)
 
-                file.write(current_day.strip('\x00'))
+                file.write(current_day.strip('\x00').strip(" ").strip())
 
                 backup_kana()
                 backup_vocab()

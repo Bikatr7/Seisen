@@ -386,9 +386,9 @@ class LocalHandler():
                 shutil.copytree(FileEnsurer.kana_dir, os.path.join(archive_dir, "kana"))
                 shutil.copytree(FileEnsurer.vocab_dir, os.path.join(archive_dir, "vocab"))
 
-                file.truncate()
+                file.truncate(0)
                 
-                file.write(current_day.strip('\x00').strip())
+                file.write(current_day.strip('\x00').strip(" ").strip())
             
             else:
                 pass

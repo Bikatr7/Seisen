@@ -55,6 +55,7 @@ class Searcher:
             f"Correct Guesses: {target_vocab.correct_count}\n"
             f"ID: {target_vocab.word_id}\n"
             f"Synonym ID(S): {mini_synonym_print}\n"
+            f"Synonym Values(s): {[synonym.synonym_value for synonym in target_vocab.testing_material_answer_all]}\n"
             f"---------------------------------\n"
         )
 

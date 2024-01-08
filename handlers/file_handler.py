@@ -384,6 +384,29 @@ class FileHandler():
         return new_id
     
 ##--------------------start-of-perform_database_sanitization()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def perform_database_sanitization(value:str):
+
+        """
+
+        Performs a database sanitization.
+
+        Parameters:
+        value (str) : The value to be sanitized.
+
+        Returns:
+        value (str) : The sanitized value.
+
+        """
+
+        value = value.replace(",", "*")        ## Replacing commas with asterisks
+        value = value.replace("'", "\\'")      ## Escaping single quotes
+        value = value.replace("\\", "\\\\")    ## Replacing single backslash with double backslash
+
+        return value
+    
+##--------------------start-of-perform_database_sanitization()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
     def perform_reversal_of_database_sanitization(value:str):

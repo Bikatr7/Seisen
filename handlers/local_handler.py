@@ -289,7 +289,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 2 = kana incorrect typo id
@@ -298,7 +298,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 3 = vocab typo id
@@ -307,7 +307,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 4 = vocab incorrect typo id
@@ -316,7 +316,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 5 = kana id
@@ -325,7 +325,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_path, i+1, WORD_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_path, i+1, WORD_ID_INDEX_LOCATION))
                     i+=1
                     
         ## 6 = vocab id
@@ -334,7 +334,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_path, i+1, WORD_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i+1, WORD_ID_INDEX_LOCATION))
                     i+=1
 
         ## 7 = kana synonym id
@@ -343,7 +343,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
                     i+=1
 
         ## 8 = vocab synonym id
@@ -352,7 +352,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
                     i+=1
 
         ids =  [int(x) for x in ids]

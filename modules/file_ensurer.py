@@ -306,7 +306,7 @@ class FileEnsurer:
          if(i not in black_list_indexes):
             kana_csep_insert_values = [str(i), str(i), synonym.rstrip(',\n'), "kana"]
 
-            FileHandler.write_sei_line(FileEnsurer.kana_synonyms_path, kana_csep_insert_values)
+            FileHandler.write_seisen_line(FileEnsurer.kana_synonyms_path, kana_csep_insert_values)
 
       Logger.log_action("Kana files repaired.")
 

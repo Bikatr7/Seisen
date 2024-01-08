@@ -165,7 +165,7 @@ class Seisen:
                 Seisen.change_mode()
 
             ## modules outside seisen are forced to edit the mode in the loop data file when needed as they are unable to access the seisen object
-            Seisen.current_mode = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, target_line=1,column=1))
+            Seisen.current_mode = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, target_line=1,column=1))
             
 ##--------------------start-of-change_mode()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -185,7 +185,7 @@ class Seisen:
         old_mode = Seisen.current_mode
         
         Seisen.current_mode = int(Toolkit.input_check(1, Toolkit.get_single_key(), 3, main_menu_message))
-        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to=str(Seisen.current_mode))
+        FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to=str(Seisen.current_mode))
         
         Logger.log_action("Current mode changed to " + str(Seisen.current_mode) + " was " + str(old_mode))
 
@@ -215,8 +215,8 @@ class Seisen:
         kana_to_test, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
 
         ## gets the total number of rounds and the number of correct rounds, then calculates the ratio
-        total_number_of_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
-        number_of_correct_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds, 2)) if total_number_of_rounds != 0 else "0.0"
 
         Logger.log_action("Testing Kana... Round " + str(total_number_of_rounds))
@@ -291,8 +291,8 @@ class Seisen:
             
         Toolkit.clear_console()
 
-        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
-        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
+        FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
+        FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
 
         Logger.log_action("--------------------------------------------------------------")
 
@@ -321,8 +321,8 @@ class Seisen:
         vocab_to_test, display_list = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
 
         ## gets the total number of rounds and the number of correct rounds, and calculates the ratio
-        total_number_of_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
-        number_of_correct_rounds = int(FileHandler.read_sei_file(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
         round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
 
         Logger.log_action("Testing Vocab... Round " + str(total_number_of_rounds))
@@ -423,8 +423,8 @@ class Seisen:
             
         Toolkit.clear_console()
 
-        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
-        FileHandler.edit_sei_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
+        FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
+        FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
 
         Logger.log_action("--------------------------------------------------------------")
 

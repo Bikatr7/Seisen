@@ -43,7 +43,6 @@ class Seisen:
     current_user_guess:str = ""
 
     ## to do
-    ## add some ways to better read seisen files
     ## need to add a way to have multiple romaji or furigana, and possibly the kanji itself likely the way csep was done 
     ## look into a way to force kana reading showing if another vocab with the same kanji reading is in the deck
 

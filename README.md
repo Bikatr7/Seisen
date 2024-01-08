@@ -14,6 +14,9 @@
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Notes**<a name="notes"></a>
 
+Seisen is currently undergoing a rewrite, if you're reading this, you're looking at the main branch, which is definitely not stable or working depending one the day lol. If you want to use Seisen, please use v2.0.0, which is the latest stable release. See:
+https://github.com/Bikatr7/Seisen/releases/tag/v2.0.0
+ 
 Built for Windows.
 
 May work on Linux/Mac, attempts were made to make it cross platform, but no guarantees. I'd welcome any feedback on this.

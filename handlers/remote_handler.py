@@ -457,8 +457,6 @@ class RemoteHandler():
 
                     values = FileHandler.extract_seisen_line_values(line)
 
-                    values[2] = FileHandler.perform_database_sanitization(values[2])
-
                     table_name = "kana_typos"
                     insert_dict = {
                         "kana_id": values[0],
@@ -477,8 +475,6 @@ class RemoteHandler():
 
                         values = FileHandler.extract_seisen_line_values(line)
 
-                        values[2] = FileHandler.perform_database_sanitization(values[2])
-
                         table_name = "kana_incorrect_typos"
                         insert_dict = {
                         "kana_id": values[0],
@@ -496,8 +492,6 @@ class RemoteHandler():
                     for line in file:
 
                         values = FileHandler.extract_seisen_line_values(line)
-
-                        values[2] = FileHandler.perform_database_sanitization(values[2])
 
                         table_name = "kana_synonyms"
                         insert_dict = {
@@ -524,8 +518,6 @@ class RemoteHandler():
                         is_kanji = 0
                     else:
                         is_kanji = 1
-                    
-                    values[3] = FileHandler.perform_database_sanitization(values[3])
 
                     table_name = "vocab"
                     insert_dict = {
@@ -550,8 +542,6 @@ class RemoteHandler():
 
                     values = FileHandler.extract_seisen_line_values(line)
 
-                    values[2] = FileHandler.perform_database_sanitization(values[2])
-
                     table_name = "vocab_typos"
                     insert_dict = {
                         "vocab_id": values[0],
@@ -570,8 +560,6 @@ class RemoteHandler():
 
                         values = FileHandler.extract_seisen_line_values(line)
 
-                        values[2] = FileHandler.perform_database_sanitization(values[2])
-
                         table_name = "vocab_incorrect_typos"
                         insert_dict = {
                         "vocab_id": values[0],
@@ -589,8 +577,6 @@ class RemoteHandler():
                     for line in file:
 
                         values = FileHandler.extract_seisen_line_values(line)
-
-                        values[2] = FileHandler.perform_database_sanitization(values[2])
 
                         table_name = "vocab_synonyms"
                         insert_dict = {

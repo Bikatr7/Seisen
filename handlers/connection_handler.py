@@ -238,7 +238,7 @@ class ConnectionHandler():
 ##--------------------start-of-execute_query()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def execute_query(query:str) -> None:
+    def execute_query(query:str, params=None) -> None:
 
         """
 
@@ -255,7 +255,7 @@ class ConnectionHandler():
         if(ConnectionHandler.cursor == None or ConnectionHandler.connection == None):
             raise Exception("Connection is invalid, please ensure you have a valid connection and try again.")
 
-        ConnectionHandler.cursor.execute(query) 
+        ConnectionHandler.cursor.execute(query, params)
         
         ConnectionHandler.connection.commit()
 
@@ -348,8 +348,8 @@ class ConnectionHandler():
         """
 
         columns = ", ".join(data.keys())
-        values = ", ".join([f"'{value}'" for value in data.values()])
+        placeholders = ", ".join(["%s"] * len(data))
 
-        query = f"INSERT INTO {table_name} ({columns}) VALUES ({values})"
+        query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
 
-        ConnectionHandler.execute_query(query)
+        ConnectionHandler.execute_query(query, list(data.values()))

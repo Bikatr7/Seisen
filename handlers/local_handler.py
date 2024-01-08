@@ -69,8 +69,6 @@ class LocalHandler():
                     
                     if(synonym_kana_id == kana_id):
 
-                        synonym_value = FileHandler.perform_reversal_of_database_sanitization(synonym_value)
-
                         synonyms.append(synonym_blueprint(int(synonym_kana_id), int(synonym_id), synonym_value, synonym_word_type))
 
             return synonyms
@@ -101,8 +99,6 @@ class LocalHandler():
                         for kana in LocalHandler.kana:
                             if(kana.word_id == int(typo_kana_id)):
 
-                                typo_value = FileHandler.perform_reversal_of_database_sanitization(typo_value)
-
                                 kana.typos.append(typo_blueprint(int(typo_kana_id), int(typo_id), typo_value, typo_word_type))
 
                                 Logger.log_action("Loaded Kana Typo - (" + typo_kana_id + "," + typo_id + "," + typo_value + "," + typo_word_type + ")")
@@ -116,8 +112,6 @@ class LocalHandler():
                     if(incorrect_typo_word_type == LocalHandler.KANA_WORD_TYPE):
                         for kana in LocalHandler.kana:
                             if(kana.word_id == int(incorrect_typo_kana_id)):
-
-                                incorrect_typo_value = FileHandler.perform_reversal_of_database_sanitization(incorrect_typo_value)
 
                                 kana.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_kana_id), int(incorrect_typo_id), incorrect_typo_value, incorrect_typo_word_type))
 
@@ -136,8 +130,6 @@ class LocalHandler():
                     synonym_vocab_id, synonym_id, synonym_value, synonym_word_type = FileHandler.extract_seisen_line_values(line)
 
                     if(synonym_vocab_id == vocab_id):
-
-                        synonym_value = FileHandler.perform_reversal_of_database_sanitization(synonym_value)
 
                         synonyms.append(synonym_blueprint(int(synonym_vocab_id), int(synonym_id), synonym_value, synonym_word_type))
 
@@ -162,8 +154,6 @@ class LocalHandler():
 
                     synonyms = get_vocab_synonym_values(vocab_id)
 
-                    testing_material_answer_main = FileHandler.perform_reversal_of_database_sanitization(testing_material_answer_main)
-
                     LocalHandler.vocab.append(vocab_blueprint(int(vocab_id), testing_material, romaji, testing_material_answer_main, synonyms, furigana, int(incorrect_count), int(correct_count), kanji_flag))
 
                     Logger.log_action("Loaded Vocab - (" + vocab_id + "," + testing_material + "," + romaji + "," + testing_material_answer_main + "," + furigana + "," + incorrect_count + "," + correct_count + "," + str(kanji_flag) + ") with the following synonyms - " + str([synonym.synonym_value for synonym in synonyms]))
@@ -178,8 +168,6 @@ class LocalHandler():
                         for vocab in LocalHandler.vocab:
                             if(vocab.word_id == int(typo_vocab_id)):
 
-                                typo_value = FileHandler.perform_reversal_of_database_sanitization(typo_value)
-
                                 vocab.typos.append(typo_blueprint(int(typo_vocab_id), int(typo_id), typo_value, typo_word_type))
 
                                 Logger.log_action("Loaded Vocab Typo - (" + typo_vocab_id + "," + typo_id + "," + typo_value + "," + typo_word_type + ")")
@@ -193,8 +181,6 @@ class LocalHandler():
                     if(incorrect_typo_word_type == LocalHandler.VOCAB_WORD_TYPE):
                         for vocab in LocalHandler.vocab:
                             if(vocab.word_id == int(incorrect_typo_vocab_id)):
-
-                                incorrect_typo_value = FileHandler.perform_reversal_of_database_sanitization(incorrect_typo_value)
 
                                 vocab.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_vocab_id), int(incorrect_typo_id), incorrect_typo_value, incorrect_typo_word_type))
 

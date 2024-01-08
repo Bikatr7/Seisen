@@ -135,7 +135,7 @@ class StorageSettingsHandler():
 
             FileEnsurer.ensure_files()
 
-        RemoteHandler.reset_remote_storage()
+        RemoteHandler.reset_remote_storage(omit_print=True)
 
         LocalHandler.load_words_from_local_storage()
 

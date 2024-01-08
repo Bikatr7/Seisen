@@ -177,21 +177,21 @@ class FileHandler():
 ##--------------------start-of-write_seisen_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def write_seisen_line(sei_file_path:str, items_to_write:typing.List[typing.Any]) -> None:
+    def write_seisen_line(seisen_file_path:str, items_to_write:typing.List[typing.Any]) -> None:
 
         """
         
         Writes the given items to the given seisen file.
 
         Parameters:
-        sei_file_path (str) : The path to the seisen file.
+        seisen_file_path (str) : The path to the seisen file.
         items_to_write (list - Any) : The items to be written to the seisen file.
 
         """
 
         line = ",".join(str(item) for item in items_to_write)
         
-        with open(sei_file_path, "a+", encoding="utf-8") as file:
+        with open(seisen_file_path, "a+", encoding="utf-8") as file:
             file.write(line + ",\n")
 
 ##-------------------start-of-edit_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -229,14 +229,14 @@ class FileHandler():
 ##-------------------start-of-read_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def read_seisen_line(sei_file_path:str, target_line:int, column:int) -> str:
+    def read_seisen_line(seisen_file_path:str, target_line:int, column:int) -> str:
 
         """
 
         Reads the given seisen file and returns the value of the given column in the given line.
         
         Parameters:
-        sei_file_path (str) : The path to the seisen file.
+        seisen_file_path (str) : The path to the seisen file.
         target_line (int) : The line number of the seisen file.
         column (int) : The column we are reading.
 
@@ -249,7 +249,7 @@ class FileHandler():
         build_string = ""
         file_details = []
 
-        with open(sei_file_path, "r", encoding="utf-8") as file:
+        with open(seisen_file_path, "r", encoding="utf-8") as file:
             sei_file = file.readlines()
 
         sei_line = sei_file[target_line - 1]
@@ -270,25 +270,57 @@ class FileHandler():
 ##-------------------start-of-delete_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def delete_seisen_line(sei_file_path:str, target_line:int) -> None:
+    def delete_seisen_line(seisen_file_path:str, target_line:int) -> None:
 
         """
 
         Deletes the specified line from the given seisen file.
 
         Parameters:
-        sei_file_path (str) : The path to the seisen file.
+        seisen_file_path (str) : The path to the seisen file.
         target_line (int) : The line number to be deleted.
 
         """
 
-        with open(sei_file_path, "r", encoding="utf-8") as file:
+        with open(seisen_file_path, "r", encoding="utf-8") as file:
             lines = file.readlines()
 
-        with open(sei_file_path, "w", encoding="utf-8") as file:
+        with open(seisen_file_path, "w", encoding="utf-8") as file:
             for i, line in enumerate(lines, 1):
                 if(i != target_line):
                     file.write(line)
+
+##-------------------start-of-find_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def find_seisen_line(seisen_file_path:str, column_index:int, target_value:typing.Any) -> int:
+
+        """
+
+        Finds the line number of the given value in the given column of the given seisen file.
+
+        Parameters:
+        seisen_file_path (str) : The path to the seisen file.
+        column_index (int) : The column to search.
+        target_value (str) : The value to search for.
+
+        Returns:
+        i + 1 (int) : The line number of the value.
+
+        Throws:
+        ValueError : If the value is not found.
+
+        """
+
+        with open(seisen_file_path, 'r', encoding='utf-8') as file:
+            for i, line in enumerate(file):
+
+                line_value = FileHandler.read_seisen_line(seisen_file_path, i + 1, column_index)
+
+                if(line_value == str(target_value)):
+                    return i + 1  
+
+        raise ValueError(f"Could not find {target_value} in {seisen_file_path} at column {column_index}.")
 
 ##-------------------start-of-extract_seisen_line_values()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

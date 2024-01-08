@@ -45,6 +45,8 @@ class Seisen:
     ## to do
     ## change all txt files to .seisen files
     ## add some ways to better read seisen files
+    ## need to add a way to have multiple romaji or furigana, and possibly the kanji itself likely the way csep was done 
+    ## look into a way to force kana reading showing if another vocab with the same kanji reading is in the deck
 
 ##--------------------start-of-handle_intensive_db_operations()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

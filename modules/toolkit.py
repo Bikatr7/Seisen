@@ -22,6 +22,7 @@ class Toolkit():
     """
 
     CURRENT_VERSION = "v2.0.0"
+    sleep_constant = 2
 
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -283,10 +284,13 @@ class Toolkit():
         Prompts the user to confirm their input.
 
         Parameters:
-        prompt (str) : the prompt to be displayed to the user.\n
+        prompt (str) : The prompt to be displayed to the user.
 
         Returns:
-        user_input (str) : the user's input.
+        user_input (str) : The user's input.
+
+        Throws:
+        UserCancelError : If the user cancels the action.
 
         """
 

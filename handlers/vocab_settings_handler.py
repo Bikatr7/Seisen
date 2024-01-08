@@ -1,4 +1,5 @@
 ## built-in modules
+from re import T
 import time
 
 ## custom modules
@@ -31,7 +32,7 @@ class VocabSettingsHandler():
 
         """ 
 
-        Logger.log_action("User is changing vocab settings")
+        Logger.log_action("User is changing vocab settings.")
 
         vocab_message = "What are you trying to do?\n\n1.Add Vocab\n2.Add Synonym/Answer to Vocab\n3.Replace Vocab Value\n4.Replace Synonym/Answer Value\n5.Delete Vocab Value\n6.Delete Synonym/Answer from Vocab\n7.Search Vocab\n"
 
@@ -94,7 +95,9 @@ class VocabSettingsHandler():
                     is_kanji = True
                     break
         
-        except:
+        except Toolkit.UserCancelError:
+            print("Cancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         ## checks if inc vocab is a duplicate
@@ -105,11 +108,10 @@ class VocabSettingsHandler():
                 Toolkit.clear_console()
 
                 print(testing_material + " is in vocab already.\n")
-                time.sleep(1)
-                
+                time.sleep(Toolkit.sleep_constant)
                 return
 
-        ## inserts cseps first
+        ## inserts synonyms first
         for synonym_value in synonym_value_list:
 
             synonym_insert_values = [new_vocab_id, new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE]
@@ -151,7 +153,9 @@ class VocabSettingsHandler():
         try:
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a Synonym/Answer to.")
 
-        except:
+        except Toolkit.UserCancelError:
+            print("Cancelled.")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         if(vocab_term_or_id.isdigit() == True):
@@ -169,11 +173,13 @@ class VocabSettingsHandler():
             synonym_value = Toolkit.user_confirm("Please enter the Synonym/Answer for " + vocab_term + " you would like to add.")
 
         except AssertionError:
-            print("invalid id or term\n")
-            time.sleep(1)
+            print("Invalid id or term.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         except Toolkit.UserCancelError:
+            print("Cancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         ## gets index of vocab in local handler
@@ -202,11 +208,10 @@ class VocabSettingsHandler():
         index_to_replace = 0
 
         target_vocab_line = 0
-        target_synonym_value = 0
 
         target_index = 0
 
-        csep_id = 0
+        synonym_id = 0
 
         ATTRIBUTE_TESTING_MATERIAL = 2
         ATTRIBUTE_ROMAJI = 3
@@ -218,7 +223,9 @@ class VocabSettingsHandler():
         try:
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.")
 
-        except:
+        except Toolkit.UserCancelError:
+            print("Cancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         if(vocab_term_or_id.isdigit() == True):
@@ -234,12 +241,9 @@ class VocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            print("invalid id or term.\n")
-            time.sleep(1)
+            print("Invalid id or term.\n")
+            time.sleep(Toolkit.sleep_constant)
             return 
-        
-        except Toolkit.UserCancelError:
-            return
         
         ## gets index of target vocab in local handler
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
@@ -268,22 +272,24 @@ class VocabSettingsHandler():
         try:
             replacement_value = Toolkit.user_confirm("What are you replacing " + str(value_to_replace) + " with?")
 
-        except:
+        except Toolkit.UserCancelError:
+            print("Cancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
             return 
         
         ## if the user is changing the main definition, we also need to adjust the Synonym for it
         if(type_value == "4"):
 
-            csep_id = next((synonym.synonym_id for synonym in target_vocab.testing_material_answer_all if synonym.synonym_value == value_to_replace))
+            synonym_id = next((synonym.synonym_id for synonym in target_vocab.testing_material_answer_all if synonym.synonym_value == value_to_replace))
 
-            target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == csep_id))
+            target_synonym_line = FileHandler.find_seisen_line(FileEnsurer.vocab_synonyms_path, 2, synonym_id)
 
-            FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, 3, str(replacement_value))
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_line, 3, str(replacement_value))
         
         else:
             pass
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab_id)
 
         ## edits the vocab word
         FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
@@ -307,7 +313,9 @@ class VocabSettingsHandler():
         try:
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that contains the Synonym you want to edit.")
 
-        except:
+        except Toolkit.UserCancelError:
+            print("Cancelled.")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         if(vocab_term_or_id.isdigit() == True):
@@ -323,13 +331,10 @@ class VocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            Logger.log_action("Invalid id or term.")
-            print("invalid id or term\n")
-            time.sleep(1)
+            print("Invalid id or term.\n")
+            time.sleep(Toolkit.sleep_constant)
             return 
         
-        except Toolkit.UserCancelError:
-            return
         
         ## gets target vocab from local handler directly
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
@@ -352,14 +357,14 @@ class VocabSettingsHandler():
 
                     Synonym.synonym_value = replace_value
 
-                    target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == Synonym.synonym_id))
+                    target_synonym_line = FileHandler.find_seisen_line(FileEnsurer.vocab_synonyms_path, 2, Synonym.synonym_id)
 
-                    FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, SYNONYM_VALUE_COLUMN_NUMBER, replace_value)
+                    FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_line, SYNONYM_VALUE_COLUMN_NUMBER, replace_value)
 
                     ## if the Synonym is the main answer, we also need to change the vocab definition
                     if(Synonym.synonym_value == target_vocab.testing_material_answer_main):
 
-                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+                        target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab_id)
 
                         FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, 4, replace_value)
 
@@ -398,23 +403,29 @@ class VocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            Logger.log_action("Invalid id or term.")
-            print("invalid id or term.\n")
-            time.sleep(1)
+            print("Invalid id or term.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
         
-        except Toolkit.UserCancelError:
-            return
-
         target_vocab_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab_id)
+
+        Toolkit.clear_console()
+
+        if(input("Are you sure you want to delete this vocab? (1 for yes, 2 for no) \n\n" + Searcher.get_vocab_print_item_from_id(int(vocab_id)) + "\n") == "1"):
+            pass
+
+        else:
+            print("Cancelled.")
+            time.sleep(Toolkit.sleep_constant)
+            return
 
         ## deletes the vocab itself
         FileHandler.delete_seisen_line(FileEnsurer.vocab_path, target_vocab_line)
         LocalHandler.vocab.pop(target_vocab_index)
 
-        ## deletes the cseps
+        ## deletes the synonyms
         FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, 1, vocab_id)
 
         ## deletes the typos
@@ -439,7 +450,7 @@ class VocabSettingsHandler():
 
         except:
             print("Cancelled.")
-            Toolkit.pause_console()
+            time.sleep(Toolkit.sleep_constant)
             return
         
         if(vocab_term_or_id.isdigit() == True):
@@ -455,18 +466,13 @@ class VocabSettingsHandler():
             assert vocab_id != -1
 
         except AssertionError:
-            Logger.log_action("Invalid id or term.")
-            print("invalid id or term\n")
-            time.sleep(1)
+            print("Invalid id or term.\n")
+            time.sleep(Toolkit.sleep_constant)
             return 
-        
-        except Toolkit.UserCancelError:
-            return
-        
+    
         ## gets target vocab from local handler directly
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
         target_vocab = LocalHandler.vocab[target_index]
-
 
         ## gets Synonym print items
         valid_synonyms = Searcher.get_synonym_print_items_from_vocab_id(vocab_id)
@@ -474,7 +480,7 @@ class VocabSettingsHandler():
         ## if it's the only Synonym, decline to delete
         if(len(target_vocab.testing_material_answer_all) <= 1):
             print("Cannot delete the only Synonym.\n")
-            time.sleep(2)
+            time.sleep(Toolkit.sleep_constant)
             return
             
         for synonym_item in valid_synonyms:
@@ -486,10 +492,22 @@ class VocabSettingsHandler():
 
             target_synonym_id = Toolkit.user_confirm(print_string)
 
-        except:
-            print("Cancelled.")
-            Toolkit.pause_console()
+        except Toolkit.UserCancelError:
+            print("Cancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
+        
+        Toolkit.clear_console()
+
+        if(input("Are you sure you want to delete this Synonym? (1 for yes, 2 for no) \n\n" + Searcher.get_synonym_print_item_from_id(int(target_synonym_id)) + "\n") == "1"):
+            pass
+
+        else:
+            print("Cancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+
+        Toolkit.pause_console()
         
         target_synonym_id = int(target_synonym_id)
 
@@ -504,7 +522,7 @@ class VocabSettingsHandler():
                         
                         target_vocab.testing_material_answer_main = target_vocab.testing_material_answer_all[1].synonym_value
     
-                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+                        target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab_id)
     
                         FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, 4, target_vocab.testing_material_answer_main)
                 
@@ -537,7 +555,9 @@ class VocabSettingsHandler():
         try:
             search_term = Toolkit.user_confirm("Please enter search term.")
 
-        except:
+        except Toolkit.UserCancelError:
+            print("Cancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         ## if search term is an id
@@ -578,7 +598,7 @@ class VocabSettingsHandler():
             except Searcher.IDNotFoundError:
                 pass
 
-        ## cseps have to be handled differently, determine if they exist before doing anything with them
+        ## synonyms have to be handled differently, determine if they exist before doing anything with them
         for id in matching_synonym_ids:
 
             try:

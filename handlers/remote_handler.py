@@ -94,19 +94,19 @@ class RemoteHandler():
             ## resets local storage file-wise
             for kana in RemoteHandler.kana:
                 word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                FileHandler.write_sei_line(FileEnsurer.kana_path, word_values)
+                FileHandler.write_seisen_line(FileEnsurer.kana_path, word_values)
 
             for typo in RemoteHandler.kana_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                FileHandler.write_sei_line(FileEnsurer.kana_typos_path, typo_values)
+                FileHandler.write_seisen_line(FileEnsurer.kana_typos_path, typo_values)
 
             for incorrect_typo in RemoteHandler.kana_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                FileHandler.write_sei_line(FileEnsurer.kana_incorrect_typos_path, incorrect_typo_values)
+                FileHandler.write_seisen_line(FileEnsurer.kana_incorrect_typos_path, incorrect_typo_values)
 
             for synonym in RemoteHandler.kana_synonyms:
                 synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value, synonym.word_type]
-                FileHandler.write_sei_line(FileEnsurer.kana_synonyms_path, synonym_values)
+                FileHandler.write_seisen_line(FileEnsurer.kana_synonyms_path, synonym_values)
 
             ## current session-wise reset
             for kana in RemoteHandler.kana:
@@ -147,19 +147,19 @@ class RemoteHandler():
             ## resets local storage file-wise
             for vocab in RemoteHandler.vocab:
                 vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
-                FileHandler.write_sei_line(FileEnsurer.vocab_path, vocab_values)
+                FileHandler.write_seisen_line(FileEnsurer.vocab_path, vocab_values)
 
             for typo in RemoteHandler.vocab_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                FileHandler.write_sei_line(FileEnsurer.vocab_typos_path, typo_values)
+                FileHandler.write_seisen_line(FileEnsurer.vocab_typos_path, typo_values)
 
             for incorrect_typo in RemoteHandler.vocab_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                FileHandler.write_sei_line(FileEnsurer.vocab_incorrect_typos_path, incorrect_typo_values)
+                FileHandler.write_seisen_line(FileEnsurer.vocab_incorrect_typos_path, incorrect_typo_values)
 
             for synonym in RemoteHandler.vocab_synonyms:
                 synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value, synonym.word_type]
-                FileHandler.write_sei_line(FileEnsurer.vocab_synonyms_path, synonym_values)
+                FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, synonym_values)
 
             ## current session-wise reset
             for vocab in RemoteHandler.vocab:
@@ -435,7 +435,7 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = line.strip().split(',')
+                    values = FileHandler.extract_seisen_line_values(line)
 
                     table_name = "kana"
                     insert_dict = {
@@ -455,13 +455,9 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = line.strip().split(',')
+                    values = FileHandler.extract_seisen_line_values(line)
 
-                    values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
-                    values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
-
-                    ## replace comma with an asterisk
-                    values[2] = values[2].replace(",", "*")
+                    values[2] = FileHandler.perform_database_sanitization(values[2])
 
                     table_name = "kana_typos"
                     insert_dict = {
@@ -479,13 +475,9 @@ class RemoteHandler():
 
                     for line in file:
 
-                        values = line.strip().split(',')
+                        values = FileHandler.extract_seisen_line_values(line)
 
-                        values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
-                        values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
-
-                        ## replace comma with an asterisk
-                        values[2] = values[2].replace(",", "*")
+                        values[2] = FileHandler.perform_database_sanitization(values[2])
 
                         table_name = "kana_incorrect_typos"
                         insert_dict = {
@@ -503,13 +495,9 @@ class RemoteHandler():
 
                     for line in file:
 
-                        values = line.strip().split(',')
+                        values = FileHandler.extract_seisen_line_values(line)
 
-                        values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
-                        values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
-
-                        ## replace comma with an asterisk
-                        values[2] = values[2].replace(",", "*")
+                        values[2] = FileHandler.perform_database_sanitization(values[2])
 
                         table_name = "kana_synonyms"
                         insert_dict = {
@@ -529,18 +517,15 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = line.strip().split(',')
+                    values = FileHandler.extract_seisen_line_values(line)
 
+                    ## 0 is treated as a lack of furigana, which means it's not a kanji word
                     if(values[4] == "0"):
                         is_kanji = 0
                     else:
                         is_kanji = 1
                     
-                    values[3] = values[3].replace('\\', '\\\\')  ## Replace single backslash with double backslash
-                    values[3] = values[3].replace("'", "\\'")    ## Escape single quotes with a backslash
-
-                    ## replace comma with an asterisk
-                    values[3] = values[3].replace(",", "*")
+                    values[3] = FileHandler.perform_database_sanitization(values[3])
 
                     table_name = "vocab"
                     insert_dict = {
@@ -563,13 +548,9 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = line.strip().split(',')
+                    values = FileHandler.extract_seisen_line_values(line)
 
-                    values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
-                    values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
-
-                    ## replace comma with an asterisk
-                    values[2] = values[2].replace(",", "*")
+                    values[2] = FileHandler.perform_database_sanitization(values[2])
 
                     table_name = "vocab_typos"
                     insert_dict = {
@@ -587,13 +568,9 @@ class RemoteHandler():
 
                     for line in file:
 
-                        values = line.strip().split(',')
+                        values = FileHandler.extract_seisen_line_values(line)
 
-                        values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
-                        values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
-
-                        ## replace comma with an asterisk
-                        values[2] = values[2].replace(",", "*")
+                        values[2] = FileHandler.perform_database_sanitization(values[2])
 
                         table_name = "vocab_incorrect_typos"
                         insert_dict = {
@@ -611,12 +588,9 @@ class RemoteHandler():
 
                     for line in file:
 
-                        values = line.strip().split(',')
+                        values = FileHandler.extract_seisen_line_values(line)
 
-                        values[2] = values[2].replace('\\', '\\\\')  ## Replace single backslash with double backslash
-                        values[2] = values[2].replace("'", "\\'")    ## Escape single quotes with a backslash
-
-                        ## replace comma with an asterisk
+                        values[2] = FileHandler.perform_database_sanitization(values[2])
 
                         table_name = "vocab_synonyms"
                         insert_dict = {
@@ -659,10 +633,10 @@ class RemoteHandler():
 
             remote_archive_kana_dir = os.path.join(archive_dir, "kana")
 
-            remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.txt")
-            remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana_typos.txt")
-            remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana_incorrect_typos.txt")
-            remote_archive_kana_synonyms_path = os.path.join(remote_archive_kana_dir, "kana_synonyms.txt")
+            remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.seisen")
+            remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana_typos.seisen")
+            remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana_incorrect_typos.seisen")
+            remote_archive_kana_synonyms_path = os.path.join(remote_archive_kana_dir, "kana_synonyms.seisen")
 
             FileHandler.standard_create_directory(remote_archive_kana_dir)
 
@@ -679,19 +653,19 @@ class RemoteHandler():
             ## backups local storage file-wise
             for kana in RemoteHandler.kana:
                 word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                FileHandler.write_sei_line(remote_archive_kana_path, word_values)
+                FileHandler.write_seisen_line(remote_archive_kana_path, word_values)
 
             for typo in RemoteHandler.kana_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                FileHandler.write_sei_line(remote_archive_kana_typos_path, typo_values)
+                FileHandler.write_seisen_line(remote_archive_kana_typos_path, typo_values)
 
             for incorrect_typo in RemoteHandler.kana_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                FileHandler.write_sei_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
+                FileHandler.write_seisen_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
 
             for synonym in RemoteHandler.kana_synonyms:
                 synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value, synonym.word_type]
-                FileHandler.write_sei_line(remote_archive_kana_synonyms_path, synonym_values)
+                FileHandler.write_seisen_line(remote_archive_kana_synonyms_path, synonym_values)
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
@@ -699,10 +673,10 @@ class RemoteHandler():
 
             remote_archive_vocab_dir = os.path.join(archive_dir, "vocab")
 
-            remote_archive_vocab_path = os.path.join(remote_archive_vocab_dir, "vocab.txt")
-            remote_archive_vocab_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_typos.txt")
-            remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_incorrect_typos.txt")
-            remote_archive_vocab_synonyms_path = os.path.join(remote_archive_vocab_dir, "vocab_synonyms.txt")
+            remote_archive_vocab_path = os.path.join(remote_archive_vocab_dir, "vocab.seisen")
+            remote_archive_vocab_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_typos.seisen")
+            remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_incorrect_typos.seisen")
+            remote_archive_vocab_synonyms_path = os.path.join(remote_archive_vocab_dir, "vocab_synonyms.seisen")
 
             FileHandler.standard_create_directory(remote_archive_vocab_dir)
 
@@ -719,19 +693,19 @@ class RemoteHandler():
             ## resets local storage file-wise
             for vocab in RemoteHandler.vocab:
                 vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
-                FileHandler.write_sei_line(remote_archive_vocab_path, vocab_values)
+                FileHandler.write_seisen_line(remote_archive_vocab_path, vocab_values)
 
             for typo in RemoteHandler.vocab_typos:
                 typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                FileHandler.write_sei_line(remote_archive_vocab_typos_path, typo_values)
+                FileHandler.write_seisen_line(remote_archive_vocab_typos_path, typo_values)
 
             for incorrect_typo in RemoteHandler.vocab_incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                FileHandler.write_sei_line(remote_archive_vocab_incorrect_typos_path, incorrect_typo_values)
+                FileHandler.write_seisen_line(remote_archive_vocab_incorrect_typos_path, incorrect_typo_values)
 
             for synonym in RemoteHandler.vocab_synonyms:
                 synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value, synonym.word_type]
-                FileHandler.write_sei_line(remote_archive_vocab_synonyms_path, synonym_values)
+                FileHandler.write_seisen_line(remote_archive_vocab_synonyms_path, synonym_values)
 
         ##----------------------------------------------------------------main----------------------------------------------------------------
 

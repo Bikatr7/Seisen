@@ -174,18 +174,18 @@ class FileHandler():
 
         return content
 
-##--------------------start-of-write_sei_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-write_seisen_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def write_sei_line(sei_file_path:str, items_to_write:typing.List[typing.Any]) -> None:
+    def write_seisen_line(sei_file_path:str, items_to_write:typing.List[typing.Any]) -> None:
 
         """
         
-        Writes the given items to the given sei file.
+        Writes the given items to the given seisen file.
 
         Parameters:
-        sei_file_path (str) : The path to the sei file.
-        items_to_write (list - Any) : The items to be written to the sei file.
+        sei_file_path (str) : The path to the seisen file.
+        items_to_write (list - Any) : The items to be written to the seisen file.
 
         """
 
@@ -197,7 +197,7 @@ class FileHandler():
 ##-------------------start-of-edit_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def edit_sei_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:typing.Any) -> None:
+    def edit_seisen_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:typing.Any) -> None:
         
         """
 
@@ -226,18 +226,18 @@ class FileHandler():
         with open(file_path, "w", encoding="utf8") as file:
             file.writelines(lines)
 
-##-------------------start-of-read_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-read_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def read_sei_file(sei_file_path:str, target_line:int, column:int) -> str:
+    def read_seisen_line(sei_file_path:str, target_line:int, column:int) -> str:
 
         """
 
-        Reads the given sei file and returns the value of the given column.
+        Reads the given seisen file and returns the value of the given column in the given line.
         
         Parameters:
-        sei_file_path (str) : The path to the sei file.
-        target_line (int) : The line number of the sei file.
+        sei_file_path (str) : The path to the seisen file.
+        target_line (int) : The line number of the seisen file.
         column (int) : The column we are reading.
 
         Returns:
@@ -267,17 +267,17 @@ class FileHandler():
             
         return file_details[column-1]
 
-##-------------------start-of-delete_sei_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##-------------------start-of-delete_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def delete_sei_line(sei_file_path:str, target_line:int) -> None:
+    def delete_seisen_line(sei_file_path:str, target_line:int) -> None:
 
         """
 
-        Deletes the specified line from the given sei file.
+        Deletes the specified line from the given seisen file.
 
         Parameters:
-        sei_file_path (str) : The path to the sei file.
+        sei_file_path (str) : The path to the seisen file.
         target_line (int) : The line number to be deleted.
 
         """
@@ -289,6 +289,31 @@ class FileHandler():
             for i, line in enumerate(lines, 1):
                 if(i != target_line):
                     file.write(line)
+
+##-------------------start-of-extract_seisen_line_values()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def extract_seisen_line_values(line:str) -> typing.List[str]:
+
+        """
+
+        Extracts the values from a given seisen line.
+
+        Parameters:
+        line (str) : The line to extract the values from.
+
+        Returns:
+        values (list - str) : The values extracted from the line.
+
+        """
+
+        values = line.strip().split(',')
+
+        if(values[-1] == ''): 
+            return values[:-1]
+
+        else:
+            raise ValueError("The given line is not a valid seisen line.")  
 
 ##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -315,8 +340,8 @@ class FileHandler():
 
         while(i < line_count):
 
-            if(int(FileHandler.read_sei_file(file_path, i + 1, id_index)) == target_id):
-                FileHandler.delete_sei_line(file_path, i + 1)
+            if(int(FileHandler.read_seisen_line(file_path, i + 1, id_index)) == target_id):
+                FileHandler.delete_seisen_line(file_path, i + 1)
                 line_count -= 1
                 
             else:
@@ -357,3 +382,49 @@ class FileHandler():
                 return new_id
             
         return new_id
+    
+##--------------------start-of-perform_database_sanitization()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def perform_database_sanitization(value:str):
+
+        """
+
+        Performs a database sanitization.
+
+        Parameters:
+        value (str) : The value to be sanitized.
+
+        Returns:
+        value (str) : The sanitized value.
+
+        """
+
+        value = value.replace(",", "*")        ## Replacing commas with asterisks
+        value = value.replace("'", "\\'")      ## Escaping single quotes
+        value = value.replace("\\", "\\\\")    ## Replacing single backslash with double backslash
+
+        return value
+    
+##--------------------start-of-perform_database_sanitization()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def perform_reversal_of_database_sanitization(value:str):
+
+        """
+
+        Performs a reversal of the database sanitization.
+
+        Parameters:
+        value (str) : The value to be reversed.
+
+        Returns:
+        value (str) : The reversed value.
+        
+        """
+
+        value = value.replace('*', ',')        ## Reversing comma to asterisk replacement
+        value = value.replace("\\'", "'")      ## Reversing escaping of single quotes
+        value = value.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
+
+        return value

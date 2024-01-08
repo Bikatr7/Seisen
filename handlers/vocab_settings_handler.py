@@ -118,13 +118,13 @@ class VocabSettingsHandler():
             synonym_actual_list_handler.append(synonym_blueprint(new_vocab_id, new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE))
 
             ## writes synonym to local
-            FileHandler.write_sei_line(FileEnsurer.vocab_synonyms_path, synonym_insert_values)
+            FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, synonym_insert_values)
 
             new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
         ## writes vocab to local
         vocab_insert_values = [new_vocab_id, testing_material, romaji, definition, furigana, 0, 0]
-        FileHandler.write_sei_line(FileEnsurer.vocab_path, vocab_insert_values)
+        FileHandler.write_seisen_line(FileEnsurer.vocab_path, vocab_insert_values)
 
         ## updates local handler with new vocab
         LocalHandler.vocab.append(vocab_blueprint(new_vocab_id, testing_material, romaji, definition, synonym_actual_list_handler, furigana, 0, 0, is_kanji))
@@ -181,7 +181,7 @@ class VocabSettingsHandler():
 
         ## adds Synonym to local storage
         synonym_insert_values = [vocab_id, new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE]
-        FileHandler.write_sei_line(FileEnsurer.vocab_synonyms_path, synonym_insert_values)
+        FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, synonym_insert_values)
         
         ## adds Synonym to local handler/current session
         new_synonym = synonym_blueprint(int(vocab_id), new_synonym_id, synonym_value, LocalHandler.VOCAB_WORD_TYPE)
@@ -276,17 +276,17 @@ class VocabSettingsHandler():
 
             csep_id = next((synonym.synonym_id for synonym in target_vocab.testing_material_answer_all if synonym.synonym_value == value_to_replace))
 
-            target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == csep_id))
+            target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == csep_id))
 
-            FileHandler.edit_sei_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, 3, str(replacement_value))
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, 3, str(replacement_value))
         
         else:
             pass
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
 
         ## edits the vocab word
-        FileHandler.edit_sei_line(FileEnsurer.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
+        FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
             
         ## it's easier to just reload everything than for me to figure out how to juggle Synonym values in the handler if the user wants to fuck with definitions or answers
         LocalHandler.load_words_from_local_storage()
@@ -352,16 +352,16 @@ class VocabSettingsHandler():
 
                     Synonym.synonym_value = replace_value
 
-                    target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == Synonym.synonym_id))
+                    target_synonym_value = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_synonyms_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_synonyms_path, i + 1, 2)) == Synonym.synonym_id))
 
-                    FileHandler.edit_sei_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, SYNONYM_VALUE_COLUMN_NUMBER, replace_value)
+                    FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_value, SYNONYM_VALUE_COLUMN_NUMBER, replace_value)
 
                     ## if the Synonym is the main answer, we also need to change the vocab definition
                     if(Synonym.synonym_value == target_vocab.testing_material_answer_main):
 
-                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
 
-                        FileHandler.edit_sei_line(FileEnsurer.vocab_path, target_vocab_line, 4, replace_value)
+                        FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, 4, replace_value)
 
                     break
 
@@ -408,10 +408,10 @@ class VocabSettingsHandler():
 
         target_vocab_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))
 
-        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
 
         ## deletes the vocab itself
-        FileHandler.delete_sei_line(FileEnsurer.vocab_path, target_vocab_line)
+        FileHandler.delete_seisen_line(FileEnsurer.vocab_path, target_vocab_line)
         LocalHandler.vocab.pop(target_vocab_index)
 
         ## deletes the cseps
@@ -504,9 +504,9 @@ class VocabSettingsHandler():
                         
                         target_vocab.testing_material_answer_main = target_vocab.testing_material_answer_all[1].synonym_value
     
-                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_sei_file(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
+                        target_vocab_line = next((i + 1 for i, line in enumerate(FileEnsurer.vocab_path) if int(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i + 1, 1)) == vocab_id))
     
-                        FileHandler.edit_sei_line(FileEnsurer.vocab_path, target_vocab_line, 4, target_vocab.testing_material_answer_main)
+                        FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, 4, target_vocab.testing_material_answer_main)
                 
                 target_vocab.testing_material_answer_all.pop(i)
 

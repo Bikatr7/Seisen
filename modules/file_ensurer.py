@@ -54,19 +54,19 @@ class FileEnsurer:
    ##----------------------------------/
 
    ## loop data
-   loop_data_path = os.path.join(loop_data_dir, "loop_data.txt")
+   loop_data_path = os.path.join(loop_data_dir, "loop_data.seisen")
 
    ## kana
-   kana_path = os.path.join(kana_dir, "kana.txt")
-   kana_synonyms_path = os.path.join(kana_dir, "kana_synonyms.txt")
-   kana_typos_path = os.path.join(kana_dir, "kana_typos.txt")
-   kana_incorrect_typos_path = os.path.join(kana_dir, "kana_incorrect_typos.txt")
+   kana_path = os.path.join(kana_dir, "kana.seisen")
+   kana_synonyms_path = os.path.join(kana_dir, "kana_synonyms.seisen")
+   kana_typos_path = os.path.join(kana_dir, "kana_typos.seisen")
+   kana_incorrect_typos_path = os.path.join(kana_dir, "kana_incorrect_typos.seisen")
 
    ## vocab
-   vocab_path = os.path.join(vocab_dir, "vocab.txt")
-   vocab_synonyms_path = os.path.join(vocab_dir, "vocab_synonyms.txt")
-   vocab_typos_path = os.path.join(vocab_dir, "vocab_typos.txt")
-   vocab_incorrect_typos_path = os.path.join(vocab_dir, "vocab_incorrect_typos.txt")
+   vocab_path = os.path.join(vocab_dir, "vocab.seisen")
+   vocab_synonyms_path = os.path.join(vocab_dir, "vocab_synonyms.seisen")
+   vocab_typos_path = os.path.join(vocab_dir, "vocab_typos.seisen")
+   vocab_incorrect_typos_path = os.path.join(vocab_dir, "vocab_incorrect_typos.seisen")
 
    ##----------------------------------/
 
@@ -82,7 +82,7 @@ class FileEnsurer:
    all_kana_readings_path = os.path.join(local_kana_lib_dir, "kana_readings.txt")
 
    ## the answers for the kana in file path above
-   all_kana_synonyms_path = os.path.join(local_kana_lib_dir, "kana_synonyms.txt")
+   all_kana_synonyms_path = os.path.join(local_kana_lib_dir, "kana_synonyms.seisen")
 
    ##----------------------------------/
 
@@ -92,10 +92,10 @@ class FileEnsurer:
    local_vocab_lib_dir = os.path.join(local_lib_dir, "vocab")
 
    ## path to the starter vocab.txt file that is used for testing purposes
-   local_vocab_lib_path = os.path.join(local_vocab_lib_dir, "vocab.txt")
+   local_vocab_lib_path = os.path.join(local_vocab_lib_dir, "vocab.seisen")
 
    ## path to the starter vocab synonym.txt file that is used for testing purposes
-   local_vocab_synonyms_lib_path = os.path.join(local_vocab_lib_dir, "vocab_synonyms.txt")
+   local_vocab_synonyms_lib_path = os.path.join(local_vocab_lib_dir, "vocab_synonyms.seisen")
 
    ##----------------------------------/
 
@@ -306,7 +306,7 @@ class FileEnsurer:
          if(i not in black_list_indexes):
             kana_csep_insert_values = [str(i), str(i), synonym.rstrip(',\n'), "kana"]
 
-            FileHandler.write_sei_line(FileEnsurer.kana_synonyms_path, kana_csep_insert_values)
+            FileHandler.write_seisen_line(FileEnsurer.kana_synonyms_path, kana_csep_insert_values)
 
       Logger.log_action("Kana files repaired.")
 

@@ -65,13 +65,11 @@ class LocalHandler():
 
                 for line in file:
 
-                    synonym_kana_id, synonym_id, synonym_value, synonym_word_type, _ = line.strip().split(',')
+                    synonym_kana_id, synonym_id, synonym_value, synonym_word_type = FileHandler.extract_seisen_line_values(line)
                     
                     if(synonym_kana_id == kana_id):
 
-                        synonym_value = synonym_value.replace('*', ',')        ## Reversing comma to asterisk replacement
-                        synonym_value = synonym_value.replace("\\'", "'")      ## Reversing escaping of single quotes
-                        synonym_value = synonym_value.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
+                        synonym_value = FileHandler.perform_reversal_of_database_sanitization(synonym_value)
 
                         synonyms.append(synonym_blueprint(int(synonym_kana_id), int(synonym_id), synonym_value, synonym_word_type))
 
@@ -85,7 +83,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    kana_id, testing_material, testing_material_answer_main, incorrect_count, correct_count, _ = line.strip().split(',')
+                    kana_id, testing_material, testing_material_answer_main, incorrect_count, correct_count = FileHandler.extract_seisen_line_values(line)
 
                     synonyms = get_kana_synonyms(kana_id)
 
@@ -97,16 +95,13 @@ class LocalHandler():
 
                 for line in file:
                     
-                    typo_kana_id, typo_id, typo_value, typo_word_type, _ = line.strip().split(',')
+                    typo_kana_id, typo_id, typo_value, typo_word_type = FileHandler.extract_seisen_line_values(line)
 
                     if(typo_word_type == LocalHandler.KANA_WORD_TYPE):
                         for kana in LocalHandler.kana:
                             if(kana.word_id == int(typo_kana_id)):
 
-                                typo_value = typo_value.replace('*', ',')        ## Reversing comma to asterisk replacement
-                                typo_value = typo_value.replace("\\'", "'")      ## Reversing escaping of single quotes
-                                typo_value = typo_value.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
-
+                                typo_value = FileHandler.perform_reversal_of_database_sanitization(typo_value)
 
                                 kana.typos.append(typo_blueprint(int(typo_kana_id), int(typo_id), typo_value, typo_word_type))
 
@@ -116,15 +111,13 @@ class LocalHandler():
 
                 for line in file:
     
-                    incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type, _ = line.strip().split(',')
+                    incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type = FileHandler.extract_seisen_line_values(line)
 
                     if(incorrect_typo_word_type == LocalHandler.KANA_WORD_TYPE):
                         for kana in LocalHandler.kana:
                             if(kana.word_id == int(incorrect_typo_kana_id)):
 
-                                incorrect_typo_value = incorrect_typo_value.replace('*', ',')        ## Reversing comma to asterisk replacement
-                                incorrect_typo_value = incorrect_typo_value.replace("\\'", "'")      ## Reversing escaping of single quotes
-                                incorrect_typo_value = incorrect_typo_value.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
+                                incorrect_typo_value = FileHandler.perform_reversal_of_database_sanitization(incorrect_typo_value)
 
                                 kana.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_kana_id), int(incorrect_typo_id), incorrect_typo_value, incorrect_typo_word_type))
 
@@ -140,13 +133,11 @@ class LocalHandler():
 
                 for line in file:
 
-                    synonym_vocab_id, synonym_id, synonym_value, synonym_word_type, _ = line.strip().split(',')
+                    synonym_vocab_id, synonym_id, synonym_value, synonym_word_type = FileHandler.extract_seisen_line_values(line)
 
                     if(synonym_vocab_id == vocab_id):
 
-                        synonym_value = synonym_value.replace('*', ',')        ## Reversing comma to asterisk replacement
-                        synonym_value = synonym_value.replace("\\'", "'")      ## Reversing escaping of single quotes
-                        synonym_value = synonym_value.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
+                        synonym_value = FileHandler.perform_reversal_of_database_sanitization(synonym_value)
 
                         synonyms.append(synonym_blueprint(int(synonym_vocab_id), int(synonym_id), synonym_value, synonym_word_type))
 
@@ -161,8 +152,9 @@ class LocalHandler():
 
                 for line in file:
 
-                    vocab_id, testing_material, romaji, testing_material_answer_main, furigana, incorrect_count, correct_count, _ = line.strip().split(',')
+                    vocab_id, testing_material, romaji, testing_material_answer_main, furigana, incorrect_count, correct_count = FileHandler.extract_seisen_line_values(line)
 
+                    ## 0 is treated as a lack of furigana, which means it's not a kanji word
                     if(furigana == "0"):
                         kanji_flag = False
                     else:
@@ -170,9 +162,7 @@ class LocalHandler():
 
                     synonyms = get_vocab_synonym_values(vocab_id)
 
-                    testing_material_answer_main = testing_material_answer_main.replace('*', ',')        ## Reversing comma to asterisk replacement
-                    testing_material_answer_main = testing_material_answer_main.replace("\\'", "'")      ## Reversing escaping of single quotes
-                    testing_material_answer_main = testing_material_answer_main.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
+                    testing_material_answer_main = FileHandler.perform_reversal_of_database_sanitization(testing_material_answer_main)
 
                     LocalHandler.vocab.append(vocab_blueprint(int(vocab_id), testing_material, romaji, testing_material_answer_main, synonyms, furigana, int(incorrect_count), int(correct_count), kanji_flag))
 
@@ -182,15 +172,13 @@ class LocalHandler():
 
                 for line in file:
                     
-                    typo_vocab_id, typo_id, typo_value, typo_word_type, _ = line.strip().split(',')
+                    typo_vocab_id, typo_id, typo_value, typo_word_type = FileHandler.extract_seisen_line_values(line)
 
                     if(typo_word_type == LocalHandler.VOCAB_WORD_TYPE):
                         for vocab in LocalHandler.vocab:
                             if(vocab.word_id == int(typo_vocab_id)):
 
-                                typo_value = typo_value.replace('*', ',')        ## Reversing comma to asterisk replacement
-                                typo_value = typo_value.replace("\\'", "'")      ## Reversing escaping of single quotes
-                                typo_value = typo_value.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
+                                typo_value = FileHandler.perform_reversal_of_database_sanitization(typo_value)
 
                                 vocab.typos.append(typo_blueprint(int(typo_vocab_id), int(typo_id), typo_value, typo_word_type))
 
@@ -200,15 +188,13 @@ class LocalHandler():
 
                 for line in file:
 
-                    incorrect_typo_vocab_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type, _ = line.strip().split(',')
+                    incorrect_typo_vocab_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type = FileHandler.extract_seisen_line_values(line)
 
                     if(incorrect_typo_word_type == LocalHandler.VOCAB_WORD_TYPE):
                         for vocab in LocalHandler.vocab:
                             if(vocab.word_id == int(incorrect_typo_vocab_id)):
 
-                                incorrect_typo_value = incorrect_typo_value.replace('*', ',')        # Reversing comma to asterisk replacement
-                                incorrect_typo_value = incorrect_typo_value.replace("\\'", "'")      # Reversing escaping of single quotes
-                                incorrect_typo_value = incorrect_typo_value.replace('\\\\', '\\')    # Reversing double backslash to single backslash replacement
+                                incorrect_typo_value = FileHandler.perform_reversal_of_database_sanitization(incorrect_typo_value)
 
                                 vocab.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_vocab_id), int(incorrect_typo_id), incorrect_typo_value, incorrect_typo_word_type))
 
@@ -289,7 +275,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 2 = kana incorrect typo id
@@ -298,7 +284,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 3 = vocab typo id
@@ -307,7 +293,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 4 = vocab incorrect typo id
@@ -316,7 +302,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
                     i+=1
 
         ## 5 = kana id
@@ -325,7 +311,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_path, i+1, WORD_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_path, i+1, WORD_ID_INDEX_LOCATION))
                     i+=1
                     
         ## 6 = vocab id
@@ -334,7 +320,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_path, i+1, WORD_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i+1, WORD_ID_INDEX_LOCATION))
                     i+=1
 
         ## 7 = kana synonym id
@@ -343,7 +329,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.kana_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
                     i+=1
 
         ## 8 = vocab synonym id
@@ -352,7 +338,7 @@ class LocalHandler():
                 file_size = file.readlines()
 
                 while(i < len(file_size)):
-                    ids.append(FileHandler.read_sei_file(FileEnsurer.vocab_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
+                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_synonyms_path, i+1, SYNONYM_ID_INDEX_LOCATION))
                     i+=1
 
         ids =  [int(x) for x in ids]

@@ -409,7 +409,7 @@ class ScoreRater:
         new_typo = typo_blueprint(Word.word_id, new_typo_id, typo, Word.word_type)
 
         ## updates local storage so the typo will be saved
-        FileHandler.write_sei_line(path_to_write_to, [str(Word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
 
         ## updates the current session with the typo
         Word.typos.append(new_typo)
@@ -442,7 +442,7 @@ class ScoreRater:
         new_incorrect_typo = incorrect_typo_blueprint(Word.word_id, new_incorrect_typo_id, incorrect_typo, Word.word_type)
 
         ## updates local storage so the incorrect typo will be saved
-        FileHandler.write_sei_line(path_to_write_to, [str(Word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
 
         ## updates the current session with the incorrect typo
         Word.incorrect_typos.append(new_incorrect_typo)
@@ -486,7 +486,7 @@ class ScoreRater:
         line_to_write_to = word_ids.index(Word.word_id) + 1
 
         ## updates local storage so the correct answer will be saved for future sessions
-        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(Word.correct_count))
+        FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.correct_count))
 
         Logger.log_action("Logged a correct answer for " + Word.testing_material + ", id : " + str(Word.word_id))
 
@@ -527,6 +527,6 @@ class ScoreRater:
         line_to_write_to = word_ids.index(Word.word_id) + 1
 
         ## updates local storage so the incorrect answer will be saved for future sessions
-        FileHandler.edit_sei_line(path_to_write_to, line_to_write_to, index_location, str(Word.incorrect_count))
+        FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.incorrect_count))
 
         Logger.log_action("Logged an incorrect answer for " + Word.testing_material + ", id : " + str(Word.word_id))

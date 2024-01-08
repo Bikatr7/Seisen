@@ -56,7 +56,7 @@ class SettingsHandler():
         ## if no valid option is selected, exit back to seisen.
         else:
             ## just a way to exit back to seisen
-            FileHandler.edit_sei_line(FileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to="-1")
+            FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to="-1")
 
         Logger.log_barrier()
 

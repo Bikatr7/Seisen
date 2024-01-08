@@ -290,6 +290,31 @@ class FileHandler():
                 if(i != target_line):
                     file.write(line)
 
+##-------------------start-of-extract_seisen_line_values()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def extract_seisen_line_values(line:str) -> typing.List[str]:
+
+        """
+
+        Extracts the values from a given seisen line.
+
+        Parameters:
+        line (str) : The line to extract the values from.
+
+        Returns:
+        values (list - str) : The values extracted from the line.
+
+        """
+
+        values = line.strip().split(',')
+
+        if(values[-1] == ''): 
+            return values[:-1]
+
+        else:
+            raise ValueError("The given line is not a valid seisen line.")  
+
 ##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod

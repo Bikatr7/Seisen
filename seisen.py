@@ -211,7 +211,7 @@ class Seisen:
         displayOther = False
 
         ## uses the word rater to get the kana we are gonna test, as well as the display list, but that is not used here
-        kana_to_test, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
+        kana_to_test, _ = ScoreRater.get_kana_to_test(LocalHandler.kana)
 
         ## gets the total number of rounds and the number of correct rounds, then calculates the ratio
         total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
@@ -317,7 +317,7 @@ class Seisen:
         romaTriggered = False
 
         ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
-        vocab_to_test, display_list = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
+        vocab_to_test, _ = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
 
         ## gets the total number of rounds and the number of correct rounds, and calculates the ratio
         total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))

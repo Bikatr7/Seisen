@@ -382,3 +382,26 @@ class FileHandler():
                 return new_id
             
         return new_id
+    
+##--------------------start-of-perform_database_sanitization()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def perform_reversal_of_database_sanitization(value:str):
+
+        """
+
+        Performs a reversal of the database sanitization.
+
+        Parameters:
+        value (str) : The value to be reversed.
+
+        Returns:
+        value (str) : The reversed value.
+        
+        """
+
+        value = value.replace('*', ',')        ## Reversing comma to asterisk replacement
+        value = value.replace("\\'", "'")      ## Reversing escaping of single quotes
+        value = value.replace('\\\\', '\\')    ## Reversing double backslash to single backslash replacement
+
+        return value

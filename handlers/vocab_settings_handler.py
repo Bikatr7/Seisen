@@ -490,8 +490,8 @@ class VocabSettingsHandler():
         try:
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete a Synonym from.")
 
-        except:
-            print("Cancelled.")
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         
@@ -522,7 +522,7 @@ class VocabSettingsHandler():
         ## if it's the only Synonym, decline to delete
         if(len(target_vocab.testing_material_answer_all) <= 1):
             print("Cannot delete the only Synonym.\n")
-            time.sleep(Toolkit.sleep_constant)
+            Toolkit.pause_console()
             return
             
         for synonym_item in valid_synonyms:
@@ -535,7 +535,7 @@ class VocabSettingsHandler():
             target_synonym_id = Toolkit.user_confirm(print_string)
 
         except Toolkit.UserCancelError:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         
@@ -545,18 +545,26 @@ class VocabSettingsHandler():
             pass
 
         else:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
 
         Toolkit.pause_console()
         
-        target_synonym_id = int(target_synonym_id)
+        try:
+            target_synonym_id = int(target_synonym_id)
+
+        except:
+            target_synonym_id = -1
+
+        if(target_synonym_id not in [synonym.synonym_id for synonym in target_vocab.testing_material_answer_all]):
+            print("\nInvalid Synonym ID.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
 
         ## pops the matching Synonym in the handler if exists, will do nothing if id is invalid or incorrect
         for i, Synonym in enumerate(target_vocab.testing_material_answer_all):
 
-            
             if(Synonym.synonym_id == target_synonym_id):
 
                 ## if it's the main Synonym, change the main Synonym to the next one
@@ -568,6 +576,7 @@ class VocabSettingsHandler():
     
                         FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, 4, target_vocab.testing_material_answer_main)
                 
+                ## deletes the Synonym itself
                 target_vocab.testing_material_answer_all.pop(i)
 
         ## same thing but for the file

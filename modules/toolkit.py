@@ -105,7 +105,7 @@ class Toolkit():
 
             import msvcrt
 
-            user_input = str(msvcrt.getch().decode())
+            user_input = str(msvcrt.getch().decode()).lower()
             
         else:  ## Linux
 
@@ -295,7 +295,7 @@ class Toolkit():
         """
 
         confirmation = "Just To Confirm You Selected "
-        options = " (Press 1 To Confirm, 2 To Retry, z to skip, or q to quit)\n"
+        options = " (Press 1 To Confirm, 2 To Retry, z to skip, or q to quit):\n"
         output = ""
         user_input = ""
         

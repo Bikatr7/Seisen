@@ -9,16 +9,22 @@ Break core word definitions into multiple classes, due to the way Japanese is ab
 So like with how Alternative answers, and typos are built into Synonyms, and Typo classes respectively, we need to do the same with the core word definitions.
 Likely being
 > testing_material (basically the kanji writing): If it has multiple kanji, we need to account for this and have a class for it, will likely be structured the same way synonyms are.
+
 > romaji: Same as above, need to account for multiple romaji readings
+
 > furigana: Same as above, need to account for multiple furigana readings
 
 This was necessitate three new classes and three new file collections, which while doesn't seem a lot, is a LOT of fucking work and I'll have to redo all of remote again (and fucking with sql is annoying).
 
 With the new word class basically just being
 > word_id
+
 > testing_material_answer_main
+
 > incorrect_count
+
 > correct_count
+
 > likelihood
 
 if you exclude the other classes we need (can throw on is_kanji for vocab class)
@@ -32,7 +38,9 @@ A way to force kana reading to show if another vocab with the same kanji reading
 
 ## Backlog
 Redo All Documentation
+
 Add confirmations to a lot of core decisions, something old me liked to do was not tell you what was happening???
+
 REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
 
 ## After done

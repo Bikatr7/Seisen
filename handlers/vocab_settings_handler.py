@@ -1,5 +1,4 @@
 ## built-in modules
-from re import T
 import time
 
 ## custom modules
@@ -338,7 +337,7 @@ class VocabSettingsHandler():
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that contains the Synonym you want to edit.").strip()
 
         except Toolkit.UserCancelError:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         
@@ -369,31 +368,49 @@ class VocabSettingsHandler():
         for synonym_item in valid_synonyms:
             print(synonym_item)
 
-        target_synonym_id = int(input("\nPlease enter the Synonym ID for the Synonym you would like to edit:\n")) 
+        try:
+            target_synonym_id = int(input("Please enter the Synonym ID for the Synonym you would like to edit:\n")) 
+
+        except:
+            target_synonym_id = -1
+
+        if(target_synonym_id not in [synonym.synonym_id for synonym in target_vocab.testing_material_answer_all]):
+            print("\nInvalid Synonym ID.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
 
         ## gets the Synonym to edit, will do nothing if id is invalid or incorrect
         for i, Synonym in enumerate(target_vocab.testing_material_answer_all):
             
             if(Synonym.synonym_id == target_synonym_id):
+
                 try:
+
                     replace_value = Toolkit.user_confirm("What are you replacing " + Synonym.synonym_value + " with?")
-
-                    Synonym.synonym_value = replace_value
-
                     target_synonym_line = FileHandler.find_seisen_line(FileEnsurer.vocab_synonyms_path, 2, Synonym.synonym_id)
-
-                    FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_line, SYNONYM_VALUE_COLUMN_NUMBER, replace_value)
 
                     ## if the Synonym is the main answer, we also need to change the vocab definition
                     if(Synonym.synonym_value == target_vocab.testing_material_answer_main):
 
                         target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab_id)
 
+                        ## local handler change
+                        target_vocab.testing_material_answer_main = replace_value
+
+                        ## edits the vocab word in the file directly
                         FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, 4, replace_value)
+
+                    ## local handler change
+                    Synonym.synonym_value = replace_value
+
+                    ## edits the Synonym in the file
+                    FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_line, SYNONYM_VALUE_COLUMN_NUMBER, replace_value)
 
                     break
 
-                except:
+                except Toolkit.UserCancelError:
+                    print("\nCancelled.\n")
+                    time.sleep(Toolkit.sleep_constant)
                     return
 
 ##--------------------start-of-delete_vocab_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -78,25 +78,14 @@ class VocabSettingsHandler():
 
         ## gets vocab and Synonym details
         try:
-            testing_material = Toolkit.user_confirm("Please enter a vocab term")
-            romaji = Toolkit.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation")
-            definition = Toolkit.user_confirm("Please enter " + testing_material + "'s definition/main answer")
+            testing_material = Toolkit.user_confirm("Please enter a vocab term").strip()
+            romaji = Toolkit.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation").strip()
+            definition = Toolkit.user_confirm("Please enter " + testing_material + "'s definition/main answer").strip()
 
             synonym_value_list.append(definition)
 
-            while(input("Enter 1 if " + testing_material + " has any additional answers :\n") == "1"):
-                Toolkit.clear_stream()
-                synonym_value_list.append(Toolkit.user_confirm("Please enter " + testing_material + "'s additional answers"))
-
-            for character in testing_material:
-                if(character not in FileEnsurer.kana_filter):
-                    Logger.log_action(character + " is kanji")
-                    furigana = Toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling")
-                    is_kanji = True
-                    break
-        
         except Toolkit.UserCancelError:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         
@@ -107,9 +96,30 @@ class VocabSettingsHandler():
 
                 Toolkit.clear_console()
 
-                print(testing_material + " is in vocab already.\n")
-                time.sleep(Toolkit.sleep_constant)
+                ## find the line where
+                target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab.word_id)
+
+                print(testing_material + " is in vocab already. See line " + str(target_vocab_line) + " in vocab.seisen\n")
+                Toolkit.pause_console()
                 return
+            
+        try:
+
+            while(input("Enter 1 if " + testing_material + " has any additional answers :\n") == "1"):
+                Toolkit.clear_stream()
+                synonym_value_list.append(Toolkit.user_confirm("Please enter " + testing_material + "'s additional answers").strip())
+
+            for character in testing_material:
+                if(character not in FileEnsurer.kana_filter):
+                    Logger.log_action(character + " is kanji")
+                    furigana = Toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling").strip()
+                    is_kanji = True
+                    break
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
 
         ## inserts synonyms first
         for synonym_value in synonym_value_list:

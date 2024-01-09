@@ -90,16 +90,18 @@ class StorageSettingsHandler():
         if(last_backup_date == ""):
             last_backup_date = "(NEVER)"
 
-        confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no)\n"))
+        confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no):\n"))
 
         if(confirm == "1"):
             RemoteHandler.reset_local_storage()
             LocalHandler.load_words_from_local_storage()
 
-            Logger.log_action("Local has been reset with remote", output=True, omit_timestamp=True)
+            Toolkit.clear_console()
+
+            Logger.log_action("Local has been reset with remote.", output=True, omit_timestamp=True)
 
         else:
-            print("Cancelled\n")
+            print("Cancelled.\n")
 
 ##--------------------start-of-reset_local_and_remote_to_default()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

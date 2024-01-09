@@ -233,6 +233,8 @@ class RemoteHandler():
         RemoteHandler.create_remote_storage()
         RemoteHandler.fill_remote_storage()
 
+        Logger.log_action("Remote Storage Reset.")
+
         if(not omit_print):
             print("Remote Storage Reset.\n")
 

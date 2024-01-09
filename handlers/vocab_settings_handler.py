@@ -231,7 +231,7 @@ class VocabSettingsHandler():
         ATTRIBUTE_CORRECT_COUNT = 7
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to replace a value in.").strip()
 
         except Toolkit.UserCancelError:
             print("Cancelled.\n")
@@ -280,7 +280,7 @@ class VocabSettingsHandler():
         value_to_replace, index_to_replace = attributes_map[type_value]
 
         try:
-            replacement_value = Toolkit.user_confirm("What are you replacing " + str(value_to_replace) + " with?")
+            replacement_value = Toolkit.user_confirm("What are you replacing " + str(value_to_replace) + " with?").strip()
 
         except Toolkit.UserCancelError:
             print("Cancelled.\n")
@@ -292,8 +292,13 @@ class VocabSettingsHandler():
 
             synonym_id = next((synonym.synonym_id for synonym in target_vocab.testing_material_answer_all if synonym.synonym_value == value_to_replace))
 
+            target_synonym = next((synonym for synonym in target_vocab.testing_material_answer_all if synonym.synonym_value == value_to_replace))
             target_synonym_line = FileHandler.find_seisen_line(FileEnsurer.vocab_synonyms_path, 2, synonym_id)
 
+            ## local handler change
+            target_synonym.synonym_value = replacement_value
+
+            ## edits the Synonym in the file
             FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_line, 3, str(replacement_value))
         
         else:
@@ -301,11 +306,14 @@ class VocabSettingsHandler():
 
         target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab_id)
 
-        ## edits the vocab word
+        ## edits the vocab word in the file directly
         FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
-            
-        ## it's easier to just reload everything than for me to figure out how to juggle Synonym values in the handler if the user wants to fuck with definitions or answers
-        LocalHandler.load_words_from_local_storage()
+
+        ## Find the attribute name that corresponds to the (value_to_replace, index_to_replace) tuple
+        attribute_name = list(attributes_map.keys())[list(attributes_map.values()).index((value_to_replace, index_to_replace))]
+
+        ## Updates the value in the local handler directly
+        target_vocab.__dict__[attribute_name] = replacement_value
 
 ##--------------------start-of-replace_synonym_value()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

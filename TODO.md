@@ -32,17 +32,25 @@ With the new word class basically just being
 
 if you exclude the other classes we need (can throw on is_kanji for vocab class)
 
+## Things to look into
+Searcher refactor? Not really liking how it's implemented currently
+Getting rid of the requests requirement? Could be easy just to handle it myself.
+Properly test what happens if mysql.connector-python isn't installed, and add countermeasures to ensure Seisen can function without it.
 
 ## Architecture
 word_type needs to be fucking removed and extinguished. It's a vestigial part of the codebase that I somehow let remain back when i wanted to put everything into one file (lmao no)
 
 ## New features I'd like to add eventually
 A way to force kana reading to show if another vocab with the same kanji reading is in the deck (Likely gonna be annoying as hell once we add different readings)
+Look into bundling a JMdict/EDICT with Seisen to allow easy force to root verb
+Look into building a jisho query option into it
 
 ## Backlog
 Redo All Documentation
 
 Add confirmations to a lot of core decisions, something old me liked to do was not tell you what was happening???
+
+Make logging better
 
 REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
 

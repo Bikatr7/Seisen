@@ -396,8 +396,8 @@ class LocalHandler():
         backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
 
         if(len(valid_backups) == 0):
-            print("No backups found.")
-            time.sleep(1)
+            print("No backups found.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
 
         try: ## user confirm will throw an assertion error or a user cancel error if the user cancels.
@@ -420,4 +420,4 @@ class LocalHandler():
                 print("Invalid Backup.\n")
 
         except Toolkit.UserCancelError or AssertionError:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")

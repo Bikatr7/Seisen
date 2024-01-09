@@ -42,11 +42,6 @@ class Seisen:
     ## the current user guess
     current_user_guess:str = ""
 
-    ## to do
-    ## thoroughly test the vocab settings, cause they don't seem to work always, also add confirmation cause wtf?
-    ## need to add a way to have multiple romaji or furigana, and possibly the kanji itself likely the way csep was done 
-    ## look into a way to force kana reading showing if another vocab with the same kanji reading is in the deck
-
 ##--------------------start-of-handle_intensive_db_operations()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod

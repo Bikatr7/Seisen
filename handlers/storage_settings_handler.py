@@ -1,6 +1,5 @@
 ## built-in modules
 from datetime import datetime
-from distutils.log import Log
 
 import os
 import shutil
@@ -91,16 +90,18 @@ class StorageSettingsHandler():
         if(last_backup_date == ""):
             last_backup_date = "(NEVER)"
 
-        confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no)\n"))
+        confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no):\n"))
 
         if(confirm == "1"):
             RemoteHandler.reset_local_storage()
             LocalHandler.load_words_from_local_storage()
 
-            Logger.log_action("Local has been reset with remote", output=True, omit_timestamp=True)
+            Toolkit.clear_console()
+
+            Logger.log_action("Local has been reset with remote.", output=True, omit_timestamp=True)
 
         else:
-            print("Cancelled\n")
+            print("Cancelled.\n")
 
 ##--------------------start-of-reset_local_and_remote_to_default()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -245,7 +246,7 @@ class StorageSettingsHandler():
 
         for file_name in os.listdir(FileEnsurer.script_dir):
 
-            if(file_name.endswith(".seisen")): ## If the file is a backup file, then act accordingly
+            if(file_name.endswith(".seisen")): 
 
                 file_path = os.path.join(FileEnsurer.script_dir, file_name)
                 file_name = file_name.replace(".seisen", "")
@@ -265,7 +266,7 @@ class StorageSettingsHandler():
 
             return
 
-        try: ## user confirm will throw an assertion/user cancel error if the user wants to cancel the backup restore.
+        try: ## user confirm will throw a UserCancel error if the user wants to cancel the backup restore.
 
             deck_to_import = Toolkit.user_confirm(deck_to_import_prompt)
 
@@ -275,13 +276,13 @@ class StorageSettingsHandler():
                 target_index = valid_import_names.index(deck_to_import)
 
             else:
-                print("Invalid Deck\n")
-                time.sleep(1)
+                print("Invalid Deck Choice.\n")
+                time.sleep(Toolkit.sleep_constant)
                 return
 
         except Toolkit.UserCancelError:
-            Logger.log_action("Cancelled deck import", output=True, omit_timestamp=True)
-            time.sleep(2)
+            Logger.log_action("\nCancelled deck import", output=True, omit_timestamp=True)
+            time.sleep(Toolkit.sleep_constant)
             return
         
         with open(valid_import_paths[target_index], 'r', encoding="utf-8") as file:
@@ -313,6 +314,6 @@ class StorageSettingsHandler():
 
         LocalHandler.load_words_from_local_storage()
 
-        Logger.log_action("Imported the " + deck_to_import + " vocab deck", output=True, omit_timestamp=True)
+        Logger.log_action("Imported the " + deck_to_import + " vocab deck.", output=True, omit_timestamp=True)
 
         time.sleep(2)

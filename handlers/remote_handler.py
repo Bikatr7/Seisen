@@ -233,6 +233,8 @@ class RemoteHandler():
         RemoteHandler.create_remote_storage()
         RemoteHandler.fill_remote_storage()
 
+        Logger.log_action("Remote Storage Reset.")
+
         if(not omit_print):
             print("Remote Storage Reset.\n")
 
@@ -735,7 +737,7 @@ class RemoteHandler():
         ## we do not fuck w/ remote if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("restore remote storage backup") == False):
             print("No valid database connection skipping remote portion.\n")
-            time.sleep(1)
+            time.sleep(Toolkit.sleep_constant)
             return
 
         valid_backups = []
@@ -755,14 +757,14 @@ class RemoteHandler():
                 valid_backups.append(item)
                 backup_to_restore_prompt += item + "\n"
         
-        backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
+        backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible. (This resets local with a remote backup)"
 
         if(len(valid_backups) == 0):
             print("No backups found.")
             time.sleep(1)
             return
 
-        try: ## user confirm will throw an assertion/user confirm error if the user wants to cancel the backup restore.
+        try: ## user confirm will throw an UserConfirm error if the user wants to cancel the backup restore.
 
             backup_to_restore = Toolkit.user_confirm(backup_to_restore_prompt)
 
@@ -776,11 +778,13 @@ class RemoteHandler():
 
                 Logger.log_action("Restored the " + backup_to_restore + " remote backup.", omit_timestamp=True, output=True)
 
+                print("\nNote that if you wish to see changes in remote, you need to reset remote with local.\n")
+
             else:
-                print("Invalid Backup\n")
+                print("Invalid Backup.\n")
 
         except Toolkit.UserCancelError or AssertionError:
-            print("Canceled.")
+            print("Canceled.\n")
 
 ##--------------------start-of-local_remote_overwrite()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -78,9 +78,9 @@ class VocabSettingsHandler():
 
         ## gets vocab and Synonym details
         try:
-            testing_material = Toolkit.user_confirm("Please enter a vocab term").strip()
-            romaji = Toolkit.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation").strip()
-            definition = Toolkit.user_confirm("Please enter " + testing_material + "'s definition/main answer").strip()
+            testing_material = Toolkit.user_confirm("Please enter a vocab term.").strip()
+            romaji = Toolkit.user_confirm("Please enter " + testing_material + "'s romaji/pronunciation.").strip()
+            definition = Toolkit.user_confirm("Please enter " + testing_material + "'s definition/main answer.").strip()
 
             synonym_value_list.append(definition)
 
@@ -99,7 +99,7 @@ class VocabSettingsHandler():
                 ## find the line where
                 target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, 1, vocab.word_id)
 
-                print(testing_material + " is in vocab already. See line " + str(target_vocab_line) + " in vocab.seisen\n")
+                print(testing_material + " is in vocab already. See line " + str(target_vocab_line) + " in vocab.seisen.\n")
                 Toolkit.pause_console()
                 return
             
@@ -107,12 +107,12 @@ class VocabSettingsHandler():
 
             while(input("Enter 1 if " + testing_material + " has any additional answers :\n") == "1"):
                 Toolkit.clear_stream()
-                synonym_value_list.append(Toolkit.user_confirm("Please enter " + testing_material + "'s additional answers").strip())
+                synonym_value_list.append(Toolkit.user_confirm("Please enter " + testing_material + "'s additional answers.").strip())
 
             for character in testing_material:
                 if(character not in FileEnsurer.kana_filter):
                     Logger.log_action(character + " is kanji")
-                    furigana = Toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling").strip()
+                    furigana = Toolkit.user_confirm("Please enter " + testing_material + "'s furigana/kana spelling.").strip()
                     is_kanji = True
                     break
 
@@ -188,7 +188,7 @@ class VocabSettingsHandler():
             return
         
         except Toolkit.UserCancelError:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         
@@ -260,30 +260,36 @@ class VocabSettingsHandler():
 
         target_vocab = LocalHandler.vocab[target_index]
 
+        attribute_names = ["testing_material", "romaji", "furigana", "testing_material_answer_main", "incorrect_count", "correct_count"]
+
+        attributes_map = {
+            attribute_names[0]: (target_vocab.testing_material, ATTRIBUTE_TESTING_MATERIAL),
+            attribute_names[1]: (target_vocab.romaji, ATTRIBUTE_ROMAJI),
+            attribute_names[2]: (target_vocab.furigana, ATTRIBUTE_FURIGANA),
+            attribute_names[3]: (target_vocab.testing_material_answer_main, ATTRIBUTE_TESTING_MATERIAL_ANSWER_MAIN),
+            attribute_names[4]: (target_vocab.incorrect_count, ATTRIBUTE_INCORRECT_COUNT),
+            attribute_names[5]: (target_vocab.correct_count, ATTRIBUTE_CORRECT_COUNT)
+        }
+
         type_replacement_message = Searcher.get_vocab_print_item_from_id(vocab_id)
 
-        type_replacement_message += "\n\nWhat value would you like to replace? (1-6) (select index)"
+        readable_attributes_map = "\n".join(f"{i+1}: {value[0]}" for i, (key, value) in enumerate(attributes_map.items()))
+        type_replacement_message += "\n" + readable_attributes_map
+
+        type_replacement_message += "\n\nWhat value would you like to replace? (1-6) (select index):"
 
         print(type_replacement_message)
 
         type_value = Toolkit.input_check(4, Toolkit.get_single_key(), 6, type_replacement_message)
+        attribute_name = list(attributes_map.keys())[int(type_value) - 1]
 
-        attributes_map = {
-            "1": (target_vocab.testing_material, ATTRIBUTE_TESTING_MATERIAL),
-            "2": (target_vocab.romaji, ATTRIBUTE_ROMAJI),
-            "3": (target_vocab.furigana, ATTRIBUTE_FURIGANA),
-            "4": (target_vocab.testing_material_answer_main, ATTRIBUTE_TESTING_MATERIAL_ANSWER_MAIN),
-            "5": (target_vocab.incorrect_count, ATTRIBUTE_INCORRECT_COUNT),
-            "6": (target_vocab.correct_count, ATTRIBUTE_CORRECT_COUNT)
-        }
-
-        value_to_replace, index_to_replace = attributes_map[type_value]
+        value_to_replace, index_to_replace = attributes_map[attribute_name]
 
         try:
             replacement_value = Toolkit.user_confirm("What are you replacing " + str(value_to_replace) + " with?").strip()
 
         except Toolkit.UserCancelError:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return 
         
@@ -309,8 +315,8 @@ class VocabSettingsHandler():
         ## edits the vocab word in the file directly
         FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, index_to_replace, str(replacement_value))
 
-        ## Find the attribute name that corresponds to the (value_to_replace, index_to_replace) tuple
-        attribute_name = list(attributes_map.keys())[list(attributes_map.values()).index((value_to_replace, index_to_replace))]
+        if(attribute_name in ["incorrect_count", "correct_count"]):
+            replacement_value = int(replacement_value)
 
         ## Updates the value in the local handler directly
         target_vocab.__dict__[attribute_name] = replacement_value
@@ -329,10 +335,10 @@ class VocabSettingsHandler():
         SYNONYM_VALUE_COLUMN_NUMBER = 3
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that contains the Synonym you want to edit.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that contains the Synonym you want to edit.").strip()
 
         except Toolkit.UserCancelError:
-            print("Cancelled.")
+            print("Cancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         
@@ -352,7 +358,6 @@ class VocabSettingsHandler():
             print("Invalid id or term.\n")
             time.sleep(Toolkit.sleep_constant)
             return 
-        
         
         ## gets target vocab from local handler directly
         target_index = next((i for i, vocab in enumerate(LocalHandler.vocab) if vocab.word_id == vocab_id))

@@ -427,7 +427,9 @@ class VocabSettingsHandler():
         try:
             vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete.")
 
-        except:
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
             return
         
         if(vocab_term_or_id.isdigit() == True):
@@ -457,7 +459,7 @@ class VocabSettingsHandler():
             pass
 
         else:
-            print("Cancelled.")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
 

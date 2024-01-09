@@ -161,10 +161,10 @@ class VocabSettingsHandler():
         new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a Synonym/Answer to.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to add a Synonym/Answer to.").strip()
 
         except Toolkit.UserCancelError:
-            print("Cancelled.")
+            print("Cancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         
@@ -180,7 +180,7 @@ class VocabSettingsHandler():
             assert vocab_term != "-1"
             assert vocab_id != -1
 
-            synonym_value = Toolkit.user_confirm("Please enter the Synonym/Answer for " + vocab_term + " you would like to add.")
+            synonym_value = Toolkit.user_confirm("Please enter the Synonym/Answer for " + vocab_term + " you would like to add.").strip()
 
         except AssertionError:
             print("Invalid id or term.\n")

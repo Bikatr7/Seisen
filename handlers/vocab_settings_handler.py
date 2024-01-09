@@ -425,7 +425,7 @@ class VocabSettingsHandler():
         """ 
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete.").strip()
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -488,7 +488,7 @@ class VocabSettingsHandler():
         print_string = ""
 
         try:
-            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete a Synonym from.")
+            vocab_term_or_id = Toolkit.user_confirm("Please enter the vocab or vocab id that you want to delete a Synonym from.").strip()
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -604,10 +604,10 @@ class VocabSettingsHandler():
         match_found_synonym = False
 
         try:
-            search_term = Toolkit.user_confirm("Please enter search term.")
+            search_term = Toolkit.user_confirm("Please enter search term.").strip()
 
         except Toolkit.UserCancelError:
-            print("Cancelled.\n")
+            print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
         

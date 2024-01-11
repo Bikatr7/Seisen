@@ -189,6 +189,8 @@ class FileHandler():
 
         """
 
+        items_to_write = [str(item).replace(",","'COMMALITERAL'") for item in items_to_write]
+
         line = ",".join(str(item) for item in items_to_write)
         
         with open(seisen_file_path, "a+", encoding="utf-8") as file:
@@ -210,6 +212,8 @@ class FileHandler():
         value_to_replace_to (Any) : The value to replace the edit value with.
 
         """
+
+        value_to_replace_to = str(value_to_replace_to).replace(",","'COMMALITERAL'")
 
         with open(file_path, "r+", encoding="utf8") as file:
             lines = file.readlines()
@@ -264,6 +268,8 @@ class FileHandler():
                 build_string = ""
                 i+=1
             ii+=1
+
+        file_details = [str(detail).replace("'COMMALITERAL'",",") for detail in file_details]
             
         return file_details[column-1]
 
@@ -340,6 +346,8 @@ class FileHandler():
         """
 
         values = line.strip().split(',')
+
+        values = [str(value).replace("'COMMALITERAL'",",") for value in values]
 
         if(values[-1] == ''): 
             return values[:-1]

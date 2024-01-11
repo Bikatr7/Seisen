@@ -1,9 +1,6 @@
 ## Important
 Likely to grow and expand overtime.
 
-## Immediate
-Ensurer functionality of all current features, do not worry about new features. If old architecture is preventing functionality, move to backlog.
-
 ## Soon
 Database sanitization has been practically solved by using parameterized queries, but we still need to deal with .seisen files having commas written to them, which would be like super bad. So we need to sanitize the input of the .seisen files, should be fine just to do commas and replace them to a literal or so, perhaps literally just "comma" or something. 
 

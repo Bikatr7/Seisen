@@ -1,7 +1,7 @@
 ## Important
 Likely to grow and expand overtime.
 
-## Something I know I need to do but like nowhere near there yet
+## Next
 Break core word definitions into multiple classes, due to the way Japanese is absolute bullshit, we need to account for multiple different kanji, romaji, and furigana readings.
 So like with how Alternative answers, and typos are built into Synonyms, and Typo classes respectively, we need to do the same with the core word definitions.
 Likely being
@@ -26,13 +26,16 @@ With the new word class basically just being
 
 if you exclude the other classes we need (can throw on is_kanji for vocab class)
 
+
+
+## Architecture
+word_type needs to be fucking removed and extinguished. It's a vestigial part of the codebase that I somehow let remain back when i wanted to put everything into one file (lmao no)
+since spaces and other shit keep getting added to the timestamp files, we can just start deleting them instead lol
+
 ## Things to look into
 Searcher refactor? Not really liking how it's implemented currently
 Getting rid of the requests requirement? Could be easy just to handle it myself.
 Properly test what happens if mysql.connector-python isn't installed, and add countermeasures to ensure Seisen can function without it.
-
-## Architecture
-word_type needs to be fucking removed and extinguished. It's a vestigial part of the codebase that I somehow let remain back when i wanted to put everything into one file (lmao no)
 
 ## New features I'd like to add eventually
 A way to force kana reading to show if another vocab with the same kanji reading is in the deck (Likely gonna be annoying as hell once we add different readings)

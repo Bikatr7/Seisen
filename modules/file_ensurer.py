@@ -37,6 +37,7 @@ class FileEnsurer:
    vocab_dir = os.path.join(config_dir, "vocab")
    loop_data_dir = os.path.join(config_dir, "loopdata")
    archives_dir = os.path.join(config_dir, "archives")
+   settings_dir = os.path.join(config_dir, "settings")
 
    lib_dir = os.path.join(script_dir, "lib")
 
@@ -46,6 +47,12 @@ class FileEnsurer:
    local_archives_dir = os.path.join(archives_dir, "local")
    remote_archives_dir = os.path.join(archives_dir, "remote")
    local_remote_archives_dir = os.path.join(archives_dir, "localremote")
+
+   ##----------------------------------/
+
+   ## settings
+
+   do_sleep_after_test_path = os.path.join(settings_dir, "do_sleep_after_test.txt")
 
    ##----------------------------------/
 
@@ -118,9 +125,12 @@ class FileEnsurer:
 
    ##----------------------------------/
 
-   ## kana filter
+   ## kana filter and misc
 
    kana_filter = []
+
+   ## whether to sleep after a test or a pause
+   do_sleep_after_test:bool
 
 ##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -160,6 +170,8 @@ class FileEnsurer:
 
       FileEnsurer.ensure_archive_files()
 
+      FileEnsurer.ensure_settings_files()
+
       with open(FileEnsurer.all_kana_path, 'r', encoding="utf-8") as file:
          FileEnsurer.kana_filter = file.readlines()
 
@@ -183,6 +195,7 @@ class FileEnsurer:
       FileHandler.standard_create_directory(FileEnsurer.vocab_dir)
       FileHandler.standard_create_directory(FileEnsurer.remote_lib_dir)
       FileHandler.standard_create_directory(FileEnsurer.archives_dir)
+      FileHandler.standard_create_directory(FileEnsurer.settings_dir)
                
 ##--------------------start-of-ensure_loop_data_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -262,7 +275,7 @@ class FileEnsurer:
       """
 
       ## needs to be false so that connectionHandler.py will attempt to connect, only if it doesn't exist
-      FileHandler.modified_create_file(FileEnsurer.has_database_connection_failed_path, "false")
+      FileHandler.modified_create_file(FileEnsurer.has_database_connection_failed_path, "False")
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -354,6 +367,21 @@ class FileEnsurer:
 
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_path)
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_overwrite_accurate_path)
+
+##--------------------start-of-ensure_settings_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+   @staticmethod
+   def ensure_settings_files() -> None:
+
+      """
+      
+      Ensures that the files located in the settings directory are present and ready to be used.
+
+      """
+
+      FileHandler.modified_create_file(FileEnsurer.do_sleep_after_test_path, "True")
+
+      FileEnsurer.do_sleep_after_test = FileHandler.string_to_bool(FileHandler.standard_read_file(FileEnsurer.do_sleep_after_test_path))
 
 ##--------------------start-of-create_archive_dir()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

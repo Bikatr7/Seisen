@@ -422,3 +422,22 @@ class FileHandler():
                 return new_id
             
         return new_id
+    
+##-------------------start-of-string_to_bool()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def string_to_bool(string:str) -> bool:
+
+        """
+
+        Converts a string to a boolean.
+
+        Parameters:
+        string (str) : The string to be converted.
+
+        Returns:
+        (bool) : The converted boolean.
+
+        """
+
+        return string.lower() in ['true', '1', 'yes', 'y', 't']

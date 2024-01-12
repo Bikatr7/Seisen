@@ -1,3 +1,6 @@
+## built-in modules
+import time
+
 ## custom modules
 from handlers.local_handler import LocalHandler
 from handlers.connection_handler import ConnectionHandler
@@ -35,11 +38,11 @@ class SettingsHandler():
 
         Toolkit.clear_console()
 
-        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Set Up New Database\n"
+        settings_menu_message = "1. Vocab Settings\n2. Storage Settings\n3. See Score Ratings\n4. Set Up New Database\n5. Toggle Sleep/Pause after Kana/Vocab Test\n"
 
         print(settings_menu_message)
 
-        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 4, settings_menu_message)
+        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 5, settings_menu_message)
 
         if(pathing == "1"): 
             VocabSettingsHandler.change_vocab_settings()
@@ -52,6 +55,9 @@ class SettingsHandler():
 
         elif(pathing == "4"):
             SettingsHandler.set_up_new_database()
+
+        elif(pathing == "5"):
+            SettingsHandler.toggle_sleep_after_test()
 
         ## if no valid option is selected, exit back to seisen.
         else:
@@ -112,4 +118,49 @@ class SettingsHandler():
         ConnectionHandler.initialize_database_connection()
 
         Logger.log_action("Database connection has been reset...")
+
+##--------------------start-of-toggle_sleep_after_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def toggle_sleep_after_test() -> None:
+
+        """
+        
+        Toggles whether or not the user will sleep after a test.
+
+        """  
+        
+        Toolkit.clear_console()
+
+        with open(FileEnsurer.do_sleep_after_test_path, "r") as file:
+            sleep_after_test = file.read()
+
+        if(sleep_after_test == "True"):
+            message_to_print = "Sleep after test is currently enabled. Would you like to switch to pause after test? (1 for yes, 2 for no)\n"
+
+        else:
+            message_to_print = "Pause after test is currently enabled. Would you like to switch to sleep after test? (1 for yes, 2 for no)\n"
+
+        print(message_to_print)
+
+        if(Toolkit.input_check(4, Toolkit.get_single_key(), 2, message_to_print) == "1"):
+            if(sleep_after_test == "True"):
+                FileHandler.standard_overwrite_file(FileEnsurer.do_sleep_after_test_path, "False")
+                FileEnsurer.do_sleep_after_test = False
+
+                print("Switched to pause after test.\n")
+                time.sleep(Toolkit.sleep_constant)
+
+            else:
+                FileHandler.standard_overwrite_file(FileEnsurer.do_sleep_after_test_path, "True")
+                FileEnsurer.do_sleep_after_test = True
+
+                print("Switched to sleep after test.\n")
+                time.sleep(Toolkit.sleep_constant)
+
+        else:
+
+            print("Did not switch.\n")
+            time.sleep(Toolkit.sleep_constant)
+
 

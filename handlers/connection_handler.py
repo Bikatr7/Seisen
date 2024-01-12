@@ -75,7 +75,7 @@ class ConnectionHandler():
         cursor = None
         
         with open(FileEnsurer.has_database_connection_failed_path, "r+", encoding="utf-8") as file:
-            if(file.read().strip() == "true"):
+            if(file.read().strip() == "True"):
                 Logger.log_action("Database connection has failed previously.... skipping connection initialization", output=True)
                 return connection, cursor
 
@@ -165,7 +165,7 @@ class ConnectionHandler():
 
         """
 
-        FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "true", omit=False)
+        FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "True", omit=False)
             
         Logger.log_action("Remote Connection Failed.", output=True, omit_timestamp=True)
 
@@ -184,7 +184,7 @@ class ConnectionHandler():
 
         """
 
-        FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "false", omit=False)
+        FileHandler.standard_overwrite_file(FileEnsurer.has_database_connection_failed_path, "False", omit=False)
 
         if(not faux):
             Logger.log_action("Remote Connection Succeeded.", output=True, omit_timestamp=True)

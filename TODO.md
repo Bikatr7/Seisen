@@ -33,6 +33,7 @@ if you exclude the other classes we need (can throw on is_kanji for vocab class)
 
 ## Architecture
 word_type needs to be fucking removed and extinguished. It's a vestigial part of the codebase that I somehow let remain back when i wanted to put everything into one file (lmao no)
+Change an absent furigana value to no longer exist, all kana/vocab will have a furigana and we can just filter these out later by comparing if the furigana matches the testing material itself
 since spaces and other shit keep getting added to the timestamp files, we can just start deleting them instead lol
 
 ## Things to look into

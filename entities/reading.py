@@ -2,7 +2,7 @@ class Reading:
 
     """
     
-    The Reading Class represents how a Kana/Vocab can be read.
+    The Reading Class represents how a Word can be read.
 
     Contains both the furigana and the romaji.
 

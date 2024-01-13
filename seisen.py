@@ -61,7 +61,58 @@ class Seisen:
 
         ## overwrites remote with local
         RemoteHandler.local_remote_overwrite()
+
+##--------------------start-of-attempt_auto_repair()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def attempt_auto_resolve() -> None:
+
+        """
+
+        Attempts to auto repair local storage.
+
+        First will get confirmation from the user, if not given it will exit.
+
+        If given, it will attempt to reset local storage with remote storage, if that fails it will attempt to reset local and remote storage to default.
+
+        If even that fails, it will ask the user to contact the developer and exit.
+
+        """
+
+        if(input("Error loading local storage, would you like Seisen to attempt to fix this? (1 for yes, 2 for no) ") == "1"):
+
         
+            Logger.log_action("Error loading local storage, resetting local storage with remote storage.",output=True, omit_timestamp=True)
+
+            try:
+                StorageSettingsHandler.reset_local_with_remote(hard_reset=True)
+
+                LocalHandler.load_words_from_local_storage()
+
+            except:
+                Logger.log_action("Error resetting local storage, resetting local and remote storage to default.",output=True, omit_timestamp=True)
+
+                try:
+
+                    StorageSettingsHandler.reset_local_and_remote_to_default()
+
+                except:
+
+                    print("Cannot resolve automatically, please contact the developer.")
+
+                    Toolkit.pause_console()
+
+                    FileEnsurer.exit_seisen()
+
+            Toolkit.pause_console()
+
+        else:
+
+            print("Please correct discrepancies in local storage yourself, or contact the developer.")
+            Toolkit.pause_console()
+
+            FileEnsurer.exit_seisen()
+
 ##--------------------start-of-bootup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -90,19 +141,7 @@ class Seisen:
 
         except:
 
-            Logger.log_action("Error loading local storage, resetting local storage with remote storage.",output=True, omit_timestamp=True)
-
-            try:
-                StorageSettingsHandler.reset_local_with_remote()
-
-                LocalHandler.load_words_from_local_storage()
-
-            except:
-                Logger.log_action("Error resetting local storage, resetting local and remote storage to default.",output=True, omit_timestamp=True)
-
-                StorageSettingsHandler.reset_local_and_remote_to_default()
-
-            Toolkit.pause_console()
+            Seisen.attempt_auto_resolve()
 
         os.system("title " + "Seisen")
 

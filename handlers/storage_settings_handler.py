@@ -70,7 +70,7 @@ class StorageSettingsHandler():
 ##--------------------start-of-reset_local_with_remote()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def reset_local_with_remote() -> None:
+    def reset_local_with_remote(hard_reset:bool=False) -> None:
 
         """
 
@@ -90,7 +90,11 @@ class StorageSettingsHandler():
         if(last_backup_date == ""):
             last_backup_date = "(NEVER)"
 
-        confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no):\n"))
+        if(hard_reset):
+            confirm = "1"
+        
+        else:
+            confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no):\n"))
 
         if(confirm == "1"):
             RemoteHandler.reset_local_storage()

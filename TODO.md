@@ -2,18 +2,20 @@
 Likely to grow and expand overtime.
 
 ## Next (Breakdown of word/vocab classes and large architecture changes)
-Break core word definitions into multiple classes, due to the way Japanese is absolute bullshit, we need to account for multiple different kanji, romaji, and furigana readings.
-So like with how Alternative answers, and typos are built into Synonyms, and Typo classes respectively, we need to do the same with the core word definitions.
-Likely being
-> testing_material (basically the kanji writing): If it has multiple kanji, we need to account for this and have a class for it, will likely be structured the same way synonyms are.
+~~Break core word definitions into multiple classes, due to the way Japanese is absolute bullshit, we need to account for multiple different kanji, romaji, and furigana readings.~~
+~~So like with how Alternative answers, and typos are built into Synonyms, and Typo classes respectively, we need to do the same with the core word definitions.~~
+~~Likely being:~~
+> ~~testing_material (basically the kanji writing): If it has multiple kanji, we need to account for this and have a class for it, will likely be structured the same way synonyms are.~~
 
-> romaji: Same as above, need to account for multiple romaji readings
+> ~~romaji: Same as above, need to account for multiple romaji readings~~
 
-> furigana: Same as above, need to account for multiple furigana readings
+> ~~furigana: Same as above, need to account for multiple furigana readings~~
 
 They have to exist independently of each other cause the number of testing_material, romaji, and furigana readings for a vocab/word will not always be the same, and we need to account for this.
 
-This will necessitate three new classes and three new file collections, which while doesn't seem a lot, is a LOT of fucking work and I'll have to redo all of remote again (and fucking with sql is annoying).
+This will necessitate two new classes and two new file collections, which while doesn't seem a lot, is a LOT of fucking work and I'll have to redo all of remote again (and fucking with sql is annoying).
+
+Gonna combine furigana and romaji into one class called reading
 
 With the new word class basically just being
 > word_id

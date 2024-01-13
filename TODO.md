@@ -11,7 +11,9 @@ Likely being
 
 > furigana: Same as above, need to account for multiple furigana readings
 
-This was necessitate three new classes and three new file collections, which while doesn't seem a lot, is a LOT of fucking work and I'll have to redo all of remote again (and fucking with sql is annoying).
+They have to exist independently of each other cause the number of testing_material, romaji, and furigana readings for a vocab/word will not always be the same, and we need to account for this.
+
+This will necessitate three new classes and three new file collections, which while doesn't seem a lot, is a LOT of fucking work and I'll have to redo all of remote again (and fucking with sql is annoying).
 
 With the new word class basically just being
 > word_id

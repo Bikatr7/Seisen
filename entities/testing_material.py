@@ -4,7 +4,7 @@ class TestingMaterial:
 
     """
     
-    The TestingMaterial class represents the testing material of a Word and Vocab.
+    The TestingMaterial class represents the testing material of a Word.
 
     Typically will be kanji, but in the case of Words or Vocab with no Kanji, it will be kana.
 
@@ -29,5 +29,7 @@ class TestingMaterial:
         """
 
         self.word_id:int = incoming_word_id
+
         self.testing_material_id:int = incoming_testing_material_id
+        
         self.testing_material_value:str = incoming_testing_material_value

@@ -30,13 +30,13 @@ class Word:
 
         """
         
-        Initializes the Word class.
+        Initializes a new Word object.
 
         Parameters:
         incoming_id (int) : The ID of the Word.
-        incoming_testing_material (typing.List[TestingMaterial]) : The TestingMaterial of the Word.
+        incoming_testing_material (list - TestingMaterial) : The TestingMaterial of the Word.
         incoming_testing_material_answer_main (str) : The dictionary answer to the TestingMaterial of the Word.
-        incoming_testing_material_answer_main_all (typing.List[Synonym]) : The list of all answers to the TestingMaterial of the Word.
+        incoming_testing_material_answer_main_all (list - Synonym) : The list of all answers to the TestingMaterial of the Word.
         incoming_incorrect_count (int) : The number of times the user answered the TestingMaterial incorrectly.
         incoming_correct_count (int) : The number of times the user answered the TestingMaterial correctly.
 

@@ -1,7 +1,7 @@
 ## Important
 Likely to grow and expand overtime.
 
-## Next
+## Next (Breakdown of word/vocab classes and large architecture changes)
 Break core word definitions into multiple classes, due to the way Japanese is absolute bullshit, we need to account for multiple different kanji, romaji, and furigana readings.
 So like with how Alternative answers, and typos are built into Synonyms, and Typo classes respectively, we need to do the same with the core word definitions.
 Likely being
@@ -25,7 +25,6 @@ With the new word class basically just being
 > likelihood
 
 if you exclude the other classes we need (can throw on is_kanji for vocab class)
-
 
 
 ## Architecture

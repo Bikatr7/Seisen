@@ -32,11 +32,15 @@ class RemoteHandler():
     kana_typos = []
     kana_incorrect_typos = []
     kana_synonyms = []
+    kana_readings = []
+    kana_testing_material = []
 
     vocab = []
     vocab_typos = []
     vocab_incorrect_typos = []
     vocab_synonyms = []
+    vocab_readings = []
+    vocab_testing_material = []
 
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -59,6 +63,8 @@ class RemoteHandler():
             FileHandler.clear_file(FileEnsurer.kana_synonyms_path)
             FileHandler.clear_file(FileEnsurer.kana_typos_path)
             FileHandler.clear_file(FileEnsurer.kana_incorrect_typos_path)
+            FileHandler.clear_file(FileEnsurer.kana_readings_path)
+            FileHandler.clear_file(FileEnsurer.kana_testing_material_path)
 
         ##----------------------------------------------------------------clear_local_vocab()----------------------------------------------------------------
 
@@ -68,6 +74,8 @@ class RemoteHandler():
             FileHandler.clear_file(FileEnsurer.vocab_synonyms_path)
             FileHandler.clear_file(FileEnsurer.vocab_typos_path)
             FileHandler.clear_file(FileEnsurer.vocab_incorrect_typos_path)
+            FileHandler.clear_file(FileEnsurer.vocab_readings_path)
+            FileHandler.clear_file(FileEnsurer.vocab_testing_material_path)
 
         ##----------------------------------------------------------------reset_kana_relations()----------------------------------------------------------------
 
@@ -251,6 +259,14 @@ class RemoteHandler():
 
         ##----------------------------------------------------------------kana----------------------------------------------------------------
 
+        delete_kana_readings_query = """
+        drop table if exists kana_readings;
+        """
+
+        delete_kana_testing_material_query = """
+        drop table if exists kana_testing_material;
+        """
+
         delete_kana_synonyms_query = """
         drop table if exists kana_synonyms;
         """
@@ -268,6 +284,14 @@ class RemoteHandler():
         """
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
+
+        delete_vocab_readings_query = """
+        drop table if exists vocab_readings;
+        """
+
+        delete_vocab_testing_material_query = """
+        drop table if exists vocab_testing_material;
+        """
 
         delete_vocab_synonyms_query = """
         drop table if exists vocab_synonyms;
@@ -287,11 +311,15 @@ class RemoteHandler():
 
         ##----------------------------------------------------------------calls----------------------------------------------------------------
 
+        ConnectionHandler.execute_query(delete_kana_readings_query)
+        ConnectionHandler.execute_query(delete_kana_testing_material_query)
         ConnectionHandler.execute_query(delete_kana_synonyms_query)
         ConnectionHandler.execute_query(delete_kana_typos_query)
         ConnectionHandler.execute_query(delete_kana_incorrect_typos_query)
         ConnectionHandler.execute_query(delete_kana_query)
 
+        ConnectionHandler.execute_query(delete_vocab_readings_query)
+        ConnectionHandler.execute_query(delete_vocab_testing_material_query)
         ConnectionHandler.execute_query(delete_vocab_synonyms_query)
         ConnectionHandler.execute_query(delete_vocab_typos_query)
         ConnectionHandler.execute_query(delete_vocab_incorrect_typos_query)
@@ -313,11 +341,8 @@ class RemoteHandler():
         create_kana_query = """
         CREATE TABLE kana (
             id INT NOT NULL,
-            kana VARCHAR(255) NOT NULL,
-            reading VARCHAR(255) NOT NULL,
             incorrect_count INT NOT NULL,
             correct_count INT NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
             PRIMARY KEY (id)
         );
         """
@@ -326,8 +351,7 @@ class RemoteHandler():
         CREATE TABLE kana_typos (
             kana_id INT NOT NULL,
             typo_id INT NOT NULL,
-            typo_value VARCHAR(255) NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
+            typo VARCHAR(1024) NOT NULL,
             PRIMARY KEY (typo_id),
             FOREIGN KEY (kana_id) REFERENCES kana(id)
         );
@@ -337,8 +361,7 @@ class RemoteHandler():
         CREATE TABLE kana_incorrect_typos (
             kana_id INT NOT NULL,
             incorrect_typo_id INT NOT NULL,
-            incorrect_typo_value VARCHAR(255) NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
+            incorrect_typo VARCHAR(1024) NOT NULL,
             PRIMARY KEY (incorrect_typo_id),
             FOREIGN KEY (kana_id) REFERENCES kana(id)
         );
@@ -348,9 +371,29 @@ class RemoteHandler():
         CREATE TABLE kana_synonyms (
             kana_id INT NOT NULL,
             kana_synonym_id INT NOT NULL,
-            kana_synonym_value VARCHAR(255) NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
+            synonym VARCHAR(1024) NOT NULL,
             PRIMARY KEY (kana_synonym_id),
+            FOREIGN KEY (kana_id) REFERENCES kana(id)
+        );
+        """
+
+        create_kana_testing_material_query = """
+        CREATE TABLE kana_testing_material (
+            kana_id INT NOT NULL,
+            testing_material_id INT NOT NULL,
+            testing_material VARCHAR(1024) NOT NULL,
+            PRIMARY KEY (testing_material_id),
+            FOREIGN KEY (kana_id) REFERENCES kana(id)
+        );
+        """
+
+        create_kana_readings_query = """
+        CREATE TABLE kana_readings (
+            kana_id INT NOT NULL,
+            reading_id INT NOT NULL,
+            furigana VARCHAR(1024) NOT NULL,
+            romaji VARCHAR(1024) NOT NULL,
+            PRIMARY KEY (reading_id),
             FOREIGN KEY (kana_id) REFERENCES kana(id)
         );
         """
@@ -360,14 +403,8 @@ class RemoteHandler():
         create_vocab_query = """
         CREATE TABLE vocab (
             id INT NOT NULL,
-            vocab VARCHAR(255) NOT NULL,
-            romaji VARCHAR(255) NOT NULL,
-            answer VARCHAR(255) NOT NULL,
-            furigana VARCHAR(255) NOT NULL,
             incorrect_count INT NOT NULL,
             correct_count INT NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
-            is_kanji TINYINT(1) NOT NULL,
             PRIMARY KEY (id)
         );
 
@@ -376,8 +413,7 @@ class RemoteHandler():
         CREATE TABLE vocab_typos (
             vocab_id INT NOT NULL,
             typo_id INT NOT NULL,
-            typo_value VARCHAR(255) NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
+            typo VARCHAR(1024) NOT NULL,
             PRIMARY KEY (typo_id),
             FOREIGN KEY (vocab_id) REFERENCES vocab(id)
         );
@@ -387,8 +423,7 @@ class RemoteHandler():
         CREATE TABLE vocab_incorrect_typos (
             vocab_id INT NOT NULL,
             incorrect_typo_id INT NOT NULL,
-            incorrect_typo_value VARCHAR(255) NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
+            incorrect_typo VARCHAR(1024) NOT NULL,
             PRIMARY KEY (incorrect_typo_id),
             FOREIGN KEY (vocab_id) REFERENCES vocab(id)
         );
@@ -398,9 +433,29 @@ class RemoteHandler():
         CREATE TABLE vocab_synonyms (
             vocab_id INT NOT NULL,
             vocab_synonym_id INT NOT NULL,
-            vocab_synonym_value VARCHAR(255) NOT NULL,
-            word_type VARCHAR(255) NOT NULL,
+            synonym VARCHAR(1024) NOT NULL,
             PRIMARY KEY (vocab_synonym_id),
+            FOREIGN KEY (vocab_id) REFERENCES vocab(id)
+        );
+        """
+
+        create_vocab_testing_material_query = """
+        CREATE TABLE vocab_testing_material (
+            vocab_id INT NOT NULL,
+            testing_material_id INT NOT NULL,
+            testing_material VARCHAR(1024) NOT NULL,
+            PRIMARY KEY (testing_material_id),
+            FOREIGN KEY (vocab_id) REFERENCES vocab(id)
+        );
+        """
+
+        create_vocab_readings_query = """
+        CREATE TABLE vocab_readings (
+            vocab_id INT NOT NULL,
+            reading_id INT NOT NULL,
+            furigana VARCHAR(1024) NOT NULL,
+            romaji VARCHAR(1024) NOT NULL,
+            PRIMARY KEY (reading_id),
             FOREIGN KEY (vocab_id) REFERENCES vocab(id)
         );
         """
@@ -411,11 +466,15 @@ class RemoteHandler():
         ConnectionHandler.execute_query(create_kana_typos_query)
         ConnectionHandler.execute_query(create_kana_incorrect_typos_query)
         ConnectionHandler.execute_query(create_kana_synonyms_query)
+        ConnectionHandler.execute_query(create_kana_testing_material_query)
+        ConnectionHandler.execute_query(create_kana_readings_query)
 
         ConnectionHandler.execute_query(create_vocab_query)
         ConnectionHandler.execute_query(create_vocab_typos_query)
         ConnectionHandler.execute_query(create_vocab_incorrect_typos_query)
         ConnectionHandler.execute_query(create_vocab_synonym_query)
+        ConnectionHandler.execute_query(create_vocab_testing_material_query)
+        ConnectionHandler.execute_query(create_vocab_readings_query)
 
 ##--------------------start-of-fill_remote_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -1001,16 +1001,20 @@ class RemoteHandler():
         
         with open(FileEnsurer.last_local_remote_backup_path, 'r+', encoding="utf-8") as file:
 
-            last_backup_date = str(file.read().strip()).strip('\x00').strip()
+            strips_to_perform = [" ", "\n", "\x00"]
+
+            last_backup_date = file.read()
+
+            last_backup_date = [last_backup_date.strip(strip) for strip in strips_to_perform]
         
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
-            if(last_backup_date != current_day):
+        if(last_backup_date != current_day):
 
-                Logger.log_action("Overwriting Remote with Local.")
-        
-                file.truncate(0)
-                
-                file.write(current_day.strip('\x00').strip())
+            Logger.log_action("Overwriting Remote with Local.")
+    
+            FileHandler.standard_delete_file(FileEnsurer.last_local_remote_backup_path)
 
-                RemoteHandler.reset_remote_storage(omit_print=True)
+            FileHandler.modified_create_file(FileEnsurer.last_local_remote_backup_path, current_day)
+
+            RemoteHandler.reset_remote_storage(omit_print=True)

@@ -21,7 +21,7 @@ class Vocab(Word):
     def __init__(self, 
                 incoming_id:int, 
                 incoming_testing_material:typing.List[TestingMaterial],
-                incoming_testing_material_answer_main:str, 
+                incoming_testing_material_answer_main:Synonym,
                 incoming_testing_material_answer_main_all:typing.List[Synonym], 
                 incoming_incorrect_count:int,
                 incoming_correct_count:int, 
@@ -35,7 +35,7 @@ class Vocab(Word):
         Parameters:
         incoming_id (int) : The ID of the Vocab.
         incoming_testing_material (list - TestingMaterial) : The TestingMaterial of the Vocab.
-        incoming_testing_material_answer_main (str) : The dictionary answer to the TestingMaterial of the Vocab.
+        incoming_testing_material_answer_main (Synonym) : The answer to the TestingMaterial of the Vocab, i.e. the dictionary definition of the Vocab.
         incoming_testing_material_answer_main_all (list - Synonym) : The list of all answers to the TestingMaterial of the Vocab.
         incoming_incorrect_count (int) : The number of times the user answered the TestingMaterial incorrectly.
         incoming_correct_count (int) : The number of times the user answered the TestingMaterial correctly.
@@ -45,8 +45,6 @@ class Vocab(Word):
         
         """
         
-        super().__init__(incoming_id, incoming_testing_material, incoming_testing_material_answer_main, incoming_testing_material_answer_main_all, incoming_incorrect_count, incoming_correct_count)
-
-        self.reading:Reading = incoming_reading
+        super().__init__(incoming_id, incoming_testing_material, incoming_testing_material_answer_main, incoming_testing_material_answer_main_all, incoming_reading, incoming_incorrect_count, incoming_correct_count)
 
         self.is_kanji:bool = incoming_kanji_flag

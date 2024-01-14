@@ -354,6 +354,27 @@ class FileHandler():
 
         else:
             raise ValueError("The given line is not a valid seisen line.")  
+        
+##-------------------start-of-is_file_damaged()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def is_file_damaged(file_path:str) -> bool:
+
+        """
+
+        Checks if a file is damaged.
+
+        File is considered damaged if it doesn't exist or if it is empty.
+
+        Parameters:
+        file_path (str) : The path to the file to check.
+
+        Returns:
+        (bool) : Whether the file is damaged.
+
+        """
+
+        return not os.path.exists(file_path) or os.path.getsize(file_path) == 0
 
 ##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

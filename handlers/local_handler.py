@@ -15,7 +15,9 @@ from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 from entities.word import Word as kana_blueprint
 from entities.vocab import Vocab as vocab_blueprint
 
+from entities.reading import Reading as reading_blueprint
 from entities.synonym import Synonym as synonym_blueprint
+from entities.testing_material import TestingMaterial as testing_material_blueprint
 
 from modules.toolkit import Toolkit
 from modules.logger import Logger
@@ -27,6 +29,8 @@ if(typing.TYPE_CHECKING): ## Used for cheating the circular import issue that oc
     from entities.synonym import Synonym
     from entities.vocab import Vocab
     from entities.word import Word as Kana
+    from entities.reading import Reading
+    from entities.testing_material import TestingMaterial
 
 class LocalHandler():
 
@@ -36,15 +40,11 @@ class LocalHandler():
 
     """
 
-    KANA_WORD_TYPE = "kana"
-
-    VOCAB_WORD_TYPE = "vocab"
-
     kana: typing.List[Kana] = [] 
 
     vocab: typing.List[Vocab] = []
 
-##--------------------start-of-load_words_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-load_words_from_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
     def load_words_from_local_storage() -> None:
@@ -54,6 +54,24 @@ class LocalHandler():
         Loads all words from local storage into the program.
 
         """
+
+        ##----------------------------------------------------------------get_kana_readings()----------------------------------------------------------------
+
+        def get_kana_readings(kana_id:str) -> typing.List[Reading]:
+
+            readings = []
+
+            with open(FileEnsurer.kana_readings_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    reading_kana_id, reading_id, furigana, romaji = FileHandler.extract_seisen_line_values(line)
+
+                    if(reading_kana_id == kana_id):
+
+                        readings.append(reading_blueprint(int(reading_kana_id), int(reading_id), furigana, romaji))
+
+            return readings
 
         ##----------------------------------------------------------------get_kana_synonyms()----------------------------------------------------------------
 
@@ -65,13 +83,32 @@ class LocalHandler():
 
                 for line in file:
 
-                    synonym_kana_id, synonym_id, synonym_value, synonym_word_type = FileHandler.extract_seisen_line_values(line)
+                    synonym_kana_id, synonym_id, synonym_value = FileHandler.extract_seisen_line_values(line)
                     
                     if(synonym_kana_id == kana_id):
 
-                        synonyms.append(synonym_blueprint(int(synonym_kana_id), int(synonym_id), synonym_value, synonym_word_type))
+                        synonyms.append(synonym_blueprint(int(synonym_kana_id), int(synonym_id), synonym_value))
 
             return synonyms
+        
+        ##----------------------------------------------------------------get_kana_testing_material()----------------------------------------------------------------
+
+        def get_kana_testing_material(kana_id:str) -> typing.List[TestingMaterial]:
+
+            testing_material = []
+
+            with open(FileEnsurer.kana_testing_material_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    testing_material_kana_id, testing_material_id, testing_material_value = FileHandler.extract_seisen_line_values(line)
+
+                    if(testing_material_kana_id == kana_id):
+                            
+                        testing_material.append(testing_material_blueprint(int(testing_material_kana_id), int(testing_material_id), testing_material_value))
+
+
+            return testing_material
 
         ##----------------------------------------------------------------load_kana()----------------------------------------------------------------
 
@@ -81,41 +118,41 @@ class LocalHandler():
 
                 for line in file:
 
-                    kana_id, testing_material, testing_material_answer_main, incorrect_count, correct_count = FileHandler.extract_seisen_line_values(line)
+                    kana_id, incorrect_count, correct_count = FileHandler.extract_seisen_line_values(line)
 
+                    readings = get_kana_readings(kana_id)
                     synonyms = get_kana_synonyms(kana_id)
+                    testing_material = get_kana_testing_material(kana_id)
 
-                    LocalHandler.kana.append(kana_blueprint(int(kana_id), testing_material, testing_material_answer_main, synonyms, int(incorrect_count), int(correct_count)))
+                    LocalHandler.kana.append(kana_blueprint(int(kana_id), testing_material, synonyms[0], synonyms, readings, int(incorrect_count), int(correct_count)))
 
-                    Logger.log_action("Loaded Kana - (" + kana_id + "," + testing_material + "," + testing_material_answer_main + "," + incorrect_count + "," + correct_count + ") with the following synonyms - " + str([synonym.synonym_value for synonym in synonyms]))
-
+                    Logger.log_action("Loaded Kana - (" + kana_id + "," + incorrect_count + "," + correct_count + ") with the following readings - " + str([reading.furigana_value for reading in readings]) + " and the following synonyms - " + str([synonym.synonym_value for synonym in synonyms]) + " and the following testing material - " + str([testing_material.testing_material_value for testing_material in testing_material]))
+            
             with open(FileEnsurer.kana_typos_path, "r", encoding="utf-8") as file:
 
                 for line in file:
                     
-                    typo_kana_id, typo_id, typo_value, typo_word_type = FileHandler.extract_seisen_line_values(line)
+                    typo_kana_id, typo_id, typo_value = FileHandler.extract_seisen_line_values(line)
 
-                    if(typo_word_type == LocalHandler.KANA_WORD_TYPE):
-                        for kana in LocalHandler.kana:
-                            if(kana.word_id == int(typo_kana_id)):
+                    for kana in LocalHandler.kana:
+                        if(kana.word_id == int(typo_kana_id)):
 
-                                kana.typos.append(typo_blueprint(int(typo_kana_id), int(typo_id), typo_value, typo_word_type))
+                            kana.typos.append(typo_blueprint(int(typo_kana_id), int(typo_id), typo_value))
 
-                                Logger.log_action("Loaded Kana Typo - (" + typo_kana_id + "," + typo_id + "," + typo_value + "," + typo_word_type + ")")
+                            Logger.log_action("Loaded Kana Typo - (" + typo_kana_id + "," + typo_id + "," + typo_value + ",)")
             
             with open(FileEnsurer.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
 
                 for line in file:
     
-                    incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value, incorrect_typo_word_type = FileHandler.extract_seisen_line_values(line)
+                    incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value = FileHandler.extract_seisen_line_values(line)
 
-                    if(incorrect_typo_word_type == LocalHandler.KANA_WORD_TYPE):
-                        for kana in LocalHandler.kana:
-                            if(kana.word_id == int(incorrect_typo_kana_id)):
+                    for kana in LocalHandler.kana:
+                        if(kana.word_id == int(incorrect_typo_kana_id)):
 
-                                kana.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_kana_id), int(incorrect_typo_id), incorrect_typo_value, incorrect_typo_word_type))
+                            kana.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_kana_id), int(incorrect_typo_id), incorrect_typo_value))
 
-                                Logger.log_action("Loaded Kana Incorrect Typo - (" + incorrect_typo_kana_id + "," + incorrect_typo_id + "," + incorrect_typo_value + "," + incorrect_typo_word_type + ")")
+                            Logger.log_action("Loaded Kana Incorrect Typo - (" + incorrect_typo_kana_id + "," + incorrect_typo_id + "," + incorrect_typo_value + ",)")
 
         ##----------------------------------------------------------------get_vocab_synonym_values()----------------------------------------------------------------
 

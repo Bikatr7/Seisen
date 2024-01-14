@@ -37,6 +37,212 @@ class RemoteHandler():
 
     vocab:typing.List[Vocab] = []
 
+##--------------------start-of-assemble_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def assemble_kana() -> None:
+
+        """
+
+        Assembles the kana objects from the remote storage.
+
+        """
+
+        RemoteHandler.kana.clear()
+
+        kana_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from kana")
+        typo_kana_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select kana_id, typo_id, typo from kana_typos")
+        incorrect_typo_kana_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select kana_id, incorrect_typo_id, incorrect_typo from kana_incorrect_typos") 
+        synonym_kana_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select kana_id, kana_synonym_id, synonym from kana_synonyms")
+        testing_material_kana_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select kana_id, testing_material_id, testing_material from kana_testing_material")
+        reading_kana_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select kana_id, reading_id, furigana, romaji from kana_readings")
+
+        ## construct typos
+        kana_typos = [typo_blueprint(int(typo_kana_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_kana_id_list))]
+        kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_kana_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_kana_id_list))]
+
+        ## construct synonyms, testing_materials, and readings
+        kana_synonyms = [synonym_blueprint(int(synonym_kana_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_kana_id_list))]
+        kana_testing_materials = [testing_material_blueprint(int(testing_material_kana_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_kana_id_list))]
+        kana_readings = [reading_blueprint(int(reading_kana_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_kana_id_list))]
+
+        ## construct kana dummy objects
+        for i in range(len(kana_id_list)):
+            kana = kana_blueprint(int(kana_id_list[i]), [kana_testing_materials[0]], kana_synonyms[0], [kana_synonyms[0]], [kana_readings[0]], int(incorrect_count_list[i]), int(correct_count_list[i])) 
+            RemoteHandler.kana.append(kana)
+
+        ## fill kana objects with their respective synonyms, testing_materials, and readings
+        for kana in RemoteHandler.kana:
+
+            is_first_synonym:bool = True
+
+            for synonym in kana_synonyms:
+                if(synonym.word_id == kana.word_id):
+
+                    if(is_first_synonym):
+                        kana.testing_material_answer_main = synonym
+                        is_first_synonym = False
+                    
+                    kana.testing_material_answer_all.append(synonym)
+                    Logger.log_action("Added Synonym " + synonym.synonym_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
+
+            for testing_material in kana_testing_materials:
+                if(testing_material.word_id == kana.word_id):
+                    kana.testing_material.append(testing_material)
+                    Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Kana " + str(kana.word_id))
+
+            for reading in kana_readings:
+                if(reading.word_id == kana.word_id):
+                    kana.readings.append(reading)
+                    Logger.log_action("Added Reading " + reading.furigana_value+ " to Kana " + kana.testing_material_answer_main.synonym_value)
+
+        ## fill kana objects with their respective typos, incorrect typos
+        for kana in RemoteHandler.kana:
+            for typo in kana_typos:
+                if(typo.word_id == kana.word_id):
+                    kana.typos.append(typo)
+                    Logger.log_action("Added Typo " + typo.typo_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
+
+            for incorrect_typo in kana_incorrect_typos:
+                if(incorrect_typo.word_id == kana.word_id):
+                    kana.incorrect_typos.append(incorrect_typo)
+                    Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
+
+##--------------------start-of-write_kana_to_disk()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def write_kana_to_disk(kana_path:str, kana_testing_material_path:str, kana_synonyms_path:str, kana_readings_path:str, kana_typos_path:str, kana_incorrect_typos_path:str) -> None:
+
+        ## apply changes to local storage
+        for kana in RemoteHandler.kana:
+
+            kana_values = [kana.word_id, kana.incorrect_count, kana.correct_count]
+            
+            for testing_material in kana.testing_material:
+                testing_material_values = [testing_material.word_id, testing_material.testing_material_id, testing_material.testing_material_value]
+                FileHandler.write_seisen_line(kana_testing_material_path, testing_material_values)
+
+            for synonym in kana.testing_material_answer_all:
+                synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value]
+                FileHandler.write_seisen_line(kana_synonyms_path, synonym_values)
+
+            for reading in kana.readings:
+                reading_values = [reading.word_id, reading.reading_id, reading.furigana_value, reading.romaji_value]
+                FileHandler.write_seisen_line(kana_readings_path, reading_values)
+
+            for typo in kana.typos:
+                typo_values = [typo.word_id, typo.typo_id, typo.typo_value]
+                FileHandler.write_seisen_line(kana_typos_path, typo_values)
+
+            for incorrect_typo in kana.incorrect_typos:
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value]
+                FileHandler.write_seisen_line(kana_incorrect_typos_path, incorrect_typo_values)
+
+            FileHandler.write_seisen_line(kana_path, kana_values)
+
+##--------------------start-of-assemble_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                    
+    @staticmethod
+    def assemble_vocab() -> None:
+
+        """
+
+        Assembles the vocab objects from the remote storage.
+
+        """
+
+        RemoteHandler.vocab.clear()
+
+        vocab_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from vocab")
+        typo_vocab_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, typo_id, typo from vocab_typos")
+        incorrect_typo_vocab_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, incorrect_typo_id, incorrect_typo from vocab_incorrect_typos")
+        synonym_vocab_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select vocab_id, vocab_synonym_id, synonym from vocab_synonyms")
+        testing_material_vocab_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select vocab_id, testing_material_id, testing_material from vocab_testing_material")
+        reading_vocab_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select vocab_id, reading_id, furigana, romaji from vocab_readings")
+
+        ## construct typos
+        vocab_typos = [typo_blueprint(int(typo_vocab_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_vocab_id_list))]
+        vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_vocab_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_vocab_id_list))]
+
+        ## construct synonyms, testing_materials, and readings
+        vocab_synonyms = [synonym_blueprint(int(synonym_vocab_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_vocab_id_list))]
+        vocab_testing_materials = [testing_material_blueprint(int(testing_material_vocab_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_vocab_id_list))]
+        vocab_readings = [reading_blueprint(int(reading_vocab_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_vocab_id_list))]
+
+        ## construct vocab dummy objects
+        for i in range(len(vocab_id_list)):
+            vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], vocab_synonyms[0], [vocab_synonyms[0]], [vocab_readings[0]], int(incorrect_count_list[i]), int(correct_count_list[i])) 
+            RemoteHandler.vocab.append(vocab)
+
+        ## fill vocab objects with their respective synonyms, testing_materials, and readings
+        for vocab in RemoteHandler.vocab:
+
+            is_first_synonym:bool = True
+
+            for synonym in vocab_synonyms:
+                if(synonym.word_id == vocab.word_id):
+
+                    if(is_first_synonym):
+                        vocab.testing_material_answer_main = synonym
+                        is_first_synonym = False
+                    
+                    vocab.testing_material_answer_all.append(synonym)
+                    Logger.log_action("Added Synonym " + synonym.synonym_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+
+            for testing_material in vocab_testing_materials:
+                if(testing_material.word_id == vocab.word_id):
+                    vocab.testing_material.append(testing_material)
+                    Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Vocab " + str(vocab.word_id))
+
+            for reading in vocab_readings:
+                if(reading.word_id == vocab.word_id):
+                    vocab.readings.append(reading)
+                    Logger.log_action("Added Reading " + reading.furigana_value+ " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+
+        ## fill vocab objects with their respective typos, incorrect typos
+        for vocab in RemoteHandler.vocab:
+            for typo in vocab_typos:
+                if(typo.word_id == vocab.word_id):
+                    vocab.typos.append(typo)
+                    Logger.log_action("Added Typo " + typo.typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+
+            for incorrect_typo in vocab_incorrect_typos:
+                if(incorrect_typo.word_id == vocab.word_id):
+                    vocab.incorrect_typos.append(incorrect_typo)
+                    Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+
+##--------------------start-of-write_vocab_to_disk()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                    
+    @staticmethod
+    def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_synonyms_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str) -> None:
+
+        ## apply changes to local storage
+        for vocab in RemoteHandler.vocab:
+
+            vocab_values = [vocab.word_id, vocab.incorrect_count, vocab.correct_count]
+            
+            for testing_material in vocab.testing_material:
+                testing_material_values = [testing_material.word_id, testing_material.testing_material_id, testing_material.testing_material_value]
+                FileHandler.write_seisen_line(vocab_testing_material_path, testing_material_values)
+
+            for synonym in vocab.testing_material_answer_all:
+                synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value]
+                FileHandler.write_seisen_line(vocab_synonyms_path, synonym_values)
+
+            for reading in vocab.readings:
+                reading_values = [reading.word_id, reading.reading_id, reading.furigana_value, reading.romaji_value]
+                FileHandler.write_seisen_line(vocab_readings_path, reading_values)
+
+            for typo in vocab.typos:
+                typo_values = [typo.word_id, typo.typo_id, typo.typo_value]
+                FileHandler.write_seisen_line(vocab_typos_path, typo_values)
+
+            for incorrect_typo in vocab.incorrect_typos:
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value]
+                FileHandler.write_seisen_line(vocab_incorrect_typos_path, incorrect_typo_values)
+
+            FileHandler.write_seisen_line(vocab_path, vocab_values)
+
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -76,156 +282,27 @@ class RemoteHandler():
 
         def reset_kana_relations() -> None:
             
-            RemoteHandler.kana.clear()
+            RemoteHandler.assemble_kana()
 
-            kana_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from kana")
-            typo_kana_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select kana_id, typo_id, typo from kana_typos")
-            incorrect_typo_kana_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select kana_id, incorrect_typo_id, incorrect_typo from kana_incorrect_typos") 
-            synonym_kana_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select kana_id, kana_synonym_id, synonym from kana_synonyms")
-            testing_material_kana_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select kana_id, testing_material_id, testing_material from kana_testing_material")
-            reading_kana_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select kana_id, reading_id, furigana, romaji from kana_readings")
-
-            ## construct typos
-            kana_typos = [typo_blueprint(int(typo_kana_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_kana_id_list))]
-            kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_kana_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_kana_id_list))]
-
-            ## construct synonyms, testing_materials, and readings
-            kana_synonyms = [synonym_blueprint(int(synonym_kana_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_kana_id_list))]
-            kana_testing_materials = [testing_material_blueprint(int(testing_material_kana_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_kana_id_list))]
-            kana_readings = [reading_blueprint(int(reading_kana_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_kana_id_list))]
-
-            ## construct kana dummy objects
-            for i in range(len(kana_id_list)):
-                kana = kana_blueprint(int(kana_id_list[i]), [kana_testing_materials[0]], kana_synonyms[0], [kana_synonyms[0]], [kana_readings[0]], int(incorrect_count_list[i]), int(correct_count_list[i])) 
-                RemoteHandler.kana.append(kana)
-
-            ## fill kana objects with their respective synonyms, testing_materials, and readings
-            for kana in RemoteHandler.kana:
-
-                is_first_synonym:bool = True
-
-                for synonym in kana_synonyms:
-                    if(synonym.word_id == kana.word_id):
-
-                        if(is_first_synonym):
-                            kana.testing_material_answer_main = synonym
-                            is_first_synonym = False
-                        
-                        kana.testing_material_answer_all.append(synonym)
-                        Logger.log_action("Added Synonym " + synonym.synonym_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
-
-                for testing_material in kana_testing_materials:
-                    if(testing_material.word_id == kana.word_id):
-                        kana.testing_material.append(testing_material)
-                        Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Kana " + str(kana.word_id))
-
-                for reading in kana_readings:
-                    if(reading.word_id == kana.word_id):
-                        kana.readings.append(reading)
-                        Logger.log_action("Added Reading " + reading.furigana_value+ " to Kana " + kana.testing_material_answer_main.synonym_value)
-
-            ## fill kana objects with their respective typos, incorrect typos
-            for kana in RemoteHandler.kana:
-                for typo in kana_typos:
-                    if(typo.word_id == kana.word_id):
-                        kana.typos.append(typo)
-                        Logger.log_action("Added Typo " + typo.typo_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
-
-                for incorrect_typo in kana_incorrect_typos:
-                    if(incorrect_typo.word_id == kana.word_id):
-                        kana.incorrect_typos.append(incorrect_typo)
-                        Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
-
-            ## apply changes to local storage
-            for kana in RemoteHandler.kana:
-
-                kana_values = [kana.word_id, kana.incorrect_count, kana.correct_count]
-                
-                for testing_material in kana.testing_material:
-                    testing_material_values = [testing_material.word_id, testing_material.testing_material_id, testing_material.testing_material_value]
-                    FileHandler.write_seisen_line(FileEnsurer.kana_testing_material_path, testing_material_values)
-
-                for synonym in kana.testing_material_answer_all:
-                    synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value]
-                    FileHandler.write_seisen_line(FileEnsurer.kana_synonyms_path, synonym_values)
-
-                for reading in kana.readings:
-                    reading_values = [reading.word_id, reading.reading_id, reading.furigana_value, reading.romaji_value]
-                    FileHandler.write_seisen_line(FileEnsurer.kana_readings_path, reading_values)
-
-                for typo in kana.typos:
-                    typo_values = [typo.word_id, typo.typo_id, typo.typo_value]
-                    FileHandler.write_seisen_line(FileEnsurer.kana_typos_path, typo_values)
-
-                for incorrect_typo in kana.incorrect_typos:
-                    incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value]
-                    FileHandler.write_seisen_line(FileEnsurer.kana_incorrect_typos_path, incorrect_typo_values)
-
-                FileHandler.write_seisen_line(FileEnsurer.kana_path, kana_values)
+            RemoteHandler.write_kana_to_disk(FileEnsurer.kana_path, 
+                                            FileEnsurer.kana_testing_material_path,
+                                            FileEnsurer.kana_synonyms_path,
+                                            FileEnsurer.kana_readings_path,
+                                            FileEnsurer.kana_typos_path,
+                                            FileEnsurer.kana_incorrect_typos_path)
 
         ##----------------------------------------------------------------reset_vocab_relations()----------------------------------------------------------------
                 
         def reset_vocab_relations() -> None:
 
-            RemoteHandler.vocab.clear()
+            RemoteHandler.assemble_vocab()
 
-            vocab_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from vocab")
-            typo_vocab_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, typo_id, typo from vocab_typos")
-            incorrect_typo_vocab_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, incorrect_typo_id, incorrect_typo from vocab_incorrect_typos")
-            synonym_vocab_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select vocab_id, vocab_synonym_id, synonym from vocab_synonyms")
-            testing_material_vocab_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select vocab_id, testing_material_id, testing_material from vocab_testing_material")
-            reading_vocab_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select vocab_id, reading_id, furigana, romaji from vocab_readings")
-
-            ## construct typos
-            vocab_typos = [typo_blueprint(int(typo_vocab_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_vocab_id_list))]
-            vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_vocab_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_vocab_id_list))]
-
-            ## construct synonyms, testing_materials, and readings
-            vocab_synonyms = [synonym_blueprint(int(synonym_vocab_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_vocab_id_list))]
-            vocab_testing_materials = [testing_material_blueprint(int(testing_material_vocab_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_vocab_id_list))]
-            vocab_readings = [reading_blueprint(int(reading_vocab_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_vocab_id_list))]
-
-            ## construct vocab dummy objects
-            for i in range(len(vocab_id_list)):
-                vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], vocab_synonyms[0], [vocab_synonyms[0]], [vocab_readings[0]], int(incorrect_count_list[i]), int(correct_count_list[i])) 
-                RemoteHandler.vocab.append(vocab)
-
-            ## fill vocab objects with their respective synonyms, testing_materials, and readings
-            for vocab in RemoteHandler.vocab:
-
-                is_first_synonym:bool = True
-
-                for synonym in vocab_synonyms:
-                    if(synonym.word_id == vocab.word_id):
-
-                        if(is_first_synonym):
-                            vocab.testing_material_answer_main = synonym
-                            is_first_synonym = False
-                        
-                        vocab.testing_material_answer_all.append(synonym)
-                        Logger.log_action("Added Synonym " + synonym.synonym_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
-
-                for testing_material in vocab_testing_materials:
-                    if(testing_material.word_id == vocab.word_id):
-                        vocab.testing_material.append(testing_material)
-                        Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Vocab " + str(vocab.word_id))
-
-                for reading in vocab_readings:
-                    if(reading.word_id == vocab.word_id):
-                        vocab.readings.append(reading)
-                        Logger.log_action("Added Reading " + reading.furigana_value+ " to Vocab " + vocab.testing_material_answer_main.synonym_value)
-
-            ## fill vocab objects with their respective typos, incorrect typos
-            for vocab in RemoteHandler.vocab:
-                for typo in vocab_typos:
-                    if(typo.word_id == vocab.word_id):
-                        vocab.typos.append(typo)
-                        Logger.log_action("Added Typo " + typo.typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
-
-                for incorrect_typo in vocab_incorrect_typos:
-                    if(incorrect_typo.word_id == vocab.word_id):
-                        vocab.incorrect_typos.append(incorrect_typo)
-                        Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+            RemoteHandler.write_vocab_to_disk(FileEnsurer.vocab_path, 
+                                            FileEnsurer.vocab_testing_material_path,
+                                            FileEnsurer.vocab_synonyms_path,
+                                            FileEnsurer.vocab_readings_path,
+                                            FileEnsurer.vocab_typos_path,
+                                            FileEnsurer.vocab_incorrect_typos_path)
 
         ##----------------------------------------------------------------main()----------------------------------------------------------------
 
@@ -769,43 +846,25 @@ class RemoteHandler():
 
         def backup_kana() -> None:
 
-            list_of_all_accepted_answers = []
-
             remote_archive_kana_dir = os.path.join(archive_dir, "kana")
 
             remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.seisen")
             remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana_typos.seisen")
             remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana_incorrect_typos.seisen")
             remote_archive_kana_synonyms_path = os.path.join(remote_archive_kana_dir, "kana_synonyms.seisen")
+            remote_archive_kana_readings_path = os.path.join(remote_archive_kana_dir, "kana_readings.seisen")
+            remote_archive_kana_testing_material_path = os.path.join(remote_archive_kana_dir, "kana_testing_material.seisen")
 
             FileHandler.standard_create_directory(remote_archive_kana_dir)
 
-            word_id_list, kana_list, reading_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, kana, reading, incorrect_count, correct_count from kana")
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = ConnectionHandler.read_multi_column_query("select word_type, typo_id, kana_id, typo_value from kana_typos")
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = ConnectionHandler.read_multi_column_query("select word_type, incorrect_typo_id, kana_id, incorrect_typo_value from kana_incorrect_typos")
-            kana_id_list, synonym_id_list, synonym_value_list, word_type_list = ConnectionHandler.read_multi_column_query("select kana_id, kana_synonym_id, kana_synonym_value, word_type from kana_synonyms")
+            RemoteHandler.assemble_kana()
 
-            RemoteHandler.kana = [kana_blueprint(int(word_id_list[i]), kana_list[i], reading_list[i], list_of_all_accepted_answers, int(incorrect_count_list[i]), int(correct_count_list[i])) for i in range(len(word_id_list))]
-            RemoteHandler.kana_typos = [typo_blueprint(int(typo_word_id_list[i]), int(typo_id_list[i]), typo_value_list[i], typo_word_type_list[i]) for i in range(len(typo_word_id_list))]
-            RemoteHandler.kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_word_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_value_list[i], incorrect_typo_word_type_list[i]) for i in range(len(incorrect_typo_word_id_list))]
-            RemoteHandler.kana_synonyms = [synonym_blueprint(int(kana_id_list[i]), int(synonym_id_list[i]), synonym_value_list[i], word_type_list[i]) for i in range(len(kana_id_list))]
-
-            ## backups local storage file-wise
-            for kana in RemoteHandler.kana:
-                word_values = [kana.word_id, kana.testing_material, kana.testing_material_answer_main, kana.incorrect_count, kana.correct_count]
-                FileHandler.write_seisen_line(remote_archive_kana_path, word_values)
-
-            for typo in RemoteHandler.kana_typos:
-                typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                FileHandler.write_seisen_line(remote_archive_kana_typos_path, typo_values)
-
-            for incorrect_typo in RemoteHandler.kana_incorrect_typos:
-                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                FileHandler.write_seisen_line(remote_archive_kana_incorrect_typos_path, incorrect_typo_values)
-
-            for synonym in RemoteHandler.kana_synonyms:
-                synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value, synonym.word_type]
-                FileHandler.write_seisen_line(remote_archive_kana_synonyms_path, synonym_values)
+            RemoteHandler.write_kana_to_disk(remote_archive_kana_path, 
+                                            remote_archive_kana_typos_path,
+                                            remote_archive_kana_incorrect_typos_path,
+                                            remote_archive_kana_synonyms_path,
+                                            remote_archive_kana_readings_path,
+                                            remote_archive_kana_testing_material_path)
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
@@ -817,35 +876,19 @@ class RemoteHandler():
             remote_archive_vocab_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_typos.seisen")
             remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_incorrect_typos.seisen")
             remote_archive_vocab_synonyms_path = os.path.join(remote_archive_vocab_dir, "vocab_synonyms.seisen")
+            remote_archive_vocab_readings_path = os.path.join(remote_archive_vocab_dir, "vocab_readings.seisen")
+            remote_archive_vocab_testing_material_path = os.path.join(remote_archive_vocab_dir, "vocab_testing_material.seisen")
 
             FileHandler.standard_create_directory(remote_archive_vocab_dir)
 
-            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, incorrect_count_list, correct_count_list, is_kanji_list = ConnectionHandler.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, is_kanji from vocab")
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = ConnectionHandler.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = ConnectionHandler.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
-            vocab_id_list, synonym_id_list, synonym_value_list, word_type_list = ConnectionHandler.read_multi_column_query("select vocab_id, vocab_synonym_id, vocab_synonym_value, word_type from vocab_synonyms")
+            RemoteHandler.assemble_vocab()
 
-            RemoteHandler.vocab = [vocab_blueprint(int(word_id_list[i]), vocab_list[i], romaji_list[i], answer_list[i], [], furigana_list[i], int(incorrect_count_list[i]), int(correct_count_list[i]), bool(is_kanji_list[i])) for i in range(len(word_id_list))]
-            RemoteHandler.vocab_typos = [typo_blueprint(int(typo_word_id_list[i]), int(typo_id_list[i]), typo_value_list[i], typo_word_type_list[i]) for i in range(len(typo_word_id_list))]
-            RemoteHandler.vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_word_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_value_list[i], incorrect_typo_word_type_list[i]) for i in range(len(incorrect_typo_word_id_list))]
-            RemoteHandler.vocab_synonyms = [synonym_blueprint(int(vocab_id_list[i]), int(synonym_id_list[i]), synonym_value_list[i], word_type_list[i]) for i in range(len(vocab_id_list))]
-
-            ## resets local storage file-wise
-            for vocab in RemoteHandler.vocab:
-                vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
-                FileHandler.write_seisen_line(remote_archive_vocab_path, vocab_values)
-
-            for typo in RemoteHandler.vocab_typos:
-                typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                FileHandler.write_seisen_line(remote_archive_vocab_typos_path, typo_values)
-
-            for incorrect_typo in RemoteHandler.vocab_incorrect_typos:
-                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                FileHandler.write_seisen_line(remote_archive_vocab_incorrect_typos_path, incorrect_typo_values)
-
-            for synonym in RemoteHandler.vocab_synonyms:
-                synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value, synonym.word_type]
-                FileHandler.write_seisen_line(remote_archive_vocab_synonyms_path, synonym_values)
+            RemoteHandler.write_vocab_to_disk(remote_archive_vocab_path, 
+                                            remote_archive_vocab_typos_path,
+                                            remote_archive_vocab_incorrect_typos_path,
+                                            remote_archive_vocab_synonyms_path,
+                                            remote_archive_vocab_readings_path,
+                                            remote_archive_vocab_testing_material_path)
 
         ##----------------------------------------------------------------main----------------------------------------------------------------
 
@@ -855,25 +898,28 @@ class RemoteHandler():
         
         with open(FileEnsurer.last_remote_backup_path, 'r+', encoding="utf-8") as file:
 
-            last_backup_date = str(file.read().strip())
-            last_backup_date = last_backup_date.strip('\x00')
+            strips_to_perform = [" ", "\n", "\x00"]
+
+            last_backup_date = file.read()
+
+            last_backup_date = [last_backup_date.strip(strip) for strip in strips_to_perform]
         
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
-            if(last_backup_date != current_day):
-                archive_dir = FileEnsurer.create_archive_dir(1) 
+        if(last_backup_date != current_day):
+            archive_dir = FileEnsurer.create_archive_dir(1) 
 
-                Logger.log_action("Created Daily Remote Backup.")
+            Logger.log_action("Created Daily Remote Backup.")
 
-                file.truncate(0)
+            FileHandler.standard_delete_file(FileEnsurer.last_remote_backup_path)
 
-                file.write(current_day.strip('\x00').strip(" ").strip())
+            FileHandler.modified_create_file(FileEnsurer.last_remote_backup_path, current_day)
 
-                backup_kana()
-                backup_vocab()
+            backup_kana()
+            backup_vocab()
 
-            else:
-                pass
+        else:
+            pass
   
 ##--------------------start-of-restore_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

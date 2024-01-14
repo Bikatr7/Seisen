@@ -28,8 +28,6 @@ Likely to grow and expand overtime.
 
 > ~~likelihood~~
 
-~~if you exclude the other classes we need (can throw on is_kanji for vocab class)~~
-
 
 ## Architecture
 word_type needs to be fucking removed and extinguished. It's a vestigial part of the codebase that I somehow let remain back when i wanted to put everything into one file (lmao no)

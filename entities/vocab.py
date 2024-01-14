@@ -25,8 +25,7 @@ class Vocab(Word):
                 incoming_testing_material_answer_main_all:typing.List[Synonym], 
                 incoming_incorrect_count:int,
                 incoming_correct_count:int, 
-                incoming_readings:typing.List[Reading],
-                incoming_kanji_flag:bool) -> None:
+                incoming_readings:typing.List[Reading]) -> None:
 
         """
         
@@ -40,11 +39,7 @@ class Vocab(Word):
         incoming_incorrect_count (int) : The number of times the user answered the TestingMaterial incorrectly.
         incoming_correct_count (int) : The number of times the user answered the TestingMaterial correctly.
         incoming_reading (Reading) : The Reading of the Vocab.
-        incoming_kanji_flag (bool) : Whether or not the Vocab contains kanji.
 
-        
         """
         
         super().__init__(incoming_id, incoming_testing_material, incoming_testing_material_answer_main, incoming_testing_material_answer_main_all, incoming_readings, incoming_incorrect_count, incoming_correct_count)
-
-        self.is_kanji:bool = incoming_kanji_flag

@@ -133,6 +133,24 @@ class FileHandler():
         
         Logger.log_action(file_path + " was overwritten with the following content: " + content_to_write)
 
+##--------------------start-of-standard_delete_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def standard_delete_file(file_path:str) -> None:
+
+        """
+
+        Deletes a file, as well as logs what was deleted.
+
+        Parameters:
+        file_path (str) : Path to the file to be deleted.
+
+        """
+
+        if(os.path.exists(file_path)):
+            os.remove(file_path)
+            Logger.log_action(file_path + " was deleted.")
+
 ##--------------------start-of-clear_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod

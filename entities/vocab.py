@@ -25,7 +25,7 @@ class Vocab(Word):
                 incoming_testing_material_answer_main_all:typing.List[Synonym], 
                 incoming_incorrect_count:int,
                 incoming_correct_count:int, 
-                incoming_reading:Reading,
+                incoming_readings:typing.List[Reading],
                 incoming_kanji_flag:bool) -> None:
 
         """
@@ -45,6 +45,6 @@ class Vocab(Word):
         
         """
         
-        super().__init__(incoming_id, incoming_testing_material, incoming_testing_material_answer_main, incoming_testing_material_answer_main_all, incoming_reading, incoming_incorrect_count, incoming_correct_count)
+        super().__init__(incoming_id, incoming_testing_material, incoming_testing_material_answer_main, incoming_testing_material_answer_main_all, incoming_readings, incoming_incorrect_count, incoming_correct_count)
 
         self.is_kanji:bool = incoming_kanji_flag

@@ -26,7 +26,7 @@ class Word:
                 incoming_testing_material:typing.List[TestingMaterial],
                 incoming_testing_material_answer_main:Synonym,
                 incoming_testing_material_answer_main_all:typing.List[Synonym], 
-                incoming_reading:Reading,
+                incoming_reading:typing.List[Reading],
                 incoming_incorrect_count:int,
                 incoming_correct_count:int) -> None:
 
@@ -56,7 +56,7 @@ class Word:
         self.testing_material_answer_all:typing.List[Synonym] = incoming_testing_material_answer_main_all
 
         ## the Reading of the Word
-        self.reading:Reading = incoming_reading
+        self.reading:typing.List[Reading] = incoming_reading
 
         ## the number of times the user answer to testing_material was incorrect
         self.incorrect_count:int = incoming_incorrect_count

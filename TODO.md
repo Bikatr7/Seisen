@@ -51,11 +51,6 @@ Searcher refactor? Not really liking how it's implemented currently
 Getting rid of the requests requirement? Could be easy just to handle it myself.
 Properly test what happens if mysql.connector-python isn't installed, and add countermeasures to ensure Seisen can function without it.
 
-## New features I'd like to add eventually
-A way to force kana reading to show if another vocab with the same kanji reading is in the deck (Likely gonna be annoying as hell once we add different readings)
-Look into bundling a JMdict/EDICT with Seisen to allow easy force to root verb
-Look into building a jisho query option into it
-
 ## Backlog
 Redo All Documentation
 
@@ -67,3 +62,11 @@ REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
 
 ## After done
 Make a deck converter to whatever the new decks end up looking like, cause I have thousands of words that I am *not* redoing lol.
+
+## New features I'd like to add eventually
+A way to force kana reading to show if another vocab with the same kanji reading is in the deck (Likely gonna be annoying as hell once we add different readings)
+Look into using spacy to get root verbs and force things into it
+Add a phrase class, for phrases that the user can add to the deck
+Look into building a jisho query option into it
+Look into gradio implementation
+Look into using OpenAi to generate sentences for the user to translate

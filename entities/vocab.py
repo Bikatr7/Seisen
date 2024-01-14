@@ -22,10 +22,10 @@ class Vocab(Word):
                 incoming_id:int, 
                 incoming_testing_material:typing.List[TestingMaterial],
                 incoming_testing_material_answer_main:Synonym,
-                incoming_testing_material_answer_main_all:typing.List[Synonym], 
+                incoming_testing_material_answer_main_all:typing.List[Synonym],
+                incoming_readings:typing.List[Reading],
                 incoming_incorrect_count:int,
-                incoming_correct_count:int, 
-                incoming_readings:typing.List[Reading]) -> None:
+                incoming_correct_count:int) -> None:
 
         """
         

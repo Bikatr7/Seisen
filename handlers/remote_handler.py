@@ -168,54 +168,64 @@ class RemoteHandler():
         def reset_vocab_relations() -> None:
 
             RemoteHandler.vocab.clear()
-            RemoteHandler.vocab_typos.clear()
-            RemoteHandler.vocab_incorrect_typos.clear()
-            RemoteHandler.vocab_synonyms.clear()
 
-            word_id_list, vocab_list, romaji_list, answer_list, furigana_list, incorrect_count_list, correct_count_list, is_kanji_list = ConnectionHandler.read_multi_column_query("select id, vocab, romaji, answer, furigana, incorrect_count, correct_count, is_kanji from vocab")
-            typo_word_type_list, typo_id_list, typo_word_id_list, typo_value_list = ConnectionHandler.read_multi_column_query("select word_type, typo_id, vocab_id, typo_value from vocab_typos")
-            incorrect_typo_word_type_list, incorrect_typo_id_list, incorrect_typo_word_id_list, incorrect_typo_value_list = ConnectionHandler.read_multi_column_query("select word_type, incorrect_typo_id, vocab_id, incorrect_typo_value from vocab_incorrect_typos")
-            vocab_id_list, synonym_id_list, synonym_value_list, word_type_list = ConnectionHandler.read_multi_column_query("select vocab_id, vocab_synonym_id, vocab_synonym_value, word_type from vocab_synonyms")
+            vocab_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from vocab")
+            typo_vocab_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, typo_id, typo from vocab_typos")
+            incorrect_typo_vocab_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, incorrect_typo_id, incorrect_typo from vocab_incorrect_typos")
+            synonym_vocab_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select vocab_id, vocab_synonym_id, synonym from vocab_synonyms")
+            testing_material_vocab_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select vocab_id, testing_material_id, testing_material from vocab_testing_material")
+            reading_vocab_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select vocab_id, reading_id, furigana, romaji from vocab_readings")
 
-            RemoteHandler.vocab = [vocab_blueprint(int(word_id_list[i]), vocab_list[i], romaji_list[i], answer_list[i], [], furigana_list[i], int(incorrect_count_list[i]), int(correct_count_list[i]), bool(is_kanji_list[i])) for i in range(len(word_id_list))]
-            RemoteHandler.vocab_typos = [typo_blueprint(int(typo_word_id_list[i]), int(typo_id_list[i]), typo_value_list[i], typo_word_type_list[i]) for i in range(len(typo_word_id_list))]
-            RemoteHandler.vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_word_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_value_list[i], incorrect_typo_word_type_list[i]) for i in range(len(incorrect_typo_word_id_list))]
-            RemoteHandler.vocab_synonyms = [synonym_blueprint(int(vocab_id_list[i]), int(synonym_id_list[i]), synonym_value_list[i], word_type_list[i]) for i in range(len(vocab_id_list))]
+            ## construct typos
+            vocab_typos = [typo_blueprint(int(typo_vocab_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_vocab_id_list))]
+            vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_vocab_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_vocab_id_list))]
 
-            ## resets local storage file-wise
-            for vocab in RemoteHandler.vocab:
-                vocab_values = [vocab.word_id, vocab.testing_material, vocab.romaji, vocab.testing_material_answer_main, vocab.furigana, vocab.incorrect_count, vocab.correct_count]
-                FileHandler.write_seisen_line(FileEnsurer.vocab_path, vocab_values)
+            ## construct synonyms, testing_materials, and readings
+            vocab_synonyms = [synonym_blueprint(int(synonym_vocab_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_vocab_id_list))]
+            vocab_testing_materials = [testing_material_blueprint(int(testing_material_vocab_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_vocab_id_list))]
+            vocab_readings = [reading_blueprint(int(reading_vocab_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_vocab_id_list))]
 
-            for typo in RemoteHandler.vocab_typos:
-                typo_values = [typo.word_id, typo.typo_id, typo.typo_value, typo.word_type]
-                FileHandler.write_seisen_line(FileEnsurer.vocab_typos_path, typo_values)
+            ## construct vocab dummy objects
+            for i in range(len(vocab_id_list)):
+                vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], vocab_synonyms[0], [vocab_synonyms[0]], [vocab_readings[0]], int(incorrect_count_list[i]), int(correct_count_list[i])) 
+                RemoteHandler.vocab.append(vocab)
 
-            for incorrect_typo in RemoteHandler.vocab_incorrect_typos:
-                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value, incorrect_typo.word_type]
-                FileHandler.write_seisen_line(FileEnsurer.vocab_incorrect_typos_path, incorrect_typo_values)
-
-            for synonym in RemoteHandler.vocab_synonyms:
-                synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value, synonym.word_type]
-                FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, synonym_values)
-
-            ## current session-wise reset
+            ## fill vocab objects with their respective synonyms, testing_materials, and readings
             for vocab in RemoteHandler.vocab:
 
-                for typo in RemoteHandler.vocab_typos:
-                    if(typo.word_type == vocab.word_type and typo.word_id == vocab.word_id):
-                        vocab.typos.append(typo)        
-                        Logger.log_action("Added Typo" + typo.typo_value + " to Vocab " + vocab.testing_material)    
+                is_first_synonym:bool = True
 
-                for incorrect_typo in RemoteHandler.vocab_incorrect_typos:
-                    if(incorrect_typo.word_type == vocab.word_type and incorrect_typo.word_id == vocab.word_id):
-                        vocab.incorrect_typos.append(incorrect_typo)
-                        Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Vocab " + vocab.testing_material)
+                for synonym in vocab_synonyms:
+                    if(synonym.word_id == vocab.word_id):
 
-                for synonym in RemoteHandler.vocab_synonyms:
-                    if(synonym.word_id == vocab.word_id and synonym.word_type == vocab.word_type):
+                        if(is_first_synonym):
+                            vocab.testing_material_answer_main = synonym
+                            is_first_synonym = False
+                        
                         vocab.testing_material_answer_all.append(synonym)
-                        Logger.log_action("Added Synonym " + synonym.synonym_value + " to Vocab " + vocab.testing_material)
+                        Logger.log_action("Added Synonym " + synonym.synonym_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+
+                for testing_material in vocab_testing_materials:
+                    if(testing_material.word_id == vocab.word_id):
+                        vocab.testing_material.append(testing_material)
+                        Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Vocab " + str(vocab.word_id))
+
+                for reading in vocab_readings:
+                    if(reading.word_id == vocab.word_id):
+                        vocab.readings.append(reading)
+                        Logger.log_action("Added Reading " + reading.furigana_value+ " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+
+            ## fill vocab objects with their respective typos, incorrect typos
+            for vocab in RemoteHandler.vocab:
+                for typo in vocab_typos:
+                    if(typo.word_id == vocab.word_id):
+                        vocab.typos.append(typo)
+                        Logger.log_action("Added Typo " + typo.typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+
+                for incorrect_typo in vocab_incorrect_typos:
+                    if(incorrect_typo.word_id == vocab.word_id):
+                        vocab.incorrect_typos.append(incorrect_typo)
+                        Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
 
         ##----------------------------------------------------------------main()----------------------------------------------------------------
 

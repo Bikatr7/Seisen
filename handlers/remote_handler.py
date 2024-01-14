@@ -536,16 +536,13 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = FileHandler.extract_seisen_line_values(line)
+                    id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
 
                     table_name = "kana"
                     insert_dict = {
-                    "id": values[0],
-                    "kana": values[1],
-                    "reading": values[2],
-                    "incorrect_count": values[3],
-                    "correct_count": values[4],
-                    "word_type": "kana"
+                    "id": id,
+                    "correct_count": correct_count,
+                    "incorrect_count": incorrect_count
                     }
 
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
@@ -556,53 +553,85 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = FileHandler.extract_seisen_line_values(line)
+                    kana_id, typo_id, typo = FileHandler.extract_seisen_line_values(line)
 
                     table_name = "kana_typos"
                     insert_dict = {
-                        "kana_id": values[0],
-                        "typo_id": values[1],
-                        "typo_value": values[2],
-                        "word_type": values[3]
+                        "kana_id": kana_id,
+                        "typo_id": typo_id,
+                        "typo": typo,
                     }
 
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
         
         def fill_kana_incorrect_typos() -> None:
 
-                with open(FileEnsurer.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
+            with open(FileEnsurer.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
 
-                    for line in file:
+                for line in file:
 
-                        values = FileHandler.extract_seisen_line_values(line)
+                    kana_id, incorrect_typo_id, incorrect_typo = FileHandler.extract_seisen_line_values(line)
 
-                        table_name = "kana_incorrect_typos"
-                        insert_dict = {
-                        "kana_id": values[0],
-                        "incorrect_typo_id": values[1],
-                        "incorrect_typo_value": values[2],
-                        "word_type": values[3]
-                        }
+                    table_name = "kana_incorrect_typos"
+                    insert_dict = {
+                    "kana_id": kana_id,
+                    "incorrect_typo_id": incorrect_typo_id,
+                    "incorrect_typo": incorrect_typo,
+                    }
 
-                        ConnectionHandler.insert_into_table(table_name, insert_dict)
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
 
-        def fill_kana_csep() -> None:
-                                
-                with open(FileEnsurer.kana_synonyms_path, "r", encoding="utf-8") as file:
+        def fill_kana_synonyms() -> None:
+                            
+            with open(FileEnsurer.kana_synonyms_path, "r", encoding="utf-8") as file:
 
-                    for line in file:
+                for line in file:
 
-                        values = FileHandler.extract_seisen_line_values(line)
+                    kana_id, synonym_id, synonym = FileHandler.extract_seisen_line_values(line)
 
-                        table_name = "kana_synonyms"
-                        insert_dict = {
-                        "kana_id": values[0],
-                        "kana_synonym_id": values[1],
-                        "kana_synonym_value": values[2],
-                        "word_type": values[3]
-                        }
+                    table_name = "kana_synonyms"
+                    insert_dict = {
+                    "kana_id": kana_id,
+                    "synonym_id": synonym_id,
+                    "synonym": synonym,
+                    }
 
-                        ConnectionHandler.insert_into_table(table_name, insert_dict)
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
+
+        def fill_kana_testing_material() -> None:
+
+            with open(FileEnsurer.kana_testing_material_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    kana_id, testing_material_id, testing_material = FileHandler.extract_seisen_line_values(line)
+
+                    table_name = "kana_testing_material"
+                    insert_dict = {
+                    "kana_id": kana_id,
+                    "testing_material_id": testing_material_id,
+                    "testing_material": testing_material,
+                    }
+
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
+
+        def fill_kana_readings() -> None:
+
+            with open(FileEnsurer.kana_readings_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    kana_id, reading_id, furigana, romaji = FileHandler.extract_seisen_line_values(line)
+
+                    table_name = "kana_readings"
+                    insert_dict = {
+                    "kana_id": kana_id,
+                    "reading_id": reading_id,
+                    "furigana": furigana,
+                    "romaji": romaji
+                    }
+
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
@@ -612,25 +641,13 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = FileHandler.extract_seisen_line_values(line)
-
-                    ## 0 is treated as a lack of furigana, which means it's not a kanji word
-                    if(values[4] == "0"):
-                        is_kanji = 0
-                    else:
-                        is_kanji = 1
+                    id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
 
                     table_name = "vocab"
                     insert_dict = {
-                    "id": values[0],
-                    "vocab": values[1],
-                    "romaji": values[2],
-                    "answer": values[3],
-                    "furigana": values[4],
-                    "incorrect_count": values[5],
-                    "correct_count": values[6],
-                    "word_type": "vocab",
-                    "is_kanji": is_kanji
+                    "id": id,
+                    "correct_count": correct_count,
+                    "incorrect_count": incorrect_count
                     }
 
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
@@ -641,65 +658,101 @@ class RemoteHandler():
 
                 for line in file:
 
-                    values = FileHandler.extract_seisen_line_values(line)
+                    vocab_id, typo_id, typo = FileHandler.extract_seisen_line_values(line)
 
                     table_name = "vocab_typos"
                     insert_dict = {
-                        "vocab_id": values[0],
-                        "typo_id": values[1],
-                        "typo_value": values[2],
-                        "word_type": values[3]
+                    "vocab_id": vocab_id,
+                    "typo_id": typo_id,
+                    "typo": typo,
                     }
 
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
         
         def fill_vocab_incorrect_typos() -> None:
 
-                with open(FileEnsurer.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
+            with open(FileEnsurer.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
 
-                    for line in file:
+                for line in file:
 
-                        values = FileHandler.extract_seisen_line_values(line)
+                    vocab_id, incorrect_typo_id, incorrect_typo = FileHandler.extract_seisen_line_values(line)
 
-                        table_name = "vocab_incorrect_typos"
-                        insert_dict = {
-                        "vocab_id": values[0],
-                        "incorrect_typo_id": values[1],
-                        "incorrect_typo_value": values[2],
-                        "word_type": values[3]
-                        }
+                    table_name = "vocab_incorrect_typos"
+                    insert_dict = {
+                    "vocab_id": vocab_id,
+                    "incorrect_typo_id": incorrect_typo_id,
+                    "incorrect_typo": incorrect_typo,
+                    }
 
-                        ConnectionHandler.insert_into_table(table_name, insert_dict)
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
 
         def fill_vocab_csep() -> None:
                                 
-                with open(FileEnsurer.vocab_synonyms_path, "r", encoding="utf-8") as file:
+            with open(FileEnsurer.vocab_synonyms_path, "r", encoding="utf-8") as file:
 
-                    for line in file:
+                for line in file:
 
-                        values = FileHandler.extract_seisen_line_values(line)
+                    vocab_id, synonym_id, synonym = FileHandler.extract_seisen_line_values(line)
 
-                        table_name = "vocab_synonyms"
-                        insert_dict = {
-                        "vocab_id": values[0],
-                        "vocab_synonym_id": values[1],
-                        "vocab_synonym_value": values[2],
-                        "word_type": values[3]
-                        }
+                    table_name = "vocab_synonyms"
+                    insert_dict = {
+                    "vocab_id": vocab_id,
+                    "synonym_id": synonym_id,
+                    "synonym": synonym,
+                    }
 
-                        ConnectionHandler.insert_into_table(table_name, insert_dict)
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
+
+        def fill_vocab_testing_material() -> None:
+
+            with open(FileEnsurer.vocab_testing_material_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    vocab_id, testing_material_id, testing_material = FileHandler.extract_seisen_line_values(line)
+
+                    table_name = "vocab_testing_material"
+                    insert_dict = {
+                    "vocab_id": vocab_id,
+                    "testing_material_id": testing_material_id,
+                    "testing_material": testing_material,
+                    }
+
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
+
+        def fill_vocab_readings() -> None:
+
+            with open(FileEnsurer.vocab_readings_path, "r", encoding="utf-8") as file:
+
+                for line in file:
+
+                    vocab_id, reading_id, furigana, romaji = FileHandler.extract_seisen_line_values(line)
+
+                    table_name = "vocab_readings"
+                    insert_dict = {
+                    "vocab_id": vocab_id,
+                    "reading_id": reading_id,
+                    "furigana": furigana,
+                    "romaji": romaji
+                    }
+
+                    ConnectionHandler.insert_into_table(table_name, insert_dict)
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         fill_kana()
         fill_kana_typos()
         fill_kana_incorrect_typos()
-        fill_kana_csep()
+        fill_kana_synonyms()
+        fill_kana_testing_material()
+        fill_kana_readings()
 
         fill_vocab()
         fill_vocab_typos()
         fill_vocab_incorrect_typos()
         fill_vocab_csep()
+        fill_vocab_testing_material()
+        fill_vocab_readings()
 
 ##--------------------start-of-create_daily_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

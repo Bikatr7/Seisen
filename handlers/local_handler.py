@@ -225,7 +225,7 @@ class LocalHandler():
                     synonyms = get_vocab_synonym_values(vocab_id)
                     testing_material = get_vocab_testing_material(vocab_id)
 
-                    LocalHandler.vocab.append(vocab_blueprint(int(vocab_id), testing_material, synonyms[0], synonyms, int(incorrect_count), int(correct_count), readings))
+                    LocalHandler.vocab.append(vocab_blueprint(int(vocab_id), testing_material, synonyms[0], synonyms, readings, int(incorrect_count), int(correct_count)))
 
                     Logger.log_action("Loaded Vocab - (" + vocab_id + "," + incorrect_count + "," + correct_count + ") with the following readings - " + str([reading.furigana_value for reading in readings]) + " and the following synonyms - " + str([synonym.synonym_value for synonym in synonyms]) + " and the following testing material - " + str([testing_material.testing_material_value for testing_material in testing_material]))
 
@@ -455,11 +455,11 @@ class LocalHandler():
 
         with open(FileEnsurer.last_local_backup_path, 'r+', encoding="utf-8") as file:
 
-            strips_to_perform = [" ", "\n", "\x00"]
+            strips_to_perform = " \n\x00"
 
             last_backup_date = file.read()
 
-            last_backup_date = [last_backup_date.strip(strip) for strip in strips_to_perform]
+            last_backup_date = last_backup_date.strip(strips_to_perform)
 
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 

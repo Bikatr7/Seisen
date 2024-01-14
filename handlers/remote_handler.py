@@ -898,11 +898,11 @@ class RemoteHandler():
         
         with open(FileEnsurer.last_remote_backup_path, 'r+', encoding="utf-8") as file:
 
-            strips_to_perform = [" ", "\n", "\x00"]
+            strips_to_perform = " \n\x00"
 
             last_backup_date = file.read()
 
-            last_backup_date = [last_backup_date.strip(strip) for strip in strips_to_perform]
+            last_backup_date = last_backup_date.strip(strips_to_perform)
         
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
@@ -1001,11 +1001,11 @@ class RemoteHandler():
         
         with open(FileEnsurer.last_local_remote_backup_path, 'r+', encoding="utf-8") as file:
 
-            strips_to_perform = [" ", "\n", "\x00"]
+            strips_to_perform = " \n\x00"
 
             last_backup_date = file.read()
 
-            last_backup_date = [last_backup_date.strip(strip) for strip in strips_to_perform]
+            last_backup_date = last_backup_date.strip(strips_to_perform)
         
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 

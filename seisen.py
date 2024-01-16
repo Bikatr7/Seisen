@@ -79,7 +79,7 @@ class Seisen:
 
         """
 
-        if(input("Error loading local storage, would you like Seisen to attempt to fix this? (1 for yes, 2 for no) ") == "1"):
+        if(input("Error loading local storage, would you like Seisen to attempt to fix this? (data may be lost) (1 for yes, 2 for no) ") == "1"):
 
         
             Logger.log_action("Error loading local storage, resetting local storage with remote storage.",output=True, omit_timestamp=True)
@@ -89,16 +89,24 @@ class Seisen:
 
                 LocalHandler.load_words_from_local_storage()
 
-            except:
+            except Exception as e:
                 Logger.log_action("Error resetting local storage, resetting local and remote storage to default.",output=True, omit_timestamp=True)
+
+                traceback_str = traceback.format_exc()
+                Logger.log_action(traceback_str)
+                Logger.log_barrier()
 
                 try:
 
                     StorageSettingsHandler.reset_local_and_remote_to_default()
 
-                except:
+                except Exception as e:
 
-                    print("Cannot resolve automatically, please contact the developer.")
+                    print("Cannot resolve automatically, please contact the developer. Check the log file for more information.")
+
+                    traceback_str = traceback.format_exc()
+                    Logger.log_action(traceback_str)
+                    Logger.log_barrier()
 
                     Toolkit.pause_console()
 
@@ -124,6 +132,8 @@ class Seisen:
 
         """
 
+        FileEnsurer.ensure_files()
+
         Logger.clear_log_file()
 
         Logger.log_barrier()
@@ -146,8 +156,6 @@ class Seisen:
         os.system("title " + "Seisen")
 
         Toolkit.maximize_window()
-
-        FileEnsurer.ensure_files()
 
         Seisen.has_valid_connection, update_prompt = Toolkit.check_update()
 
@@ -257,7 +265,7 @@ class Seisen:
         Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         Seisen.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
-        Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material + "?\n"
+        Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material[0].testing_material_value + "?\n"
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
@@ -288,7 +296,7 @@ class Seisen:
             ScoreRater.log_correct_answer(kana_to_test)      
 
         elif(isCorrect == False):
-            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, the correct answer was " + kana_to_test.testing_material_answer_main + ".\n"
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, A correct answer was " + kana_to_test.testing_material_answer_main.synonym_value + ".\n"
             ScoreRater.log_incorrect_answer(kana_to_test)
 
         else:
@@ -363,9 +371,20 @@ class Seisen:
         Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         Seisen.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
-        Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material + "?\n"
+        Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material[0].testing_material_value + "?\n"
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
+
+        all_testing_material = [value.testing_material_value for value in vocab_to_test.testing_material]
+        all_readings = [reading for reading in vocab_to_test.readings]
+
+        all_furigana = [furigana.furigana_value for furigana in all_readings]
+
+        testing_material_string = ' '.join(all_testing_material)
+
+        furigana_string = ' '.join(all_furigana)
+
+        extended_prompt = vocab_to_test.testing_material[0].testing_material_value + "/" + testing_material_string + "/" + furigana_string
 
         ## if the user wants to change the mode do so
         if(Seisen.current_user_guess == "v"):
@@ -380,11 +399,11 @@ class Seisen:
             return
         
         ## if the user wants to see the furigana do so
-        elif(Seisen.current_user_guess == "b" and vocab_to_test.furigana != "0"):
+        elif(Seisen.current_user_guess == "b"):
 
             Toolkit.clear_console()
 
-            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material[0].testing_material_value, extended_prompt)
 
             Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
@@ -411,8 +430,8 @@ class Seisen:
 
         Toolkit.clear_console()
 
-        if(vocab_to_test.furigana != "0" and romaTriggered == False):
-            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material, vocab_to_test.testing_material + "/" + vocab_to_test.furigana)
+        if(romaTriggered == False):
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material[0].testing_material_value, extended_prompt)
 
         if(isCorrect == True):
             number_of_correct_rounds+=1
@@ -420,7 +439,7 @@ class Seisen:
             ScoreRater.log_correct_answer(vocab_to_test)           
 
         elif(isCorrect == False):
-            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, the correct answer was " + vocab_to_test.testing_material_answer_main + ".\n"
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, a correct answer was " + vocab_to_test.testing_material_answer_main.synonym_value + ".\n"
             ScoreRater.log_incorrect_answer(vocab_to_test)
 
         else:

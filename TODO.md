@@ -38,14 +38,24 @@ Likely to grow and expand overtime.
 
 ~~since spaces and other shit keep getting added to the timestamp files, we can just start deleting them instead lol~~
 
+Add a default testing_material, likely just the first index of all testing material
+
 Need to add a way to allow user to see additional readings and testing material, likely via a keybind
+
+implement 'b' functionality for kana testing
+
+remote archive creation seems broken
+
+need to make kana/vocab testing work properly
 
 -----------------------------------------------------------------------------------------------------------------
 Tasks above are to be implemented in Breakdown-of-word/vocab-classes-and-large-architecture-changes
 -----------------------------------------------------------------------------------------------------------------
 
 ## Things to after the above branch
+vocab settings need to be redone
 Refactor searcher and vocab_settings_handler to fit with new architecture
+add a auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"
 
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.

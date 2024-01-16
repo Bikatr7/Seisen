@@ -66,7 +66,7 @@ class FileEnsurer:
    ## kana
    kana_path = os.path.join(kana_dir, "kana.seisen")
    kana_testing_material_path = os.path.join(kana_dir, "kana_testing_material_to_write.seisen")
-   kana_readings_path = os.path.join(kana_dir, "kana_readings.txt")
+   kana_readings_path = os.path.join(kana_dir, "kana_readings.seisen")
    kana_synonyms_path = os.path.join(kana_dir, "kana_synonyms.seisen")
    kana_typos_path = os.path.join(kana_dir, "kana_typos.seisen")
    kana_incorrect_typos_path = os.path.join(kana_dir, "kana_incorrect_typos.seisen")
@@ -74,7 +74,7 @@ class FileEnsurer:
    ## vocab
    vocab_path = os.path.join(vocab_dir, "vocab.seisen")
    vocab_testing_material_path = os.path.join(vocab_dir, "vocab_testing_material.seisen")
-   vocab_readings_path = os.path.join(vocab_dir, "vocab_readings.txt")
+   vocab_readings_path = os.path.join(vocab_dir, "vocab_readings.seisen")
    vocab_synonyms_path = os.path.join(vocab_dir, "vocab_synonyms.seisen")
    vocab_typos_path = os.path.join(vocab_dir, "vocab_typos.seisen")
    vocab_incorrect_typos_path = os.path.join(vocab_dir, "vocab_incorrect_typos.seisen")
@@ -91,7 +91,7 @@ class FileEnsurer:
 
    local_lib_kana_path = os.path.join(local_kana_lib_dir, "kana.seisen")
    local_lib_kana_testing_material_path = os.path.join(local_kana_lib_dir, "kana_testing_material.seisen")
-   local_lib_kana_readings_path = os.path.join(local_kana_lib_dir, "kana_readings.txt")
+   local_lib_kana_readings_path = os.path.join(local_kana_lib_dir, "kana_readings.seisen")
    local_lib_kana_synonyms_path = os.path.join(local_kana_lib_dir, "kana_synonyms.seisen")
 
    ##----------------------------------/
@@ -103,7 +103,7 @@ class FileEnsurer:
 
    local_vocab_lib_path = os.path.join(local_vocab_lib_dir, "vocab.seisen")
    local_vocab_lib_testing_material_path = os.path.join(local_vocab_lib_dir, "vocab_testing_material.seisen")
-   local_vocab_lib_readings_path = os.path.join(local_vocab_lib_dir, "vocab_readings.txt")
+   local_vocab_lib_readings_path = os.path.join(local_vocab_lib_dir, "vocab_readings.seisen")
    local_vocab_lib_synonyms_path = os.path.join(local_vocab_lib_dir, "vocab_synonyms.seisen")
 
    ##----------------------------------/
@@ -190,6 +190,9 @@ class FileEnsurer:
       Creates the needed base directories.
 
       """
+
+      if(not os.path.exists(FileEnsurer.config_dir)):
+         os.makedirs(FileEnsurer.config_dir)
 
       FileHandler.standard_create_directory(FileEnsurer.logins_dir)
       FileHandler.standard_create_directory(FileEnsurer.lib_dir)

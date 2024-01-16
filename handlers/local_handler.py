@@ -124,6 +124,8 @@ class LocalHandler():
                     synonyms = get_kana_synonyms(kana_id)
                     testing_material = get_kana_testing_material(kana_id)
 
+                    Logger.log_action(kana_id + " " + str(len(readings)) + " " + str(len(synonyms)) + " " + str(len(testing_material)))
+
                     LocalHandler.kana.append(kana_blueprint(int(kana_id), testing_material, synonyms[0], synonyms, readings, int(incorrect_count), int(correct_count)))
 
                     Logger.log_action("Loaded Kana - (" + kana_id + "," + incorrect_count + "," + correct_count + ") with the following readings - " + str([reading.furigana_value for reading in readings]) + " and the following synonyms - " + str([synonym.synonym_value for synonym in synonyms]) + " and the following testing material - " + str([testing_material.testing_material_value for testing_material in testing_material]))
@@ -182,7 +184,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    synonym_vocab_id, synonym_id, synonym_value, synonym_word_type = FileHandler.extract_seisen_line_values(line)
+                    synonym_vocab_id, synonym_id, synonym_value = FileHandler.extract_seisen_line_values(line)
 
                     if(synonym_vocab_id == vocab_id):
 

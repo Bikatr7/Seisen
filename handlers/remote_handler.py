@@ -53,7 +53,7 @@ class RemoteHandler():
         kana_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from kana")
         typo_kana_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select kana_id, typo_id, typo from kana_typos")
         incorrect_typo_kana_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select kana_id, incorrect_typo_id, incorrect_typo from kana_incorrect_typos") 
-        synonym_kana_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select kana_id, kana_synonym_id, synonym from kana_synonyms")
+        synonym_kana_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select kana_id, synonym_id, synonym from kana_synonyms")
         testing_material_kana_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select kana_id, testing_material_id, testing_material from kana_testing_material")
         reading_kana_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select kana_id, reading_id, furigana, romaji from kana_readings")
 
@@ -75,6 +75,11 @@ class RemoteHandler():
         for kana in RemoteHandler.kana:
 
             is_first_synonym:bool = True
+
+            ## clear out old dummy data
+            kana.testing_material.clear()
+            kana.testing_material_answer_all.clear()
+            kana.readings.clear()
 
             for synonym in kana_synonyms:
                 if(synonym.word_id == kana.word_id):
@@ -156,7 +161,7 @@ class RemoteHandler():
         vocab_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from vocab")
         typo_vocab_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, typo_id, typo from vocab_typos")
         incorrect_typo_vocab_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, incorrect_typo_id, incorrect_typo from vocab_incorrect_typos")
-        synonym_vocab_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select vocab_id, vocab_synonym_id, synonym from vocab_synonyms")
+        synonym_vocab_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select vocab_id, synonym_id, synonym from vocab_synonyms")
         testing_material_vocab_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select vocab_id, testing_material_id, testing_material from vocab_testing_material")
         reading_vocab_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select vocab_id, reading_id, furigana, romaji from vocab_readings")
 
@@ -180,6 +185,12 @@ class RemoteHandler():
             is_first_synonym:bool = True
 
             for synonym in vocab_synonyms:
+
+                ## clear out old dummy data
+                vocab.testing_material.clear()
+                vocab.testing_material_answer_all.clear()
+                vocab.readings.clear()
+
                 if(synonym.word_id == vocab.word_id):
 
                     if(is_first_synonym):
@@ -487,9 +498,9 @@ class RemoteHandler():
         create_kana_synonyms_query = """
         CREATE TABLE kana_synonyms (
             kana_id INT NOT NULL,
-            kana_synonym_id INT NOT NULL,
+            synonym_id INT NOT NULL,
             synonym VARCHAR(1024) NOT NULL,
-            PRIMARY KEY (kana_synonym_id),
+            PRIMARY KEY (synonym_id),
             FOREIGN KEY (kana_id) REFERENCES kana(id)
         );
         """
@@ -549,9 +560,9 @@ class RemoteHandler():
         create_vocab_synonym_query = """
         CREATE TABLE vocab_synonyms (
             vocab_id INT NOT NULL,
-            vocab_synonym_id INT NOT NULL,
+            synonym_id INT NOT NULL,
             synonym VARCHAR(1024) NOT NULL,
-            PRIMARY KEY (vocab_synonym_id),
+            PRIMARY KEY (synonym_id),
             FOREIGN KEY (vocab_id) REFERENCES vocab(id)
         );
         """

@@ -32,7 +32,7 @@ Likely to grow and expand overtime.
 ## Architecture
 ~~word_type needs to be fucking removed and extinguished. It's a vestigial part of the codebase that I somehow let remain back when i wanted to put everything into one file (lmao no)~~
 
-Need to update file architecture to fit with new entity architecture
+~~Need to update file architecture to fit with new entity architecture~~
 
 ~~Change an absent furigana value to no longer exist, all kana/vocab will have a furigana and we can just filter these out later by comparing if the furigana matches the testing material itself~~
 
@@ -44,8 +44,10 @@ Need to add a way to allow user to see additional readings and testing material,
 Tasks above are to be implemented in Breakdown-of-word/vocab-classes-and-large-architecture-changes
 -----------------------------------------------------------------------------------------------------------------
 
+## Things to after the above branch
+Refactor searcher and vocab_settings_handler to fit with new architecture
+
 ## Things to look into
-Searcher refactor? Not really liking how it's implemented currently
 Getting rid of the requests requirement? Could be easy just to handle it myself.
 Properly test what happens if mysql.connector-python isn't installed, and add countermeasures to ensure Seisen can function without it.
 

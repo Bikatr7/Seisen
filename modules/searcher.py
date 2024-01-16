@@ -4,6 +4,8 @@ import typing
 ## custom modules
 from modules.toolkit import Toolkit
 
+from entities.testing_material import TestingMaterial
+
 from handlers.local_handler import LocalHandler
 
 
@@ -43,17 +45,20 @@ class Searcher:
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
+        mini_testing_material_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material]
+        mini_reading_print = [str(reading.romaji_value) + "/" + str(reading.furigana_value) for reading in target_vocab.readings]
         mini_synonym_print = [str(synonym.synonym_id) for synonym in target_vocab.testing_material_answer_all]
+
 
         print_item = (
             f"---------------------------------\n"
-            f"Vocab: {target_vocab.testing_material}\n"
-            f"Romaji: {target_vocab.romaji}\n"
-            f"Furigana: {target_vocab.furigana}\n"
-            f"Definition: {target_vocab.testing_material_answer_main}\n"
+            f"ID: {target_vocab.word_id}\n"
             f"Incorrect Guesses: {target_vocab.incorrect_count}\n"
             f"Correct Guesses: {target_vocab.correct_count}\n"
-            f"ID: {target_vocab.word_id}\n"
+            f"Testing Material ID(S) : {mini_testing_material_print}\n"
+            f"Testing Material Value(s): {[testing_material.testing_material_value for testing_material in target_vocab.testing_material]}\n"
+            f"Reading ID(S): {mini_reading_print}\n"
+            f"Reading Value(s): {[str(reading.romaji_value) + '/' + str(reading.furigana_value) for reading in target_vocab.readings]}\n"
             f"Synonym ID(S): {mini_synonym_print}\n"
             f"Synonym Values(s): {[synonym.synonym_value for synonym in target_vocab.testing_material_answer_all]}\n"
             f"---------------------------------\n"
@@ -96,7 +101,6 @@ class Searcher:
             f"Synonym ID: {target_synonym.synonym_id}\n"
             f"VOCAB: {target_vocab.testing_material}\n"
             f"VOCAB ID: {target_synonym.word_id}\n"
-            f"WORD TYPE: {target_synonym.word_type}\n"
             f"---------------------------------\n"
         )
 
@@ -136,7 +140,6 @@ class Searcher:
                 f"Synonym: {synonym.synonym_value}\n"
                 f"Synonym ID: {synonym.synonym_id}\n"
                 f"VOCAB ID {synonym.word_id}\n"
-                f"WORD TYPE: {synonym.word_type}\n"
                 f"---------------------------------\n"
             )
 
@@ -147,7 +150,7 @@ class Searcher:
 ##--------------------start-of-get_vocab_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_vocab_term_from_id(vocab_id:int) -> str:
+    def get_vocab_term_from_id(vocab_id:int) -> typing.List[TestingMaterial]:
 
         """
         
@@ -161,11 +164,14 @@ class Searcher:
 
         """
 
-        term = "-1"
+        term = None
         
         for vocab in LocalHandler.vocab:
             if(vocab.word_id == vocab_id):
                 term = vocab.testing_material
+
+        if(term == None):
+            raise Searcher.IDNotFoundError(vocab_id)
 
         return term
     
@@ -234,8 +240,15 @@ class Searcher:
 
         for vocab in LocalHandler.vocab:
 
-            if(term == vocab.testing_material or term == vocab.furigana):
-                vocab_ids.append(vocab.word_id)
+            for reading in vocab.readings:
+                if(term == reading.furigana_value):
+                    vocab_ids.append(vocab.word_id)
+
+            for testing_material in vocab.testing_material:
+                if(term == testing_material.testing_material_value):
+                    vocab_ids.append(vocab.word_id)
+
+            vocab_ids = [int(id) for id in set(vocab_ids)]
             
         return vocab_ids
 
@@ -253,29 +266,30 @@ class Searcher:
 
         Returns:
         vocab_ids (list = int) : matching vocab ids.
-        csep_ids (list - int) : matching synonym ids.
+        synonym_ids (list - int) : matching synonym ids.
 
         """
 
         vocab_ids = []
-        csep_ids = []
+        synonym_ids = []
 
         for vocab in LocalHandler.vocab:
 
             ## if term matches romaji or definition 
-            if(vocab.romaji == term or vocab.testing_material_answer_main == term):
-                vocab_ids.append(vocab.word_id)
+            for reading in vocab.readings:
+                if(term == reading.romaji_value):
+                    vocab_ids.append(vocab.word_id)
 
             for synonym in vocab.testing_material_answer_all:
                 if(synonym.synonym_value == term):
                     vocab_ids.append(vocab.word_id)
-                    csep_ids.append(synonym.synonym_id)
+                    synonym_ids.append(synonym.synonym_id)
             
             
         vocab_ids = [int(id) for id in set(vocab_ids)]
-        csep_ids = [int(id) for id in set(csep_ids)]
+        synonym_ids = [int(id) for id in set(synonym_ids)]
 
-        return vocab_ids, csep_ids
+        return vocab_ids, synonym_ids
         
 ##--------------------start-of-IDNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

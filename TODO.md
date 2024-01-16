@@ -38,9 +38,9 @@ Likely to grow and expand overtime.
 
 ~~since spaces and other shit keep getting added to the timestamp files, we can just start deleting them instead lol~~
 
-need to make kana/vocab testing work properly
+Add a default testing_material, likely just the first index of all testing material, can just built it into the vocab/kana class
 
-Add a default testing_material, likely just the first index of all testing material
+need to make kana/vocab testing work properly
 
 remote archive creation seems broken
 
@@ -50,6 +50,7 @@ Tasks above are to be implemented in Breakdown-of-word/vocab-classes-and-large-a
 
 ## Things to after the above branch
 vocab settings need to be redone
+
 Refactor searcher and vocab_settings_handler to fit with new architecture
 
 add a auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"
@@ -62,6 +63,7 @@ implement 'b' functionality for kana testing
 
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.
+
 Properly test what happens if mysql.connector-python isn't installed, and add countermeasures to ensure Seisen can function without it.
 
 ## Backlog
@@ -75,8 +77,13 @@ REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
 
 ## New features I'd like to add eventually
 A way to force kana reading to show if another vocab with the same kanji reading is in the deck (Likely gonna be annoying as hell once we add different readings)
+
 Look into using spacy to get root verbs and force things into it
+
 Add a phrase class, for phrases that the user can add to the deck
+
 Look into building a jisho query option into it
+
 Look into gradio implementation
+
 Look into using OpenAi to generate sentences for the user to translate

@@ -38,15 +38,11 @@ Likely to grow and expand overtime.
 
 ~~since spaces and other shit keep getting added to the timestamp files, we can just start deleting them instead lol~~
 
+need to make kana/vocab testing work properly
+
 Add a default testing_material, likely just the first index of all testing material
 
-Need to add a way to allow user to see additional readings and testing material, likely via a keybind
-
-implement 'b' functionality for kana testing
-
 remote archive creation seems broken
-
-need to make kana/vocab testing work properly
 
 -----------------------------------------------------------------------------------------------------------------
 Tasks above are to be implemented in Breakdown-of-word/vocab-classes-and-large-architecture-changes
@@ -55,7 +51,14 @@ Tasks above are to be implemented in Breakdown-of-word/vocab-classes-and-large-a
 ## Things to after the above branch
 vocab settings need to be redone
 Refactor searcher and vocab_settings_handler to fit with new architecture
+
 add a auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"
+
+## after vocab addition functionality restored
+Need to add a way to allow user to see additional readings and testing material, likely via a keybind
+
+implement 'b' functionality for kana testing
+
 
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.
@@ -69,9 +72,6 @@ Add confirmations to a lot of core decisions, something old me liked to do was n
 Make logging better
 
 REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
-
-## After done
-Make a deck converter to whatever the new decks end up looking like, cause I have thousands of words that I am *not* redoing lol.
 
 ## New features I'd like to add eventually
 A way to force kana reading to show if another vocab with the same kanji reading is in the deck (Likely gonna be annoying as hell once we add different readings)

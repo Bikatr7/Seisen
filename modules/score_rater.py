@@ -464,18 +464,17 @@ class ScoreRater:
         """
 
         ## where the correct count index is in the file
-        KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 5
-        VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 7
+        CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 2
     
         if(isinstance(Word, Vocab)):
             word_ids = LocalHandler.get_list_of_all_ids(6)
             path_to_write_to = FileEnsurer.vocab_path
-            index_location = VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
         
         else:
             word_ids = LocalHandler.get_list_of_all_ids(5)
             path_to_write_to = FileEnsurer.kana_path
-            index_location = KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         line_to_write_to = 0
 
@@ -505,18 +504,17 @@ class ScoreRater:
         """
 
         ## where the incorrect count index is in the file
-        KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 4
-        VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 6
+        INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 3
 
         if(isinstance(Word, Vocab)):
             word_ids = LocalHandler.get_list_of_all_ids(6)
             path_to_write_to = FileEnsurer.vocab_path
-            index_location = VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         else:
             word_ids = LocalHandler.get_list_of_all_ids(5)
             path_to_write_to = FileEnsurer.kana_path
-            index_location = KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         line_to_write_to = 0
 

@@ -267,7 +267,7 @@ class Seisen:
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
         Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material_main.testing_material_value + "?\n"
 
-        Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
+        Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
 
         ## if the user wants to change the mode do so
         if(Seisen.current_user_guess == "v"): 
@@ -373,18 +373,16 @@ class Seisen:
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
         Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material_main.testing_material_value + "?\n"
 
-        Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
+        Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
 
         all_testing_material = [value.testing_material_value for value in vocab_to_test.testing_material_all]
-        all_readings = [reading for reading in vocab_to_test.readings]
+        all_furigana = [reading.furigana_value for reading in vocab_to_test.readings]
 
-        all_furigana = [furigana.furigana_value for furigana in all_readings]
+        testing_material_string = '/'.join(all_testing_material)
 
-        testing_material_string = ' '.join(all_testing_material)
+        furigana_string = '/'.join(all_furigana)
 
-        furigana_string = ' '.join(all_furigana)
-
-        extended_prompt = "/".join([value.testing_material_value for value in vocab_to_test.testing_material_all]) + "/" + testing_material_string + "/" + furigana_string
+        extended_prompt = testing_material_string + " (" + furigana_string + ")"
 
         ## if the user wants to change the mode do so
         if(Seisen.current_user_guess == "v"):

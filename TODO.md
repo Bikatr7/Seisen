@@ -40,7 +40,7 @@ Likely to grow and expand overtime.
 
 ~~Add a default testing_material, likely just the first index of all testing material~~
 
-need to make kana/vocab testing work properly
+~~need to make kana/vocab testing work properly~~
 
 remote archive creation seems broken
 

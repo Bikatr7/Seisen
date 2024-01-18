@@ -65,12 +65,16 @@ class FileEnsurer:
 
    ## kana
    kana_path = os.path.join(kana_dir, "kana.seisen")
+   kana_testing_material_path = os.path.join(kana_dir, "kana_testing_material.seisen")
+   kana_readings_path = os.path.join(kana_dir, "kana_readings.seisen")
    kana_synonyms_path = os.path.join(kana_dir, "kana_synonyms.seisen")
    kana_typos_path = os.path.join(kana_dir, "kana_typos.seisen")
    kana_incorrect_typos_path = os.path.join(kana_dir, "kana_incorrect_typos.seisen")
 
    ## vocab
    vocab_path = os.path.join(vocab_dir, "vocab.seisen")
+   vocab_testing_material_path = os.path.join(vocab_dir, "vocab_testing_material.seisen")
+   vocab_readings_path = os.path.join(vocab_dir, "vocab_readings.seisen")
    vocab_synonyms_path = os.path.join(vocab_dir, "vocab_synonyms.seisen")
    vocab_typos_path = os.path.join(vocab_dir, "vocab_typos.seisen")
    vocab_incorrect_typos_path = os.path.join(vocab_dir, "vocab_incorrect_typos.seisen")
@@ -85,11 +89,10 @@ class FileEnsurer:
    ## the kana seisen uses to determine if a word is kanji or not
    all_kana_path = os.path.join(local_kana_lib_dir, "kana.txt")
 
-   ## the readings for the kana in the file path above
-   all_kana_readings_path = os.path.join(local_kana_lib_dir, "kana_readings.txt")
-
-   ## the answers for the kana in file path above
-   all_kana_synonyms_path = os.path.join(local_kana_lib_dir, "kana_synonyms.seisen")
+   local_lib_kana_path = os.path.join(local_kana_lib_dir, "kana.seisen")
+   local_lib_kana_testing_material_path = os.path.join(local_kana_lib_dir, "kana_testing_material.seisen")
+   local_lib_kana_readings_path = os.path.join(local_kana_lib_dir, "kana_readings.seisen")
+   local_lib_kana_synonyms_path = os.path.join(local_kana_lib_dir, "kana_synonyms.seisen")
 
    ##----------------------------------/
 
@@ -98,11 +101,10 @@ class FileEnsurer:
    ## where the local vocab files are located
    local_vocab_lib_dir = os.path.join(local_lib_dir, "vocab")
 
-   ## path to the starter vocab.txt file that is used for testing purposes
    local_vocab_lib_path = os.path.join(local_vocab_lib_dir, "vocab.seisen")
-
-   ## path to the starter vocab synonym.txt file that is used for testing purposes
-   local_vocab_synonyms_lib_path = os.path.join(local_vocab_lib_dir, "vocab_synonyms.seisen")
+   local_vocab_lib_testing_material_path = os.path.join(local_vocab_lib_dir, "vocab_testing_material.seisen")
+   local_vocab_lib_readings_path = os.path.join(local_vocab_lib_dir, "vocab_readings.seisen")
+   local_vocab_lib_synonyms_path = os.path.join(local_vocab_lib_dir, "vocab_synonyms.seisen")
 
    ##----------------------------------/
 
@@ -116,7 +118,7 @@ class FileEnsurer:
    last_local_remote_backup_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite.txt")
 
    ## contains a more accurate timestamp of the last time that remote was overwritten with local
-   last_local_remote_overwrite_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite_accurate.txt")
+   last_local_remote_overwrite_timestamp_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite_timestamp.txt")
    
    ##----------------------------------/
 
@@ -189,6 +191,9 @@ class FileEnsurer:
 
       """
 
+      if(not os.path.exists(FileEnsurer.config_dir)):
+         os.makedirs(FileEnsurer.config_dir)
+
       FileHandler.standard_create_directory(FileEnsurer.logins_dir)
       FileHandler.standard_create_directory(FileEnsurer.lib_dir)
       FileHandler.standard_create_directory(FileEnsurer.kana_dir)
@@ -227,6 +232,15 @@ class FileEnsurer:
 
       FileHandler.standard_create_file(FileEnsurer.kana_incorrect_typos_path)
 
+      kana_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_path)
+      kana_synonyms_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_synonyms_path)
+      kana_readings_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_readings_path)
+      kana_testing_material_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_testing_material_path)
+
+      ## if kana testing files are damaged or empty, then repair them
+      if(kana_damaged or kana_synonyms_damaged or kana_readings_damaged or kana_testing_material_damaged):
+         FileEnsurer.repair_kana()
+
 ##--------------------start-of-ensure_kana_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    @staticmethod
@@ -242,6 +256,15 @@ class FileEnsurer:
 
       FileHandler.standard_create_file(FileEnsurer.vocab_incorrect_typos_path)
 
+      vocab_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_path)
+      vocab_synonyms_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_synonyms_path)
+      vocab_readings_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_readings_path)
+      vocab_testing_material_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_testing_material_path)
+
+      ## if vocab testing files are damaged or empty, then repair them
+      if(vocab_damaged or vocab_synonyms_damaged or vocab_readings_damaged or vocab_testing_material_damaged):
+         FileEnsurer.repair_vocab()
+
 ##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
    @staticmethod
@@ -254,14 +277,6 @@ class FileEnsurer:
       """
 
       FileEnsurer.ensure_remote_lib_files()
-
-      ## if kana testing files are damaged or empty, then repair them
-      if(os.path.exists(FileEnsurer.kana_path) == False or os.path.getsize(FileEnsurer.kana_path) == 0 or os.path.exists(FileEnsurer.kana_synonyms_path) == False or os.path.getsize(FileEnsurer.kana_synonyms_path) == 0):
-         FileEnsurer.repair_kana()
-
-      ## if vocab testing files are damaged or empty, then repair them
-      if(os.path.exists(FileEnsurer.vocab_path) == False or os.path.getsize(FileEnsurer.vocab_path) == 0 or os.path.exists(FileEnsurer.vocab_synonyms_path) == False or os.path.getsize(FileEnsurer.vocab_synonyms_path) == 0):
-         FileEnsurer.repair_vocab()
 
 ##--------------------start-of-ensure_remote_lib_files()------- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -288,45 +303,11 @@ class FileEnsurer:
 
       """
 
-      ## kana black list, small kana and symbols
-      black_list_characters_kana = ['ヶ', 'ョ', 'ゃ', 'ァ', 'ィ', 'ゥ', 'ェ', 'ォ', 'ァ', 'ゅ', 'ょ', 'ぉ', '-', 'ヱ', 'ゐ', 'ヰ', 'ー', 'ッ','っ']
-
-      black_list_indexes = []
-      kana_readings = []
-
-      default_kana_to_write = ""
-
-      i = 0
-
-      ## raw readings
-      with open(FileEnsurer.all_kana_readings_path, 'r', encoding="utf-8") as file:
-         kana_readings = file.readlines()
-
-      ## kana characters
-      with open(FileEnsurer.all_kana_path, 'r', encoding="utf-8") as file:
-
-         for line in file:
-
-            i+=1
-
-            if(line.strip() not in black_list_characters_kana):
-               default_kana_to_write += str(i) + "," + line.strip() + "," + kana_readings[i-1].strip() + ",0,0,\n"
-
-            else:
-               black_list_indexes.append(i)
-
-      with open(FileEnsurer.kana_path, 'w+', encoding="utf-8") as file:
-         file.write(default_kana_to_write)
-      
-      with open(FileEnsurer.all_kana_readings_path, 'r', encoding="utf-8") as file:
-         kana_synonyms = file.readlines()
-
-      for i, synonym in enumerate(kana_synonyms,start=1):
-
-         if(i not in black_list_indexes):
-            kana_csep_insert_values = [str(i), str(i), synonym.rstrip(',\n'), "kana"]
-
-            FileHandler.write_seisen_line(FileEnsurer.kana_synonyms_path, kana_csep_insert_values)
+      ## directly copy the files from the local lib to the actual files
+      shutil.copy2(FileEnsurer.local_lib_kana_path, FileEnsurer.kana_path)
+      shutil.copy2(FileEnsurer.local_lib_kana_testing_material_path, FileEnsurer.kana_testing_material_path)
+      shutil.copy2(FileEnsurer.local_lib_kana_readings_path, FileEnsurer.kana_readings_path)
+      shutil.copy2(FileEnsurer.local_lib_kana_synonyms_path, FileEnsurer.kana_synonyms_path)
 
       Logger.log_action("Kana files repaired.")
 
@@ -343,7 +324,9 @@ class FileEnsurer:
 
       ## directly copy the files from the local lib to the actual files
       shutil.copy2(FileEnsurer.local_vocab_lib_path, FileEnsurer.vocab_path)
-      shutil.copy2(FileEnsurer.local_vocab_synonyms_lib_path, FileEnsurer.vocab_synonyms_path)
+      shutil.copy2(FileEnsurer.local_vocab_lib_testing_material_path, FileEnsurer.vocab_testing_material_path)
+      shutil.copy2(FileEnsurer.local_vocab_lib_readings_path, FileEnsurer.vocab_readings_path)
+      shutil.copy2(FileEnsurer.local_vocab_lib_synonyms_path, FileEnsurer.vocab_synonyms_path)
 
       Logger.log_action("Vocab files repaired.")
 
@@ -366,7 +349,7 @@ class FileEnsurer:
       FileHandler.standard_create_file(FileEnsurer.last_remote_backup_path)
 
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_path)
-      FileHandler.standard_create_file(FileEnsurer.last_local_remote_overwrite_accurate_path)
+      FileHandler.standard_create_file(FileEnsurer.last_local_remote_overwrite_timestamp_path)
 
 ##--------------------start-of-ensure_settings_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

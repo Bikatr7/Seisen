@@ -2,13 +2,16 @@ class IncorrectTypo:
 
     """
 
-    The IncorrectTypo class is used to represent typos the user makes but are not actually typos when guessing a Word.
+    The IncorrectTypo class represents typos the user makes but are not actually typos when guessing a Word.
         
     """
 
 ##--------------------start-of-IncorrectTypo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, incoming_word_id:int, incoming_incorrect_typo_id:int, incoming_incorrect_typo_value:str, incoming_word_type:str) -> None:
+    def __init__(self, 
+                incoming_word_id:int, 
+                incoming_incorrect_typo_id:int, 
+                incoming_incorrect_typo_value:str) -> None:
 
         """
         
@@ -18,7 +21,6 @@ class IncorrectTypo:
         incoming_word_id (int) : The ID of the Word the IncorrectTypo is for.
         incoming_incorrect_typo_id (int) : The ID of the IncorrectTypo.
         incoming_incorrect_typo_value (str) : The value of the IncorrectTypo.
-        incoming_word_type (str) : The type of the Word the IncorrectTypo is for.
 
         """
 
@@ -27,5 +29,3 @@ class IncorrectTypo:
         self.incorrect_typo_id:int  = incoming_incorrect_typo_id
 
         self.incorrect_typo_value:str = incoming_incorrect_typo_value
-
-        self.word_type:str = incoming_word_type

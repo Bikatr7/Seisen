@@ -106,7 +106,7 @@ class ScoreRater:
             display_item = (
                 f"\n---------------------------------\n"
                 f"Likelihood: {kana.likelihood}%\n"
-                f"Kana: {kana.testing_material}\n"
+                f"Kana: {kana.testing_material_all}\n"
                 f"Incorrect Guesses: {kana.incorrect_count}\n"
                 f"Correct Guesses: {kana.correct_count}\n"
                 f"ID: {kana.word_id}\n"
@@ -123,7 +123,7 @@ class ScoreRater:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        Logger.log_action(kana_to_test.testing_material + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
+        Logger.log_action(kana_to_test.testing_material_all[0].testing_material_value + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
 
         return kana_to_test, display_item_list
     
@@ -184,7 +184,7 @@ class ScoreRater:
             display_item = (
                 f"\n---------------------------------\n"
                 f"Likelihood: {Vocab.likelihood}%\n"
-                f"Vocab: {Vocab.testing_material}\n"
+                f"Vocab: {Vocab.testing_material_all}\n"
                 f"Incorrect Guesses: {Vocab.incorrect_count}\n"
                 f"Correct Guesses: {Vocab.correct_count}\n"
                 f"ID: {Vocab.word_id}\n"
@@ -201,7 +201,7 @@ class ScoreRater:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        Logger.log_action(vocab_to_test.testing_material + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
+        Logger.log_action(vocab_to_test.testing_material_all[0].testing_material_value + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
 
         return vocab_to_test, display_item_list
     
@@ -406,15 +406,15 @@ class ScoreRater:
             new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(1))
             path_to_write_to = FileEnsurer.kana_typos_path
 
-        new_typo = typo_blueprint(Word.word_id, new_typo_id, typo, Word.word_type)
+        new_typo = typo_blueprint(Word.word_id, new_typo_id, typo)
 
         ## updates local storage so the typo will be saved
-        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_typo_id), str(new_typo.typo_value), str(new_typo.word_type)])
+        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_typo_id), str(new_typo.typo_value)])
 
         ## updates the current session with the typo
         Word.typos.append(new_typo)
 
-        Logger.log_action("Logged a typo : " + typo + " for " + Word.testing_material + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged a typo : " + typo + " for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -439,15 +439,15 @@ class ScoreRater:
             new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(2))
             path_to_write_to = FileEnsurer.kana_incorrect_typos_path
 
-        new_incorrect_typo = incorrect_typo_blueprint(Word.word_id, new_incorrect_typo_id, incorrect_typo, Word.word_type)
+        new_incorrect_typo = incorrect_typo_blueprint(Word.word_id, new_incorrect_typo_id, incorrect_typo)
 
         ## updates local storage so the incorrect typo will be saved
-        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value), str(new_incorrect_typo.word_type)])
+        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value)])
 
         ## updates the current session with the incorrect typo
         Word.incorrect_typos.append(new_incorrect_typo)
 
-        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + Word.testing_material + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_correct_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -464,18 +464,17 @@ class ScoreRater:
         """
 
         ## where the correct count index is in the file
-        KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 5
-        VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 7
+        CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 2
     
         if(isinstance(Word, Vocab)):
             word_ids = LocalHandler.get_list_of_all_ids(6)
             path_to_write_to = FileEnsurer.vocab_path
-            index_location = VOCAB_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
         
         else:
             word_ids = LocalHandler.get_list_of_all_ids(5)
             path_to_write_to = FileEnsurer.kana_path
-            index_location = KANA_CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         line_to_write_to = 0
 
@@ -488,7 +487,7 @@ class ScoreRater:
         ## updates local storage so the correct answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.correct_count))
 
-        Logger.log_action("Logged a correct answer for " + Word.testing_material + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged a correct answer for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -505,18 +504,17 @@ class ScoreRater:
         """
 
         ## where the incorrect count index is in the file
-        KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 4
-        VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 6
+        INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 3
 
         if(isinstance(Word, Vocab)):
             word_ids = LocalHandler.get_list_of_all_ids(6)
             path_to_write_to = FileEnsurer.vocab_path
-            index_location = VOCAB_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         else:
             word_ids = LocalHandler.get_list_of_all_ids(5)
             path_to_write_to = FileEnsurer.kana_path
-            index_location = KANA_INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
+            index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         line_to_write_to = 0
 
@@ -529,4 +527,4 @@ class ScoreRater:
         ## updates local storage so the incorrect answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.incorrect_count))
 
-        Logger.log_action("Logged an incorrect answer for " + Word.testing_material + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged an incorrect answer for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))

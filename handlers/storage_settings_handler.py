@@ -70,7 +70,7 @@ class StorageSettingsHandler():
 ##--------------------start-of-reset_local_with_remote()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def reset_local_with_remote() -> None:
+    def reset_local_with_remote(hard_reset:bool=False) -> None:
 
         """
 
@@ -85,12 +85,20 @@ class StorageSettingsHandler():
             return
 
         with open(FileEnsurer.last_local_remote_overwrite_accurate_path, 'r', encoding="utf-8") as file:
-            last_backup_date = str(file.read().strip()).strip('\x00').strip()
+            strips_to_perform = " \n\x00"
+
+            last_backup_date = file.read()
+
+            last_backup_date = last_backup_date.strip(strips_to_perform)
         
         if(last_backup_date == ""):
             last_backup_date = "(NEVER)"
 
-        confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no):\n"))
+        if(hard_reset):
+            confirm = "1"
+        
+        else:
+            confirm = str(input("Warning, remote storage has not been updated since " + last_backup_date + ", all changes made to local storage after this will be lost. Are you sure you wish to continue? (1 for yes 2 for no):\n"))
 
         if(confirm == "1"):
             RemoteHandler.reset_local_storage()
@@ -189,6 +197,8 @@ class StorageSettingsHandler():
         
         """ 
 
+        raise NotImplementedError
+
         write_string_list = []
 
         file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d_%H-%M-%S')) + ".seisen"
@@ -229,6 +239,9 @@ class StorageSettingsHandler():
         Imports an external vocab deck into Seisen.
         
         """
+
+        ## will deal with this later
+        raise NotImplementedError
 
         valid_import_paths = []
         valid_import_names = []

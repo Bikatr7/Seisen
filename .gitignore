@@ -97,4 +97,9 @@ __pypackages__/
 .vs/ProjectSettings.json
 .vs/VSWorkspaceState.json
 .vs/Kudasai/v17/.wsuo
+
+## lib files
 lib/remote/has_connection_failed.txt
+
+## seisen config that im altering to test
+SeisenConfig_to_alter/

@@ -356,7 +356,7 @@ class RemoteHandler():
             time.sleep(1)
             return
         
-        with open(FileEnsurer.last_local_remote_overwrite_accurate_path, 'w+', encoding="utf-8") as file:
+        with open(FileEnsurer.last_local_remote_overwrite_timestamp_path, 'w+', encoding="utf-8") as file:
 
             last_overwrite_date_accurate = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -871,11 +871,11 @@ class RemoteHandler():
             RemoteHandler.assemble_kana()
 
             RemoteHandler.write_kana_to_disk(remote_archive_kana_path, 
-                                            remote_archive_kana_typos_path,
-                                            remote_archive_kana_incorrect_typos_path,
+                                            remote_archive_kana_testing_material_path,
                                             remote_archive_kana_synonyms_path,
                                             remote_archive_kana_readings_path,
-                                            remote_archive_kana_testing_material_path)
+                                            remote_archive_kana_typos_path,
+                                            remote_archive_kana_incorrect_typos_path)
 
         ##----------------------------------------------------------------vocab----------------------------------------------------------------
 
@@ -894,12 +894,12 @@ class RemoteHandler():
 
             RemoteHandler.assemble_vocab()
 
-            RemoteHandler.write_vocab_to_disk(remote_archive_vocab_path, 
-                                            remote_archive_vocab_typos_path,
-                                            remote_archive_vocab_incorrect_typos_path,
+            RemoteHandler.write_vocab_to_disk(remote_archive_vocab_path,
+                                            remote_archive_vocab_testing_material_path,
                                             remote_archive_vocab_synonyms_path,
                                             remote_archive_vocab_readings_path,
-                                            remote_archive_vocab_testing_material_path)
+                                            remote_archive_vocab_typos_path,
+                                            remote_archive_vocab_incorrect_typos_path)
 
         ##----------------------------------------------------------------main----------------------------------------------------------------
 

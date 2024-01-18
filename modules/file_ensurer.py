@@ -65,7 +65,7 @@ class FileEnsurer:
 
    ## kana
    kana_path = os.path.join(kana_dir, "kana.seisen")
-   kana_testing_material_path = os.path.join(kana_dir, "kana_testing_material_to_write.seisen")
+   kana_testing_material_path = os.path.join(kana_dir, "kana_testing_material.seisen")
    kana_readings_path = os.path.join(kana_dir, "kana_readings.seisen")
    kana_synonyms_path = os.path.join(kana_dir, "kana_synonyms.seisen")
    kana_typos_path = os.path.join(kana_dir, "kana_typos.seisen")
@@ -118,7 +118,7 @@ class FileEnsurer:
    last_local_remote_backup_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite.txt")
 
    ## contains a more accurate timestamp of the last time that remote was overwritten with local
-   last_local_remote_overwrite_accurate_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite_accurate.txt")
+   last_local_remote_overwrite_timestamp_path = os.path.join(local_remote_archives_dir, "last_local_remote_overwrite_timestamp.txt")
    
    ##----------------------------------/
 
@@ -349,7 +349,7 @@ class FileEnsurer:
       FileHandler.standard_create_file(FileEnsurer.last_remote_backup_path)
 
       FileHandler.standard_create_file(FileEnsurer.last_local_remote_backup_path)
-      FileHandler.standard_create_file(FileEnsurer.last_local_remote_overwrite_accurate_path)
+      FileHandler.standard_create_file(FileEnsurer.last_local_remote_overwrite_timestamp_path)
 
 ##--------------------start-of-ensure_settings_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

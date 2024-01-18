@@ -42,7 +42,7 @@ Likely to grow and expand overtime.
 
 ~~need to make kana/vocab testing work properly~~
 
-remote archive creation seems broken
+~~remote archive creation seems broken~~
 
 -----------------------------------------------------------------------------------------------------------------
 Tasks above are to be implemented in Breakdown-of-word/vocab-classes-and-large-architecture-changes

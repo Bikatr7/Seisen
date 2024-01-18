@@ -265,7 +265,7 @@ class Seisen:
         Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         Seisen.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
-        Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material[0].testing_material_value + "?\n"
+        Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material_main.testing_material_value + "?\n"
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
@@ -371,11 +371,11 @@ class Seisen:
         Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         Seisen.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
-        Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material[0].testing_material_value + "?\n"
+        Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material_main.testing_material_value + "?\n"
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
-        all_testing_material = [value.testing_material_value for value in vocab_to_test.testing_material]
+        all_testing_material = [value.testing_material_value for value in vocab_to_test.testing_material_all]
         all_readings = [reading for reading in vocab_to_test.readings]
 
         all_furigana = [furigana.furigana_value for furigana in all_readings]
@@ -384,7 +384,7 @@ class Seisen:
 
         furigana_string = ' '.join(all_furigana)
 
-        extended_prompt = vocab_to_test.testing_material[0].testing_material_value + "/" + testing_material_string + "/" + furigana_string
+        extended_prompt = "/".join([value.testing_material_value for value in vocab_to_test.testing_material_all]) + "/" + testing_material_string + "/" + furigana_string
 
         ## if the user wants to change the mode do so
         if(Seisen.current_user_guess == "v"):
@@ -403,7 +403,7 @@ class Seisen:
 
             Toolkit.clear_console()
 
-            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material[0].testing_material_value, extended_prompt)
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material_main.testing_material_value, extended_prompt)
 
             Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
@@ -431,7 +431,7 @@ class Seisen:
         Toolkit.clear_console()
 
         if(romaTriggered == False):
-            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material[0].testing_material_value, extended_prompt)
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material_main.testing_material_value, extended_prompt)
 
         if(isCorrect == True):
             number_of_correct_rounds+=1

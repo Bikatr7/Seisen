@@ -77,7 +77,7 @@ class RemoteHandler():
             is_first_synonym:bool = True
 
             ## clear out old dummy data
-            kana.testing_material.clear()
+            kana.testing_material_all.clear()
             kana.testing_material_answer_all.clear()
             kana.readings.clear()
 
@@ -93,7 +93,7 @@ class RemoteHandler():
 
             for testing_material in kana_testing_materials:
                 if(testing_material.word_id == kana.word_id):
-                    kana.testing_material.append(testing_material)
+                    kana.testing_material_all.append(testing_material)
                     Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Kana " + str(kana.word_id))
 
             for reading in kana_readings:
@@ -123,7 +123,7 @@ class RemoteHandler():
 
             kana_values = [kana.word_id, kana.incorrect_count, kana.correct_count]
             
-            for testing_material in kana.testing_material:
+            for testing_material in kana.testing_material_all:
                 testing_material_values = [testing_material.word_id, testing_material.testing_material_id, testing_material.testing_material_value]
                 FileHandler.write_seisen_line(kana_testing_material_path, testing_material_values)
 
@@ -187,7 +187,7 @@ class RemoteHandler():
             for synonym in vocab_synonyms:
 
                 ## clear out old dummy data
-                vocab.testing_material.clear()
+                vocab.testing_material_all.clear()
                 vocab.testing_material_answer_all.clear()
                 vocab.readings.clear()
 
@@ -202,7 +202,7 @@ class RemoteHandler():
 
             for testing_material in vocab_testing_materials:
                 if(testing_material.word_id == vocab.word_id):
-                    vocab.testing_material.append(testing_material)
+                    vocab.testing_material_all.append(testing_material)
                     Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Vocab " + str(vocab.word_id))
 
             for reading in vocab_readings:
@@ -232,7 +232,7 @@ class RemoteHandler():
 
             vocab_values = [vocab.word_id, vocab.incorrect_count, vocab.correct_count]
             
-            for testing_material in vocab.testing_material:
+            for testing_material in vocab.testing_material_all:
                 testing_material_values = [testing_material.word_id, testing_material.testing_material_id, testing_material.testing_material_value]
                 FileHandler.write_seisen_line(vocab_testing_material_path, testing_material_values)
 

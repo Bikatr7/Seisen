@@ -47,7 +47,9 @@ class Word:
 
         self.word_id:int = incoming_id
 
-        self.testing_material:typing.List[TestingMaterial] = incoming_testing_material
+        self.testing_material_main:TestingMaterial = incoming_testing_material[0]
+
+        self.testing_material_all:typing.List[TestingMaterial] = incoming_testing_material
 
         ## the answer to the testing_material, i.e. the dictionary definition of the Word
         self.testing_material_answer_main:Synonym = incoming_testing_material_answer_main

@@ -38,9 +38,9 @@ Likely to grow and expand overtime.
 
 ~~since spaces and other shit keep getting added to the timestamp files, we can just start deleting them instead lol~~
 
-need to make kana/vocab testing work properly
+~~Add a default testing_material, likely just the first index of all testing material~~
 
-Add a default testing_material, likely just the first index of all testing material
+need to make kana/vocab testing work properly
 
 remote archive creation seems broken
 

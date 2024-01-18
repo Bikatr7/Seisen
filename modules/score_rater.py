@@ -106,7 +106,7 @@ class ScoreRater:
             display_item = (
                 f"\n---------------------------------\n"
                 f"Likelihood: {kana.likelihood}%\n"
-                f"Kana: {kana.testing_material}\n"
+                f"Kana: {kana.testing_material_all}\n"
                 f"Incorrect Guesses: {kana.incorrect_count}\n"
                 f"Correct Guesses: {kana.correct_count}\n"
                 f"ID: {kana.word_id}\n"
@@ -123,7 +123,7 @@ class ScoreRater:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        Logger.log_action(kana_to_test.testing_material[0].testing_material_value + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
+        Logger.log_action(kana_to_test.testing_material_all[0].testing_material_value + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
 
         return kana_to_test, display_item_list
     
@@ -184,7 +184,7 @@ class ScoreRater:
             display_item = (
                 f"\n---------------------------------\n"
                 f"Likelihood: {Vocab.likelihood}%\n"
-                f"Vocab: {Vocab.testing_material}\n"
+                f"Vocab: {Vocab.testing_material_all}\n"
                 f"Incorrect Guesses: {Vocab.incorrect_count}\n"
                 f"Correct Guesses: {Vocab.correct_count}\n"
                 f"ID: {Vocab.word_id}\n"
@@ -201,7 +201,7 @@ class ScoreRater:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        Logger.log_action(vocab_to_test.testing_material[0].testing_material_value + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
+        Logger.log_action(vocab_to_test.testing_material_all[0].testing_material_value + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
 
         return vocab_to_test, display_item_list
     
@@ -414,7 +414,7 @@ class ScoreRater:
         ## updates the current session with the typo
         Word.typos.append(new_typo)
 
-        Logger.log_action("Logged a typo : " + typo + " for " + Word.testing_material[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged a typo : " + typo + " for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -447,7 +447,7 @@ class ScoreRater:
         ## updates the current session with the incorrect typo
         Word.incorrect_typos.append(new_incorrect_typo)
 
-        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + Word.testing_material[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_correct_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -488,7 +488,7 @@ class ScoreRater:
         ## updates local storage so the correct answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.correct_count))
 
-        Logger.log_action("Logged a correct answer for " + Word.testing_material[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged a correct answer for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -529,4 +529,4 @@ class ScoreRater:
         ## updates local storage so the incorrect answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.incorrect_count))
 
-        Logger.log_action("Logged an incorrect answer for " + Word.testing_material[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged an incorrect answer for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))

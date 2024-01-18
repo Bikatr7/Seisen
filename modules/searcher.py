@@ -45,7 +45,7 @@ class Searcher:
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
-        mini_testing_material_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material]
+        mini_testing_material_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material_all]
         mini_reading_print = [str(reading.romaji_value) + "/" + str(reading.furigana_value) for reading in target_vocab.readings]
         mini_synonym_print = [str(synonym.synonym_id) for synonym in target_vocab.testing_material_answer_all]
 
@@ -56,7 +56,7 @@ class Searcher:
             f"Incorrect Guesses: {target_vocab.incorrect_count}\n"
             f"Correct Guesses: {target_vocab.correct_count}\n"
             f"Testing Material ID(S) : {mini_testing_material_print}\n"
-            f"Testing Material Value(s): {[testing_material.testing_material_value for testing_material in target_vocab.testing_material]}\n"
+            f"Testing Material Value(s): {[testing_material.testing_material_value for testing_material in target_vocab.testing_material_all]}\n"
             f"Reading ID(S): {mini_reading_print}\n"
             f"Reading Value(s): {[str(reading.romaji_value) + '/' + str(reading.furigana_value) for reading in target_vocab.readings]}\n"
             f"Synonym ID(S): {mini_synonym_print}\n"
@@ -99,7 +99,7 @@ class Searcher:
             f"---------------------------------\n"
             f"Synonym: {target_synonym.synonym_value}\n"
             f"Synonym ID: {target_synonym.synonym_id}\n"
-            f"VOCAB: {target_vocab.testing_material}\n"
+            f"VOCAB: {target_vocab.testing_material_all}\n"
             f"VOCAB ID: {target_synonym.word_id}\n"
             f"---------------------------------\n"
         )
@@ -168,7 +168,7 @@ class Searcher:
         
         for vocab in LocalHandler.vocab:
             if(vocab.word_id == vocab_id):
-                term = vocab.testing_material
+                term = vocab.testing_material_all
 
         if(term == None):
             raise Searcher.IDNotFoundError(vocab_id)
@@ -199,7 +199,7 @@ class Searcher:
         final_id = -1
 
         for vocab in LocalHandler.vocab:
-            if(vocab.testing_material == term):
+            if(vocab.testing_material_all == term):
                 matching_ids.append(vocab.word_id)
 
         if(len(matching_ids) == 0):
@@ -244,7 +244,7 @@ class Searcher:
                 if(term == reading.furigana_value):
                     vocab_ids.append(vocab.word_id)
 
-            for testing_material in vocab.testing_material:
+            for testing_material in vocab.testing_material_all:
                 if(term == testing_material.testing_material_value):
                     vocab_ids.append(vocab.word_id)
 

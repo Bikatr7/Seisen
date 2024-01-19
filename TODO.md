@@ -1,4 +1,41 @@
-## Things to after the above branch
+Vocab Setting Design (searcher to be refactored alongside):
+Likely Going to need to structure into Add/Edit/Delete due to constraint of 9 options per prompt:
+
+So:
+
+first menu would be
+
+1. Add Entity
+2. Edit Entity
+3. Delete Entity
+4. Search Entity
+
+For add we'd need:
+1. Add Vocab
+2. Add Synonym To Vocab
+3. Add TestingMaterial To Vocab
+4. Add Reading To Vocab
+5. Add Typo To Vocab
+6. Add IncorrectTypo To Vocab
+
+For Edit we'd need:
+1. Edit Vocab
+2. Edit Synonym For Vocab
+3. Edit TestingMaterial For Vocab
+4. Edit Reading For Vocab
+5. Edit Typo For Vocab
+6. Edit IncorrectTypo For Vocab
+
+For Delete we'd need:
+1. Delete Vocab
+2. Delete Synonym From Vocab
+3. Delete TestingMaterial From Vocab
+4. Delete Reading From Vocab
+5. Delete Typo From Vocab
+6. Delete IncorrectTypo From Vocab
+
+Then we can just have a search function.
+
 Refactor searcher and vocab_settings_handler to fit with new architecture
 
 Add a auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"

@@ -10,8 +10,8 @@ from modules.file_ensurer import FileEnsurer
 
 class InputType(Enum):
     NUMBER_CHOICE_NO_V = 1
-    VALIDATION_WITH_V_TEXT_ENTER = 4
-    VALIDATION_WITH_V_SINGLE_KEY = 5
+    VALIDATION_WITH_V_SINGLE_KEY = 4
+    VALIDATION_WITH_V_TEXT_ENTER = 5
 
 class Toolkit():
 
@@ -44,8 +44,8 @@ class Toolkit():
 
         Input Types:
         1 : Number Choice No V : the user can only enter a number choice or q.
-        4 : Validation With V Text Enter : the user can enter a number choice, q, or v. User must press enter to confirm their input.
-        5 : Validation With V Single Key : the user can enter a number choice, q, or v. User input is confirmed with a single key press.
+        4 : Validation With V Single Key : the user can enter a number choice, q, or v. User input is confirmed with a single key press.
+        5 : Validation With V Text Enter : the user can enter a number choice, q, or v. User must press enter to confirm their input.
 
         """
 

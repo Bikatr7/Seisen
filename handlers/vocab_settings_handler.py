@@ -52,6 +52,8 @@ class VocabSettingsHandler():
 
         type_setting = Toolkit.input_check(4, Toolkit.get_single_key(), 4, vocab_message)
 
+        if(type_setting == "1"):
+            VocabSettingsHandler.add_entity()
 
 ##--------------------start-of-add_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
@@ -70,8 +72,10 @@ class VocabSettingsHandler():
 
         print(entity_message)
 
-        type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 6, entity_message)
+        type_setting = Toolkit.input_check(4, Toolkit.get_single_key(), 6, entity_message)
 
+        if(type_setting == "1"):
+            VocabSettingsHandler.add_vocab()
 
 ##--------------------start-of-edit_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
@@ -161,7 +165,7 @@ class VocabSettingsHandler():
                 raw_testing_material.append(Toolkit.user_confirm("Please enter your vocab's additional testing material (testing material are kanji/kana that are used as the material to be tested on)."))
 
             ## romaji and furigana (reading)
-            curr_raw_romaji = Toolkit.user_confirm(f"Please enter {raw_testing_material}'s main romaji (romaji are the pronunciation of the testing material, your main romaji should match the main testing material).")
+            curr_raw_romaji = Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main romaji (romaji are the pronunciation of the testing material, your main romaji should match the main testing material).")
             curr_raw_furigana = Toolkit.user_confirm(f"Please enter {curr_raw_romaji}'s furigana (furigana is the kana spelling of {curr_raw_romaji}).") 
 
             raw_romaji.append(curr_raw_romaji)
@@ -173,42 +177,45 @@ class VocabSettingsHandler():
                 raw_furigana.append(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."))
 
             ## synonyms
-            raw_synonyms.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s main synonym (Synonyms are the definition of the testing material. Your main synonym should match the main testing material)."))
+            raw_synonyms.append(Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main synonym (Synonyms are the definition of the testing material. Your main synonym should match the main testing material)."))
 
             while(input(f"Enter 1 if {raw_testing_material} has any additional synonyms, otherwise enter 2 (Synonyms are the definition of the testing material).") == "1"):
                 Toolkit.clear_stream()
                 raw_synonyms.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional synonym (Synonyms are the definition of the testing material. Additional synonyms can match any)."))
 
-
-            ## assemble actual objects and assign ids
-            for i in range(len(raw_testing_material)):
-                new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(12))
-                testing_material.append(testing_material_blueprint(new_vocab_id, new_testing_material_id, raw_testing_material[i]))
-
-            for i in range(len(raw_romaji)):
-                new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(10))
-                readings.append(reading_blueprint(new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
-
-            for i in range(len(raw_synonyms)):
-                new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
-                synonyms.append(synonym_blueprint(new_vocab_id, new_synonym_id, raw_synonyms[i]))
-
-            ## assemble vocab object
-            new_vocab = vocab_blueprint(new_vocab_id, testing_material, synonyms[0], synonyms, readings, incoming_correct_count=0, incoming_incorrect_count=0)
-
-            ## add to current session
-            LocalHandler.vocab.append(new_vocab)
-
-            ## write to file
-            RemoteHandler.write_vocab_to_disk(FileEnsurer.vocab_path,
-                                            FileEnsurer.vocab_testing_material_path,
-                                            FileEnsurer.vocab_synonyms_path,
-                                            FileEnsurer.vocab_readings_path,
-                                            FileEnsurer.vocab_typos_path,
-                                            FileEnsurer.vocab_incorrect_typos_path,
-                                            vocab=new_vocab)
-
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
+
+        ## assemble actual objects and assign ids
+        for i in range(len(raw_testing_material)):
+            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(12))
+            testing_material.append(testing_material_blueprint(new_vocab_id, new_testing_material_id, raw_testing_material[i]))
+
+            stuff_to_write = [new_vocab_id, new_testing_material_id, raw_testing_material[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_testing_material_path, stuff_to_write)
+
+        for i in range(len(raw_romaji)):
+            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(10))
+            readings.append(reading_blueprint(new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
+
+            stuff_to_write = [new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_readings_path, stuff_to_write)
+
+        for i in range(len(raw_synonyms)):
+            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
+            synonyms.append(synonym_blueprint(new_vocab_id, new_synonym_id, raw_synonyms[i]))
+
+            stuff_to_write = [new_vocab_id, new_synonym_id, raw_synonyms[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
+
+        ## assemble vocab object
+        new_vocab = vocab_blueprint(new_vocab_id, testing_material, synonyms[0], synonyms, readings, incoming_correct_count=0, incoming_incorrect_count=0)
+
+        ## write to file
+        stuff_to_write = [new_vocab_id, new_vocab.correct_count, new_vocab.incorrect_count]
+        FileHandler.write_seisen_line(FileEnsurer.vocab_path, stuff_to_write)
+
+        ## add to current session
+        LocalHandler.vocab.append(new_vocab)

@@ -34,19 +34,25 @@ For Delete we'd need:
 5. Delete Typo From Vocab
 6. Delete IncorrectTypo From Vocab
 
+Constraints:
+1. Vocab must have at least one reading, one testing material, and one synonym at creation.
+2. When you delete a vocab, you must delete all readings, testing materials, synonyms, typos, and incorrect typos associated with it.
+3. You cannot delete a reading, testing material, or synonym if it is the only one associated with a vocab.
+
 Then we can just have a search function.
 
-Refactor searcher and vocab_settings_handler to fit with new architecture
+For the search function we'd need:
+an auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"
 
-Add a auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"
-
-Need to add a way to allow user to see additional readings and testing material, likely via a keybind
-
-implement 'b' functionality for kana testing
+Searcher needs to be refactored to not require each search to have an assert, and incorporate more exception throwing.
 
 -----------------------------------------------------------------------------------------------------------------
 Tasks above are to be implemented in (full-refactor of searcher and vocab_settings_handler) branch
 -----------------------------------------------------------------------------------------------------------------
+
+Need to add a way to allow user to see additional readings and testing material, likely via a keybind
+
+implement 'b' functionality for kana testing
 
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.

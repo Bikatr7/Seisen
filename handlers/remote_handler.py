@@ -227,6 +227,8 @@ class RemoteHandler():
     @staticmethod
     def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_synonyms_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str, vocab:typing.Union[Vocab, None]=None) -> None:
 
+        old_remote_vocab:typing.List[Vocab] = []
+
         if(vocab != None):
             old_remote_vocab = RemoteHandler.vocab
             RemoteHandler.vocab = [vocab]

@@ -307,6 +307,14 @@ class LocalHandler():
         
         VOCAB SYNONYM ID = 8
 
+        KANA READING ID = 9
+
+        VOCAB READING ID = 10
+
+        KANA TESTING MATERIAL ID = 11
+
+        VOCAB TESTING MATERIAL ID = 12
+
         """
 
         ids = ["0"]

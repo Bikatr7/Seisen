@@ -225,7 +225,11 @@ class RemoteHandler():
 ##--------------------start-of-write_vocab_to_disk()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                     
     @staticmethod
-    def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_synonyms_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str) -> None:
+    def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_synonyms_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str, vocab:typing.Union[Vocab, None]=None) -> None:
+
+        if(vocab != None):
+            old_remote_vocab = RemoteHandler.vocab
+            RemoteHandler.vocab = [vocab]
 
         ## apply changes to local storage
         for vocab in RemoteHandler.vocab:
@@ -253,6 +257,10 @@ class RemoteHandler():
                 FileHandler.write_seisen_line(vocab_incorrect_typos_path, incorrect_typo_values)
 
             FileHandler.write_seisen_line(vocab_path, vocab_values)
+
+        if(vocab != None):
+            RemoteHandler.vocab = old_remote_vocab ## type: ignore
+            RemoteHandler.vocab.append(vocab)
 
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

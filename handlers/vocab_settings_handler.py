@@ -77,6 +77,9 @@ class VocabSettingsHandler():
         if(type_setting == "1"):
             VocabSettingsHandler.add_vocab()
 
+        elif(type_setting == "2"):
+            VocabSettingsHandler.add_synonym_to_existing_vocab()
+
 ##--------------------start-of-edit_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
@@ -211,11 +214,70 @@ class VocabSettingsHandler():
             FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
 
         ## assemble vocab object
-        new_vocab = vocab_blueprint(new_vocab_id, testing_material, synonyms[0], synonyms, readings, incoming_correct_count=0, incoming_incorrect_count=0)
+        new_vocab = vocab_blueprint(new_vocab_id, testing_material, synonyms[0], synonyms, readings, incoming_incorrect_count=0, incoming_correct_count=0)
 
         ## write to file
-        stuff_to_write = [new_vocab_id, new_vocab.correct_count, new_vocab.incorrect_count]
+        stuff_to_write = [new_vocab_id, new_vocab.incorrect_count, new_vocab.correct_count]
         FileHandler.write_seisen_line(FileEnsurer.vocab_path, stuff_to_write)
 
         ## add to current session
         LocalHandler.vocab.append(new_vocab)
+
+##--------------------start-of-add_synonym_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def add_synonym_to_existing_vocab() -> None:
+
+        """
+
+        Adds a synonym entity to an existing vocab entity in the database.
+
+        """ 
+
+        ## raw strings and actual objects
+        raw_synonyms:typing.List[str] = []
+        synonyms:typing.List[Synonym] = []
+
+        ## gets synonym components
+        try:
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add a Synonym to."))
+
+            print(target_vocab_id)
+
+            Toolkit.pause_console()
+
+            ## get target vocab
+            try:
+                target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
+
+                print(target_vocab.word_id)
+
+                Toolkit.pause_console()
+
+            except Searcher.IDNotFoundError:
+                print("Vocab not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+        
+            raw_synonyms.append(Toolkit.user_confirm("Please enter the Synonym/Answer for " + target_vocab.testing_material_main.testing_material_value + " you would like to add."))
+
+            while(input(f"Enter 1 if you'd like to add more synonyms for {target_vocab.testing_material_main.testing_material_value}, otherwise enter 2.") == "1"):
+                Toolkit.clear_stream()
+                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Synonym/Answer for {target_vocab.testing_material_main.testing_material_value} you would like to add.")) 
+        
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+        ## assemble actual objects, assign ids, and write to persistent storage
+        for i in range(len(raw_synonyms)):
+            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
+            synonyms.append(synonym_blueprint(target_vocab_id, new_synonym_id, raw_synonyms[i]))
+
+            stuff_to_write = [target_vocab_id, new_synonym_id, raw_synonyms[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
+
+        ## add to current session
+        for i in range(len(synonyms)):
+            target_vocab.testing_material_answer_all.append(synonyms[i])

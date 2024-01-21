@@ -4,6 +4,7 @@ import typing
 ## custom modules
 from modules.toolkit import Toolkit
 
+from entities.vocab import Vocab
 from entities.testing_material import TestingMaterial
 
 from handlers.local_handler import LocalHandler
@@ -150,74 +151,28 @@ class Searcher:
 ##--------------------start-of-get_vocab_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_vocab_term_from_id(vocab_id:int) -> typing.List[TestingMaterial]:
+    def get_vocab_from_id(vocab_id:int) -> Vocab:
 
         """
-        
-        Gets a vocab term given an id.
+
+        Gets a vocab given an id.
 
         Parameters:
-        vocab_id (int) : the id for the term we are searching for.
+        vocab_id (int) : the id of the vocab we are getting a print item for.
 
         Returns:
-        term (str) : the term if found, otherwise "-1".
+        vocab (Vocab) : the vocab for the id.
 
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
         """
 
-        term = None
-        
         for vocab in LocalHandler.vocab:
             if(vocab.word_id == vocab_id):
-                term = vocab.testing_material_all
+                return vocab
 
-        if(term == None):
-            raise Searcher.IDNotFoundError(vocab_id)
-
-        return term
-    
-##--------------------start-of-get_id_from_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def get_id_from_vocab_term(term:str) -> int:
-
-        """
-        
-        Gets a vocab id given an verb.
-
-        Parameters:
-        tern (str) : the term for the id we are searching for.
-
-        Returns:
-        final_id (int) : the id if found, otherwise -1.
-
-        """
-
-        matching_ids = []
-
-        id_print_message = ""
-
-        final_id = -1
-
-        for vocab in LocalHandler.vocab:
-            if(vocab.testing_material_all == term):
-                matching_ids.append(vocab.word_id)
-
-        if(len(matching_ids) == 0):
-            return final_id
-        elif(len(matching_ids) == 1):
-            final_id = matching_ids[0]
-            return final_id
-        
-        for id in matching_ids:
-            id_print_message += Searcher.get_vocab_print_item_from_id(id)
-
-        id_print_message += "\n\nWhich vocab are you looking for? (Enter position 1-" + str(len(matching_ids)) + ")"
-
-        target_index = int(Toolkit.input_check(4, Toolkit.get_single_key(), len(matching_ids), id_print_message)) - 1
-
-        final_id = matching_ids[target_index]
-
-        return final_id
+        raise Searcher.IDNotFoundError(vocab_id)
     
 ##--------------------start-of-get_ids_from_japanese()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     

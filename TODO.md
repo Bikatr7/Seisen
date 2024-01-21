@@ -11,8 +11,8 @@ first menu would be
 4. Search Entity
 
 For add we'd need:
-1. Add Vocab
-2. Add Synonym To Vocab
+1. ~~Add Vocab~~
+2. ~~Add Synonym To Vocab~~
 3. Add TestingMaterial To Vocab
 4. Add Reading To Vocab
 5. Add Typo To Vocab

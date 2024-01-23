@@ -80,6 +80,12 @@ class VocabSettingsHandler():
         elif(type_setting == "2"):
             VocabSettingsHandler.add_synonym_to_existing_vocab()
 
+        elif(type_setting == "3"):
+            VocabSettingsHandler.add_testing_material_to_existing_vocab()
+
+        elif(type_setting == "4"):
+            VocabSettingsHandler.add_reading_to_existing_vocab()
+
 ##--------------------start-of-edit_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
@@ -163,7 +169,7 @@ class VocabSettingsHandler():
             curr_raw_testing_material = Toolkit.user_confirm("Please enter your vocab's main testing material (testing material are kanji/kana that are used as the material to be tested on).")
             raw_testing_material.append(curr_raw_testing_material)
 
-            while(input(f"Enter 1 if {curr_raw_testing_material} has any additional testing material, otherwise enter 2 (testing material are kanji/kana that are used as the material to be tested on).") == "1"):
+            while(input(f"Enter 1 if {curr_raw_testing_material} has any additional testing material, otherwise enter 2 (testing material are kanji/kana that are used as the material to be tested on).\n") == "1"):
                 Toolkit.clear_stream()
                 raw_testing_material.append(Toolkit.user_confirm("Please enter your vocab's additional testing material (testing material are kanji/kana that are used as the material to be tested on)."))
 
@@ -174,7 +180,7 @@ class VocabSettingsHandler():
             raw_romaji.append(curr_raw_romaji)
             raw_furigana.append(curr_raw_furigana)
 
-            while(input(f"Enter 1 if {raw_testing_material} has any additional romaji, otherwise enter 2 (romaji are the pronunciation of the testing material).") == "1"):
+            while(input(f"Enter 1 if {raw_testing_material} has any additional romaji, otherwise enter 2 (romaji are the pronunciation of the testing material).\n") == "1"):
                 Toolkit.clear_stream()
                 raw_romaji.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional romaji (romaji are the pronunciation of the testing material. Additional Romaji can match any)."))
                 raw_furigana.append(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."))
@@ -182,7 +188,7 @@ class VocabSettingsHandler():
             ## synonyms
             raw_synonyms.append(Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main synonym (Synonyms are the definition of the testing material. Your main synonym should match the main testing material)."))
 
-            while(input(f"Enter 1 if {raw_testing_material} has any additional synonyms, otherwise enter 2 (Synonyms are the definition of the testing material).") == "1"):
+            while(input(f"Enter 1 if {raw_testing_material} has any additional synonyms, otherwise enter 2 (Synonyms are the definition of the testing material).\n") == "1"):
                 Toolkit.clear_stream()
                 raw_synonyms.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional synonym (Synonyms are the definition of the testing material. Additional synonyms can match any)."))
 
@@ -259,11 +265,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_synonyms.append(Toolkit.user_confirm("Please enter the Synonym/Answer for " + target_vocab.testing_material_main.testing_material_value + " you would like to add."))
+            raw_synonyms.append(Toolkit.user_confirm("Please enter the Synonym/Answer for " + target_vocab.testing_material_main.testing_material_value + " you would like to add. (Synonyms are the definition of the testing material)."))
 
-            while(input(f"Enter 1 if you'd like to add more synonyms for {target_vocab.testing_material_main.testing_material_value}, otherwise enter 2.") == "1"):
+            while(input(f"Enter 1 if you'd like to add more synonyms for {target_vocab.testing_material_main.testing_material_value}, otherwise enter 2.\n") == "1"):
                 Toolkit.clear_stream()
-                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Synonym/Answer for {target_vocab.testing_material_main.testing_material_value} you would like to add.")) 
+                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Synonym/Answer for {target_vocab.testing_material_main.testing_material_value} you would like to add. (Synonyms are the definition of the testing material)."))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -281,3 +287,213 @@ class VocabSettingsHandler():
         ## add to current session
         for i in range(len(synonyms)):
             target_vocab.testing_material_answer_all.append(synonyms[i])
+
+##--------------------start-of-add_testing_material_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def add_testing_material_to_existing_vocab() -> None:
+
+        """
+
+        Adds a testing material entity to an existing vocab entity in the database.
+
+        """ 
+
+        ## raw strings and actual objects
+        raw_testing_material:typing.List[str] = []
+        testing_material:typing.List[TestingMaterial] = []
+
+        ## gets testing material components
+        try:
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add a Testing Material to."))
+
+            ## get target vocab
+            try:
+                target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
+
+            except Searcher.IDNotFoundError:
+                print("Vocab not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+        
+            raw_testing_material.append(Toolkit.user_confirm("Please enter the Testing Material for " + target_vocab.testing_material_main.testing_material_value + " you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."))
+
+            while(input(f"Enter 1 if you'd like to add more Testing Material for {target_vocab.testing_material_main.testing_material_value}, otherwise enter 2.\n") == "1"):
+                Toolkit.clear_stream()
+                raw_testing_material.append(Toolkit.user_confirm(f"Please enter the Testing Material for {target_vocab.testing_material_main.testing_material_value} you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."))
+        
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+        ## assemble actual objects, assign ids, and write to persistent storage
+        for i in range(len(raw_testing_material)):
+            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(12))
+            testing_material.append(testing_material_blueprint(target_vocab_id, new_testing_material_id, raw_testing_material[i]))
+
+            stuff_to_write = [target_vocab_id, new_testing_material_id, raw_testing_material[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_testing_material_path, stuff_to_write)
+
+        ## add to current session
+        for i in range(len(testing_material)):
+            target_vocab.testing_material_all.append(testing_material[i])
+
+##--------------------start-of-add_reading_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def add_reading_to_existing_vocab() -> None:
+
+        """
+
+        Adds a reading entity to an existing vocab entity in the database.
+
+        """ 
+
+        ## raw strings and actual objects
+        raw_romaji:typing.List[str] = []
+        raw_furigana:typing.List[str] = []
+        readings:typing.List[Reading] = []
+
+        ## gets reading components
+        try:
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add a Reading to."))
+
+            ## get target vocab
+            try:
+                target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
+
+            except Searcher.IDNotFoundError:
+                print("Vocab not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+        
+            curr_raw_romaji = Toolkit.user_confirm(f"Please enter a romaji for {target_vocab.testing_material_main.testing_material_value} you would like to add. (romaji are the pronunciation of the testing material).")
+            curr_raw_furigana = Toolkit.user_confirm(f"Please enter {curr_raw_romaji}'s furigana (furigana is the kana spelling of {curr_raw_romaji}).") 
+
+            raw_romaji.append(curr_raw_romaji)
+            raw_furigana.append(curr_raw_furigana)
+
+            while(input(f"Enter 1 if {target_vocab.testing_material_main.testing_material_value} has any additional romaji, otherwise enter 2 (romaji are the pronunciation of the testing material).\n") == "1"):
+                Toolkit.clear_stream()
+                raw_romaji.append(Toolkit.user_confirm(f"Please enter {target_vocab.testing_material_main.testing_material_value}'s additional romaji (romaji are the pronunciation of the testing material)."))
+                raw_furigana.append(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."))
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+        ## assemble actual objects, assign ids, and write to persistent storage
+        for i in range(len(raw_romaji)):
+            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(10))
+            readings.append(reading_blueprint(target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
+
+            stuff_to_write = [target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_readings_path, stuff_to_write)
+
+        ## add to current session
+        for i in range(len(readings)):
+            target_vocab.readings.append(readings[i])
+
+##--------------------start-of-add_typo_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            
+    @staticmethod
+    def add_typo_to_existing_vocab() -> None:
+
+        """
+
+        Adds a typo entity to an existing vocab entity in the database.
+
+        """ 
+
+        ## raw strings and actual objects
+        raw_typo:typing.List[str] = []
+        typos:typing.List[Typo] = []
+
+        ## gets typo components
+        try:
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add a Typo to."))
+
+            ## get target vocab
+            try:
+                target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
+
+            except Searcher.IDNotFoundError:
+                print("Vocab not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+        
+            raw_typo.append(Toolkit.user_confirm(f"Please enter a typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (typos are the incorrect spelling of the testing material) These \"typos\" automatically count as correct answers."))
+
+            while(input(f"Enter 1 if {target_vocab.testing_material_main.testing_material_value} has any additional typos, otherwise enter 2 (typos are the incorrect spelling of the testing material, These \"typos\" automatically count as correct answers).\n") == "1"):
+                Toolkit.clear_stream()
+                raw_typo.append(Toolkit.user_confirm(f"Please enter a typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (typos are the incorrect spelling of the testing material).\n"))
+        
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+        ## assemble actual objects, assign ids, and write to persistent storage
+        for i in range(len(raw_typo)):
+            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(3))
+            typos.append(typo_blueprint(target_vocab_id, new_typo_id, raw_typo[i]))
+
+            stuff_to_write = [target_vocab_id, new_typo_id, raw_typo[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_typos_path, stuff_to_write)
+
+        ## add to current session
+        for i in range(len(typos)):
+            target_vocab.typos.append(typos[i])
+
+##--------------------start-of-add_incorrect_typo_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            
+    @staticmethod
+    def add_incorrect_typo_to_existing_vocab() -> None:
+
+        """
+
+        Adds an incorrect typo entity to an existing vocab entity in the database.
+
+        """ 
+
+        ## raw strings and actual objects
+        raw_incorrect_typo:typing.List[str] = []
+        incorrect_typos:typing.List[IncorrectTypo] = []
+
+        ## gets incorrect typo components
+        try:
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add an Incorrect Typo to."))
+
+            ## get target vocab
+            try:
+                target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
+
+            except Searcher.IDNotFoundError:
+                print("Vocab not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+        
+            raw_incorrect_typo.append(Toolkit.user_confirm(f"Please enter an incorrect typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers)."))
+
+            while(input(f"Enter 1 if {target_vocab.testing_material_main.testing_material_value} has any additional incorrect typos, otherwise enter 2 (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers).\n") == "1"):
+                Toolkit.clear_stream()
+                raw_incorrect_typo.append(Toolkit.user_confirm(f"Please enter an incorrect typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers).\n"))
+        
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+        ## assemble actual objects, assign ids, and write to persistent storage
+        for i in range(len(raw_incorrect_typo)):
+            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(4))
+            incorrect_typos.append(incorrect_typo_blueprint(target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]))
+
+            stuff_to_write = [target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_incorrect_typos_path, stuff_to_write)
+
+        ## add to current session
+        for i in range(len(incorrect_typos)):
+            target_vocab.incorrect_typos.append(incorrect_typos[i])

@@ -13,10 +13,10 @@ first menu would be
 For add we'd need:
 1. ~~Add Vocab~~
 2. ~~Add Synonym To Vocab~~
-3. Add TestingMaterial To Vocab
-4. Add Reading To Vocab
-5. Add Typo To Vocab
-6. Add IncorrectTypo To Vocab
+3. ~~Add TestingMaterial To Vocab~~
+4. ~~Add Reading To Vocab~~
+5. ~~Add Typo To Vocab~~
+6. ~~Add IncorrectTypo To Vocab~~
 
 For Edit we'd need:
 1. Edit Vocab

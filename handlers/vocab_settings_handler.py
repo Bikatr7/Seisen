@@ -55,6 +55,15 @@ class VocabSettingsHandler():
         if(type_setting == "1"):
             VocabSettingsHandler.add_entity()
 
+        elif(type_setting == "2"):
+            VocabSettingsHandler.edit_entity()
+
+        elif(type_setting == "3"):
+            VocabSettingsHandler.delete_entity()
+
+        elif(type_setting == "4"):
+            VocabSettingsHandler.search_entity()
+
 ##--------------------start-of-add_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
@@ -534,7 +543,7 @@ class VocabSettingsHandler():
                 return
             
             ## get value to edit
-            edit_message = "What would you like to edit?\n\n1. Incorrect Count\n2. Correct Count\n(ID cannot be edited, please use other settings to edit associated entities (testing material, synonyms, etc.))\n"
+            edit_message = "What would you like to edit?\n\n1. Incorrect Count\n2. Correct Count\nID cannot be edited, please use other settings to edit associated entities (testing material, synonyms, etc.)\n"
 
             print(edit_message)
 

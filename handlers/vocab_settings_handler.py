@@ -86,6 +86,12 @@ class VocabSettingsHandler():
         elif(type_setting == "4"):
             VocabSettingsHandler.add_reading_to_existing_vocab()
 
+        elif(type_setting == "5"):
+            VocabSettingsHandler.add_typo_to_existing_vocab()
+
+        elif(type_setting == "6"):
+            VocabSettingsHandler.add_incorrect_typo_to_existing_vocab()
+
 ##--------------------start-of-edit_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
@@ -104,6 +110,11 @@ class VocabSettingsHandler():
         print(entity_message)
 
         type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 6, entity_message)
+
+        print(type_setting)
+
+        if(type_setting == "1"):
+            VocabSettingsHandler.edit_vocab()
 
 ##--------------------start-of-delete_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
@@ -497,3 +508,61 @@ class VocabSettingsHandler():
         ## add to current session
         for i in range(len(incorrect_typos)):
             target_vocab.incorrect_typos.append(incorrect_typos[i])
+
+##--------------------start-of-edit_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            
+    @staticmethod
+    def edit_vocab() -> None:
+
+        """
+
+        Edits a vocab entity in the database.
+
+        """ 
+
+        ## gets target vocab
+        try:
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the id of the vocab you want to edit."))
+
+            ## get target vocab
+            try:
+                target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
+
+            except Searcher.IDNotFoundError:
+                print("Vocab not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            ## get value to edit
+            edit_message = "What would you like to edit?\n\n1. Incorrect Count\n2. Correct Count\n(ID cannot be edited, please use other settings to edit associated entities (testing material, synonyms, etc.))\n"
+
+            print(edit_message)
+
+            type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 2, edit_message)
+
+            if(type_setting == "1"):
+                value_to_edit = target_vocab.incorrect_count
+                message_to_print = "Please enter the new incorrect count for " + target_vocab.testing_material_main.testing_material_value + ". (Incorrect count is the number of times the user has gotten the vocab wrong. Currently: " + str(value_to_edit) + ")\n"
+
+            else:
+                value_to_edit = target_vocab.correct_count
+                message_to_print = "Please enter the new correct count for " + target_vocab.testing_material_main.testing_material_value + ". (Correct count is the number of times the user has gotten the vocab right. Currently: " + str(value_to_edit) + ")\n"
+
+            new_value = int(Toolkit.user_confirm(message_to_print))
+
+            ## edit value in current session
+            if(type_setting == "1"):
+                target_vocab.incorrect_count = new_value
+                index = 2
+
+            else:
+                target_vocab.correct_count = new_value
+                index = 3
+
+            ## edit value in persistent storage
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_id, index, new_value)
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return

@@ -125,6 +125,9 @@ class VocabSettingsHandler():
         if(type_setting == "1"):
             VocabSettingsHandler.edit_vocab()
 
+        elif(type_setting == "2"):
+            VocabSettingsHandler.edit_synonym()
+
 ##--------------------start-of-delete_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
@@ -551,11 +554,11 @@ class VocabSettingsHandler():
 
             if(type_setting == "1"):
                 value_to_edit = target_vocab.incorrect_count
-                message_to_print = "Please enter the new incorrect count for " + target_vocab.testing_material_main.testing_material_value + ". (Incorrect count is the number of times the user has gotten the vocab wrong. Currently: " + str(value_to_edit) + ")\n"
+                message_to_print = "Please enter the new incorrect count for " + target_vocab.testing_material_main.testing_material_value + ". (Incorrect count is the number of times the user has gotten the vocab wrong. Currently: " + str(value_to_edit) + ")"
 
             else:
                 value_to_edit = target_vocab.correct_count
-                message_to_print = "Please enter the new correct count for " + target_vocab.testing_material_main.testing_material_value + ". (Correct count is the number of times the user has gotten the vocab right. Currently: " + str(value_to_edit) + ")\n"
+                message_to_print = "Please enter the new correct count for " + target_vocab.testing_material_main.testing_material_value + ". (Correct count is the number of times the user has gotten the vocab right. Currently: " + str(value_to_edit) + ")"
 
             new_value = int(Toolkit.user_confirm(message_to_print))
 
@@ -569,7 +572,48 @@ class VocabSettingsHandler():
                 index = 3
 
             ## edit value in persistent storage
-            FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_id, index, new_value)
+            target_vocab_line = FileHandler.find_seisen_line(FileEnsurer.vocab_path, column_index=1, target_value=target_vocab_id)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_path, target_vocab_line, index, new_value)
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+##--------------------start-of-edit_synonym()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def edit_synonym() -> None:
+
+        """
+
+        Edits a synonym entity in the database.
+
+        """ 
+
+        ## gets target synonym
+        try:
+            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the synonym you want to edit."))
+
+            ## get target synonym
+            try:
+                target_synonym = Searcher.get_synonym_from_id(target_synonym_id)
+
+            except Searcher.IDNotFoundError:
+                print("Synonym not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            message_to_print = "Please enter the new synonym for " + target_synonym.synonym_value + ". (Synonym is the definition of the testing material)."
+
+            new_value = Toolkit.user_confirm(message_to_print)
+
+            ## edit value in current session
+            target_synonym.synonym_value = new_value
+
+            ## edit value in persistent storage
+            target_synonym_line = FileHandler.find_seisen_line(FileEnsurer.vocab_synonyms_path, column_index=2, target_value=target_synonym_id)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_line, column_number=3, value_to_replace_to=new_value)
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")

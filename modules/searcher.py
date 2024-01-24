@@ -6,6 +6,7 @@ from modules.toolkit import Toolkit
 
 from entities.vocab import Vocab
 from entities.testing_material import TestingMaterial
+from entities.synonym import Synonym
 
 from handlers.local_handler import LocalHandler
 
@@ -173,6 +174,33 @@ class Searcher:
                 return vocab
 
         raise Searcher.IDNotFoundError(vocab_id)
+    
+##--------------------start-of-get_synonym_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_synonym_from_id(synonym_id:int) -> Synonym:
+
+        """
+
+        Gets a synonym given an id.
+
+        Parameters:
+        synonym_id (int) : the id of the synonym we are getting a print item for.
+
+        Returns:
+        synonym (Synonym) : the synonym for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for synonym in vocab.testing_material_answer_all:
+                if(synonym.synonym_id == synonym_id):
+                    return synonym
+
+        raise Searcher.IDNotFoundError(synonym_id)
     
 ##--------------------start-of-get_ids_from_japanese()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     

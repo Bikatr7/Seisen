@@ -19,8 +19,8 @@ For add we'd need:
 6. ~~Add IncorrectTypo To Vocab~~
 
 For Edit we'd need:
-1. Edit Vocab
-2. Edit Synonym For Vocab
+1. ~~Edit Vocab~~
+2. ~~Edit Synonym For Vocab~~
 3. Edit TestingMaterial For Vocab
 4. Edit Reading For Vocab
 5. Edit Typo For Vocab

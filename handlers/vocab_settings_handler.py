@@ -619,3 +619,43 @@ class VocabSettingsHandler():
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
+        
+##--------------------start-of-edit_testing_material()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def edit_testing_material() -> None:
+
+        """
+
+        Edits a testing material entity in the database.
+
+        """ 
+
+        ## gets target testing material
+        try:
+            target_testing_material_id = int(Toolkit.user_confirm("Please enter the id of the testing material you want to edit."))
+
+            ## get target testing material
+            try:
+                target_testing_material = Searcher.get_testing_material_from_id(target_testing_material_id)
+
+            except Searcher.IDNotFoundError:
+                print("Testing Material not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            message_to_print = "Please enter the new testing material for " + target_testing_material.testing_material_value + ". (Testing Material is the kanji/kana that are used as the material to be tested on)."
+
+            new_value = Toolkit.user_confirm(message_to_print)
+
+            ## edit value in current session
+            target_testing_material.testing_material_value = new_value
+
+            ## edit value in persistent storage
+            target_testing_material_line = FileHandler.find_seisen_line(FileEnsurer.vocab_testing_material_path, column_index=2, target_value=target_testing_material_id)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_testing_material_path, target_testing_material_line, column_number=3, value_to_replace_to=new_value)
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return

@@ -7,6 +7,9 @@ from modules.toolkit import Toolkit
 from entities.vocab import Vocab
 from entities.testing_material import TestingMaterial
 from entities.synonym import Synonym
+from entities.reading import Reading
+from entities.typo import Typo
+from entities.incorrect_typo import IncorrectTypo
 
 from handlers.local_handler import LocalHandler
 
@@ -201,7 +204,115 @@ class Searcher:
                     return synonym
 
         raise Searcher.IDNotFoundError(synonym_id)
+
+##--------------------start-of-get_testing_material_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
+
+    @staticmethod
+    def get_testing_material_from_id(testing_material_id:int) -> TestingMaterial:
+
+        """
+
+        Gets a testing material given an id.
+
+        Parameters:
+        testing_material_id (int) : the id of the testing material we are getting a print item for.
+
+        Returns:
+        testing_material (TestingMaterial) : the testing material for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material_all:
+                if(testing_material.testing_material_id == testing_material_id):
+                    return testing_material
+
+        raise Searcher.IDNotFoundError(testing_material_id)
     
+##--------------------start-of-get_reading_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_from_id(reading_id:int) -> Reading:
+
+        """
+
+        Gets a reading given an id.
+
+        Parameters:
+        reading_id (int) : the id of the reading we are getting a print item for.
+
+        Returns:
+        reading (Reading) : the reading for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for reading in vocab.readings:
+                if(reading.reading_id == reading_id):
+                    return reading
+
+        raise Searcher.IDNotFoundError(reading_id)
+    
+##--------------------start-of-get_incorrect_typo_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_incorrect_typo_from_id(incorrect_typo_id:int) -> IncorrectTypo:
+
+        """
+
+        Gets an incorrect typo given an id.
+
+        Parameters:
+        incorrect_typo_id (int) : the id of the incorrect typo we are getting a print item for.
+
+        Returns:
+        incorrect_typo (IncorrectTypo) : the incorrect typo for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for incorrect_typo in vocab.incorrect_typos:
+                if(incorrect_typo.incorrect_typo_id == incorrect_typo_id):
+                    return incorrect_typo
+
+        raise Searcher.IDNotFoundError(incorrect_typo_id)
+
+##--------------------start-of-get_typo_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_typo_from_id(typo_id:int) -> Typo:
+
+        """
+
+        Gets a typo given an id.
+
+        Parameters:
+        typo_id (int) : the id of the typo we are getting a print item for.
+
+        Returns:
+        typo (Typo) : the typo for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for typo in vocab.typos:
+                if(typo.typo_id == typo_id):
+                    return typo
+
+        raise Searcher.IDNotFoundError(typo_id)
+
 ##--------------------start-of-get_ids_from_japanese()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod

@@ -128,6 +128,18 @@ class VocabSettingsHandler():
         elif(type_setting == "2"):
             VocabSettingsHandler.edit_synonym()
 
+        elif(type_setting == "3"):
+            VocabSettingsHandler.edit_testing_material()
+
+        elif(type_setting == "4"):
+            VocabSettingsHandler.edit_reading()
+
+        elif(type_setting == "5"):
+            VocabSettingsHandler.edit_typo()
+
+        elif(type_setting == "6"):
+            VocabSettingsHandler.edit_incorrect_typo()
+
 ##--------------------start-of-delete_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
@@ -654,6 +666,52 @@ class VocabSettingsHandler():
             ## edit value in persistent storage
             target_testing_material_line = FileHandler.find_seisen_line(FileEnsurer.vocab_testing_material_path, column_index=2, target_value=target_testing_material_id)
             FileHandler.edit_seisen_line(FileEnsurer.vocab_testing_material_path, target_testing_material_line, column_number=3, value_to_replace_to=new_value)
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+##--------------------start-of-edit_reading()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def edit_reading() -> None:
+
+        """
+
+        Edits a reading entity in the database.
+
+        """ 
+
+        ## gets target reading
+        try:
+            target_reading_id = int(Toolkit.user_confirm("Please enter the id of the reading you want to edit."))
+
+            ## get target reading
+            try:
+                target_reading = Searcher.get_reading_from_id(target_reading_id)
+
+            except Searcher.IDNotFoundError:
+                print("Reading not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            message_to_print = "Please enter the new romaji for " + target_reading.romaji_value + ". (Romaji is the pronunciation of the testing material)."
+
+            new_romaji = Toolkit.user_confirm(message_to_print)
+
+            message_to_print = "Please enter the new furigana for " + target_reading.furigana_value + ". (Furigana is the kana spelling of the romaji)."
+
+            new_furigana = Toolkit.user_confirm(message_to_print)            
+
+            ## edit value in current session
+            target_reading.romaji_value = new_romaji
+            target_reading.furigana_value = new_furigana
+
+            ## edit value in persistent storage
+            target_reading_line = FileHandler.find_seisen_line(FileEnsurer.vocab_readings_path, column_index=2, target_value=target_reading_id)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_readings_path, target_reading_line, column_number=3, value_to_replace_to=new_furigana)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_readings_path, target_reading_line, column_number=4, value_to_replace_to=new_romaji)
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")

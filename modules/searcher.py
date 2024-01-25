@@ -160,6 +160,50 @@ class Searcher:
             print_items.append(print_item)
 
         return print_items
+    
+##--------------------start-of-get_testing_material_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_testing_material_print_item_from_id(testing_material_id:int) -> str:
+
+        """
+        
+        Gets a print item for a testing material given a testing material id.
+
+        Parameters:
+        testing_material_id (int) : the id of the testing material we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_testing_material = None
+
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material_all:
+                if(testing_material.testing_material_id == testing_material_id):
+                    target_testing_material = testing_material
+                    target_vocab = vocab
+
+        if(target_testing_material == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(testing_material_id)
+        
+        mini_synonym_id_print = [str(synonym.synonym_id) for synonym in target_vocab.testing_material_answer_all]
+        mini_synonym_value_print = [str(synonym.synonym_value) for synonym in target_vocab.testing_material_answer_all]
+
+        print_item = (
+            f"---------------------------------\n"
+            f"Testing Material: {target_testing_material.testing_material_value}\n"
+            f"Testing Material ID: {target_testing_material.testing_material_id}\n"
+            f"VOCAB Synonym(s): {mini_synonym_value_print}\n"
+            f"VOCAB Synonym ID(s): {mini_synonym_id_print}\n"
+            f"VOCAB ID: {target_testing_material.word_id}\n"
+            f"---------------------------------\n"
+        )
+
+        return print_item
 
 ##--------------------start-of-get_vocab_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

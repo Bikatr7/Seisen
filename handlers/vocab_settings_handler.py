@@ -925,3 +925,63 @@ class VocabSettingsHandler():
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
+        
+##--------------------start-of-delete_testing_material()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def delete_testing_material() -> None:
+
+        """
+
+        Deletes a testing material entity from the database.
+
+        """ 
+
+        ## gets target testing material
+        try:
+            target_testing_material_id = int(Toolkit.user_confirm("Please enter the id of the testing material you want to delete."))
+
+            ## get target testing material
+            try:
+                target_testing_material = Searcher.get_testing_material_from_id(target_testing_material_id)
+
+            except Searcher.IDNotFoundError:
+                print("Testing Material not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            print_item = Searcher.get_testing_material_print_item_from_id(target_testing_material_id)
+
+            print(print_item)
+
+            if(input("\nEnter 1 if you are sure you want to delete, otherwise enter 2.\n") == "1"):
+                pass
+            
+            else:
+                print("\nCancelled.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            ## obtain vocab that contains testing material
+            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_testing_material_id, attribute_type="testing_material")
+
+            ### check to ensure that the user is not deleting the only testing material for a vocab
+            if(len(target_vocab.testing_material_all) == 1):
+                print("You cannot delete the only testing material for a vocab.\n")
+                Toolkit.pause_console()
+                return
+            
+            ## check to ensure that the user is not deleting the main testing material for a vocab, if so, change the main testing material to the next testing material
+            if(target_vocab.testing_material_main.testing_material_id == target_testing_material_id):
+                target_vocab.testing_material_main = target_vocab.testing_material_all[1]
+
+            ## delete testing material from current session
+            target_vocab.testing_material_all.remove(target_testing_material)
+
+            ## delete testing material from persistent storage
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_testing_material_path, id_index=2, target_id=target_testing_material_id)
+            
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return

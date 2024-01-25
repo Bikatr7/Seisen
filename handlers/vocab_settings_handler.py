@@ -717,3 +717,83 @@ class VocabSettingsHandler():
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
+        
+##--------------------start-of-edit_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def edit_typo() -> None:
+
+        """
+
+        Edits a typo entity in the database.
+
+        """ 
+
+        ## gets target typo
+        try:
+            target_typo_id = int(Toolkit.user_confirm("Please enter the id of the typo you want to edit."))
+
+            ## get target typo
+            try:
+                target_typo = Searcher.get_typo_from_id(target_typo_id)
+
+            except Searcher.IDNotFoundError:
+                print("Typo not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            message_to_print = "Please enter the new typo for " + target_typo.typo_value + ". (Typo is the incorrect spelling of the testing material)."
+
+            new_value = Toolkit.user_confirm(message_to_print)
+
+            ## edit value in current session
+            target_typo.typo_value = new_value
+
+            ## edit value in persistent storage
+            target_typo_line = FileHandler.find_seisen_line(FileEnsurer.vocab_typos_path, column_index=2, target_value=target_typo_id)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_typos_path, target_typo_line, column_number=3, value_to_replace_to=new_value)
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+##--------------------start-of-edit_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def edit_incorrect_typo() -> None:
+
+        """
+
+        Edits an incorrect typo entity in the database.
+
+        """ 
+
+        ## gets target incorrect typo
+        try:
+            target_incorrect_typo_id = int(Toolkit.user_confirm("Please enter the id of the incorrect typo you want to edit."))
+
+            ## get target incorrect typo
+            try:
+                target_incorrect_typo = Searcher.get_incorrect_typo_from_id(target_incorrect_typo_id)
+
+            except Searcher.IDNotFoundError:
+                print("Incorrect Typo not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            message_to_print = "Please enter the new incorrect typo for " + target_incorrect_typo.incorrect_typo_value + ". (Incorrect Typo is the incorrect spelling of the testing material that is counted as incorrect)."
+
+            new_value = Toolkit.user_confirm(message_to_print)
+
+            ## edit value in current session
+            target_incorrect_typo.incorrect_typo_value = new_value
+
+            ## edit value in persistent storage
+            target_incorrect_typo_line = FileHandler.find_seisen_line(FileEnsurer.vocab_incorrect_typos_path, column_index=2, target_value=target_incorrect_typo_id)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_incorrect_typos_path, target_incorrect_typo_line, column_number=3, value_to_replace_to=new_value)
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return

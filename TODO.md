@@ -21,10 +21,10 @@ For add we'd need:
 For Edit we'd need:
 1. ~~Edit Vocab~~
 2. ~~Edit Synonym For Vocab~~
-3. Edit TestingMaterial For Vocab
-4. Edit Reading For Vocab
-5. Edit Typo For Vocab
-6. Edit IncorrectTypo For Vocab
+3. ~~Edit TestingMaterial For Vocab~~
+4. ~~Edit Reading For Vocab~~
+5. ~~Edit Typo For Vocab~~
+6. ~~Edit IncorrectTypo For Vocab~~
 
 For Delete we'd need:
 1. Delete Vocab
@@ -35,7 +35,7 @@ For Delete we'd need:
 6. Delete IncorrectTypo From Vocab
 
 Constraints:
-1. Vocab must have at least one reading, one testing material, and one synonym at creation.
+1. ~~Vocab must have at least one reading, one testing material, and one synonym at creation.~~
 2. When you delete a vocab, you must delete all readings, testing materials, synonyms, typos, and incorrect typos associated with it.
 3. You cannot delete a reading, testing material, or synonym if it is the only one associated with a vocab.
 

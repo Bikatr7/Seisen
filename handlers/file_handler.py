@@ -287,7 +287,7 @@ class FileHandler():
                 i+=1
             ii+=1
 
-        file_details = [str(detail).replace("'COMMALITERAL'",",") for detail in file_details]
+        file_details = [str(detail).replace("COMMALITERAL",",") for detail in file_details]
             
         return file_details[column-1]
 
@@ -365,7 +365,7 @@ class FileHandler():
 
         values = line.strip().split(',')
 
-        values = [str(value).replace("'COMMALITERAL'",",") for value in values]
+        values = [str(value).replace("COMMALITERAL",",") for value in values]
 
         if(values[-1] == ''): 
             return values[:-1]

@@ -5,8 +5,8 @@ So:
 
 first menu would be
 
-1. Add Entity
-2. Edit Entity
+1. ~~Add Entity~~
+2. ~~Edit Entity~~
 3. Delete Entity
 4. Search Entity
 
@@ -27,8 +27,8 @@ For Edit we'd need:
 6. ~~Edit IncorrectTypo For Vocab~~
 
 For Delete we'd need:
-1. Delete Vocab
-2. Delete Synonym From Vocab
+1. ~~Delete Vocab~~
+2. ~~Delete Synonym From Vocab~~
 3. Delete TestingMaterial From Vocab
 4. Delete Reading From Vocab
 5. Delete Typo From Vocab
@@ -36,8 +36,11 @@ For Delete we'd need:
 
 Constraints:
 1. ~~Vocab must have at least one reading, one testing material, and one synonym at creation.~~
-2. When you delete a vocab, you must delete all readings, testing materials, synonyms, typos, and incorrect typos associated with it.
+2. ~~When you delete a vocab, you must delete all readings, testing materials, synonyms, typos, and incorrect typos associated with it.~~
 3. You cannot delete a reading, testing material, or synonym if it is the only one associated with a vocab.
+4. If deleting the main something (vocab, reading, testing material, synonym) you must select a new main something to replace it with.
+
+for get_underlying_vocab_from_synonym_id, change it to be more generic, and have it provide a literal of what type of id we are using to find the underlying vocab.
 
 Then we can just have a search function.
 

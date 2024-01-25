@@ -865,3 +865,63 @@ class VocabSettingsHandler():
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
+        
+##--------------------start-of-delete_synonym()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def delete_synonym() -> None:
+
+        """
+
+        Deletes a synonym entity from the database.
+
+        """ 
+
+        ## gets target synonym
+        try:
+            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the synonym you want to delete."))
+
+            ## get target synonym
+            try:
+                target_synonym = Searcher.get_synonym_from_id(target_synonym_id)
+
+            except Searcher.IDNotFoundError:
+                print("Synonym not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            print_item = Searcher.get_synonym_print_item_from_id(target_synonym_id)
+
+            print(print_item)
+
+            if(input("\nEnter 1 if you are sure you want to delete, otherwise enter 2.\n") == "1"):
+                pass
+            
+            else:
+                print("\nCancelled.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            ## obtain vocab that contains synonym
+            target_vocab = Searcher.get_overlying_vocab_from_synonym_id(target_synonym_id)
+
+            ### check to ensure that the user is not deleting the only synonym for a vocab
+            if(len(target_vocab.testing_material_answer_all) == 1):
+                print("You cannot delete the only synonym for a vocab.\n")
+                Toolkit.pause_console()
+                return
+            
+            ## check to ensure that the user is not deleting the main synonym for a vocab, if so, change the main synonym to the next synonym
+            if(target_vocab.testing_material_answer_main.synonym_id == target_synonym_id):
+                target_vocab.testing_material_answer_main = target_vocab.testing_material_answer_all[1]
+
+            ## delete synonym from current session
+            target_vocab.testing_material_answer_all.remove(target_synonym)
+
+            ## delete synonym from persistent storage
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=2, target_id=target_synonym_id)
+            
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return

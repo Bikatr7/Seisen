@@ -104,11 +104,15 @@ class Searcher:
         if(target_synonym == None or target_vocab == None):
             raise Searcher.IDNotFoundError(synonym_id)
         
+        mini_testing_material_value_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material_all]
+        mini_testing_material_id_print = [str(testing_material.testing_material_id) for testing_material in target_vocab.testing_material_all]
+
         print_item = (
             f"---------------------------------\n"
             f"Synonym: {target_synonym.synonym_value}\n"
             f"Synonym ID: {target_synonym.synonym_id}\n"
-            f"VOCAB: {target_vocab.testing_material_all}\n"
+            f"VOCAB Testing Material: {mini_testing_material_value_print}\n"
+            f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
             f"VOCAB ID: {target_synonym.word_id}\n"
             f"---------------------------------\n"
         )
@@ -148,6 +152,7 @@ class Searcher:
                 f"---------------------------------\n"
                 f"Synonym: {synonym.synonym_value}\n"
                 f"Synonym ID: {synonym.synonym_id}\n"
+                f"VOCAB: {target_vocab.testing_material_all}\n"
                 f"VOCAB ID {synonym.word_id}\n"
                 f"---------------------------------\n"
             )
@@ -181,6 +186,33 @@ class Searcher:
                 return vocab
 
         raise Searcher.IDNotFoundError(vocab_id)
+    
+##--------------------start-of-get_overlying_vocab_from_synonym_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_overlying_vocab_from_synonym_id(synonym_id:int) -> Vocab:
+
+        """
+
+        Gets a vocab given an id.
+
+        Parameters:
+        synonym_id (int) : the id of the synonym we are getting a print item for.
+
+        Returns:
+        vocab (Vocab) : the vocab for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for synonym in vocab.testing_material_answer_all:
+                if(synonym.synonym_id == synonym_id):
+                    return vocab
+
+        raise Searcher.IDNotFoundError(synonym_id)
     
 ##--------------------start-of-get_synonym_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     

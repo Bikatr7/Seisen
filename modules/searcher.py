@@ -234,7 +234,7 @@ class Searcher:
 ##--------------------start-of-get_overlying_vocab_from_synonym_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
-    def get_overlying_vocab_from_attribute_id(id:int, attribute_type:typing.Literal["synonym", "testing_material", "reading"]) -> Vocab:
+    def get_overlying_vocab_from_attribute_id(id:int, attribute_type:typing.Literal["synonym", "testing_material", "reading", "incorrect_typo", "typo"]) -> Vocab:
 
         """
 
@@ -267,6 +267,16 @@ class Searcher:
             elif(attribute_type == "reading"):
                 for reading in vocab.readings:
                     if(reading.reading_id == id):
+                        return vocab
+                    
+            elif(attribute_type == "incorrect_typo"):
+                for incorrect_typo in vocab.incorrect_typos:
+                    if(incorrect_typo.incorrect_typo_id == id):
+                        return vocab
+                    
+            elif(attribute_type == "typo"):
+                for typo in vocab.typos:
+                    if(typo.typo_id == id):
                         return vocab
 
         raise Searcher.IDNotFoundError(id)

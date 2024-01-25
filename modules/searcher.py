@@ -50,22 +50,26 @@ class Searcher:
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
-        mini_testing_material_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material_all]
-        mini_reading_print = [str(reading.romaji_value) + "/" + str(reading.furigana_value) for reading in target_vocab.readings]
-        mini_synonym_print = [str(synonym.synonym_id) for synonym in target_vocab.testing_material_answer_all]
+        mini_testing_material_id_print = [str(testing_material.testing_material_id) for testing_material in target_vocab.testing_material_all]
+        mini_testing_material_value_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material_all]
+        
+        mini_reading_id_print = [str(reading.reading_id) for reading in target_vocab.readings]
+        mini_reading_values_print = [str(reading.romaji_value) + "/" + str(reading.furigana_value) for reading in target_vocab.readings]
 
+        mini_synonym_id_print = [str(synonym.synonym_id) for synonym in target_vocab.testing_material_answer_all]
+        mini_synonym_value_print = [str(synonym.synonym_value) for synonym in target_vocab.testing_material_answer_all]
 
         print_item = (
             f"---------------------------------\n"
             f"ID: {target_vocab.word_id}\n"
             f"Incorrect Guesses: {target_vocab.incorrect_count}\n"
             f"Correct Guesses: {target_vocab.correct_count}\n"
-            f"Testing Material ID(S) : {mini_testing_material_print}\n"
-            f"Testing Material Value(s): {[testing_material.testing_material_value for testing_material in target_vocab.testing_material_all]}\n"
-            f"Reading ID(S): {mini_reading_print}\n"
-            f"Reading Value(s): {[str(reading.romaji_value) + '/' + str(reading.furigana_value) for reading in target_vocab.readings]}\n"
-            f"Synonym ID(S): {mini_synonym_print}\n"
-            f"Synonym Values(s): {[synonym.synonym_value for synonym in target_vocab.testing_material_answer_all]}\n"
+            f"Testing Material ID(S) : {mini_testing_material_id_print}\n"
+            f"Testing Material Value(s): {mini_testing_material_value_print}\n"
+            f"Reading ID(S): {mini_reading_id_print}\n"
+            f"Reading Value(s): {mini_reading_values_print}\n"
+            f"Synonym ID(S): {mini_synonym_id_print}\n"
+            f"Synonym Values(s): {mini_synonym_value_print}\n"
             f"---------------------------------\n"
         )
 

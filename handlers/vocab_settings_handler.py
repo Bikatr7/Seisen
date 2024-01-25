@@ -120,8 +120,6 @@ class VocabSettingsHandler():
 
         type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 6, entity_message)
 
-        print(type_setting)
-
         if(type_setting == "1"):
             VocabSettingsHandler.edit_vocab()
 
@@ -158,6 +156,24 @@ class VocabSettingsHandler():
         print(entity_message)
 
         type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 6, entity_message)
+
+        if(type_setting == "1"):
+            VocabSettingsHandler.delete_vocab()
+
+        elif(type_setting == "2"):
+            VocabSettingsHandler.delete_synonym()
+
+        elif(type_setting == "3"):
+            VocabSettingsHandler.delete_testing_material()
+
+        elif(type_setting == "4"):
+            VocabSettingsHandler.delete_reading()
+
+        elif(type_setting == "5"):
+            VocabSettingsHandler.delete_typo()
+
+        elif(type_setting == "6"):
+            VocabSettingsHandler.delete_incorrect_typo()
 
 ##--------------------start-of-search_entity()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -793,6 +809,58 @@ class VocabSettingsHandler():
             target_incorrect_typo_line = FileHandler.find_seisen_line(FileEnsurer.vocab_incorrect_typos_path, column_index=2, target_value=target_incorrect_typo_id)
             FileHandler.edit_seisen_line(FileEnsurer.vocab_incorrect_typos_path, target_incorrect_typo_line, column_number=3, value_to_replace_to=new_value)
 
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+##--------------------start-of-delete_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def delete_vocab() -> None:
+
+        """
+
+        Deletes a vocab entity from the database.
+
+        """ 
+
+        ## gets target vocab
+        try:
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the id of the vocab you want to delete."))
+
+            ## get target vocab
+            try:
+                target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
+
+            except Searcher.IDNotFoundError:
+                print("Vocab not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            print_item = Searcher.get_vocab_print_item_from_id(target_vocab_id)
+
+            print(print_item)
+
+            if(input("\nEnter 1 if you are sure you want to delete, otherwise enter 2.\n") == "1"):
+                pass
+            
+            else:
+                print("\nCancelled.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+
+            ## delete vocab from current session
+            LocalHandler.vocab.remove(target_vocab)
+
+            ## delete vocab from persistent storage
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_path, id_index=1, target_id=target_vocab_id)
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_testing_material_path, id_index=1, target_id=target_vocab_id)
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=1, target_id=target_vocab_id)
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_readings_path, id_index=1, target_id=target_vocab_id)
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_typos_path, id_index=1, target_id=target_vocab_id)
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_incorrect_typos_path, id_index=1, target_id=target_vocab_id)
+            
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)

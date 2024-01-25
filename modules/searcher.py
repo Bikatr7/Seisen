@@ -204,6 +204,134 @@ class Searcher:
         )
 
         return print_item
+    
+##--------------------start-of-get_reading_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_print_item_from_id(reading_id:int) -> str:
+
+        """
+        
+        Gets a print item for a reading given a reading id.
+
+        Parameters:
+        reading_id (int) : the id of the reading we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_reading = None
+
+        for vocab in LocalHandler.vocab:
+            for reading in vocab.readings:
+                if(reading.reading_id == reading_id):
+                    target_reading = reading
+                    target_vocab = vocab
+
+        if(target_reading == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(reading_id)
+        
+        print_item = (
+            f"---------------------------------\n"
+            f"Romaji: {target_reading.romaji_value}\n"
+            f"Furigana: {target_reading.furigana_value}\n"
+            f"Reading ID: {target_reading.reading_id}\n"
+            f"VOCAB ID: {target_reading.word_id}\n"
+            f"---------------------------------\n"
+        )
+
+        return print_item
+    
+##--------------------start-of-get_incorrect_typo_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_incorrect_typo_print_item_from_id(incorrect_typo_id:int) -> str:
+
+        """
+        
+        Gets a print item for an incorrect typo given an incorrect typo id.
+
+        Parameters:
+        incorrect_typo_id (int) : the id of the incorrect typo we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_incorrect_typo = None
+
+        for vocab in LocalHandler.vocab:
+            for incorrect_typo in vocab.incorrect_typos:
+                if(incorrect_typo.incorrect_typo_id == incorrect_typo_id):
+                    target_incorrect_typo = incorrect_typo
+                    target_vocab = vocab
+
+        if(target_incorrect_typo == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(incorrect_typo_id)
+        
+        mini_testing_material_id_print = [str(testing_material.testing_material_id) for testing_material in target_vocab.testing_material_all]
+        mini_testing_material_value_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material_all]
+        
+        print_item = (
+            f"---------------------------------\n"
+            f"Incorrect Typo: {target_incorrect_typo.incorrect_typo_value}\n"
+            f"Incorrect Typo ID: {target_incorrect_typo.incorrect_typo_id}\n"
+            f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
+            f"VOCAB Testing Material Value(s): {mini_testing_material_value_print}\n"
+            f"VOCAB ID: {target_incorrect_typo.word_id}\n"
+            f"---------------------------------\n"
+        )
+
+        return print_item
+    
+##--------------------start-of-get_typo_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_typo_print_item_from_id(typo_id:int) -> str:
+            
+        """
+        
+        Gets a print item for a typo given a typo id.
+
+        Parameters:
+        typo_id (int) : the id of the typo we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_typo = None
+
+        for vocab in LocalHandler.vocab:
+            for typo in vocab.typos:
+                if(typo.typo_id == typo_id):
+                    target_typo = typo
+                    target_vocab = vocab
+
+        if(target_typo == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(typo_id)
+        
+        mini_testing_material_id_print = [str(testing_material.testing_material_id) for testing_material in target_vocab.testing_material_all]
+        mini_testing_material_value_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material_all]
+        
+        print_item = (
+            f"---------------------------------\n"
+            f"Typo: {target_typo.typo_value}\n"
+            f"Typo ID: {target_typo.typo_id}\n"
+            f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
+            f"VOCAB Testing Material Value(s): {mini_testing_material_value_print}\n"
+            f"VOCAB ID: {target_typo.word_id}\n"
+            f"---------------------------------\n"
+        )
+
+            return print_item
 
 ##--------------------start-of-get_vocab_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

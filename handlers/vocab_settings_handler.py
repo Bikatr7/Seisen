@@ -985,3 +985,59 @@ class VocabSettingsHandler():
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
+        
+##--------------------start-of-delete_reading()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def delete_reading() -> None:
+
+        """
+
+        Deletes a reading entity from the database.
+
+        """ 
+
+        ## gets target reading
+        try:
+            target_reading_id = int(Toolkit.user_confirm("Please enter the id of the reading you want to delete."))
+
+            ## get target reading
+            try:
+                target_reading = Searcher.get_reading_from_id(target_reading_id)
+
+            except Searcher.IDNotFoundError:
+                print("Reading not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            print_item = Searcher.get_reading_print_item_from_id(target_reading_id)
+
+            print(print_item)
+
+            if(input("\nEnter 1 if you are sure you want to delete, otherwise enter 2.\n") == "1"):
+                pass
+            
+            else:
+                print("\nCancelled.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            ## obtain vocab that contains reading
+            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_reading_id, attribute_type="reading")
+
+            ### check to ensure that the user is not deleting the only reading for a vocab
+            if(len(target_vocab.readings) == 1):
+                print("You cannot delete the only reading for a vocab.\n")
+                Toolkit.pause_console()
+                return
+            
+            ## delete reading from current session
+            target_vocab.readings.remove(target_reading)
+
+            ## delete reading from persistent storage
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_readings_path, id_index=2, target_id=target_reading_id)
+            
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return

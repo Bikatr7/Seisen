@@ -903,7 +903,7 @@ class VocabSettingsHandler():
                 return
             
             ## obtain vocab that contains synonym
-            target_vocab = Searcher.get_overlying_vocab_from_synonym_id(target_synonym_id)
+            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_synonym_id, attribute_type="synonym")
 
             ### check to ensure that the user is not deleting the only synonym for a vocab
             if(len(target_vocab.testing_material_answer_all) == 1):

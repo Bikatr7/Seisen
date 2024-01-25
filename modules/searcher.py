@@ -190,14 +190,15 @@ class Searcher:
 ##--------------------start-of-get_overlying_vocab_from_synonym_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
-    def get_overlying_vocab_from_synonym_id(synonym_id:int) -> Vocab:
+    def get_overlying_vocab_from_attribute_id(id:int, attribute_type:typing.Literal["synonym", "testing_material", "reading"]) -> Vocab:
 
         """
 
         Gets a vocab given an id.
 
         Parameters:
-        synonym_id (int) : the id of the synonym we are getting a print item for.
+        id (int) : the id of the attribute we are getting a print item for.
+        attribute_type (str) : the type of attribute we are getting a print item for.
 
         Returns:
         vocab (Vocab) : the vocab for the id.
@@ -208,11 +209,23 @@ class Searcher:
         """
 
         for vocab in LocalHandler.vocab:
-            for synonym in vocab.testing_material_answer_all:
-                if(synonym.synonym_id == synonym_id):
-                    return vocab
 
-        raise Searcher.IDNotFoundError(synonym_id)
+            if(attribute_type == "synonym"):
+                for synonym in vocab.testing_material_answer_all:
+                    if(synonym.synonym_id == id):
+                        return vocab
+                    
+            elif(attribute_type == "testing_material"):
+                for testing_material in vocab.testing_material_all:
+                    if(testing_material.testing_material_id == id):
+                        return vocab
+                    
+            elif(attribute_type == "reading"):
+                for reading in vocab.readings:
+                    if(reading.reading_id == id):
+                        return vocab
+
+        raise Searcher.IDNotFoundError(id)
     
 ##--------------------start-of-get_synonym_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     

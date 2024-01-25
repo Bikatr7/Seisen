@@ -40,14 +40,15 @@ Constraints:
 3. You cannot delete a reading, testing material, or synonym if it is the only one associated with a vocab.
 4. If deleting the main something (vocab, reading, testing material, synonym) you must select a new main something to replace it with.
 
-for get_underlying_vocab_from_synonym_id, change it to be more generic, and have it provide a literal of what type of id we are using to find the underlying vocab.
+~~for get_underlying_vocab_from_synonym_id, change it to be more generic, and have it provide a literal of what type of id we are using to find the underlying vocab.~~
 
 Then we can just have a search function.
 
 For the search function we'd need:
 an auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"
+Need to auto correct hyphens to the japanese one "ー" for japanese entries but correct japanese one to hyphen for english entries
 
-Searcher needs to be refactored to not require each search to have an assert, and incorporate more exception throwing.
+~~Searcher needs to be refactored to not require each search to have an assert, and incorporate more exception throwing.~~
 
 -----------------------------------------------------------------------------------------------------------------
 Tasks above are to be implemented in (full-refactor of searcher and vocab_settings_handler) branch

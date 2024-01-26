@@ -1030,12 +1030,112 @@ class VocabSettingsHandler():
                 print("You cannot delete the only reading for a vocab.\n")
                 Toolkit.pause_console()
                 return
-            
+
             ## delete reading from current session
             target_vocab.readings.remove(target_reading)
 
             ## delete reading from persistent storage
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_readings_path, id_index=2, target_id=target_reading_id)
+            
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+##--------------------start-of-delete_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def delete_typo() -> None:
+
+        """
+
+        Deletes a typo entity from the database.
+
+        """ 
+
+        ## gets target typo
+        try:
+            target_typo_id = int(Toolkit.user_confirm("Please enter the id of the typo you want to delete."))
+
+            ## get target typo
+            try:
+                target_typo = Searcher.get_typo_from_id(target_typo_id)
+
+            except Searcher.IDNotFoundError:
+                print("Typo not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            print_item = Searcher.get_typo_print_item_from_id(target_typo_id)
+
+            print(print_item)
+
+            if(input("\nEnter 1 if you are sure you want to delete, otherwise enter 2.\n") == "1"):
+                pass
+            
+            else:
+                print("\nCancelled.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            ## obtain vocab that contains typo
+            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_typo_id, attribute_type="typo")
+            
+            ## delete typo from current session
+            target_vocab.typos.remove(target_typo)
+
+            ## delete typo from persistent storage
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_typos_path, id_index=2, target_id=target_typo_id)
+            
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+##--------------------start-of-delete_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def delete_incorrect_typo() -> None:
+
+        """
+
+        Deletes an incorrect typo entity from the database.
+
+        """ 
+
+        ## gets target incorrect typo
+        try:
+            target_incorrect_typo_id = int(Toolkit.user_confirm("Please enter the id of the incorrect typo you want to delete."))
+
+            ## get target incorrect typo
+            try:
+                target_incorrect_typo = Searcher.get_incorrect_typo_from_id(target_incorrect_typo_id)
+
+            except Searcher.IDNotFoundError:
+                print("Incorrect Typo not found.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            print_item = Searcher.get_incorrect_typo_print_item_from_id(target_incorrect_typo_id)
+
+            print(print_item)
+
+            if(input("\nEnter 1 if you are sure you want to delete, otherwise enter 2.\n") == "1"):
+                pass
+            
+            else:
+                print("\nCancelled.\n")
+                time.sleep(Toolkit.sleep_constant)
+                return
+            
+            ## obtain vocab that contains incorrect typo
+            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_incorrect_typo_id, attribute_type="incorrect_typo")
+            
+            ## delete incorrect typo from current session
+            target_vocab.incorrect_typos.remove(target_incorrect_typo)
+
+            ## delete incorrect typo from persistent storage
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_incorrect_typos_path, id_index=2, target_id=target_incorrect_typo_id)
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")

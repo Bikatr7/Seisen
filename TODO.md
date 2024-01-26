@@ -29,16 +29,16 @@ For Edit we'd need:
 For Delete we'd need:
 1. ~~Delete Vocab~~
 2. ~~Delete Synonym From Vocab~~
-3. Delete TestingMaterial From Vocab
-4. Delete Reading From Vocab
-5. Delete Typo From Vocab
-6. Delete IncorrectTypo From Vocab
+3. ~~Delete TestingMaterial From Vocab~~
+4. ~~Delete Reading From Vocab~~
+5. ~~Delete Typo From Vocab~~
+6. ~~Delete IncorrectTypo From Vocab~~
 
 Constraints:
 1. ~~Vocab must have at least one reading, one testing material, and one synonym at creation.~~
 2. ~~When you delete a vocab, you must delete all readings, testing materials, synonyms, typos, and incorrect typos associated with it.~~
-3. You cannot delete a reading, testing material, or synonym if it is the only one associated with a vocab.
-4. If deleting the main something (vocab, reading, testing material, synonym) you must select a new main something to replace it with.
+3. ~~You cannot delete a reading, testing material, or synonym if it is the only one associated with a vocab.~~
+4. ~~If deleting the main something (vocab, reading, testing material, synonym) you must select a new main something to replace it with.~~
 
 ~~for get_underlying_vocab_from_synonym_id, change it to be more generic, and have it provide a literal of what type of id we are using to find the underlying vocab.~~
 
@@ -71,6 +71,8 @@ Add confirmations to a lot of core decisions, something old me liked to do was n
 Make logging better
 
 REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
+
+Refactor number choice words to have literals instead of numbers cause that's fucking stupid
 
 ## Things I'd like to add eventually
 Look into using spacy to get root verbs and force things into it, could add a conjugation mode

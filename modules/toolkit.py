@@ -74,11 +74,11 @@ class Toolkit():
             else:
                 return new_user_input
 
-            if(input_type == InputType.VALIDATION_WITH_V_SINGLE_KEY.value):
+            if(input_type == InputType.VALIDATION_WITH_V_TEXT_ENTER.value):
                 print(input_issue_message + "\n")
                 user_input = input(input_prompt_message)
 
-            elif(input_type == InputType.VALIDATION_WITH_V_TEXT_ENTER.value or input_type == InputType.NUMBER_CHOICE_NO_V.value):
+            elif(input_type == InputType.VALIDATION_WITH_V_SINGLE_KEY.value or input_type == InputType.NUMBER_CHOICE_NO_V.value):
                 print(input_issue_message + "\n" + input_prompt_message)
                 user_input = Toolkit.get_single_key()
 

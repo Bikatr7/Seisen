@@ -386,6 +386,34 @@ class Toolkit():
             is_connection = False
 
             return is_connection, update_prompt
+        
+##--------------------start-of-perform_entity_sanitization()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def perform_entity_sanitization(entity:str, entity_type:typing.Literal["testing_material", "furigana", "romaji", "synonym"]) -> str:
+
+        """
+
+        Performs sanitization on the given entity.
+
+        Parameters:
+        entity (str) : The entity to be sanitized.
+        entity_type (str) : The type of entity to be sanitized.
+
+        Returns:
+        entity (str) : The sanitized entity.
+
+        """
+
+        if(entity_type in ["testing_material", "furigana"]):
+
+            entity = entity.replace("-","ー")
+
+        elif(entity_type == "romaji"):
+            
+            entity = entity.replace("ー","-")
+
+        return entity
     
 ##--------------------start-of-UserCancelError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

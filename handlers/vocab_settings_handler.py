@@ -182,11 +182,9 @@ class VocabSettingsHandler():
 
         """
 
-        Searches for a vocab entity in the database.
+        Searches for an entity in the database.
 
         """ 
-
-        pass
 
 ##--------------------start-of-add_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -218,23 +216,29 @@ class VocabSettingsHandler():
 
             ## testing material
             curr_raw_testing_material = Toolkit.user_confirm("Please enter your vocab's main testing material (testing material are kanji/kana that are used as the material to be tested on).")
+
+            curr_raw_testing_material = Toolkit.perform_entity_sanitization(curr_raw_testing_material, "testing_material")
+
             raw_testing_material.append(curr_raw_testing_material)
 
             while(input(f"Enter 1 if {curr_raw_testing_material} has any additional testing material, otherwise enter 2 (testing material are kanji/kana that are used as the material to be tested on).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_testing_material.append(Toolkit.user_confirm("Please enter your vocab's additional testing material (testing material are kanji/kana that are used as the material to be tested on)."))
+                raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm("Please enter your vocab's additional testing material (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
 
             ## romaji and furigana (reading)
             curr_raw_romaji = Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main romaji (romaji are the pronunciation of the testing material, your main romaji should match the main testing material).")
             curr_raw_furigana = Toolkit.user_confirm(f"Please enter {curr_raw_romaji}'s furigana (furigana is the kana spelling of {curr_raw_romaji}).") 
+
+            curr_raw_romaji = Toolkit.perform_entity_sanitization(curr_raw_romaji, "romaji")
+            curr_raw_furigana = Toolkit.perform_entity_sanitization(curr_raw_furigana, "furigana")
 
             raw_romaji.append(curr_raw_romaji)
             raw_furigana.append(curr_raw_furigana)
 
             while(input(f"Enter 1 if {raw_testing_material} has any additional romaji, otherwise enter 2 (romaji are the pronunciation of the testing material).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_romaji.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional romaji (romaji are the pronunciation of the testing material. Additional Romaji can match any)."))
-                raw_furigana.append(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."))
+                raw_romaji.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional romaji (romaji are the pronunciation of the testing material. Additional Romaji can match any)."), "romaji"))
+                raw_furigana.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."), "furigana"))
 
             ## synonyms
             raw_synonyms.append(Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main synonym (Synonyms are the definition of the testing material. Your main synonym should match the main testing material)."))
@@ -367,11 +371,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_testing_material.append(Toolkit.user_confirm("Please enter the Testing Material for " + target_vocab.testing_material_main.testing_material_value + " you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."))
+            raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm("Please enter the Testing Material for " + target_vocab.testing_material_main.testing_material_value + " you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
 
             while(input(f"Enter 1 if you'd like to add more Testing Material for {target_vocab.testing_material_main.testing_material_value}, otherwise enter 2.\n") == "1"):
                 Toolkit.clear_stream()
-                raw_testing_material.append(Toolkit.user_confirm(f"Please enter the Testing Material for {target_vocab.testing_material_main.testing_material_value} you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."))
+                raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter the Testing Material for {target_vocab.testing_material_main.testing_material_value} you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -420,15 +424,18 @@ class VocabSettingsHandler():
                 return
         
             curr_raw_romaji = Toolkit.user_confirm(f"Please enter a romaji for {target_vocab.testing_material_main.testing_material_value} you would like to add. (romaji are the pronunciation of the testing material).")
-            curr_raw_furigana = Toolkit.user_confirm(f"Please enter {curr_raw_romaji}'s furigana (furigana is the kana spelling of {curr_raw_romaji}).") 
+            curr_raw_furigana = Toolkit.user_confirm(f"Please enter {curr_raw_romaji}'s furigana (furigana is the kana spelling of {curr_raw_romaji}).")
+
+            curr_raw_romaji = Toolkit.perform_entity_sanitization(curr_raw_romaji, "romaji")
+            curr_raw_furigana = Toolkit.perform_entity_sanitization(curr_raw_furigana, "furigana") 
 
             raw_romaji.append(curr_raw_romaji)
             raw_furigana.append(curr_raw_furigana)
 
             while(input(f"Enter 1 if {target_vocab.testing_material_main.testing_material_value} has any additional romaji, otherwise enter 2 (romaji are the pronunciation of the testing material).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_romaji.append(Toolkit.user_confirm(f"Please enter {target_vocab.testing_material_main.testing_material_value}'s additional romaji (romaji are the pronunciation of the testing material)."))
-                raw_furigana.append(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."))
+                raw_romaji.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {target_vocab.testing_material_main.testing_material_value}'s additional romaji (romaji are the pronunciation of the testing material)."), "romaji"))
+                raw_furigana.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."), "furigana"))
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -676,6 +683,8 @@ class VocabSettingsHandler():
 
             new_value = Toolkit.user_confirm(message_to_print)
 
+            new_value = Toolkit.perform_entity_sanitization(new_value, "testing_material")
+
             ## edit value in current session
             target_testing_material.testing_material_value = new_value
 
@@ -718,7 +727,10 @@ class VocabSettingsHandler():
 
             message_to_print = "Please enter the new furigana for " + target_reading.furigana_value + ". (Furigana is the kana spelling of the romaji)."
 
-            new_furigana = Toolkit.user_confirm(message_to_print)            
+            new_furigana = Toolkit.user_confirm(message_to_print)          
+
+            new_romaji = Toolkit.perform_entity_sanitization(new_romaji, "romaji")
+            new_furigana = Toolkit.perform_entity_sanitization(new_furigana, "furigana") 
 
             ## edit value in current session
             target_reading.romaji_value = new_romaji

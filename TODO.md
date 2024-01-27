@@ -1,9 +1,9 @@
 Vocab Setting Design (searcher to be refactored alongside):
-Likely Going to need to structure into Add/Edit/Delete due to constraint of 9 options per prompt:
+~~Likely Going to need to structure into Add/Edit/Delete due to constraint of 9 options per prompt:~~
 
-So:
+~~So:~~
 
-first menu would be
+~~first menu would be~~
 
 1. ~~Add Entity~~
 2. ~~Edit Entity~~
@@ -44,9 +44,9 @@ Constraints:
 
 Then we can just have a search function.
 
-For the search function we'd need:
-an auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"
-Need to auto correct hyphens to the japanese one "ー" for japanese entries but correct japanese one to hyphen for english entries
+~~For the search function we'd need:~~
+~~an auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"~~
+~~Need to auto correct hyphens to the japanese one "ー" for japanese entries but correct japanese one to hyphen for english entries~~
 
 ~~Searcher needs to be refactored to not require each search to have an assert, and incorporate more exception throwing.~~
 

@@ -1,4 +1,4 @@
-Vocab Setting Design (searcher to be refactored alongside):
+~~Vocab Setting Design (searcher to be refactored alongside):~~
 ~~Likely Going to need to structure into Add/Edit/Delete due to constraint of 9 options per prompt:~~
 
 ~~So:~~
@@ -7,8 +7,8 @@ Vocab Setting Design (searcher to be refactored alongside):
 
 1. ~~Add Entity~~
 2. ~~Edit Entity~~
-3. Delete Entity
-4. Search Entity
+3. ~~Delete Entity~~
+4. ~~Search Entity~~
 
 For add we'd need:
 1. ~~Add Vocab~~
@@ -42,7 +42,7 @@ Constraints:
 
 ~~for get_underlying_vocab_from_synonym_id, change it to be more generic, and have it provide a literal of what type of id we are using to find the underlying vocab.~~
 
-Then we can just have a search function.
+~~Then we can just have a search function.~~
 
 ~~For the search function we'd need:~~
 ~~an auto replace for when user is searching characters that have "- in it to replace to the japanese one "ー"~~

@@ -11,6 +11,8 @@ from entities.reading import Reading
 from entities.typo import Typo
 from entities.incorrect_typo import IncorrectTypo
 
+from entities.entity import Entity
+
 from handlers.local_handler import LocalHandler
 
 
@@ -544,6 +546,168 @@ class Searcher:
 
         raise Searcher.IDNotFoundError(id)
     
+##--------------------start-of-get_vocab_from_japanese_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_testing_material_from_japanese_term(japanese_term:str) -> TestingMaterial:
+
+        """
+
+        Gets a testing material given a japanese term.
+
+        Parameters:
+        japanese_term (str) : the japanese term of the testing material we are getting a print item for.
+
+        Returns:
+        testing_material (TestingMaterial) : the testing material for the japanese term.
+
+        Raises:
+        IDNotFoundError : if the testing material is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material:
+                if(testing_material.value == japanese_term):
+                    return testing_material
+
+        raise Searcher.TermNotFoundError(japanese_term)
+    
+##--------------------start-of-get_reading_from_japanese_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_from_japanese_term(japanese_term:str) -> Reading:
+
+        """
+
+        Gets a reading given a japanese term.
+
+        Parameters:
+        japanese_term (str) : the japanese term of the reading we are getting a print item for.
+
+        Returns:
+        reading (Reading) : the reading for the japanese term.
+
+        Raises:
+        IDNotFoundError : if the reading is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for reading in vocab.readings:
+                if(reading.furigana == japanese_term):
+                    return reading
+
+        raise Searcher.TermNotFoundError(japanese_term)
+    
+##--------------------start-of-get_synonym_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_synonym_from_alphabetic_term(alphabetic_term:str) -> Synonym:
+
+        """
+
+        Gets a synonym given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the synonym we are getting a print item for.
+
+        Returns:
+        synonym (Synonym) : the synonym for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the synonym is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for synonym in vocab.answers:
+                if(synonym.value == alphabetic_term):
+                    return synonym
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+
+##--------------------start-of-get_reading_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_from_alphabetic_term(alphabetic_term:str) -> Reading:
+
+        """
+
+        Gets a reading given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the reading we are getting a print item for.
+
+        Returns:
+        reading (Reading) : the reading for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the reading is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for reading in vocab.readings:
+                if(reading.romaji == alphabetic_term):
+                    return reading
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+    
+##--------------------start-of-get_typo_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_typo_from_alphabetic_term(alphabetic_term:str) -> Typo:
+            
+        """
+
+        Gets a typo given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the typo we are getting a print item for.
+
+        Returns:
+        typo (Typo) : the typo for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the typo is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for typo in vocab.typos:
+                if(typo.value == alphabetic_term):
+                    return typo
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+    
+##--------------------start-of-get_incorrect_typo_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_incorrect_typo_from_alphabetic_term(alphabetic_term:str) -> IncorrectTypo:
+                
+        """
+
+        Gets an incorrect typo given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the incorrect typo we are getting a print item for.
+
+        Returns:
+        incorrect_typo (IncorrectTypo) : the incorrect typo for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the incorrect typo is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for incorrect_typo in vocab.incorrect_typos:
+                if(incorrect_typo.value == alphabetic_term):
+                    return incorrect_typo
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+                
 ##--------------------start-of-perform_search_by_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
@@ -588,6 +752,129 @@ class Searcher:
                     Toolkit.clear_console()
                     
                 print(match_types[i][2](match.id))
+
+##--------------------start-of-perform_search_by_japanese_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def perform_search_by_japanese_term(japanese_term:str) -> None:
+
+        """
+        
+        Performs a search by japanese term.
+
+        Parameters:
+        japanese_term (str) : the japanese term we are searching for.
+
+        """
+
+        vocab = None
+
+        ## Define the match types and their corresponding methods
+        match_types = [
+            ("testing_material", Searcher.get_testing_material_from_japanese_term, Searcher.get_testing_material_print_item_from_id),
+            ("reading", Searcher.get_reading_from_japanese_term, Searcher.get_reading_print_item_from_id)
+        ]
+
+        # Initialize the match list and the confirm message list
+        match_list = [None] * len(match_types)
+        confirm_message_list = ["Press any key to see matching testing materials.", "Press any key to see matching readings."]
+
+        # Try to get a match for each type
+        for i, (match_type, get_from_japanese_term, get_print_item_from_id) in enumerate(match_types):
+            try:
+                match_list[i] = get_from_japanese_term(japanese_term)
+            except Searcher.TermNotFoundError:
+                pass
+
+        ## if there is a match for a testing material, get the vocab for that testing material
+        if(match_list[0] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[0].id, "testing_material")
+        
+        elif(match_list[1] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[1].id, "reading")
+
+        ## so if we have the vocab, we can show that first
+        if(vocab is not None):
+            print(Searcher.get_vocab_print_item_from_id(vocab.id))
+
+        ## Print the matches, do not a confirm message for the first match
+        for i, match in enumerate(match_list):
+            if(match is not None):
+
+                print("\n" + confirm_message_list[i])
+                Toolkit.pause_console("")
+                Toolkit.clear_console()
+                    
+                print(match_types[i][2](match.id))
+
+        Toolkit.pause_console("Press any key to continue.")
+
+##--------------------start-of-perform_search_by_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                
+    @staticmethod
+    def perform_search_by_alphabetic_term(alphabetic_term:str) -> None:
+
+        """
+        
+        Performs a search by alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term we are searching for.
+
+        """
+
+        vocab = None
+
+        ## Define the match types and their corresponding methods
+        match_types = [
+            ("synonym", Searcher.get_synonym_from_alphabetic_term, Searcher.get_synonym_print_item_from_id),
+            ("reading", Searcher.get_reading_from_alphabetic_term, Searcher.get_reading_print_item_from_id),
+            ("typo", Searcher.get_typo_from_alphabetic_term, Searcher.get_typo_print_item_from_id),
+            ("incorrect_typo", Searcher.get_incorrect_typo_from_alphabetic_term, Searcher.get_incorrect_typo_print_item_from_id)
+        ]
+
+        # Initialize the match list and the confirm message list
+        match_list = [None] * len(match_types)
+        confirm_message_list = ["Press any key to see matching synonyms.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
+
+        # Try to get a match for each type
+        for i, (match_type, get_from_alphabetic_term, get_print_item_from_id) in enumerate(match_types):
+            try:
+                match_list[i] = get_from_alphabetic_term(alphabetic_term)
+            except Searcher.TermNotFoundError:
+                pass
+
+        ## if there is a match for a synonym, get the vocab for that synonym
+        if(match_list[0] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[0].id, "synonym")
+
+        ## if there is a match for a reading, get the vocab for that reading
+        elif(match_list[1] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[1].id, "reading")
+
+        ## if there is a match for a typo, get the vocab for that typo
+        elif(match_list[2] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[2].id, "typo")
+
+        ## if there is a match for an incorrect typo, get the vocab for that incorrect typo
+        elif(match_list[3] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[3].id, "incorrect_typo")
+        
+        ## so if we have the vocab, we can show that first
+        if(vocab is not None):
+            print(Searcher.get_vocab_print_item_from_id(vocab.id))
+
+        ## Print the matches, do not a confirm message for the first match
+        for i, match in enumerate(match_list):
+            if(match is not None):
+
+                print("\n" + confirm_message_list[i])
+                Toolkit.pause_console("")
+                Toolkit.clear_console()
+                    
+                print(match_types[i][2](match.id))
+
+        Toolkit.pause_console("Press any key to continue.")
             
 ##--------------------start-of-IDNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -615,3 +902,29 @@ class Searcher:
             """
 
             self.message = f"ID '{id_value}' not found."
+
+##--------------------start-of-TermNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    class TermNotFoundError(Exception):
+
+        """
+    
+        Is raised when a term is not found.
+
+        """
+
+##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        def __init__(self, term_value:str):
+
+            """
+            
+            Initializes a new TermNotFoundError Exception.
+
+            Parameters:\n
+            term_value (str) : The term value that wasn't found.
+
+            """
+
+            self.message = f"Term '{term_value}' not found."

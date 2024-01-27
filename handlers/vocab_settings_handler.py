@@ -198,6 +198,12 @@ class VocabSettingsHandler():
         if(search_term.isnumeric()):
             Searcher.perform_search_by_id(int(search_term))
 
+        elif(any(char in search_term for char in FileEnsurer.kana_filter)):
+            Searcher.perform_search_by_japanese_term(search_term)
+
+        else:
+            Searcher.perform_search_by_alphabetic_term(search_term)
+
 ##--------------------start-of-add_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod

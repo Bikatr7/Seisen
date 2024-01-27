@@ -186,6 +186,18 @@ class VocabSettingsHandler():
 
         """ 
 
+        try:
+
+            search_term = Toolkit.user_confirm("Please enter the search term.")
+
+        except Toolkit.UserCancelError:
+            print("\nCancelled.\n")
+            time.sleep(Toolkit.sleep_constant)
+            return
+        
+        if(search_term.isnumeric()):
+            Searcher.perform_search_by_id(int(search_term))
+
 ##--------------------start-of-add_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod

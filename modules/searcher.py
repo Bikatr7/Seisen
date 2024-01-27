@@ -543,7 +543,52 @@ class Searcher:
                     return typo
 
         raise Searcher.IDNotFoundError(typo_id)
+    
+##--------------------start-of-perform_search_by_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def perform_search_by_id(id:int) -> None:
+
+        """
         
+        Performs a search by id.
+
+        Parameters:
+        id (int) : the id we are searching for.
+
+        """
+
+        ## Define the match types and their corresponding methods
+        match_types = [
+            ("vocab", Searcher.get_vocab_from_id, Searcher.get_vocab_print_item_from_id),
+            ("synonym", Searcher.get_synonym_from_id, Searcher.get_synonym_print_item_from_id),
+            ("testing_material", Searcher.get_testing_material_from_id, Searcher.get_testing_material_print_item_from_id),
+            ("reading", Searcher.get_reading_from_id, Searcher.get_reading_print_item_from_id),
+            ("typo", Searcher.get_typo_from_id, Searcher.get_typo_print_item_from_id),
+            ("incorrect_typo", Searcher.get_incorrect_typo_from_id, Searcher.get_incorrect_typo_print_item_from_id)
+        ]
+
+        # Initialize the match list and the confirm message list
+        match_list = [None] * len(match_types)
+        confirm_message_list = ["", "Press any key to see matching synonyms.", "Press any key to see matching testing materials.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
+
+        # Try to get a match for each type
+        for i, (match_type, get_from_id, get_print_item_from_id) in enumerate(match_types):
+            try:
+                match_list[i] = get_from_id(id)
+            except Searcher.IDNotFoundError:
+                pass
+
+        ## Print the matches, do not a confirm message for the first match
+        for i, match in enumerate(match_list):
+            if(match is not None):
+                if(i != 0):
+                    print("\n" + confirm_message_list[i])
+                    Toolkit.pause_console("")
+                    Toolkit.clear_console()
+                    
+                print(match_types[i][2](match.id))
+            
 ##--------------------start-of-IDNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 

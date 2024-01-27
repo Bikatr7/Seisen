@@ -47,6 +47,9 @@ class Word:
 
         self.word_id:int = incoming_id
 
+        ## alias for word_id, need to make this permanent later
+        self.id = self.word_id
+
         self.testing_material_main:TestingMaterial = incoming_testing_material[0]
 
         self.testing_material_all:typing.List[TestingMaterial] = incoming_testing_material

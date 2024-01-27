@@ -50,6 +50,8 @@ Then we can just have a search function.
 
 ~~Searcher needs to be refactored to not require each search to have an assert, and incorporate more exception throwing.~~
 
+Have a new entity class and have all entities inherit it, should just have an id. Then we can unify all that buillshit
+
 -----------------------------------------------------------------------------------------------------------------
 Tasks above are to be implemented in (full-refactor of searcher and vocab_settings_handler) branch
 -----------------------------------------------------------------------------------------------------------------

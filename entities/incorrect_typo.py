@@ -28,4 +28,7 @@ class IncorrectTypo:
 
         self.incorrect_typo_id:int  = incoming_incorrect_typo_id
 
+        ## alias for incorrect_typo_id, need to make this permanent later
+        self.id = self.incorrect_typo_id
+
         self.incorrect_typo_value:str = incoming_incorrect_typo_value

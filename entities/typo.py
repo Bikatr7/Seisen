@@ -29,4 +29,7 @@ class Typo:
 
         self.typo_id:int = incoming_typo_id
 
+        ## alias for typo_id, need to make this permanent later
+        self.id = self.typo_id
+
         self.typo_value:str = incoming_typo_value

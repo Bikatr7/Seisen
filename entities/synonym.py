@@ -29,4 +29,7 @@ class Synonym:
 
         self.synonym_id:int = incoming_synonym_id
 
+        ## alias for synonym_id, need to make this permanent later
+        self.id = self.synonym_id
+
         self.synonym_value:str = incoming_synonym_value

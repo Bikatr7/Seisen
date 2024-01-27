@@ -33,6 +33,9 @@ class Reading:
         self.word_id:int = incoming_word_id
 
         self.reading_id:int = incoming_reading_id
+
+        ## alias for reading_id, need to make this permanent later
+        self.id = self.reading_id
         
         self.furigana_value:str = incoming_furigana_value
 

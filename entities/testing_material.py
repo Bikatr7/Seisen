@@ -29,5 +29,8 @@ class TestingMaterial:
         self.word_id:int = incoming_word_id
 
         self.testing_material_id:int = incoming_testing_material_id
+
+        ## alias for testing_material_id, need to make this permanent later
+        self.id = self.testing_material_id
         
         self.testing_material_value:str = incoming_testing_material_value

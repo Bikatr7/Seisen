@@ -3,7 +3,6 @@ import time
 
 ## custom modules
 from handlers.local_handler import LocalHandler
-from handlers.connection_handler import ConnectionHandler
 
 from modules.score_rater import ScoreRater
 from modules.logger import Logger
@@ -13,6 +12,7 @@ from modules.file_ensurer import FileEnsurer
 from handlers.vocab_settings_handler import VocabSettingsHandler
 from handlers.storage_settings_handler import StorageSettingsHandler
 from handlers.file_handler import FileHandler
+from handlers.remote_handler import RemoteHandler
 
 class SettingsHandler():
 
@@ -54,7 +54,7 @@ class SettingsHandler():
             SettingsHandler.print_score_ratings()
 
         elif(pathing == "4"):
-            SettingsHandler.set_up_new_database()
+            RemoteHandler.set_up_new_database()
 
         elif(pathing == "5"):
             SettingsHandler.toggle_sleep_after_test()
@@ -96,28 +96,6 @@ class SettingsHandler():
             print(item)
 
         Toolkit.pause_console()
-
-##--------------------start-of-set_up_new_database()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def set_up_new_database() -> None:
-
-        """
-        
-        Unlinks the current database and causes the remote handler to prompt for a new database.
-
-        """  
-        
-        ## forces the RemoteHandler to not skip a remote connection upon next startup
-        ConnectionHandler.start_marked_succeeded_remote_connection()
-        
-        ## clears the credentials file so that if a valid login exists, it's not used
-        ConnectionHandler.clear_credentials_file()
-
-        ## reinitializes the database connection 
-        ConnectionHandler.initialize_database_connection()
-
-        Logger.log_action("Database connection has been reset...")
 
 ##--------------------start-of-toggle_sleep_after_test()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

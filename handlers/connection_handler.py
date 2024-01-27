@@ -4,6 +4,8 @@ import typing
 import base64
 
 ## third party modules
+
+## Intended to crash if not installed
 import mysql.connector
 import mysql.connector.pooling
 import mysql.connector.cursor

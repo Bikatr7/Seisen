@@ -15,7 +15,6 @@ from modules.logger import Logger
 from handlers.file_handler import FileHandler
 from handlers.local_handler import LocalHandler
 from handlers.remote_handler import RemoteHandler
-from handlers.connection_handler import ConnectionHandler
 
 class StorageSettingsHandler():
 
@@ -81,10 +80,8 @@ class StorageSettingsHandler():
 
         """
 
-        ## local storage does not reset if there is no valid database connection
-        if(ConnectionHandler.check_connection_validity("local storage reset") == False):
-            print("No valid database connection.\n")
-            time.sleep(1)
+        if(not RemoteHandler.is_remote_enabled()):
+            print("Remote storage is not enabled. Please install mysql-connector-python and set up a remote database to use this feature.\n")
             return
 
         with open(FileEnsurer.last_local_remote_overwrite_timestamp_path, 'r', encoding="utf-8") as file:

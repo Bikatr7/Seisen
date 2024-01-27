@@ -11,12 +11,6 @@ from handlers.file_handler import FileHandler
 from handlers.settings_handler import SettingsHandler
 from handlers.storage_settings_handler import StorageSettingsHandler
 
-try:
-    from handlers.connection_handler import ConnectionHandler
-
-except ImportError:
-    pass
-
 from modules.file_ensurer import FileEnsurer
 from modules.score_rater import ScoreRater
 from modules.toolkit import Toolkit
@@ -139,11 +133,7 @@ class Seisen:
         Logger.log_barrier()
         Logger.log_action("Bootup")
 
-        try:
-            ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
-
-        except ImportError:
-            pass
+        RemoteHandler.setup_connection_handler()
 
         try:
             ## loads the words currently in local storage.

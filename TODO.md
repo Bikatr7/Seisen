@@ -7,8 +7,6 @@ User_confirm needs to be refactored as well to lesson the confusion for instruct
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.
 
-Properly test what happens if mysql.connector-python isn't installed, and add countermeasures to ensure Seisen can function without it.
-
 ## Backlog
 Redo All Documentation
 

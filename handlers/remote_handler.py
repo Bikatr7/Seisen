@@ -22,8 +22,15 @@ from modules.file_ensurer import FileEnsurer
 from modules.toolkit import Toolkit
 from modules.logger import Logger
 
-from handlers.connection_handler import ConnectionHandler
 from handlers.file_handler import FileHandler
+
+try:
+    from handlers.connection_handler import ConnectionHandler
+
+    FileEnsurer.remote_enabled = True
+
+except ImportError:
+    FileEnsurer.remote_enabled = False
 
 class RemoteHandler():
 
@@ -37,6 +44,62 @@ class RemoteHandler():
 
     vocab:typing.List[Vocab] = []
 
+##--------------------start-of-set_up_new_database()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def set_up_new_database() -> None:
+
+        """
+        
+        Unlinks the current database and causes the remote handler to prompt for a new database.
+
+        """
+
+        if(not RemoteHandler.is_remote_enabled()):
+            print("Remote storage is not enabled. Please install mysql-connector-python and restart Seisen.\n")
+            Toolkit.pause_console()
+            return
+        
+        ## forces the RemoteHandler to not skip a remote connection upon next startup
+        ConnectionHandler.start_marked_succeeded_remote_connection()
+        
+        ## clears the credentials file so that if a valid login exists, it's not used
+        ConnectionHandler.clear_credentials_file()
+
+        ## reinitializes the database connection 
+        ConnectionHandler.initialize_database_connection()
+
+        Logger.log_action("Database connection has been reset...")
+
+##--------------------start-of-is_remote_enabled()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def is_remote_enabled() -> bool:
+
+        """
+
+        Returns whether the remote storage is enabled or not.
+
+        """
+
+        return FileEnsurer.remote_enabled
+
+##--------------------start-of-setup_connection_handler()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def setup_connection_handler() -> None:
+
+        """
+        
+        Sets up the connection handler.
+
+        """
+
+        if(not RemoteHandler.is_remote_enabled()):
+            return
+
+        ConnectionHandler.connection, ConnectionHandler.cursor = ConnectionHandler.initialize_database_connection()
+
 ##--------------------start-of-assemble_kana()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -47,6 +110,9 @@ class RemoteHandler():
         Assembles the kana objects from the remote storage.
 
         """
+
+        if(not RemoteHandler.is_remote_enabled()):
+            return
 
         RemoteHandler.kana.clear()
 
@@ -132,6 +198,9 @@ class RemoteHandler():
     @staticmethod
     def write_kana_to_disk(kana_path:str, kana_testing_material_path:str, kana_synonyms_path:str, kana_readings_path:str, kana_typos_path:str, kana_incorrect_typos_path:str) -> None:
 
+        if(not RemoteHandler.is_remote_enabled()):
+            return
+
         ## apply changes to local storage
         for kana in RemoteHandler.kana:
 
@@ -169,6 +238,9 @@ class RemoteHandler():
         Assembles the vocab objects from the remote storage.
 
         """
+
+        if(not RemoteHandler.is_remote_enabled()):
+            return
 
         RemoteHandler.vocab.clear()
 
@@ -255,6 +327,9 @@ class RemoteHandler():
     @staticmethod
     def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_synonyms_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str, vocab:typing.Union[Vocab, None]=None) -> None:
 
+        if(not RemoteHandler.is_remote_enabled()):
+            return
+        
         old_remote_vocab:typing.List[Vocab] = []
 
         if(vocab != None):
@@ -355,6 +430,9 @@ class RemoteHandler():
 
         ##----------------------------------------------------------------main()----------------------------------------------------------------
 
+        if(not RemoteHandler.is_remote_enabled()):
+            return
+
         ## local storage does not reset if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("local storage reset") == False):
             return
@@ -387,6 +465,12 @@ class RemoteHandler():
         Use Carefully!
 
         """
+
+        if(not RemoteHandler.is_remote_enabled()):
+            if(not omit_print):
+                print("Remote storage is not enabled. Please install mysql-connector-python, restart Seisen and set up a database to use this feature.\n")
+
+            return
 
         ## we do not reset remote if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("remote storage reset") == False):
@@ -476,6 +560,9 @@ class RemoteHandler():
         """
 
         ##----------------------------------------------------------------calls----------------------------------------------------------------
+
+        if(not RemoteHandler.is_remote_enabled()):
+            return
 
         ConnectionHandler.execute_query(delete_kana_readings_query)
         ConnectionHandler.execute_query(delete_kana_testing_material_query)
@@ -627,6 +714,9 @@ class RemoteHandler():
         """
 
         ##----------------------------------------------------------------queries----------------------------------------------------------------
+
+        if(not RemoteHandler.is_remote_enabled()):
+            return
 
         ConnectionHandler.execute_query(create_kana_query)
         ConnectionHandler.execute_query(create_kana_typos_query)
@@ -866,6 +956,9 @@ class RemoteHandler():
 
         ##----------------------------------------------------------------functions----------------------------------------------------------------
 
+        if(not RemoteHandler.is_remote_enabled()):
+            return
+
         fill_kana()
         fill_kana_typos()
         fill_kana_incorrect_typos()
@@ -941,6 +1034,9 @@ class RemoteHandler():
 
         ##----------------------------------------------------------------main----------------------------------------------------------------
 
+        if(not RemoteHandler.is_remote_enabled()):
+            return
+
         ## we do not create a remote storage backup if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("remote storage backup creation") == False):
             return
@@ -980,6 +1076,9 @@ class RemoteHandler():
         Prompts a user to restore a remote backup and does so if valid.
 
         """
+
+        if(not RemoteHandler.is_remote_enabled()):
+            return
 
         ## we do not fuck w/ remote if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("restore remote storage backup") == False):
@@ -1043,6 +1142,9 @@ class RemoteHandler():
         Overwrites the remote storage with the local storage.
 
         """
+
+        if(not RemoteHandler.is_remote_enabled()):
+            return
 
         ## we do not overwrite remote with local if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("local-remote overwrite") == False):

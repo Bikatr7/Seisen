@@ -769,6 +769,9 @@ class Searcher:
 
         vocab = None
 
+        ## replaces english hyphens with their japanese counterparts
+        japanese_term = Toolkit.perform_entity_sanitization(japanese_term, "furigana")
+
         ## Define the match types and their corresponding methods
         match_types = [
             ("testing_material", Searcher.get_testing_material_from_japanese_term, Searcher.get_testing_material_print_item_from_id),
@@ -824,6 +827,9 @@ class Searcher:
         """
 
         vocab = None
+
+        ## replaces japanese hyphens with their english counterparts
+        alphabetic_term = Toolkit.perform_entity_sanitization(alphabetic_term, "testing_material")
 
         ## Define the match types and their corresponding methods
         match_types = [

@@ -250,7 +250,8 @@ class Seisen:
         ROUND_COUNT_INDEX_LOCATION = 2
         NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
 
-        displayOther = False
+        display_other = False
+        roma_triggered = False
 
         ## uses the word rater to get the kana we are gonna test, as well as the display list, but that is not used here
         kana_to_test, _ = ScoreRater.get_kana_to_test(LocalHandler.kana)
@@ -269,6 +270,15 @@ class Seisen:
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
 
+        all_testing_material = set([testing_material.value for testing_material in kana_to_test.testing_material])
+        all_furigana = set([reading.furigana for reading in kana_to_test.readings])
+
+        testing_material_string = '/'.join(all_testing_material)
+
+        furigana_string = '/'.join(all_furigana)
+
+        extended_prompt = testing_material_string + " (" + furigana_string + ")"
+
         ## if the user wants to change the mode do so
         if(Seisen.current_user_guess == "v"): 
 
@@ -281,21 +291,46 @@ class Seisen:
             Seisen.change_mode()
             return
         
+        elif(Seisen.current_user_guess == "b"): ## if the user wants to see the furigana do so
+
+            Toolkit.clear_console()
+
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(kana_to_test.main_testing_material.value, extended_prompt)
+
+            Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
+
+            roma_triggered = True
+
+            ## if the user wants to change the mode do so
+            if(Seisen.current_user_guess == "v"):
+                    
+                Toolkit.clear_console()
+
+                Logger.log_action("--------------------------------------------------------------")
+                Logger.log_action("User chose to change mode")
+                Logger.log_action("--------------------------------------------------------------")
+                
+                Seisen.change_mode()
+                return
+        
         total_number_of_rounds += 1
 
         ## checks if the users answer is correct
-        isCorrect, Seisen.current_user_guess = ScoreRater.check_answers_word(kana_to_test, Seisen.current_user_guess, Seisen.current_question_prompt)
+        is_correct, Seisen.current_user_guess = ScoreRater.check_answers_word(kana_to_test, Seisen.current_user_guess, Seisen.current_question_prompt)
 
-        Logger.log_action("User guessed " + Seisen.current_user_guess + ", isCorrect = " + str(isCorrect))
+        Logger.log_action("User guessed " + Seisen.current_user_guess + ", is_correct = " + str(is_correct))
 
         Toolkit.clear_console()
 
-        if(isCorrect == True):
+        if(roma_triggered == False):
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(kana_to_test.main_testing_material.value, extended_prompt)
+
+        if(is_correct == True):
             number_of_correct_rounds+=1
             Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is correct.\n"
             ScoreRater.log_correct_answer(kana_to_test)      
 
-        elif(isCorrect == False):
+        elif(is_correct == False):
             Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, A correct answer was " + kana_to_test.main_answer.value + ".\n"
             ScoreRater.log_incorrect_answer(kana_to_test)
 
@@ -310,21 +345,21 @@ class Seisen:
             if(len(answers) == 1):
                 break
 
-            if(isCorrect == None or isCorrect == False and answer != Seisen.current_user_guess):
+            if(is_correct == None or is_correct == False and answer != Seisen.current_user_guess):
 
-                if(displayOther == False):
+                if(display_other == False):
                     Seisen.current_question_prompt += "\nOther Answers include:\n"
 
                 Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
-                displayOther = True
+                display_other = True
 
-            elif(isCorrect == True and answer != Seisen.current_user_guess):
+            elif(is_correct == True and answer != Seisen.current_user_guess):
 
-                if(displayOther == False):
+                if(display_other == False):
                     Seisen.current_question_prompt += "\nOther Answers include:\n"
                     
                 Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
-                displayOther = True
+                display_other = True
 
         print(Seisen.current_question_prompt)
 
@@ -355,8 +390,8 @@ class Seisen:
         ROUND_COUNT_INDEX_LOCATION = 2
         NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
 
-        displayOther = False
-        romaTriggered = False
+        display_other = False
+        roma_triggered = False
 
         ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
         vocab_to_test, _ = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
@@ -375,8 +410,8 @@ class Seisen:
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
 
-        all_testing_material = [testing_material.value for testing_material in vocab_to_test.testing_material]
-        all_furigana = [reading.furigana for reading in vocab_to_test.readings]
+        all_testing_material = set([testing_material.value for testing_material in vocab_to_test.testing_material])
+        all_furigana = set([reading.furigana for reading in vocab_to_test.readings])
 
         testing_material_string = '/'.join(all_testing_material)
 
@@ -405,7 +440,7 @@ class Seisen:
 
             Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
-            romaTriggered = True
+            roma_triggered = True
 
             ## if the user wants to change the mode do so
             if(Seisen.current_user_guess == "v"):
@@ -422,21 +457,21 @@ class Seisen:
         total_number_of_rounds += 1
 
         ## checks if the users answer is correct
-        isCorrect, Seisen.current_user_guess = ScoreRater.check_answers_word(vocab_to_test, Seisen.current_user_guess, Seisen.current_question_prompt)
+        is_correct, Seisen.current_user_guess = ScoreRater.check_answers_word(vocab_to_test, Seisen.current_user_guess, Seisen.current_question_prompt)
     
-        Logger.log_action("User guessed " + Seisen.current_user_guess + ", isCorrect = " + str(isCorrect))
+        Logger.log_action("User guessed " + Seisen.current_user_guess + ", is_correct = " + str(is_correct))
 
         Toolkit.clear_console()
 
-        if(romaTriggered == False):
+        if(roma_triggered == False):
             Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.main_testing_material.value, extended_prompt)
 
-        if(isCorrect == True):
+        if(is_correct == True):
             number_of_correct_rounds+=1
             Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is correct.\n"
             ScoreRater.log_correct_answer(vocab_to_test)           
 
-        elif(isCorrect == False):
+        elif(is_correct == False):
             Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, a correct answer was " + vocab_to_test.main_answer.value + ".\n"
             ScoreRater.log_incorrect_answer(vocab_to_test)
 
@@ -451,21 +486,21 @@ class Seisen:
             if(len(answers) == 1):
                 break
 
-            if(isCorrect == None or isCorrect == False and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
+            if(is_correct == None or is_correct == False and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
 
-                if(displayOther == False):
+                if(display_other == False):
                     Seisen.current_question_prompt += "\nOther Answers include:\n"
 
                 Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
-                displayOther = True
+                display_other = True
 
-            elif(isCorrect == True and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
+            elif(is_correct == True and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
 
-                if(displayOther == False):
+                if(display_other == False):
                     Seisen.current_question_prompt += "\nOther Answers include:\n"
                     
                 Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
-                displayOther = True
+                display_other = True
 
         print(Seisen.current_question_prompt)
 

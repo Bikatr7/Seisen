@@ -864,7 +864,7 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            print_item = Searcher.get_vocab_print_item_from_id(target_vocab_id)
+            print_item = Searcher.assemble_word_print_item_from_object(target_vocab)
 
             print(print_item)
 

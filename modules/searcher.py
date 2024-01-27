@@ -11,7 +11,7 @@ from entities.reading import Reading
 from entities.typo import Typo
 from entities.incorrect_typo import IncorrectTypo
 
-from entities.entity import Entity
+from entities.word import Word
 
 from handlers.local_handler import LocalHandler
 
@@ -26,10 +26,10 @@ class Searcher:
         
     '''
 
-##--------------------start-of-get_vocab_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-assemble_word_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_vocab_print_item_from_id(vocab_id:int) -> str:
+    def assemble_word_print_item_from_object(word:Word) -> str:
 
         """
         
@@ -42,30 +42,21 @@ class Searcher:
         print_item (str) : the print item for the id.
         
         """
-            
-        target_vocab = None
-
-        for vocab in LocalHandler.vocab:
-            if(vocab.id == vocab_id):
-                target_vocab = vocab
-
-        if(target_vocab == None):
-            raise Searcher.IDNotFoundError(vocab_id)
+                    
+        mini_testing_material_id_print = [str(testing_material.id) for testing_material in word.testing_material]
+        mini_testing_material_value_print = [str(testing_material.value) for testing_material in word.testing_material]
         
-        mini_testing_material_id_print = [str(testing_material.id) for testing_material in target_vocab.testing_material]
-        mini_testing_material_value_print = [str(testing_material.value) for testing_material in target_vocab.testing_material]
-        
-        mini_reading_id_print = [str(reading.id) for reading in target_vocab.readings]
-        mini_reading_values_print = [str(reading.romaji) + "/" + str(reading.furigana) for reading in target_vocab.readings]
+        mini_reading_id_print = [str(reading.id) for reading in word.readings]
+        mini_reading_values_print = [str(reading.romaji) + "/" + str(reading.furigana) for reading in word.readings]
 
-        mini_id_print = [str(synonym.id) for synonym in target_vocab.answers]
-        mini_value_print = [str(synonym.value) for synonym in target_vocab.answers]
+        mini_id_print = [str(synonym.id) for synonym in word.answers]
+        mini_value_print = [str(synonym.value) for synonym in word.answers]
 
         print_item = (
             f"---------------------------------\n"
-            f"ID: {target_vocab.id}\n"
-            f"Incorrect Guesses: {target_vocab.incorrect_count}\n"
-            f"Correct Guesses: {target_vocab.correct_count}\n"
+            f"ID: {word.id}\n"
+            f"Correct Guesses: {word.correct_count}\n"
+            f"Incorrect Guesses: {word.incorrect_count}\n"
             f"Testing Material ID(S) : {mini_testing_material_id_print}\n"
             f"Testing Material Value(s): {mini_testing_material_value_print}\n"
             f"Reading ID(S): {mini_reading_id_print}\n"
@@ -360,6 +351,32 @@ class Searcher:
                 return vocab
 
         raise Searcher.IDNotFoundError(vocab_id)
+    
+##--------------------start-of-get_kana_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_kana_from_id(id:int) -> Word:
+
+        """
+
+        Gets a word given an id.
+
+        Parameters:
+        id (int) : the id of the word we are getting a print item for.
+
+        Returns:
+        word (Word) : the word for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for word in LocalHandler.kana:
+            if(word.id == id):
+                return word
+
+        raise Searcher.IDNotFoundError(id)
     
 ##--------------------start-of-get_overlying_vocab_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
@@ -724,7 +741,8 @@ class Searcher:
 
         ## Define the match types and their corresponding methods
         match_types = [
-            ("vocab", Searcher.get_vocab_from_id, Searcher.get_vocab_print_item_from_id),
+            ## Needs to be lambda functions because otherwise it'll be evaluated at definition time
+            ("vocab", lambda: Searcher.get_vocab_from_id(id), lambda match: Searcher.assemble_word_print_item_from_object(match)),
             ("synonym", Searcher.get_synonym_from_id, Searcher.get_synonym_print_item_from_id),
             ("testing_material", Searcher.get_testing_material_from_id, Searcher.get_testing_material_print_item_from_id),
             ("reading", Searcher.get_reading_from_id, Searcher.get_reading_print_item_from_id),
@@ -798,7 +816,8 @@ class Searcher:
 
         ## so if we have the vocab, we can show that first
         if(vocab is not None):
-            print(Searcher.get_vocab_print_item_from_id(vocab.id))
+            vocab = Searcher.get_vocab_from_id(vocab.id)
+            print(Searcher.assemble_word_print_item_from_object(vocab))
 
         ## Print the matches, do not a confirm message for the first match
         for i, match in enumerate(match_list):
@@ -868,7 +887,8 @@ class Searcher:
         
         ## so if we have the vocab, we can show that first
         if(vocab is not None):
-            print(Searcher.get_vocab_print_item_from_id(vocab.id))
+            vocab = Searcher.get_vocab_from_id(vocab.id)
+            print(Searcher.assemble_word_print_item_from_object(vocab))
 
         ## Print the matches, do not a confirm message for the first match
         for i, match in enumerate(match_list):

@@ -6,6 +6,8 @@ import typing
 from entities.word import Word
 from entities.vocab import Vocab
 
+from modules.searcher import Searcher
+
 from entities.typo import Typo as typo_blueprint
 from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
@@ -103,24 +105,14 @@ class ScoreRater:
         for i, kana in enumerate(kana_list):
             kana.likelihood = round(((kana_scores[i] / sum(kana_scores)) * 100), 4)
 
-            display_item = (
-                f"\n---------------------------------\n"
-                f"Likelihood: {kana.likelihood}%\n"
-                f"Kana: {kana.testing_material}\n"
-                f"Incorrect Guesses: {kana.incorrect_count}\n"
-                f"Correct Guesses: {kana.correct_count}\n"
-                f"ID: {kana.id}\n"
-                f"---------------------------------"
-            )
-
-            display_item_list.append((kana.likelihood, display_item))
+            display_item_list.append((kana.likelihood, Searcher.assemble_word_print_item_from_object(Searcher.get_kana_from_id(kana.id))))
 
         ## Sort the display_item_list based on the likelihoods (in ascending order)
         display_item_list.sort(key=lambda item: item[0])
 
         ## Rearrange the display_item_list and add index numbers
         display_item_list = [
-            str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
+            str(i + 1) + "\n" + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
         Logger.log_action(kana_to_test.main_testing_material.value + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.id))
@@ -181,24 +173,14 @@ class ScoreRater:
         for i, Vocab in enumerate(vocab_list):
             Vocab.likelihood = round(((vocab_scores[i] / sum(vocab_scores)) * 100), 4)
 
-            display_item = (
-                f"\n---------------------------------\n"
-                f"Likelihood: {Vocab.likelihood}%\n"
-                f"Vocab: {Vocab.main_testing_material.value}\n"
-                f"Incorrect Guesses: {Vocab.incorrect_count}\n"
-                f"Correct Guesses: {Vocab.correct_count}\n"
-                f"ID: {Vocab.id}\n"
-                f"---------------------------------"
-            )
-
-            display_item_list.append((Vocab.likelihood, display_item)) 
+            display_item_list.append((Vocab.likelihood, Searcher.assemble_word_print_item_from_object(Searcher.get_vocab_from_id(Vocab.id))))
 
         ## Sort the display_item_list based on the likelihoods (in ascending order)
         display_item_list.sort(key=lambda item: item[0])
 
         ## Rearrange the display_item_list and add index numbers
         display_item_list = [
-            str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
+            str(i + 1) + "\n" + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
         Logger.log_action(vocab_to_test.main_testing_material.value + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.id))

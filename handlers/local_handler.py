@@ -118,7 +118,7 @@ class LocalHandler():
 
                 for line in file:
 
-                    kana_id, incorrect_count, correct_count = FileHandler.extract_seisen_line_values(line)
+                    kana_id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
 
                     readings = get_kana_readings(kana_id)
                     synonyms = get_kana_synonyms(kana_id)
@@ -126,9 +126,9 @@ class LocalHandler():
 
                     Logger.log_action(kana_id + " " + str(len(readings)) + " " + str(len(synonyms)) + " " + str(len(testing_material)))
 
-                    LocalHandler.kana.append(kana_blueprint(int(kana_id), testing_material, synonyms[0], synonyms, readings, int(incorrect_count), int(correct_count)))
+                    LocalHandler.kana.append(kana_blueprint(int(kana_id), testing_material, synonyms, readings, int(correct_count), int(incorrect_count)))
 
-                    Logger.log_action("Loaded Kana - (" + kana_id + "," + incorrect_count + "," + correct_count + ") with the following readings - " + str([reading.furigana_value for reading in readings]) + " and the following synonyms - " + str([synonym.synonym_value for synonym in synonyms]) + " and the following testing material - " + str([testing_material.testing_material_value for testing_material in testing_material]))
+                    Logger.log_action("Loaded Kana - (" + kana_id + "," + correct_count + "," + incorrect_count + ") with the following readings - " + str([reading.furigana for reading in readings]) + " and the following synonyms - " + str([synonym.value for synonym in synonyms]) + " and the following testing material - " + str([testing_material.value for testing_material in testing_material]))
             
             with open(FileEnsurer.kana_typos_path, "r", encoding="utf-8") as file:
 
@@ -137,7 +137,7 @@ class LocalHandler():
                     typo_kana_id, typo_id, typo_value = FileHandler.extract_seisen_line_values(line)
 
                     for kana in LocalHandler.kana:
-                        if(kana.word_id == int(typo_kana_id)):
+                        if(kana.id == int(typo_kana_id)):
 
                             kana.typos.append(typo_blueprint(int(typo_kana_id), int(typo_id), typo_value))
 
@@ -150,7 +150,7 @@ class LocalHandler():
                     incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value = FileHandler.extract_seisen_line_values(line)
 
                     for kana in LocalHandler.kana:
-                        if(kana.word_id == int(incorrect_typo_kana_id)):
+                        if(kana.id == int(incorrect_typo_kana_id)):
 
                             kana.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_kana_id), int(incorrect_typo_id), incorrect_typo_value))
 
@@ -221,15 +221,15 @@ class LocalHandler():
                 for line in file:
 
 
-                    vocab_id, incorrect_count, correct_count = FileHandler.extract_seisen_line_values(line)
+                    vocab_id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
 
                     readings = get_vocab_readings(vocab_id)
                     synonyms = get_vocab_synonym_values(vocab_id)
                     testing_material = get_vocab_testing_material(vocab_id)
 
-                    LocalHandler.vocab.append(vocab_blueprint(int(vocab_id), testing_material, synonyms[0], synonyms, readings, int(incorrect_count), int(correct_count)))
+                    LocalHandler.vocab.append(vocab_blueprint(int(vocab_id), testing_material, synonyms, readings, int(correct_count), int(incorrect_count)))
 
-                    Logger.log_action("Loaded Vocab - (" + vocab_id + "," + incorrect_count + "," + correct_count + ") with the following readings - " + str([reading.furigana_value for reading in readings]) + " and the following synonyms - " + str([synonym.synonym_value for synonym in synonyms]) + " and the following testing material - " + str([testing_material.testing_material_value for testing_material in testing_material]))
+                    Logger.log_action("Loaded Vocab - (" + vocab_id + "," + correct_count + "," + incorrect_count + ") with the following readings - " + str([reading.furigana for reading in readings]) + " and the following synonyms - " + str([synonym.value for synonym in synonyms]) + " and the following testing material - " + str([testing_material.value for testing_material in testing_material]))
 
             with open(FileEnsurer.vocab_typos_path, "r", encoding="utf-8") as file:
 
@@ -238,7 +238,7 @@ class LocalHandler():
                     typo_vocab_id, typo_id, typo_value = FileHandler.extract_seisen_line_values(line)
 
                     for vocab in LocalHandler.vocab:
-                        if(vocab.word_id == int(typo_vocab_id)):
+                        if(vocab.id == int(typo_vocab_id)):
 
                             vocab.typos.append(typo_blueprint(int(typo_vocab_id), int(typo_id), typo_value))
 
@@ -251,7 +251,7 @@ class LocalHandler():
                     incorrect_typo_vocab_id, incorrect_typo_id, incorrect_typo_value = FileHandler.extract_seisen_line_values(line)
 
                     for vocab in LocalHandler.vocab:
-                        if(vocab.word_id == int(incorrect_typo_vocab_id)):
+                        if(vocab.id == int(incorrect_typo_vocab_id)):
 
                             vocab.incorrect_typos.append(incorrect_typo_blueprint(int(incorrect_typo_vocab_id), int(incorrect_typo_id), incorrect_typo_value))
 
@@ -306,6 +306,14 @@ class LocalHandler():
         KANA SYNONYM ID = 7
         
         VOCAB SYNONYM ID = 8
+
+        KANA READING ID = 9
+
+        VOCAB READING ID = 10
+
+        KANA TESTING MATERIAL ID = 11
+
+        VOCAB TESTING MATERIAL ID = 12
 
         """
 

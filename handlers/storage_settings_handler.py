@@ -84,7 +84,7 @@ class StorageSettingsHandler():
             time.sleep(1)
             return
 
-        with open(FileEnsurer.last_local_remote_overwrite_accurate_path, 'r', encoding="utf-8") as file:
+        with open(FileEnsurer.last_local_remote_overwrite_timestamp_path, 'r', encoding="utf-8") as file:
             strips_to_perform = " \n\x00"
 
             last_backup_date = file.read()

@@ -10,8 +10,8 @@ from modules.file_ensurer import FileEnsurer
 
 class InputType(Enum):
     NUMBER_CHOICE_NO_V = 1
-    VALIDATION_WITH_V_TEXT_ENTER = 4
-    VALIDATION_WITH_V_SINGLE_KEY = 5
+    VALIDATION_WITH_V_SINGLE_KEY = 4
+    VALIDATION_WITH_V_TEXT_ENTER = 5
 
 class Toolkit():
 
@@ -44,8 +44,8 @@ class Toolkit():
 
         Input Types:
         1 : Number Choice No V : the user can only enter a number choice or q.
-        4 : Validation With V Text Enter : the user can enter a number choice, q, or v. User must press enter to confirm their input.
-        5 : Validation With V Single Key : the user can enter a number choice, q, or v. User input is confirmed with a single key press.
+        4 : Validation With V Single Key : the user can enter a number choice, q, or v. User input is confirmed with a single key press.
+        5 : Validation With V Text Enter : the user can enter a number choice, q, or v. User must press enter to confirm their input.
 
         """
 
@@ -333,7 +333,7 @@ class Toolkit():
         
         Toolkit.clear_console()
 
-        return user_input
+        return user_input.strip()
 
 ##-------------------start-of-check_update()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -386,6 +386,34 @@ class Toolkit():
             is_connection = False
 
             return is_connection, update_prompt
+        
+##--------------------start-of-perform_entity_sanitization()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    @staticmethod
+    def perform_entity_sanitization(entity:str, entity_type:typing.Literal["testing_material", "furigana", "romaji", "synonym"]) -> str:
+
+        """
+
+        Performs sanitization on the given entity.
+
+        Parameters:
+        entity (str) : The entity to be sanitized.
+        entity_type (str) : The type of entity to be sanitized.
+
+        Returns:
+        entity (str) : The sanitized entity.
+
+        """
+
+        if(entity_type in ["testing_material", "furigana"]):
+
+            entity = entity.replace("-","ー")
+
+        elif(entity_type == "romaji"):
+            
+            entity = entity.replace("ー","-")
+
+        return entity
     
 ##--------------------start-of-UserCancelError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

@@ -106,10 +106,10 @@ class ScoreRater:
             display_item = (
                 f"\n---------------------------------\n"
                 f"Likelihood: {kana.likelihood}%\n"
-                f"Kana: {kana.testing_material_all}\n"
+                f"Kana: {kana.testing_material}\n"
                 f"Incorrect Guesses: {kana.incorrect_count}\n"
                 f"Correct Guesses: {kana.correct_count}\n"
-                f"ID: {kana.word_id}\n"
+                f"ID: {kana.id}\n"
                 f"---------------------------------"
             )
 
@@ -123,7 +123,7 @@ class ScoreRater:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        Logger.log_action(kana_to_test.testing_material_all[0].testing_material_value + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.word_id))
+        Logger.log_action(kana_to_test.main_testing_material.value + " was selected, likelihood : " + str(kana_to_test.likelihood) + ", id : " + str(kana_to_test.id))
 
         return kana_to_test, display_item_list
     
@@ -184,10 +184,10 @@ class ScoreRater:
             display_item = (
                 f"\n---------------------------------\n"
                 f"Likelihood: {Vocab.likelihood}%\n"
-                f"Vocab: {Vocab.testing_material_all}\n"
+                f"Vocab: {Vocab.main_testing_material.value}\n"
                 f"Incorrect Guesses: {Vocab.incorrect_count}\n"
                 f"Correct Guesses: {Vocab.correct_count}\n"
-                f"ID: {Vocab.word_id}\n"
+                f"ID: {Vocab.id}\n"
                 f"---------------------------------"
             )
 
@@ -201,7 +201,7 @@ class ScoreRater:
             str(i + 1) + " " + str(item[1]) for i, item in enumerate(display_item_list)
         ]
 
-        Logger.log_action(vocab_to_test.testing_material_all[0].testing_material_value + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.word_id))
+        Logger.log_action(vocab_to_test.main_testing_material.value + " was selected, likelihood : " + str(vocab_to_test.likelihood) + ", id : " + str(vocab_to_test.id))
 
         return vocab_to_test, display_item_list
     
@@ -302,22 +302,22 @@ class ScoreRater:
 
         final_answer = user_guess
 
-        typos = [typo.typo_value for typo in Word.typos]
-        incorrect_typos = [incorrect_typo.incorrect_typo_value for incorrect_typo in Word.incorrect_typos]
+        typos = [typo.value for typo in Word.typos]
+        incorrect_typos = [incorrect_typo.value for incorrect_typo in Word.incorrect_typos]
 
         if(user_guess in typos):
-            possible_intended_answers = [synonym.synonym_value for synonym in Word.testing_material_answer_all]
+            possible_intended_answers = [synonym.value for synonym in Word.answers]
             return ScoreRater.get_intended_answer(user_guess, possible_intended_answers)
         elif(user_guess in incorrect_typos):
             return user_guess
 
-        for correct_answer in Word.testing_material_answer_all:
+        for correct_answer in Word.answers:
 
-            new_distance = ScoreRater.levenshtein(user_guess, correct_answer.synonym_value)
+            new_distance = ScoreRater.levenshtein(user_guess, correct_answer.value)
 
             if(new_distance < min_distance and new_distance < lowest_distance):
                 lowest_distance = new_distance
-                closest_match = correct_answer.synonym_value
+                closest_match = correct_answer.value
 
         if(closest_match is not None):
 
@@ -366,7 +366,7 @@ class ScoreRater:
 
         """
 
-        answers = [value.synonym_value for value in Word.testing_material_answer_all]
+        answers = [synonym.value for synonym in Word.answers]
 
         if(user_guess == 'q'): ## if the user wants to quit the program do so
             FileEnsurer.exit_seisen()
@@ -406,15 +406,15 @@ class ScoreRater:
             new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(1))
             path_to_write_to = FileEnsurer.kana_typos_path
 
-        new_typo = typo_blueprint(Word.word_id, new_typo_id, typo)
+        new_typo = typo_blueprint(Word.id, new_typo_id, typo)
 
         ## updates local storage so the typo will be saved
-        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_typo_id), str(new_typo.typo_value)])
+        FileHandler.write_seisen_line(path_to_write_to, [str(Word.id), str(new_typo_id), str(new_typo.value)])
 
         ## updates the current session with the typo
         Word.typos.append(new_typo)
 
-        Logger.log_action("Logged a typo : " + typo + " for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged a typo : " + typo + " for " + Word.main_testing_material.value + ", id : " + str(Word.id))
 
 ##--------------------start-of-log_new_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -439,15 +439,15 @@ class ScoreRater:
             new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(2))
             path_to_write_to = FileEnsurer.kana_incorrect_typos_path
 
-        new_incorrect_typo = incorrect_typo_blueprint(Word.word_id, new_incorrect_typo_id, incorrect_typo)
+        new_incorrect_typo = incorrect_typo_blueprint(Word.id, new_incorrect_typo_id, incorrect_typo)
 
         ## updates local storage so the incorrect typo will be saved
-        FileHandler.write_seisen_line(path_to_write_to, [str(Word.word_id), str(new_incorrect_typo_id), str(new_incorrect_typo.incorrect_typo_value)])
+        FileHandler.write_seisen_line(path_to_write_to, [str(Word.id), str(new_incorrect_typo_id), str(new_incorrect_typo.value)])
 
         ## updates the current session with the incorrect typo
         Word.incorrect_typos.append(new_incorrect_typo)
 
-        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged an incorrect typo : " + incorrect_typo + " for " + Word.main_testing_material.value + ", id : " + str(Word.id))
 
 ##--------------------start-of-log_correct_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -482,12 +482,12 @@ class ScoreRater:
         Word.correct_count += 1
                             
         ## line returned needs to be incremented by one to match file
-        line_to_write_to = word_ids.index(Word.word_id) + 1
+        line_to_write_to = word_ids.index(Word.id) + 1
 
         ## updates local storage so the correct answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.correct_count))
 
-        Logger.log_action("Logged a correct answer for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged a correct answer for " + Word.main_testing_material.value + ", id : " + str(Word.id))
 
 ##--------------------start-of-log_incorrect_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -522,9 +522,9 @@ class ScoreRater:
         Word.incorrect_count += 1
 
         ## line returned needs to be incremented by one to match file
-        line_to_write_to = word_ids.index(Word.word_id) + 1
+        line_to_write_to = word_ids.index(Word.id) + 1
 
         ## updates local storage so the incorrect answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.incorrect_count))
 
-        Logger.log_action("Logged an incorrect answer for " + Word.testing_material_all[0].testing_material_value + ", id : " + str(Word.word_id))
+        Logger.log_action("Logged an incorrect answer for " + Word.main_testing_material.value + ", id : " + str(Word.id))

@@ -4,7 +4,14 @@ import typing
 ## custom modules
 from modules.toolkit import Toolkit
 
+from entities.vocab import Vocab
 from entities.testing_material import TestingMaterial
+from entities.synonym import Synonym
+from entities.reading import Reading
+from entities.typo import Typo
+from entities.incorrect_typo import IncorrectTypo
+
+from entities.entity import Entity
 
 from handlers.local_handler import LocalHandler
 
@@ -39,28 +46,32 @@ class Searcher:
         target_vocab = None
 
         for vocab in LocalHandler.vocab:
-            if(vocab.word_id == vocab_id):
+            if(vocab.id == vocab_id):
                 target_vocab = vocab
 
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
-        mini_testing_material_print = [str(testing_material.testing_material_value) for testing_material in target_vocab.testing_material_all]
-        mini_reading_print = [str(reading.romaji_value) + "/" + str(reading.furigana_value) for reading in target_vocab.readings]
-        mini_synonym_print = [str(synonym.synonym_id) for synonym in target_vocab.testing_material_answer_all]
+        mini_testing_material_id_print = [str(testing_material.id) for testing_material in target_vocab.testing_material]
+        mini_testing_material_value_print = [str(testing_material.value) for testing_material in target_vocab.testing_material]
+        
+        mini_reading_id_print = [str(reading.id) for reading in target_vocab.readings]
+        mini_reading_values_print = [str(reading.romaji) + "/" + str(reading.furigana) for reading in target_vocab.readings]
 
+        mini_id_print = [str(synonym.id) for synonym in target_vocab.answers]
+        mini_value_print = [str(synonym.value) for synonym in target_vocab.answers]
 
         print_item = (
             f"---------------------------------\n"
-            f"ID: {target_vocab.word_id}\n"
+            f"ID: {target_vocab.id}\n"
             f"Incorrect Guesses: {target_vocab.incorrect_count}\n"
             f"Correct Guesses: {target_vocab.correct_count}\n"
-            f"Testing Material ID(S) : {mini_testing_material_print}\n"
-            f"Testing Material Value(s): {[testing_material.testing_material_value for testing_material in target_vocab.testing_material_all]}\n"
-            f"Reading ID(S): {mini_reading_print}\n"
-            f"Reading Value(s): {[str(reading.romaji_value) + '/' + str(reading.furigana_value) for reading in target_vocab.readings]}\n"
-            f"Synonym ID(S): {mini_synonym_print}\n"
-            f"Synonym Values(s): {[synonym.synonym_value for synonym in target_vocab.testing_material_answer_all]}\n"
+            f"Testing Material ID(S) : {mini_testing_material_id_print}\n"
+            f"Testing Material Value(s): {mini_testing_material_value_print}\n"
+            f"Reading ID(S): {mini_reading_id_print}\n"
+            f"Reading Value(s): {mini_reading_values_print}\n"
+            f"Synonym ID(S): {mini_id_print}\n"
+            f"Synonym Values(s): {mini_value_print}\n"
             f"---------------------------------\n"
         )
 
@@ -69,14 +80,14 @@ class Searcher:
 ##--------------------start-of-get_synonym_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_synonym_print_item_from_id(synonym_id:int) -> str:
+    def get_synonym_print_item_from_id(id:int) -> str:
 
         """
         
         Gets a print item for a synonym given a synonym id.
 
         Parameters:
-        synonym_id (int) : The id of the synonym we are getting a print item for.
+        id (int) : The id of the synonym we are getting a print item for.
 
         Returns:
         print_item (str) : the print item for the id.\n
@@ -87,20 +98,24 @@ class Searcher:
         target_synonym = None
 
         for vocab in LocalHandler.vocab:
-            for synonym in vocab.testing_material_answer_all:
-                if(synonym.synonym_id == synonym_id):
+            for synonym in vocab.answers:
+                if(synonym.id == id):
                     target_synonym = synonym
                     target_vocab = vocab
 
         if(target_synonym == None or target_vocab == None):
-            raise Searcher.IDNotFoundError(synonym_id)
+            raise Searcher.IDNotFoundError(id)
         
+        mini_testing_material_value_print = [str(testing_material.value) for testing_material in target_vocab.testing_material]
+        mini_testing_material_id_print = [str(testing_material.id) for testing_material in target_vocab.testing_material]
+
         print_item = (
             f"---------------------------------\n"
-            f"Synonym: {target_synonym.synonym_value}\n"
-            f"Synonym ID: {target_synonym.synonym_id}\n"
-            f"VOCAB: {target_vocab.testing_material_all}\n"
-            f"VOCAB ID: {target_synonym.word_id}\n"
+            f"Synonym: {target_synonym.value}\n"
+            f"Synonym ID: {target_synonym.id}\n"
+            f"VOCAB Testing Material: {mini_testing_material_value_print}\n"
+            f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
+            f"VOCAB ID: {target_synonym.id}\n"
             f"---------------------------------\n"
         )
 
@@ -127,170 +142,746 @@ class Searcher:
         print_items = []
 
         for vocab in LocalHandler.vocab:
-            if(vocab.word_id == vocab_id):
+            if(vocab.id == vocab_id):
                 target_vocab = vocab
 
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
-        for synonym in target_vocab.testing_material_answer_all:
+        for synonym in target_vocab.answers:
 
             print_item = (
                 f"---------------------------------\n"
-                f"Synonym: {synonym.synonym_value}\n"
-                f"Synonym ID: {synonym.synonym_id}\n"
-                f"VOCAB ID {synonym.word_id}\n"
+                f"Synonym: {synonym.value}\n"
+                f"Synonym ID: {synonym.id}\n"
+                f"VOCAB: {target_vocab.testing_material}\n"
+                f"VOCAB ID {synonym.id}\n"
                 f"---------------------------------\n"
             )
 
             print_items.append(print_item)
 
         return print_items
+    
+##--------------------start-of-get_testing_material_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_testing_material_print_item_from_id(id:int) -> str:
+
+        """
+        
+        Gets a print item for a testing material given a testing material id.
+
+        Parameters:
+        id (int) : the id of the testing material we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_testing_material = None
+
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material:
+                if(testing_material.id == id):
+                    target_testing_material = testing_material
+                    target_vocab = vocab
+
+        if(target_testing_material == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(id)
+        
+        mini_id_print = [str(synonym.id) for synonym in target_vocab.answers]
+        mini_value_print = [str(synonym.value) for synonym in target_vocab.answers]
+
+        print_item = (
+            f"---------------------------------\n"
+            f"Testing Material: {target_testing_material.value}\n"
+            f"Testing Material ID: {target_testing_material.id}\n"
+            f"VOCAB Synonym(s): {mini_value_print}\n"
+            f"VOCAB Synonym ID(s): {mini_id_print}\n"
+            f"VOCAB ID: {target_testing_material.id}\n"
+            f"---------------------------------\n"
+        )
+
+        return print_item
+    
+##--------------------start-of-get_reading_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_print_item_from_id(id:int) -> str:
+
+        """
+        
+        Gets a print item for a reading given a reading id.
+
+        Parameters:
+        id (int) : the id of the reading we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_reading = None
+
+        for vocab in LocalHandler.vocab:
+            for reading in vocab.readings:
+                if(reading.id == id):
+                    target_reading = reading
+                    target_vocab = vocab
+
+        if(target_reading == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(id)
+        
+        print_item = (
+            f"---------------------------------\n"
+            f"Romaji: {target_reading.romaji}\n"
+            f"Furigana: {target_reading.furigana}\n"
+            f"Reading ID: {target_reading.id}\n"
+            f"VOCAB ID: {target_reading.id}\n"
+            f"---------------------------------\n"
+        )
+
+        return print_item
+    
+##--------------------start-of-get_incorrect_typo_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_incorrect_typo_print_item_from_id(id:int) -> str:
+
+        """
+        
+        Gets a print item for an incorrect typo given an incorrect typo id.
+
+        Parameters:
+        id (int) : the id of the incorrect typo we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_incorrect_typo = None
+
+        for vocab in LocalHandler.vocab:
+            for incorrect_typo in vocab.incorrect_typos:
+                if(incorrect_typo.id == id):
+                    target_incorrect_typo = incorrect_typo
+                    target_vocab = vocab
+
+        if(target_incorrect_typo == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(id)
+        
+        mini_testing_material_id_print = [str(testing_material.id) for testing_material in target_vocab.testing_material]
+        mini_testing_material_value_print = [str(testing_material.value) for testing_material in target_vocab.testing_material]
+        
+        print_item = (
+            f"---------------------------------\n"
+            f"Incorrect Typo: {target_incorrect_typo.value}\n"
+            f"Incorrect Typo ID: {target_incorrect_typo.id}\n"
+            f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
+            f"VOCAB Testing Material Value(s): {mini_testing_material_value_print}\n"
+            f"VOCAB ID: {target_incorrect_typo.id}\n"
+            f"---------------------------------\n"
+        )
+
+        return print_item
+    
+##--------------------start-of-get_typo_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_typo_print_item_from_id(id:int) -> str:
+            
+        """
+        
+        Gets a print item for a typo given a typo id.
+
+        Parameters:
+        id (int) : the id of the typo we are getting a print item for.
+
+        Returns:
+        print_item (str) : the print item for the id.
+        
+        """
+        
+        target_vocab = None
+        target_typo = None
+
+        for vocab in LocalHandler.vocab:
+            for typo in vocab.typos:
+                if(typo.id == id):
+                    target_typo = typo
+                    target_vocab = vocab
+
+        if(target_typo == None or target_vocab == None):
+            raise Searcher.IDNotFoundError(id)
+        
+        mini_testing_material_id_print = [str(testing_material.id) for testing_material in target_vocab.testing_material]
+        mini_testing_material_value_print = [str(testing_material.value) for testing_material in target_vocab.testing_material]
+        
+        print_item = (
+            f"---------------------------------\n"
+            f"Typo: {target_typo.value}\n"
+            f"Typo ID: {target_typo.id}\n"
+            f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
+            f"VOCAB Testing Material Value(s): {mini_testing_material_value_print}\n"
+            f"VOCAB ID: {target_typo.id}\n"
+            f"---------------------------------\n"
+        )
+
+        return print_item
 
 ##--------------------start-of-get_vocab_term_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_vocab_term_from_id(vocab_id:int) -> typing.List[TestingMaterial]:
+    def get_vocab_from_id(vocab_id:int) -> Vocab:
 
         """
-        
-        Gets a vocab term given an id.
+
+        Gets a vocab given an id.
 
         Parameters:
-        vocab_id (int) : the id for the term we are searching for.
+        vocab_id (int) : the id of the vocab we are getting a print item for.
 
         Returns:
-        term (str) : the term if found, otherwise "-1".
+        vocab (Vocab) : the vocab for the id.
 
-        """
-
-        term = None
+        Raises:
+        IDNotFoundError : if the id is not found.
         
-        for vocab in LocalHandler.vocab:
-            if(vocab.word_id == vocab_id):
-                term = vocab.testing_material_all
-
-        if(term == None):
-            raise Searcher.IDNotFoundError(vocab_id)
-
-        return term
-    
-##--------------------start-of-get_id_from_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def get_id_from_vocab_term(term:str) -> int:
-
         """
-        
-        Gets a vocab id given an verb.
-
-        Parameters:
-        tern (str) : the term for the id we are searching for.
-
-        Returns:
-        final_id (int) : the id if found, otherwise -1.
-
-        """
-
-        matching_ids = []
-
-        id_print_message = ""
-
-        final_id = -1
 
         for vocab in LocalHandler.vocab:
-            if(vocab.testing_material_all == term):
-                matching_ids.append(vocab.word_id)
+            if(vocab.id == vocab_id):
+                return vocab
 
-        if(len(matching_ids) == 0):
-            return final_id
-        elif(len(matching_ids) == 1):
-            final_id = matching_ids[0]
-            return final_id
-        
-        for id in matching_ids:
-            id_print_message += Searcher.get_vocab_print_item_from_id(id)
-
-        id_print_message += "\n\nWhich vocab are you looking for? (Enter position 1-" + str(len(matching_ids)) + ")"
-
-        target_index = int(Toolkit.input_check(4, Toolkit.get_single_key(), len(matching_ids), id_print_message)) - 1
-
-        final_id = matching_ids[target_index]
-
-        return final_id
+        raise Searcher.IDNotFoundError(vocab_id)
     
-##--------------------start-of-get_ids_from_japanese()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_overlying_vocab_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
-    def get_ids_from_japanese(term:str) -> typing.List[int]:
-    
+    def get_overlying_vocab_from_attribute_id(id:int, attribute_type:typing.Literal["synonym", "testing_material", "reading", "incorrect_typo", "typo"]) -> Vocab:
+
         """
-        
-        Gets vocab ids that match a given japanese term.
+
+        Gets a vocab given an id.
 
         Parameters:
-        term (str) : the term we are searching with.\n
+        id (int) : the id of the attribute we are getting a print item for.
+        attribute_type (str) : the type of attribute we are getting a print item for.
 
         Returns:
-        vocab_ids (list = int) : matching vocab ids.\n
+        vocab (Vocab) : the vocab for the id.
 
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
         """
-
-        vocab_ids = []
 
         for vocab in LocalHandler.vocab:
 
+            if(attribute_type == "synonym"):
+                for synonym in vocab.answers:
+                    if(synonym.id == id):
+                        return vocab
+                    
+            elif(attribute_type == "testing_material"):
+                for testing_material in vocab.testing_material:
+                    if(testing_material.id == id):
+                        return vocab
+                    
+            elif(attribute_type == "reading"):
+                for reading in vocab.readings:
+                    if(reading.id == id):
+                        return vocab
+                    
+            elif(attribute_type == "incorrect_typo"):
+                for incorrect_typo in vocab.incorrect_typos:
+                    if(incorrect_typo.id == id):
+                        return vocab
+                    
+            elif(attribute_type == "typo"):
+                for typo in vocab.typos:
+                    if(typo.id == id):
+                        return vocab
+
+        raise Searcher.IDNotFoundError(id)
+    
+##--------------------start-of-get_synonym_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_synonym_from_id(id:int) -> Synonym:
+
+        """
+
+        Gets a synonym given an id.
+
+        Parameters:
+        id (int) : the id of the synonym we are getting a print item for.
+
+        Returns:
+        synonym (Synonym) : the synonym for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for synonym in vocab.answers:
+                if(synonym.id == id):
+                    return synonym
+
+        raise Searcher.IDNotFoundError(id)
+
+##--------------------start-of-get_testing_material_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
+
+    @staticmethod
+    def get_testing_material_from_id(id:int) -> TestingMaterial:
+
+        """
+
+        Gets a testing material given an id.
+
+        Parameters:
+        id (int) : the id of the testing material we are getting a print item for.
+
+        Returns:
+        testing_material (TestingMaterial) : the testing material for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material:
+                if(testing_material.id == id):
+                    return testing_material
+
+        raise Searcher.IDNotFoundError(id)
+    
+##--------------------start-of-get_reading_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_from_id(id:int) -> Reading:
+
+        """
+
+        Gets a reading given an id.
+
+        Parameters:
+        id (int) : the id of the reading we are getting a print item for.
+
+        Returns:
+        reading (Reading) : the reading for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
             for reading in vocab.readings:
-                if(term == reading.furigana_value):
-                    vocab_ids.append(vocab.word_id)
+                if(reading.id == id):
+                    return reading
 
-            for testing_material in vocab.testing_material_all:
-                if(term == testing_material.testing_material_value):
-                    vocab_ids.append(vocab.word_id)
-
-            vocab_ids = [int(id) for id in set(vocab_ids)]
-            
-        return vocab_ids
-
-##--------------------start-of-get_ids_from_alpha_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+        raise Searcher.IDNotFoundError(id)
+    
+##--------------------start-of-get_incorrect_typo_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
     @staticmethod
-    def get_ids_from_alpha_term(term:str) -> typing.Tuple[typing.List[int], typing.List[int]]:
+    def get_incorrect_typo_from_id(id:int) -> IncorrectTypo:
 
         """
-        
-        Gets vocab and synonym ids that match a given term.
+
+        Gets an incorrect typo given an id.
 
         Parameters:
-        term (str) : the term we are searching with.
+        id (int) : the id of the incorrect typo we are getting a print item for.
 
         Returns:
-        vocab_ids (list = int) : matching vocab ids.
-        synonym_ids (list - int) : matching synonym ids.
+        incorrect_typo (IncorrectTypo) : the incorrect typo for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for incorrect_typo in vocab.incorrect_typos:
+                if(incorrect_typo.id == id):
+                    return incorrect_typo
+
+        raise Searcher.IDNotFoundError(id)
+
+##--------------------start-of-get_typo_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_typo_from_id(id:int) -> Typo:
 
         """
 
-        vocab_ids = []
-        synonym_ids = []
+        Gets a typo given an id.
+
+        Parameters:
+        id (int) : the id of the typo we are getting a print item for.
+
+        Returns:
+        typo (Typo) : the typo for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
+        
+        """
 
         for vocab in LocalHandler.vocab:
+            for typo in vocab.typos:
+                if(typo.id == id):
+                    return typo
 
-            ## if term matches romaji or definition 
-            for reading in vocab.readings:
-                if(term == reading.romaji_value):
-                    vocab_ids.append(vocab.word_id)
+        raise Searcher.IDNotFoundError(id)
+    
+##--------------------start-of-get_vocab_from_japanese_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-            for synonym in vocab.testing_material_answer_all:
-                if(synonym.synonym_value == term):
-                    vocab_ids.append(vocab.word_id)
-                    synonym_ids.append(synonym.synonym_id)
-            
-            
-        vocab_ids = [int(id) for id in set(vocab_ids)]
-        synonym_ids = [int(id) for id in set(synonym_ids)]
+    @staticmethod
+    def get_testing_material_from_japanese_term(japanese_term:str) -> TestingMaterial:
 
-        return vocab_ids, synonym_ids
+        """
+
+        Gets a testing material given a japanese term.
+
+        Parameters:
+        japanese_term (str) : the japanese term of the testing material we are getting a print item for.
+
+        Returns:
+        testing_material (TestingMaterial) : the testing material for the japanese term.
+
+        Raises:
+        IDNotFoundError : if the testing material is not found.
         
+        """
+
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material:
+                if(testing_material.value == japanese_term):
+                    return testing_material
+
+        raise Searcher.TermNotFoundError(japanese_term)
+    
+##--------------------start-of-get_reading_from_japanese_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_from_japanese_term(japanese_term:str) -> Reading:
+
+        """
+
+        Gets a reading given a japanese term.
+
+        Parameters:
+        japanese_term (str) : the japanese term of the reading we are getting a print item for.
+
+        Returns:
+        reading (Reading) : the reading for the japanese term.
+
+        Raises:
+        IDNotFoundError : if the reading is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for reading in vocab.readings:
+                if(reading.furigana == japanese_term):
+                    return reading
+
+        raise Searcher.TermNotFoundError(japanese_term)
+    
+##--------------------start-of-get_synonym_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def get_synonym_from_alphabetic_term(alphabetic_term:str) -> Synonym:
+
+        """
+
+        Gets a synonym given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the synonym we are getting a print item for.
+
+        Returns:
+        synonym (Synonym) : the synonym for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the synonym is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for synonym in vocab.answers:
+                if(synonym.value == alphabetic_term):
+                    return synonym
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+
+##--------------------start-of-get_reading_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_reading_from_alphabetic_term(alphabetic_term:str) -> Reading:
+
+        """
+
+        Gets a reading given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the reading we are getting a print item for.
+
+        Returns:
+        reading (Reading) : the reading for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the reading is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for reading in vocab.readings:
+                if(reading.romaji == alphabetic_term):
+                    return reading
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+    
+##--------------------start-of-get_typo_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_typo_from_alphabetic_term(alphabetic_term:str) -> Typo:
+            
+        """
+
+        Gets a typo given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the typo we are getting a print item for.
+
+        Returns:
+        typo (Typo) : the typo for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the typo is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for typo in vocab.typos:
+                if(typo.value == alphabetic_term):
+                    return typo
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+    
+##--------------------start-of-get_incorrect_typo_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def get_incorrect_typo_from_alphabetic_term(alphabetic_term:str) -> IncorrectTypo:
+                
+        """
+
+        Gets an incorrect typo given an alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term of the incorrect typo we are getting a print item for.
+
+        Returns:
+        incorrect_typo (IncorrectTypo) : the incorrect typo for the alphabetic term.
+
+        Raises:
+        IDNotFoundError : if the incorrect typo is not found.
+        
+        """
+
+        for vocab in LocalHandler.vocab:
+            for incorrect_typo in vocab.incorrect_typos:
+                if(incorrect_typo.value == alphabetic_term):
+                    return incorrect_typo
+
+        raise Searcher.TermNotFoundError(alphabetic_term)
+                
+##--------------------start-of-perform_search_by_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    @staticmethod
+    def perform_search_by_id(id:int) -> None:
+
+        """
+        
+        Performs a search by id.
+
+        Parameters:
+        id (int) : the id we are searching for.
+
+        """
+
+        ## Define the match types and their corresponding methods
+        match_types = [
+            ("vocab", Searcher.get_vocab_from_id, Searcher.get_vocab_print_item_from_id),
+            ("synonym", Searcher.get_synonym_from_id, Searcher.get_synonym_print_item_from_id),
+            ("testing_material", Searcher.get_testing_material_from_id, Searcher.get_testing_material_print_item_from_id),
+            ("reading", Searcher.get_reading_from_id, Searcher.get_reading_print_item_from_id),
+            ("typo", Searcher.get_typo_from_id, Searcher.get_typo_print_item_from_id),
+            ("incorrect_typo", Searcher.get_incorrect_typo_from_id, Searcher.get_incorrect_typo_print_item_from_id)
+        ]
+
+        # Initialize the match list and the confirm message list
+        match_list = [None] * len(match_types)
+        confirm_message_list = ["", "Press any key to see matching synonyms.", "Press any key to see matching testing materials.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
+
+        # Try to get a match for each type
+        for i, (match_type, get_from_id, get_print_item_from_id) in enumerate(match_types):
+            try:
+                match_list[i] = get_from_id(id)
+            except Searcher.IDNotFoundError:
+                pass
+
+        ## Print the matches, do not a confirm message for the first match
+        for i, match in enumerate(match_list):
+            if(match is not None):
+                if(i != 0):
+                    print("\n" + confirm_message_list[i])
+                    Toolkit.pause_console("")
+                    Toolkit.clear_console()
+                    
+                print(match_types[i][2](match.id))
+
+##--------------------start-of-perform_search_by_japanese_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def perform_search_by_japanese_term(japanese_term:str) -> None:
+
+        """
+        
+        Performs a search by japanese term.
+
+        Parameters:
+        japanese_term (str) : the japanese term we are searching for.
+
+        """
+
+        vocab = None
+
+        ## replaces english hyphens with their japanese counterparts
+        japanese_term = Toolkit.perform_entity_sanitization(japanese_term, "furigana")
+
+        ## Define the match types and their corresponding methods
+        match_types = [
+            ("testing_material", Searcher.get_testing_material_from_japanese_term, Searcher.get_testing_material_print_item_from_id),
+            ("reading", Searcher.get_reading_from_japanese_term, Searcher.get_reading_print_item_from_id)
+        ]
+
+        # Initialize the match list and the confirm message list
+        match_list = [None] * len(match_types)
+        confirm_message_list = ["Press any key to see matching testing materials.", "Press any key to see matching readings."]
+
+        # Try to get a match for each type
+        for i, (match_type, get_from_japanese_term, get_print_item_from_id) in enumerate(match_types):
+            try:
+                match_list[i] = get_from_japanese_term(japanese_term)
+            except Searcher.TermNotFoundError:
+                pass
+
+        ## if there is a match for a testing material, get the vocab for that testing material
+        if(match_list[0] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[0].id, "testing_material")
+        
+        elif(match_list[1] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[1].id, "reading")
+
+        ## so if we have the vocab, we can show that first
+        if(vocab is not None):
+            print(Searcher.get_vocab_print_item_from_id(vocab.id))
+
+        ## Print the matches, do not a confirm message for the first match
+        for i, match in enumerate(match_list):
+            if(match is not None):
+
+                print("\n" + confirm_message_list[i])
+                Toolkit.pause_console("")
+                Toolkit.clear_console()
+                    
+                print(match_types[i][2](match.id))
+
+        Toolkit.pause_console("Press any key to continue.")
+
+##--------------------start-of-perform_search_by_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                
+    @staticmethod
+    def perform_search_by_alphabetic_term(alphabetic_term:str) -> None:
+
+        """
+        
+        Performs a search by alphabetic term.
+
+        Parameters:
+        alphabetic_term (str) : the alphabetic term we are searching for.
+
+        """
+
+        vocab = None
+
+        ## replaces japanese hyphens with their english counterparts
+        alphabetic_term = Toolkit.perform_entity_sanitization(alphabetic_term, "testing_material")
+
+        ## Define the match types and their corresponding methods
+        match_types = [
+            ("synonym", Searcher.get_synonym_from_alphabetic_term, Searcher.get_synonym_print_item_from_id),
+            ("reading", Searcher.get_reading_from_alphabetic_term, Searcher.get_reading_print_item_from_id),
+            ("typo", Searcher.get_typo_from_alphabetic_term, Searcher.get_typo_print_item_from_id),
+            ("incorrect_typo", Searcher.get_incorrect_typo_from_alphabetic_term, Searcher.get_incorrect_typo_print_item_from_id)
+        ]
+
+        # Initialize the match list and the confirm message list
+        match_list = [None] * len(match_types)
+        confirm_message_list = ["Press any key to see matching synonyms.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
+
+        # Try to get a match for each type
+        for i, (match_type, get_from_alphabetic_term, get_print_item_from_id) in enumerate(match_types):
+            try:
+                match_list[i] = get_from_alphabetic_term(alphabetic_term)
+            except Searcher.TermNotFoundError:
+                pass
+
+        ## if there is a match for a synonym, get the vocab for that synonym
+        if(match_list[0] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[0].id, "synonym")
+
+        ## if there is a match for a reading, get the vocab for that reading
+        elif(match_list[1] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[1].id, "reading")
+
+        ## if there is a match for a typo, get the vocab for that typo
+        elif(match_list[2] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[2].id, "typo")
+
+        ## if there is a match for an incorrect typo, get the vocab for that incorrect typo
+        elif(match_list[3] is not None):
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[3].id, "incorrect_typo")
+        
+        ## so if we have the vocab, we can show that first
+        if(vocab is not None):
+            print(Searcher.get_vocab_print_item_from_id(vocab.id))
+
+        ## Print the matches, do not a confirm message for the first match
+        for i, match in enumerate(match_list):
+            if(match is not None):
+
+                print("\n" + confirm_message_list[i])
+                Toolkit.pause_console("")
+                Toolkit.clear_console()
+                    
+                print(match_types[i][2](match.id))
+
+        Toolkit.pause_console("Press any key to continue.")
+            
 ##--------------------start-of-IDNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -317,3 +908,29 @@ class Searcher:
             """
 
             self.message = f"ID '{id_value}' not found."
+
+##--------------------start-of-TermNotFoundError------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    class TermNotFoundError(Exception):
+
+        """
+    
+        Is raised when a term is not found.
+
+        """
+
+##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        def __init__(self, term_value:str):
+
+            """
+            
+            Initializes a new TermNotFoundError Exception.
+
+            Parameters:\n
+            term_value (str) : The term value that wasn't found.
+
+            """
+
+            self.message = f"Term '{term_value}' not found."

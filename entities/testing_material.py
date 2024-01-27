@@ -1,4 +1,7 @@
-class TestingMaterial:
+## Custom Modules
+from entities.entity import Entity
+
+class TestingMaterial(Entity):
 
     """
     
@@ -11,23 +14,23 @@ class TestingMaterial:
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     def __init__(self,
-                incoming_word_id:int,
-                incoming_testing_material_id:int,
-                incoming_testing_material_value:str) -> None:
+                word_id:int,
+                id:int,
+                value:str) -> None:
         
         """
 
         Initializes a new TestingMaterial object.
 
         Parameters:
-        incoming_word_id (int) : The ID of the Word the TestingMaterial is for.
-        incoming_testing_material_id (int) : The ID of the TestingMaterial itself.
-        incoming_testing_material_value (str) : The value of the TestingMaterial.
+        word_id (int) : The ID of the Word the TestingMaterial is for.
+        id (int) : The ID of the TestingMaterial.
+        value (str) : The value of the TestingMaterial.
 
         """
 
-        self.word_id:int = incoming_word_id
+        super().__init__(id)
 
-        self.testing_material_id:int = incoming_testing_material_id
-        
-        self.testing_material_value:str = incoming_testing_material_value
+        self.word_id:int = word_id
+
+        self.value:str = value

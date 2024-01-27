@@ -1,5 +1,9 @@
 Get deck export/import working
 
+Add permission error handling to all file operations
+
+Refactor number choice words to have literals instead of numbers cause that's fucking stupid
+
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.
 
@@ -13,8 +17,6 @@ Add confirmations to a lot of core decisions, something old me liked to do was n
 Make logging better
 
 REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
-
-Refactor number choice words to have literals instead of numbers cause that's fucking stupid
 
 ## Things I'd like to add eventually
 Look into using spacy to get root verbs and force things into it, could add a conjugation mode

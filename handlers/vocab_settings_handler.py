@@ -321,10 +321,6 @@ class VocabSettingsHandler():
         try:
             target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add a Synonym to."))
 
-            print(target_vocab_id)
-
-            Toolkit.pause_console()
-
             ## get target vocab
             try:
                 target_vocab = Searcher.get_vocab_from_id(target_vocab_id)

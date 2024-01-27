@@ -4,12 +4,15 @@ from datetime import datetime
 import os
 import shutil
 import time
+import base64
+import typing
 
 ## custom modules
 from modules.toolkit import Toolkit
 from modules.file_ensurer import FileEnsurer
 from modules.logger import Logger
 
+from handlers.file_handler import FileHandler
 from handlers.local_handler import LocalHandler
 from handlers.remote_handler import RemoteHandler
 from handlers.connection_handler import ConnectionHandler
@@ -197,61 +200,52 @@ class StorageSettingsHandler():
         
         """ 
 
-        raise NotImplementedError
-
-        write_string_list = []
-
-        file_name = "deck-" + str(datetime.today().strftime('%Y-%m-%d_%H-%M-%S')) + ".seisen"
-
+        file_name = "deck-" + datetime.today().strftime('%Y-%m-%d_%H-%M-%S') + ".seisen"
         export_path = os.path.join(FileEnsurer.script_dir, file_name)
 
-        write_string_list.append("Seisen Vocab Deck\n")
+        is_first_portion = True
 
-        ## get vocab lines
-        with open(FileEnsurer.vocab_path, 'r', encoding="utf-8") as file:
-            write_string_list += file.readlines()
+        with open(export_path, 'w', encoding="utf-8") as export_file:
+            export_file.write("Seisen Vocab Deck\n")
+            
+            for path in FileEnsurer.vocab_paths:
+                if(not FileHandler.is_file_damaged(path)):
+                    with open(path, 'r', encoding="utf-8") as file:
+                        content = file.read()
+                        encoded_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
 
-        ## append separator
-        write_string_list.append("---\n") 
+                        ## --- is the delimiter for portions of the deck.
+                        ## Don't wanna write a delimiter at the start of the file.
+                        if(is_first_portion):
+                            is_first_portion = False
+                        else:
+                            export_file.write("\n---\n")
 
-        ## get csep lines
-        with open(FileEnsurer.vocab_synonyms_path, 'r', encoding="utf-8") as file:
-            temp = file.readlines()
-            write_string_list += temp
+                        export_file.write(encoded_content)
 
-        ## creates exported deck file
-        with open(export_path, 'w+', encoding="utf-8") as file:
-            file.writelines(write_string_list)
-        
         Toolkit.clear_console()
 
-        print(file_name + " has been placed in the script directory.\n")
-
+        print(f"{file_name} has been placed in the script directory.\n")
+        
         Toolkit.pause_console()
 
 ##--------------------start-of-import_deck()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+    
     @staticmethod
     def import_deck() -> None:
 
         """
-        
-        Imports an external vocab deck into Seisen.
-        
-        """
 
-        ## will deal with this later
-        raise NotImplementedError
+        Imports an external vocab deck into Seisen.
+
+        """
 
         valid_import_paths = []
         valid_import_names = []
 
         import_deck = []
 
-        vocab_portion_write = []
-        synonym_portion_write = []
-
-        metBreak = False
+        portions_write: typing.Dict[str, typing.List[str]] = {}
 
         target_index = -1
 
@@ -306,24 +300,29 @@ class StorageSettingsHandler():
             time.sleep(2)
             return
         
+        ## Gets rid of the Seisen Vocab Deck Identifier
         import_deck.pop(0)
 
+        portion_index = 0
+
         for line in import_deck:
-
-            if(line == "---\n"):
-                metBreak = True
-
-            elif(metBreak == False):
-                vocab_portion_write.append(line)
             
-            else:
-                synonym_portion_write.append(line)
+            ## Delimiter for portions of the deck.
+            if(line == "---\n"):
+                portion_index += 1  # move to the next portion
+                continue
 
-        with open(FileEnsurer.vocab_path, 'w+', encoding="utf-8") as file:
-            file.writelines(vocab_portion_write)
+            decoded_content = base64.b64decode(line.strip()).decode('utf-8')
+            portion = FileEnsurer.vocab_paths[portion_index]
 
-        with open(FileEnsurer.vocab_synonyms_path, 'w+', encoding="utf-8") as file:
-            file.writelines(synonym_portion_write)
+            if(portion not in portions_write):
+                portions_write[portion] = []
+
+            portions_write[portion].append(decoded_content)
+
+        for portion, lines in portions_write.items():
+            with open(portion, 'w+', encoding="utf-8") as file:
+                file.writelines(lines)
 
         LocalHandler.load_words_from_local_storage()
 

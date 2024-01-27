@@ -1,8 +1,8 @@
-Get deck export/import working
-
 Add permission error handling to all file operations
 
 Refactor number choice words to have literals instead of numbers cause that's fucking stupid
+
+User_confirm needs to be refactored as well to lesson the confusion for instructions
 
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.

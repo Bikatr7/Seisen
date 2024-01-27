@@ -79,6 +79,13 @@ class FileEnsurer:
    vocab_typos_path = os.path.join(vocab_dir, "vocab_typos.seisen")
    vocab_incorrect_typos_path = os.path.join(vocab_dir, "vocab_incorrect_typos.seisen")
 
+   vocab_paths = [
+   vocab_path,
+   vocab_testing_material_path,
+   vocab_readings_path,
+   vocab_synonyms_path,
+   ]
+
    ##----------------------------------/
 
    ## kana local lib

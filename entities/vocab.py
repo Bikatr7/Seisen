@@ -19,27 +19,26 @@ class Vocab(Word):
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def __init__(self, 
-                incoming_id:int, 
-                incoming_testing_material:typing.List[TestingMaterial],
-                incoming_testing_material_answer_main:Synonym,
-                incoming_testing_material_answer_main_all:typing.List[Synonym],
-                incoming_readings:typing.List[Reading],
-                incoming_incorrect_count:int,
-                incoming_correct_count:int) -> None:
-
+                id:int, 
+                testing_material:typing.List[TestingMaterial],
+                answers:typing.List[Synonym], 
+                readings:typing.List[Reading],
+                correct_count:int,
+                incorrect_count:int
+                ) -> None:
+        
         """
         
         Initializes a new Vocab object.
 
         Parameters:
-        incoming_id (int) : The ID of the Vocab.
-        incoming_testing_material (list - TestingMaterial) : The TestingMaterial of the Vocab.
-        incoming_testing_material_answer_main (Synonym) : The answer to the TestingMaterial of the Vocab, i.e. the dictionary definition of the Vocab.
-        incoming_testing_material_answer_main_all (list - Synonym) : The list of all answers to the TestingMaterial of the Vocab.
-        incoming_incorrect_count (int) : The number of times the user answered the TestingMaterial incorrectly.
-        incoming_correct_count (int) : The number of times the user answered the TestingMaterial correctly.
-        incoming_reading (Reading) : The Reading of the Vocab.
-
-        """
+        id (int) : The ID of the Vocab.
+        testing_material (list - TestingMaterial) : The testing material of the Vocab.
+        answers (list - Synonym) : The answers of the Vocab.
+        readings (list - Reading) : The readings of the Vocab.
+        correct_count (int) : The number of times the Vocab has been answered correctly.
+        incorrect_count (int) : The number of times the Vocab has been answered incorrectly.
         
-        super().__init__(incoming_id, incoming_testing_material, incoming_testing_material_answer_main, incoming_testing_material_answer_main_all, incoming_readings, incoming_incorrect_count, incoming_correct_count)
+        """
+
+        super().__init__(id, testing_material, answers, readings, correct_count, incorrect_count)

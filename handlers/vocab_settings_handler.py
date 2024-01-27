@@ -287,7 +287,7 @@ class VocabSettingsHandler():
             FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
 
         ## assemble vocab object
-        new_vocab = vocab_blueprint(new_vocab_id, testing_material, synonyms[0], synonyms, readings, incoming_incorrect_count=0, incoming_correct_count=0)
+        new_vocab = vocab_blueprint(new_vocab_id, testing_material, synonyms, readings, correct_count=0, incorrect_count=0)
 
         ## write to file
         stuff_to_write = [new_vocab_id, new_vocab.incorrect_count, new_vocab.correct_count]
@@ -323,20 +323,16 @@ class VocabSettingsHandler():
             try:
                 target_vocab = Searcher.get_vocab_from_id(target_vocab_id)
 
-                print(target_vocab.word_id)
-
-                Toolkit.pause_console()
-
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_synonyms.append(Toolkit.user_confirm("Please enter the Synonym/Answer for " + target_vocab.testing_material_main.testing_material_value + " you would like to add. (Synonyms are the definition of the testing material)."))
+            raw_synonyms.append(Toolkit.user_confirm("Please enter the Synonym/Answer for " + target_vocab.main_testing_material.value + " you would like to add. (Synonyms are the definition of the testing material)."))
 
-            while(input(f"Enter 1 if you'd like to add more synonyms for {target_vocab.testing_material_main.testing_material_value}, otherwise enter 2.\n") == "1"):
+            while(input(f"Enter 1 if you'd like to add more synonyms for {target_vocab.main_testing_material.value}, otherwise enter 2.\n") == "1"):
                 Toolkit.clear_stream()
-                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Synonym/Answer for {target_vocab.testing_material_main.testing_material_value} you would like to add. (Synonyms are the definition of the testing material)."))
+                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Synonym/Answer for {target_vocab.main_testing_material.value} you would like to add. (Synonyms are the definition of the testing material)."))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -353,7 +349,7 @@ class VocabSettingsHandler():
 
         ## add to current session
         for i in range(len(synonyms)):
-            target_vocab.testing_material_answer_all.append(synonyms[i])
+            target_vocab.answers.append(synonyms[i])
 
 ##--------------------start-of-add_testing_material_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -383,11 +379,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm("Please enter the Testing Material for " + target_vocab.testing_material_main.testing_material_value + " you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
+            raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm("Please enter the Testing Material for " + target_vocab.main_testing_material.value + " you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
 
-            while(input(f"Enter 1 if you'd like to add more Testing Material for {target_vocab.testing_material_main.testing_material_value}, otherwise enter 2.\n") == "1"):
+            while(input(f"Enter 1 if you'd like to add more Testing Material for {target_vocab.main_testing_material.value}, otherwise enter 2.\n") == "1"):
                 Toolkit.clear_stream()
-                raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter the Testing Material for {target_vocab.testing_material_main.testing_material_value} you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
+                raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter the Testing Material for {target_vocab.main_testing_material.value} you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -404,7 +400,7 @@ class VocabSettingsHandler():
 
         ## add to current session
         for i in range(len(testing_material)):
-            target_vocab.testing_material_all.append(testing_material[i])
+            target_vocab.testing_material.append(testing_material[i])
 
 ##--------------------start-of-add_reading_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -435,7 +431,7 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            curr_raw_romaji = Toolkit.user_confirm(f"Please enter a romaji for {target_vocab.testing_material_main.testing_material_value} you would like to add. (romaji are the pronunciation of the testing material).")
+            curr_raw_romaji = Toolkit.user_confirm(f"Please enter a romaji for {target_vocab.main_testing_material.value} you would like to add. (romaji are the pronunciation of the testing material).")
             curr_raw_furigana = Toolkit.user_confirm(f"Please enter {curr_raw_romaji}'s furigana (furigana is the kana spelling of {curr_raw_romaji}).")
 
             curr_raw_romaji = Toolkit.perform_entity_sanitization(curr_raw_romaji, "romaji")
@@ -444,9 +440,9 @@ class VocabSettingsHandler():
             raw_romaji.append(curr_raw_romaji)
             raw_furigana.append(curr_raw_furigana)
 
-            while(input(f"Enter 1 if {target_vocab.testing_material_main.testing_material_value} has any additional romaji, otherwise enter 2 (romaji are the pronunciation of the testing material).\n") == "1"):
+            while(input(f"Enter 1 if {target_vocab.main_testing_material.value} has any additional romaji, otherwise enter 2 (romaji are the pronunciation of the testing material).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_romaji.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {target_vocab.testing_material_main.testing_material_value}'s additional romaji (romaji are the pronunciation of the testing material)."), "romaji"))
+                raw_romaji.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {target_vocab.main_testing_material.value}'s additional romaji (romaji are the pronunciation of the testing material)."), "romaji"))
                 raw_furigana.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."), "furigana"))
 
         except Toolkit.UserCancelError:
@@ -494,11 +490,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_typo.append(Toolkit.user_confirm(f"Please enter a typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (typos are the incorrect spelling of the testing material) These \"typos\" automatically count as correct answers."))
+            raw_typo.append(Toolkit.user_confirm(f"Please enter a typo for {target_vocab.main_testing_material.value} you would like to add. (typos are the incorrect spelling of the testing material) These \"typos\" automatically count as correct answers."))
 
-            while(input(f"Enter 1 if {target_vocab.testing_material_main.testing_material_value} has any additional typos, otherwise enter 2 (typos are the incorrect spelling of the testing material, These \"typos\" automatically count as correct answers).\n") == "1"):
+            while(input(f"Enter 1 if {target_vocab.main_testing_material.value} has any additional typos, otherwise enter 2 (typos are the incorrect spelling of the testing material, These \"typos\" automatically count as correct answers).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_typo.append(Toolkit.user_confirm(f"Please enter a typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (typos are the incorrect spelling of the testing material).\n"))
+                raw_typo.append(Toolkit.user_confirm(f"Please enter a typo for {target_vocab.main_testing_material.value} you would like to add. (typos are the incorrect spelling of the testing material).\n"))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -545,11 +541,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_incorrect_typo.append(Toolkit.user_confirm(f"Please enter an incorrect typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers)."))
+            raw_incorrect_typo.append(Toolkit.user_confirm(f"Please enter an incorrect typo for {target_vocab.main_testing_material.value} you would like to add. (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers)."))
 
-            while(input(f"Enter 1 if {target_vocab.testing_material_main.testing_material_value} has any additional incorrect typos, otherwise enter 2 (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers).\n") == "1"):
+            while(input(f"Enter 1 if {target_vocab.main_testing_material.value} has any additional incorrect typos, otherwise enter 2 (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_incorrect_typo.append(Toolkit.user_confirm(f"Please enter an incorrect typo for {target_vocab.testing_material_main.testing_material_value} you would like to add. (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers).\n"))
+                raw_incorrect_typo.append(Toolkit.user_confirm(f"Please enter an incorrect typo for {target_vocab.main_testing_material.value} you would like to add. (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers).\n"))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -593,29 +589,29 @@ class VocabSettingsHandler():
                 return
             
             ## get value to edit
-            edit_message = "What would you like to edit?\n\n1. Incorrect Count\n2. Correct Count\nID cannot be edited, please use other settings to edit associated entities (testing material, synonyms, etc.)\n"
+            edit_message = "What would you like to edit?\n\n1. Correct Count\n2. Incorrect Count\nID cannot be edited, please use other settings to edit associated entities (testing material, synonyms, etc.)\n"
 
             print(edit_message)
 
             type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 2, edit_message)
 
             if(type_setting == "1"):
-                value_to_edit = target_vocab.incorrect_count
-                message_to_print = "Please enter the new incorrect count for " + target_vocab.testing_material_main.testing_material_value + ". (Incorrect count is the number of times the user has gotten the vocab wrong. Currently: " + str(value_to_edit) + ")"
+                value_to_edit = target_vocab.correct_count
+                message_to_print = "Please enter the new correct count for " + target_vocab.main_testing_material.value + ". (Correct count is the number of times the user has gotten the vocab right. Currently: " + str(value_to_edit) + ")"
 
             else:
-                value_to_edit = target_vocab.correct_count
-                message_to_print = "Please enter the new correct count for " + target_vocab.testing_material_main.testing_material_value + ". (Correct count is the number of times the user has gotten the vocab right. Currently: " + str(value_to_edit) + ")"
+                value_to_edit = target_vocab.incorrect_count
+                message_to_print = "Please enter the new incorrect count for " + target_vocab.main_testing_material.value + ". (Incorrect count is the number of times the user has gotten the vocab wrong. Currently: " + str(value_to_edit) + ")"
 
             new_value = int(Toolkit.user_confirm(message_to_print))
 
             ## edit value in current session
             if(type_setting == "1"):
-                target_vocab.incorrect_count = new_value
+                target_vocab.correct_count = new_value
                 index = 2
 
             else:
-                target_vocab.correct_count = new_value
+                target_vocab.incorrect_count = new_value
                 index = 3
 
             ## edit value in persistent storage
@@ -651,12 +647,12 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            message_to_print = "Please enter the new synonym for " + target_synonym.synonym_value + ". (Synonym is the definition of the testing material)."
+            message_to_print = "Please enter the new synonym for " + target_synonym.value + ". (Synonym is the definition of the testing material)."
 
             new_value = Toolkit.user_confirm(message_to_print)
 
             ## edit value in current session
-            target_synonym.synonym_value = new_value
+            target_synonym.value = new_value
 
             ## edit value in persistent storage
             target_synonym_line = FileHandler.find_seisen_line(FileEnsurer.vocab_synonyms_path, column_index=2, target_value=target_synonym_id)
@@ -691,14 +687,14 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            message_to_print = "Please enter the new testing material for " + target_testing_material.testing_material_value + ". (Testing Material is the kanji/kana that are used as the material to be tested on)."
+            message_to_print = "Please enter the new testing material for " + target_testing_material.value + ". (Testing Material is the kanji/kana that are used as the material to be tested on)."
 
             new_value = Toolkit.user_confirm(message_to_print)
 
             new_value = Toolkit.perform_entity_sanitization(new_value, "testing_material")
 
             ## edit value in current session
-            target_testing_material.testing_material_value = new_value
+            target_testing_material.value = new_value
 
             ## edit value in persistent storage
             target_testing_material_line = FileHandler.find_seisen_line(FileEnsurer.vocab_testing_material_path, column_index=2, target_value=target_testing_material_id)
@@ -733,11 +729,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            message_to_print = "Please enter the new romaji for " + target_reading.romaji_value + ". (Romaji is the pronunciation of the testing material)."
+            message_to_print = "Please enter the new romaji for " + target_reading.romaji + ". (Romaji is the pronunciation of the testing material)."
 
             new_romaji = Toolkit.user_confirm(message_to_print)
 
-            message_to_print = "Please enter the new furigana for " + target_reading.furigana_value + ". (Furigana is the kana spelling of the romaji)."
+            message_to_print = "Please enter the new furigana for " + target_reading.furigana + ". (Furigana is the kana spelling of the romaji)."
 
             new_furigana = Toolkit.user_confirm(message_to_print)          
 
@@ -745,8 +741,8 @@ class VocabSettingsHandler():
             new_furigana = Toolkit.perform_entity_sanitization(new_furigana, "furigana") 
 
             ## edit value in current session
-            target_reading.romaji_value = new_romaji
-            target_reading.furigana_value = new_furigana
+            target_reading.romaji = new_romaji
+            target_reading.furigana = new_furigana
 
             ## edit value in persistent storage
             target_reading_line = FileHandler.find_seisen_line(FileEnsurer.vocab_readings_path, column_index=2, target_value=target_reading_id)
@@ -782,12 +778,12 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            message_to_print = "Please enter the new typo for " + target_typo.typo_value + ". (Typo is the incorrect spelling of the testing material)."
+            message_to_print = "Please enter the new typo for " + target_typo.value + ". (Typo is the incorrect spelling of the testing material)."
 
             new_value = Toolkit.user_confirm(message_to_print)
 
             ## edit value in current session
-            target_typo.typo_value = new_value
+            target_typo.value = new_value
 
             ## edit value in persistent storage
             target_typo_line = FileHandler.find_seisen_line(FileEnsurer.vocab_typos_path, column_index=2, target_value=target_typo_id)
@@ -822,12 +818,12 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            message_to_print = "Please enter the new incorrect typo for " + target_incorrect_typo.incorrect_typo_value + ". (Incorrect Typo is the incorrect spelling of the testing material that is counted as incorrect)."
+            message_to_print = "Please enter the new incorrect typo for " + target_incorrect_typo.value + ". (Incorrect Typo is the incorrect spelling of the testing material that is counted as incorrect)."
 
             new_value = Toolkit.user_confirm(message_to_print)
 
             ## edit value in current session
-            target_incorrect_typo.incorrect_typo_value = new_value
+            target_incorrect_typo.value = new_value
 
             ## edit value in persistent storage
             target_incorrect_typo_line = FileHandler.find_seisen_line(FileEnsurer.vocab_incorrect_typos_path, column_index=2, target_value=target_incorrect_typo_id)
@@ -930,17 +926,17 @@ class VocabSettingsHandler():
             target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_synonym_id, attribute_type="synonym")
 
             ### check to ensure that the user is not deleting the only synonym for a vocab
-            if(len(target_vocab.testing_material_answer_all) == 1):
+            if(len(target_vocab.answers) == 1):
                 print("You cannot delete the only synonym for a vocab.\n")
                 Toolkit.pause_console()
                 return
             
             ## check to ensure that the user is not deleting the main synonym for a vocab, if so, change the main synonym to the next synonym
-            if(target_vocab.testing_material_answer_main.synonym_id == target_synonym_id):
-                target_vocab.testing_material_answer_main = target_vocab.testing_material_answer_all[1]
+            if(target_vocab.main_answer.id == target_synonym_id):
+                target_vocab.main_answer = target_vocab.answers[1]
 
             ## delete synonym from current session
-            target_vocab.testing_material_answer_all.remove(target_synonym)
+            target_vocab.answers.remove(target_synonym)
 
             ## delete synonym from persistent storage
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=2, target_id=target_synonym_id)
@@ -990,17 +986,17 @@ class VocabSettingsHandler():
             target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_testing_material_id, attribute_type="testing_material")
 
             ### check to ensure that the user is not deleting the only testing material for a vocab
-            if(len(target_vocab.testing_material_all) == 1):
+            if(len(target_vocab.testing_material) == 1):
                 print("You cannot delete the only testing material for a vocab.\n")
                 Toolkit.pause_console()
                 return
             
             ## check to ensure that the user is not deleting the main testing material for a vocab, if so, change the main testing material to the next testing material
-            if(target_vocab.testing_material_main.testing_material_id == target_testing_material_id):
-                target_vocab.testing_material_main = target_vocab.testing_material_all[1]
+            if(target_vocab.main_testing_material.id == target_testing_material_id):
+                target_vocab.main_testing_material = target_vocab.testing_material[1]
 
             ## delete testing material from current session
-            target_vocab.testing_material_all.remove(target_testing_material)
+            target_vocab.testing_material.remove(target_testing_material)
 
             ## delete testing material from persistent storage
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_testing_material_path, id_index=2, target_id=target_testing_material_id)

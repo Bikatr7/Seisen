@@ -1,4 +1,7 @@
-class IncorrectTypo:
+## Custom Modules
+from entities.entity import Entity
+
+class IncorrectTypo(Entity):
 
     """
 
@@ -9,26 +12,23 @@ class IncorrectTypo:
 ##--------------------start-of-IncorrectTypo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     def __init__(self, 
-                incoming_word_id:int, 
-                incoming_incorrect_typo_id:int, 
-                incoming_incorrect_typo_value:str) -> None:
+                word_id:int, 
+                typo_id:int, 
+                value:str) -> None:
 
         """
         
         Initializes a new IncorrectTypo object.
 
         Parameters:
-        incoming_word_id (int) : The ID of the Word the IncorrectTypo is for.
-        incoming_incorrect_typo_id (int) : The ID of the IncorrectTypo.
-        incoming_incorrect_typo_value (str) : The value of the IncorrectTypo.
+        word_id (int) : The ID of the Word the IncorrectTypo is for.
+        typo_id (int) : The ID of the IncorrectTypo.
+        value (str) : The value of the IncorrectTypo.
 
         """
 
-        self.word_id:int = incoming_word_id
+        super().__init__(typo_id)
 
-        self.incorrect_typo_id:int  = incoming_incorrect_typo_id
+        self.word_id:int = word_id
 
-        ## alias for incorrect_typo_id, need to make this permanent later
-        self.id = self.incorrect_typo_id
-
-        self.incorrect_typo_value:str = incoming_incorrect_typo_value
+        self.value:str = value

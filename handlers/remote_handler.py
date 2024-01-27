@@ -50,7 +50,7 @@ class RemoteHandler():
 
         RemoteHandler.kana.clear()
 
-        kana_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from kana")
+        kana_id_list, correct_count_list, incorrect_count_list = ConnectionHandler.read_multi_column_query("select id, correct_count, incorrect_count from kana")
         typo_kana_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select kana_id, typo_id, typo from kana_typos")
         incorrect_typo_kana_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select kana_id, incorrect_typo_id, incorrect_typo from kana_incorrect_typos") 
         synonym_kana_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select kana_id, synonym_id, synonym from kana_synonyms")
@@ -68,50 +68,64 @@ class RemoteHandler():
 
         ## construct kana dummy objects
         for i in range(len(kana_id_list)):
-            kana = kana_blueprint(int(kana_id_list[i]), [kana_testing_materials[0]], kana_synonyms[0], [kana_synonyms[0]], [kana_readings[0]], int(incorrect_count_list[i]), int(correct_count_list[i])) 
+            kana = kana_blueprint(int(kana_id_list[i]), [kana_testing_materials[0]], [kana_synonyms[0]], [kana_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
             RemoteHandler.kana.append(kana)
 
         ## fill kana objects with their respective synonyms, testing_materials, and readings
         for kana in RemoteHandler.kana:
 
-            is_first_synonym:bool = True
-
             ## clear out old dummy data
-            kana.testing_material_all.clear()
-            kana.testing_material_answer_all.clear()
+            kana.testing_material.clear()
+            kana.answers.clear()
             kana.readings.clear()
 
+            for testing_material in kana_testing_materials:
+                if(testing_material.word_id == kana.id):
+
+                    is_first_testing_material = True
+
+                    if(is_first_testing_material):  
+                        kana.main_testing_material = testing_material
+                        is_first_testing_material = False
+
+                    kana.testing_material.append(testing_material)
+                    Logger.log_action("Added Testing Material " + testing_material.value + " to Kana " + str(kana.id))
+
             for synonym in kana_synonyms:
-                if(synonym.word_id == kana.word_id):
+                if(synonym.word_id == kana.id):
+
+                    is_first_synonym = True
 
                     if(is_first_synonym):
-                        kana.testing_material_answer_main = synonym
+                        kana.main_answer = synonym
                         is_first_synonym = False
                     
-                    kana.testing_material_answer_all.append(synonym)
-                    Logger.log_action("Added Synonym " + synonym.synonym_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
-
-            for testing_material in kana_testing_materials:
-                if(testing_material.word_id == kana.word_id):
-                    kana.testing_material_all.append(testing_material)
-                    Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Kana " + str(kana.word_id))
+                    kana.answers.append(synonym)
+                    Logger.log_action("Added Synonym " + synonym.value + " to Kana " + kana.main_testing_material.value)
 
             for reading in kana_readings:
-                if(reading.word_id == kana.word_id):
+                if(reading.word_id == kana.id):
+
+                    is_first_reading = True
+
+                    if(is_first_reading):
+                        kana.main_reading = reading
+                        is_first_reading = False
+
                     kana.readings.append(reading)
-                    Logger.log_action("Added Reading " + reading.furigana_value+ " to Kana " + kana.testing_material_answer_main.synonym_value)
+                    Logger.log_action("Added Reading " + reading.furigana + " to Kana " + kana.main_testing_material.value)
 
         ## fill kana objects with their respective typos, incorrect typos
         for kana in RemoteHandler.kana:
             for typo in kana_typos:
-                if(typo.word_id == kana.word_id):
+                if(typo.word_id == kana.id):
                     kana.typos.append(typo)
-                    Logger.log_action("Added Typo " + typo.typo_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
+                    Logger.log_action("Added Typo " + typo.value + " to Kana " + kana.main_testing_material.value)
 
             for incorrect_typo in kana_incorrect_typos:
-                if(incorrect_typo.word_id == kana.word_id):
+                if(incorrect_typo.word_id == kana.id):
                     kana.incorrect_typos.append(incorrect_typo)
-                    Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Kana " + kana.testing_material_answer_main.synonym_value)
+                    Logger.log_action("Added Incorrect Typo " + incorrect_typo.value + " to Kana " + kana.main_testing_material.value)
 
 ##--------------------start-of-write_kana_to_disk()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -121,26 +135,26 @@ class RemoteHandler():
         ## apply changes to local storage
         for kana in RemoteHandler.kana:
 
-            kana_values = [kana.word_id, kana.incorrect_count, kana.correct_count]
+            kana_values = [kana.id, kana.correct_count, kana.incorrect_count]
             
-            for testing_material in kana.testing_material_all:
-                testing_material_values = [testing_material.word_id, testing_material.testing_material_id, testing_material.testing_material_value]
+            for testing_material in kana.testing_material:
+                testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
                 FileHandler.write_seisen_line(kana_testing_material_path, testing_material_values)
 
-            for synonym in kana.testing_material_answer_all:
-                synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value]
+            for synonym in kana.answers:
+                synonym_values = [synonym.word_id, synonym.id, synonym.value]
                 FileHandler.write_seisen_line(kana_synonyms_path, synonym_values)
 
             for reading in kana.readings:
-                reading_values = [reading.word_id, reading.reading_id, reading.furigana_value, reading.romaji_value]
+                reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
                 FileHandler.write_seisen_line(kana_readings_path, reading_values)
 
             for typo in kana.typos:
-                typo_values = [typo.word_id, typo.typo_id, typo.typo_value]
+                typo_values = [typo.word_id, typo.id, typo.value]
                 FileHandler.write_seisen_line(kana_typos_path, typo_values)
 
             for incorrect_typo in kana.incorrect_typos:
-                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value]
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value]
                 FileHandler.write_seisen_line(kana_incorrect_typos_path, incorrect_typo_values)
 
             FileHandler.write_seisen_line(kana_path, kana_values)
@@ -158,7 +172,7 @@ class RemoteHandler():
 
         RemoteHandler.vocab.clear()
 
-        vocab_id_list, incorrect_count_list, correct_count_list = ConnectionHandler.read_multi_column_query("select id, incorrect_count, correct_count from vocab")
+        vocab_id_list, correct_count_list, incorrect_count_list = ConnectionHandler.read_multi_column_query("select id, correct_count, incorrect_count from vocab")
         typo_vocab_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, typo_id, typo from vocab_typos")
         incorrect_typo_vocab_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, incorrect_typo_id, incorrect_typo from vocab_incorrect_typos")
         synonym_vocab_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select vocab_id, synonym_id, synonym from vocab_synonyms")
@@ -176,51 +190,65 @@ class RemoteHandler():
 
         ## construct vocab dummy objects
         for i in range(len(vocab_id_list)):
-            vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], vocab_synonyms[0], [vocab_synonyms[0]], [vocab_readings[0]], int(incorrect_count_list[i]), int(correct_count_list[i])) 
+            vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], [vocab_synonyms[0]], [vocab_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
             RemoteHandler.vocab.append(vocab)
 
         ## fill vocab objects with their respective synonyms, testing_materials, and readings
         for vocab in RemoteHandler.vocab:
 
-            is_first_synonym:bool = True
+            ## clear out old dummy data
+            vocab.testing_material.clear()
+            vocab.answers.clear()
+            vocab.readings.clear()
+
+            for testing_material in vocab_testing_materials:
+                if(testing_material.word_id == vocab.id):
+
+                    is_first_testing_material = True
+
+                    if(is_first_testing_material):  
+                        vocab.main_testing_material = testing_material
+                        is_first_testing_material = False
+
+                    vocab.testing_material.append(testing_material)
+                    Logger.log_action("Added Testing Material " + testing_material.value + " to Vocab " + str(vocab.id))
 
             for synonym in vocab_synonyms:
 
-                ## clear out old dummy data
-                vocab.testing_material_all.clear()
-                vocab.testing_material_answer_all.clear()
-                vocab.readings.clear()
+                if(synonym.word_id == vocab.id):
 
-                if(synonym.word_id == vocab.word_id):
+                    is_first_synonym = True
 
                     if(is_first_synonym):
-                        vocab.testing_material_answer_main = synonym
+                        vocab.main_answer = synonym
                         is_first_synonym = False
-                    
-                    vocab.testing_material_answer_all.append(synonym)
-                    Logger.log_action("Added Synonym " + synonym.synonym_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
 
-            for testing_material in vocab_testing_materials:
-                if(testing_material.word_id == vocab.word_id):
-                    vocab.testing_material_all.append(testing_material)
-                    Logger.log_action("Added Testing Material " + testing_material.testing_material_value+ " to Vocab " + str(vocab.word_id))
+                    vocab.answers.append(synonym)
+                    Logger.log_action("Added Synonym " + synonym.value + " to Vocab " + vocab.main_testing_material.value)
 
             for reading in vocab_readings:
-                if(reading.word_id == vocab.word_id):
+                if(reading.word_id == vocab.id):
+
+                    is_first_reading = True
+
+                    if(is_first_reading):
+                        vocab.main_reading = reading
+                        is_first_reading = False
+
                     vocab.readings.append(reading)
-                    Logger.log_action("Added Reading " + reading.furigana_value+ " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+                    Logger.log_action("Added Reading " + reading.furigana + " to Vocab " + vocab.main_testing_material.value)
 
         ## fill vocab objects with their respective typos, incorrect typos
         for vocab in RemoteHandler.vocab:
             for typo in vocab_typos:
-                if(typo.word_id == vocab.word_id):
+                if(typo.word_id == vocab.id):
                     vocab.typos.append(typo)
-                    Logger.log_action("Added Typo " + typo.typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+                    Logger.log_action("Added Typo " + typo.value + " to Vocab " + vocab.main_testing_material.value)
 
             for incorrect_typo in vocab_incorrect_typos:
-                if(incorrect_typo.word_id == vocab.word_id):
+                if(incorrect_typo.word_id == vocab.id):
                     vocab.incorrect_typos.append(incorrect_typo)
-                    Logger.log_action("Added Incorrect Typo " + incorrect_typo.incorrect_typo_value + " to Vocab " + vocab.testing_material_answer_main.synonym_value)
+                    Logger.log_action("Added Incorrect Typo " + incorrect_typo.value + " to Vocab " + vocab.main_testing_material.value)
 
 ##--------------------start-of-write_vocab_to_disk()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                     
@@ -236,32 +264,32 @@ class RemoteHandler():
         ## apply changes to local storage
         for vocab in RemoteHandler.vocab:
 
-            vocab_values = [vocab.word_id, vocab.incorrect_count, vocab.correct_count]
+            vocab_values = [vocab.id, vocab.correct_count, vocab.incorrect_count]
             
-            for testing_material in vocab.testing_material_all:
-                testing_material_values = [testing_material.word_id, testing_material.testing_material_id, testing_material.testing_material_value]
+            for testing_material in vocab.testing_material:
+                testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
                 FileHandler.write_seisen_line(vocab_testing_material_path, testing_material_values)
 
-            for synonym in vocab.testing_material_answer_all:
-                synonym_values = [synonym.word_id, synonym.synonym_id, synonym.synonym_value]
+            for synonym in vocab.answers:
+                synonym_values = [synonym.word_id, synonym.id, synonym.value]
                 FileHandler.write_seisen_line(vocab_synonyms_path, synonym_values)
 
             for reading in vocab.readings:
-                reading_values = [reading.word_id, reading.reading_id, reading.furigana_value, reading.romaji_value]
+                reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
                 FileHandler.write_seisen_line(vocab_readings_path, reading_values)
 
             for typo in vocab.typos:
-                typo_values = [typo.word_id, typo.typo_id, typo.typo_value]
+                typo_values = [typo.word_id, typo.id, typo.value]
                 FileHandler.write_seisen_line(vocab_typos_path, typo_values)
 
             for incorrect_typo in vocab.incorrect_typos:
-                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.incorrect_typo_id, incorrect_typo.incorrect_typo_value]
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value]
                 FileHandler.write_seisen_line(vocab_incorrect_typos_path, incorrect_typo_values)
 
             FileHandler.write_seisen_line(vocab_path, vocab_values)
 
         if(vocab != None):
-            RemoteHandler.vocab = old_remote_vocab ## type: ignore
+            RemoteHandler.vocab = old_remote_vocab
             RemoteHandler.vocab.append(vocab)
 
 ##--------------------start-of-reset_local_storage()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -479,8 +507,8 @@ class RemoteHandler():
         create_kana_query = """
         CREATE TABLE kana (
             id INT NOT NULL,
-            incorrect_count INT NOT NULL,
             correct_count INT NOT NULL,
+            incorrect_count INT NOT NULL,
             PRIMARY KEY (id)
         );
         """
@@ -541,8 +569,8 @@ class RemoteHandler():
         create_vocab_query = """
         CREATE TABLE vocab (
             id INT NOT NULL,
-            incorrect_count INT NOT NULL,
             correct_count INT NOT NULL,
+            incorrect_count INT NOT NULL,
             PRIMARY KEY (id)
         );
 

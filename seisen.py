@@ -265,7 +265,7 @@ class Seisen:
         Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         Seisen.current_question_prompt += "Likelihood : " + str(kana_to_test.likelihood) + "%"
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
-        Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.testing_material_main.testing_material_value + "?\n"
+        Seisen.current_question_prompt += "\nHow do you pronounce " + kana_to_test.main_testing_material.value + "?\n"
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
 
@@ -296,14 +296,14 @@ class Seisen:
             ScoreRater.log_correct_answer(kana_to_test)      
 
         elif(isCorrect == False):
-            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, A correct answer was " + kana_to_test.testing_material_answer_main.synonym_value + ".\n"
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, A correct answer was " + kana_to_test.main_answer.value + ".\n"
             ScoreRater.log_incorrect_answer(kana_to_test)
 
         else:
             Seisen.current_question_prompt += "\n\nSkipped.\n"
             ScoreRater.log_incorrect_answer(kana_to_test)
 
-        answers = [value.synonym_value for value in kana_to_test.testing_material_answer_all]
+        answers = [value.value for value in kana_to_test.answers]
 
         for answer in answers: ## prints the other accepted answers 
 
@@ -371,12 +371,12 @@ class Seisen:
         Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
         Seisen.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
-        Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.testing_material_main.testing_material_value + "?\n"
+        Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.main_testing_material.value + "?\n"
 
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
 
-        all_testing_material = [value.testing_material_value for value in vocab_to_test.testing_material_all]
-        all_furigana = [reading.furigana_value for reading in vocab_to_test.readings]
+        all_testing_material = [testing_material.value for testing_material in vocab_to_test.testing_material]
+        all_furigana = [reading.furigana for reading in vocab_to_test.readings]
 
         testing_material_string = '/'.join(all_testing_material)
 
@@ -401,7 +401,7 @@ class Seisen:
 
             Toolkit.clear_console()
 
-            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material_main.testing_material_value, extended_prompt)
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.main_testing_material.value, extended_prompt)
 
             Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
 
@@ -429,7 +429,7 @@ class Seisen:
         Toolkit.clear_console()
 
         if(romaTriggered == False):
-            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.testing_material_main.testing_material_value, extended_prompt)
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.main_testing_material.value, extended_prompt)
 
         if(isCorrect == True):
             number_of_correct_rounds+=1
@@ -437,21 +437,21 @@ class Seisen:
             ScoreRater.log_correct_answer(vocab_to_test)           
 
         elif(isCorrect == False):
-            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, a correct answer was " + vocab_to_test.testing_material_answer_main.synonym_value + ".\n"
+            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, a correct answer was " + vocab_to_test.main_answer.value + ".\n"
             ScoreRater.log_incorrect_answer(vocab_to_test)
 
         else:
             Seisen.current_question_prompt += "\n\nSkipped.\n"
             ScoreRater.log_incorrect_answer(vocab_to_test)
 
-        answers = [value.synonym_value for value in vocab_to_test.testing_material_answer_all]
+        answers = [value.value for value in vocab_to_test.answers]
 
         for answer in answers: ## prints the other accepted answers 
 
             if(len(answers) == 1):
                 break
 
-            if(isCorrect == None or isCorrect == False and answer != Seisen.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
+            if(isCorrect == None or isCorrect == False and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
 
                 if(displayOther == False):
                     Seisen.current_question_prompt += "\nOther Answers include:\n"
@@ -459,7 +459,7 @@ class Seisen:
                 Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
                 displayOther = True
 
-            elif(isCorrect == True and answer != Seisen.current_user_guess and answer != vocab_to_test.testing_material_answer_main):
+            elif(isCorrect == True and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
 
                 if(displayOther == False):
                     Seisen.current_question_prompt += "\nOther Answers include:\n"

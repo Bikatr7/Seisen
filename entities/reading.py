@@ -1,4 +1,7 @@
-class Reading:
+## Custom Modules
+from entities.entity import Entity
+
+class Reading(Entity):
 
     """
     
@@ -13,30 +16,27 @@ class Reading:
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     def __init__(self,
-                incoming_word_id:int,
-                incoming_reading_id:int,
-                incoming_furigana_value:str,
-                incoming_romaji_value:str) -> None:
+                word_id:int,
+                id:int,
+                furigana:str,
+                romaji:str) -> None:
         
         """
 
         Initializes a new Reading object.
 
         Parameters:
-        incoming_word_id (int) : The ID of the Word the Reading is for.
-        incoming_reading_id (int) : The ID of the Reading itself.
-        incoming_furigana_value (str) : The value of the Reading's furigana.
-        incoming_romaji_value (str) : The value of the Reading's romaji.
+        word_id (int) : The ID of the Word the Reading is for.
+        id (int) : The ID of the Reading.
+        furigana (str) : The furigana of the Reading.
+        romaji (str) : The romaji of the Reading.
 
         """
 
-        self.word_id:int = incoming_word_id
+        super().__init__(id)
 
-        self.reading_id:int = incoming_reading_id
+        self.word_id:int = word_id
 
-        ## alias for reading_id, need to make this permanent later
-        self.id = self.reading_id
-        
-        self.furigana_value:str = incoming_furigana_value
+        self.furigana:str = furigana
 
-        self.romaji_value:str = incoming_romaji_value
+        self.romaji:str = romaji

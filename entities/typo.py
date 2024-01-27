@@ -1,4 +1,7 @@
-class Typo:
+## Custom Modules
+from entities.entity import Entity
+
+class Typo(Entity):
 
     """
 
@@ -10,26 +13,23 @@ class Typo:
 
 
     def __init__(self, 
-                incoming_word_id:int, 
-                incoming_typo_id:int, 
-                incoming_typo_value:str) -> None:
+                word_id:int, 
+                id:int, 
+                value:str) -> None:
 
         """
         
         Initializes a new Typo object.
 
         Parameters:
-        incoming_word_id (int) : The ID of the Word the Typo is for.
-        incoming_typo_id (int) : The ID of the Typo.
-        incoming_typo_value (str) : The value of the Typo.
+        word_id (int) : The ID of the Word the Typo is for.
+        id (int) : The ID of the Typo.
+        value (str) : The value of the Typo.
 
         """
 
-        self.word_id:int = incoming_word_id
+        super().__init__(id)
 
-        self.typo_id:int = incoming_typo_id
+        self.word_id:int = word_id
 
-        ## alias for typo_id, need to make this permanent later
-        self.id = self.typo_id
-
-        self.typo_value:str = incoming_typo_value
+        self.value:str = value

@@ -1,4 +1,7 @@
-class Synonym:
+## Custom Modules
+from entities.entity import Entity
+
+class Synonym(Entity):
 
     """
 
@@ -10,26 +13,23 @@ class Synonym:
 
 
     def __init__(self, 
-                incoming_word_id:int, 
-                incoming_synonym_id:int, 
-                incoming_synonym_value:str) -> None:
+                word_id:int,
+                id:int,
+                value:str) -> None:
 
         """
         
         Initializes a new Synonym object.
 
         Parameters:
-        incoming_word_id (int): The ID of the Word that the Synonym is associated with.
-        incoming_synonym_id (int): The ID of the Synonym.
-        incoming_synonym_value (str): The value of the Synonym.
+        word_id (int) : The ID of the Word the Synonym is for.
+        id (int) : The ID of the Synonym.
+        value (str) : The value of the Synonym.
 
         """
 
-        self.word_id:int = incoming_word_id
+        super().__init__(id)
 
-        self.synonym_id:int = incoming_synonym_id
+        self.word_id:int = word_id
 
-        ## alias for synonym_id, need to make this permanent later
-        self.id = self.synonym_id
-
-        self.synonym_value:str = incoming_synonym_value
+        self.value:str = value

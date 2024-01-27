@@ -5,7 +5,7 @@ import base64
 
 ## third party modules
 
-## Intended to crash if not installed
+## Intended to crash if not installed, However RemoteHandler has precautions in place for this, and will not use this module if it is not installed.
 import mysql.connector
 import mysql.connector.pooling
 import mysql.connector.cursor
@@ -26,7 +26,7 @@ class ConnectionHandler():
 
     """
     
-    connection: typing.Union[mysql.connector.connection.MySQLConnection, mysql.connector.pooling.PooledMySQLConnection, None] = None
+    connection: typing.Union[mysql.connector.pooling.PooledMySQLConnection, mysql.connector.connection.MySQLConnection, None] = None
     cursor: typing.Union[mysql.connector.cursor.MySQLCursor, None] = None
 
 ##-------------------start-of-check_connection_validity()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------

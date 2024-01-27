@@ -4,6 +4,7 @@ import typing
 
 ## custom modules
 from modules.logger import Logger
+from modules.toolkit import permission_error_decorator
 
 class FileHandler():
 
@@ -16,6 +17,7 @@ class FileHandler():
 ##--------------------start-of-standard_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def standard_create_directory(directory_path:str) -> None:
 
         """
@@ -34,6 +36,7 @@ class FileHandler():
 ##--------------------start-of-modified_create_directory()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def modified_create_directory(directory_path:str, path_to_check:str) -> None:
 
         """
@@ -56,6 +59,7 @@ class FileHandler():
 ##--------------------start-of-standard_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def standard_create_file(file_path:str) -> None:
 
         """
@@ -75,6 +79,7 @@ class FileHandler():
 ##--------------------start-of-modified_create_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def modified_create_file(file_path:str, content_to_write:str, omit:bool=True) -> bool:
 
         """
@@ -109,6 +114,7 @@ class FileHandler():
 ##--------------------start-of-standard_overwrite_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def standard_overwrite_file(file_path:str, content_to_write:typing.Union[str, typing.List[str]], omit:bool = True) -> None:
 
         """
@@ -136,6 +142,7 @@ class FileHandler():
 ##--------------------start-of-standard_delete_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def standard_delete_file(file_path:str) -> None:
 
         """
@@ -154,6 +161,7 @@ class FileHandler():
 ##--------------------start-of-clear_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def clear_file(file_path:str) -> None:
 
         """
@@ -173,6 +181,7 @@ class FileHandler():
 ##--------------------start-of-standard_read_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def standard_read_file(file_path:str) -> str:
 
         """
@@ -195,6 +204,7 @@ class FileHandler():
 ##--------------------start-of-write_seisen_line()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def write_seisen_line(seisen_file_path:str, items_to_write:typing.List[typing.Any]) -> None:
 
         """
@@ -217,6 +227,7 @@ class FileHandler():
 ##-------------------start-of-edit_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def edit_seisen_line(file_path:str, target_line:int, column_number:int, value_to_replace_to:typing.Any) -> None:
         
         """
@@ -251,6 +262,7 @@ class FileHandler():
 ##-------------------start-of-read_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def read_seisen_line(seisen_file_path:str, target_line:int, column:int) -> str:
 
         """
@@ -294,6 +306,7 @@ class FileHandler():
 ##-------------------start-of-delete_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def delete_seisen_line(seisen_file_path:str, target_line:int) -> None:
 
         """
@@ -317,6 +330,7 @@ class FileHandler():
 ##-------------------start-of-find_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def find_seisen_line(seisen_file_path:str, column_index:int, target_value:typing.Any) -> int:
 
         """
@@ -349,6 +363,7 @@ class FileHandler():
 ##-------------------start-of-extract_seisen_line_values()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def extract_seisen_line_values(line:str) -> typing.List[str]:
 
         """
@@ -376,6 +391,7 @@ class FileHandler():
 ##-------------------start-of-is_file_damaged()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def is_file_damaged(file_path:str) -> bool:
 
         """
@@ -397,6 +413,7 @@ class FileHandler():
 ##--------------------start-of-delete_all_occurrences_of_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
+    @permission_error_decorator()
     def delete_all_occurrences_of_id(file_path:str, id_index:int, target_id:int) -> None:
 
         """

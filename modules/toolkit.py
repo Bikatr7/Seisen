@@ -4,14 +4,47 @@ from enum import Enum
 import os
 import time
 import typing
+import traceback
 
 ## custom modules
 from modules.file_ensurer import FileEnsurer
+
+##--------------------start-of-permission_error_decorator------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+def permission_error_decorator():
+
+    """
+    
+    Returns a decorator that will catch a PermissionError, inform the user, and exit Seisen.
+
+    """
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except PermissionError as e:
+
+                Toolkit.clear_console()
+
+                print(f"PermissionError: {e}")
+                print(traceback.format_exc())
+
+                Toolkit.pause_console()
+
+                FileEnsurer.exit_seisen()
+                
+        return wrapper
+    return decorator
+
+##--------------------start-of-InputType------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class InputType(Enum):
     NUMBER_CHOICE_NO_V = 1
     VALIDATION_WITH_V_SINGLE_KEY = 4
     VALIDATION_WITH_V_TEXT_ENTER = 5
+
+##--------------------start-of-Toolkit------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Toolkit():
 

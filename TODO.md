@@ -1,5 +1,3 @@
-Move api_keys to app data to reduce likelihood of accidental sharing
-
 Refactor number choice words to have literals instead of numbers cause that's fucking stupid
 
 ## Things to look into

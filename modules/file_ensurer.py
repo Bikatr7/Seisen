@@ -17,11 +17,13 @@ class FileEnsurer:
 
    """
 
-   ## main dirs
+   ## main dirs (config is just under userprofile on windows, and under home on linux); secrets are under appdata on windows, and under .config on linux
    if(os.name == 'nt'):  ## Windows
       config_dir = os.path.join(os.environ['USERPROFILE'],"SeisenConfig")
+      secrets_dir = os.path.join(os.environ['APPDATA'],"SeisenSecrets")
    else:  ## Linux
       config_dir = os.path.join(os.path.expanduser("~"), "SeisenConfig")
+      secrets_dir = os.path.join(os.path.expanduser("~"), ".config", "SeisenSecrets")
       
    script_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
@@ -32,7 +34,6 @@ class FileEnsurer:
    ##----------------------------------/
 
    ## sub dirs
-   logins_dir = os.path.join(config_dir, "logins")
    kana_dir = os.path.join(config_dir, "kana")
    vocab_dir = os.path.join(config_dir, "vocab")
    loop_data_dir = os.path.join(config_dir, "loopdata")
@@ -56,7 +57,7 @@ class FileEnsurer:
 
    ##----------------------------------/
 
-   credentials_path = os.path.join(logins_dir, "credentials.txt")
+   credentials_path = os.path.join(secrets_dir, "credentials.txt")
 
    ##----------------------------------/
 
@@ -188,7 +189,7 @@ class FileEnsurer:
       if(not os.path.exists(FileEnsurer.config_dir)):
          os.makedirs(FileEnsurer.config_dir)
 
-      FileHandler.standard_create_directory(FileEnsurer.logins_dir)
+      FileHandler.standard_create_directory(FileEnsurer.secrets_dir)
       FileHandler.standard_create_directory(FileEnsurer.lib_dir)
       FileHandler.standard_create_directory(FileEnsurer.kana_dir)
       FileHandler.standard_create_directory(FileEnsurer.vocab_dir)

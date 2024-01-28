@@ -351,7 +351,7 @@ class ScoreRater:
         answers = [synonym.value for synonym in Word.answers]
 
         if(user_guess == 'q'): ## if the user wants to quit the program do so
-            FileEnsurer.exit_seisen()
+            Toolkit.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
             user_guess = ScoreRater.check_typo(Word, user_guess, prompt)

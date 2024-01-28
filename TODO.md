@@ -1,4 +1,4 @@
-User_confirm needs to be refactored as well to lesson the confusion for instructions
+Move api_keys to app data to reduce likelihood of accidental sharing
 
 Refactor number choice words to have literals instead of numbers cause that's fucking stupid
 

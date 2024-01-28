@@ -17,7 +17,7 @@ from modules.toolkit import Toolkit
 from modules.logger import Logger
 
 class Seisen:
-
+ 
     """
     
     Seisen is the main class for the Seisen project. Everything is handled by this class, directly or indirectly.
@@ -104,7 +104,7 @@ class Seisen:
 
                     Toolkit.pause_console()
 
-                    FileEnsurer.exit_seisen()
+                    Toolkit.exit_seisen()
 
             Toolkit.pause_console()
 
@@ -113,7 +113,7 @@ class Seisen:
             print("Please correct discrepancies in local storage yourself, or contact the developer.")
             Toolkit.pause_console()
 
-            FileEnsurer.exit_seisen()
+            Toolkit.exit_seisen()
 
 ##--------------------start-of-bootup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

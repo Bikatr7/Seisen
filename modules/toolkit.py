@@ -7,7 +7,7 @@ import typing
 import traceback
 
 ## custom modules
-from modules.file_ensurer import FileEnsurer
+from modules.logger import Logger
 
 ##--------------------start-of-permission_error_decorator------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ def permission_error_decorator():
 
                 Toolkit.pause_console()
 
-                FileEnsurer.exit_seisen()
+                Toolkit.exit_seisen()
                 
         return wrapper
     return decorator
@@ -56,6 +56,21 @@ class Toolkit():
 
     CURRENT_VERSION = "v2.0.0"
     sleep_constant = 2
+
+##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def exit_seisen():
+
+        """
+        
+        Pushes the log batch to the log and exits.
+
+        """
+
+        Logger.push_batch()
+
+        exit()
 
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -90,7 +105,7 @@ class Toolkit():
         while(True):
 
             if(user_input == 'q'):
-                FileEnsurer.exit_seisen()
+                Toolkit.exit_seisen()
 
             elif(user_input == 'v' and input_type != InputType.NUMBER_CHOICE_NO_V.value):
                 return new_user_input
@@ -328,7 +343,9 @@ class Toolkit():
         """
 
         confirmation = "Just To Confirm You Selected "
-        options = " (Press 1 To Confirm, 2 To Retry, z to skip, or q to quit):\n"
+        letter_options = " (Press z to skip, or q to quit):\n"
+        num_options = " (Press 1 To Confirm, 2 To Retry):\n"
+
         output = ""
         user_input = ""
         
@@ -340,23 +357,23 @@ class Toolkit():
             
             Toolkit.clear_stream()
             
-            user_input = input(prompt + options)
+            user_input = input(prompt + letter_options)
             
             if(user_input == "q"): ## if the user wants to quit do so
-                FileEnsurer.exit_seisen()
+                Toolkit.exit_seisen()
 
             if(user_input == "z"): ## z is used to skip
                 raise Toolkit.UserCancelError()
 
             Toolkit.clear_console()
 
-            output = confirmation + user_input + options
+            output = confirmation + user_input + num_options
             
             print(output)
             
             Toolkit.clear_stream()
             
-            if(int(Toolkit.input_check(4, Toolkit.get_single_key(), 2 , output)) == 1):
+            if(int(Toolkit.input_check(1, Toolkit.get_single_key(), 2 , output)) == 1):
                     entry_confirmed = True
             else:
 

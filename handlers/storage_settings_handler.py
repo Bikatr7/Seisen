@@ -40,7 +40,7 @@ class StorageSettingsHandler():
 
         print(storage_message)
 
-        type_setting = Toolkit.input_check(4, Toolkit.get_single_key(), 6, storage_message)
+        type_setting = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 6, storage_message)
 
         if(type_setting == "1"):
             
@@ -167,7 +167,7 @@ class StorageSettingsHandler():
 
         print(backup_message)
 
-        type_backup = Toolkit.input_check(4, Toolkit.get_single_key(), 2, backup_message)
+        type_backup = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 2, backup_message)
 
         if(type_backup == "1"):
 

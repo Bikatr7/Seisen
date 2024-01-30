@@ -50,7 +50,7 @@ class VocabSettingsHandler():
 
         print(vocab_message)
 
-        type_setting = Toolkit.input_check(4, Toolkit.get_single_key(), 4, vocab_message)
+        type_setting = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 4, vocab_message)
 
         if(type_setting == "1"):
             VocabSettingsHandler.add_entity()
@@ -81,7 +81,7 @@ class VocabSettingsHandler():
 
         print(entity_message)
 
-        type_setting = Toolkit.input_check(4, Toolkit.get_single_key(), 6, entity_message)
+        type_setting = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 6, entity_message)
 
         if(type_setting == "1"):
             VocabSettingsHandler.add_vocab()
@@ -118,7 +118,7 @@ class VocabSettingsHandler():
 
         print(entity_message)
 
-        type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 6, entity_message)
+        type_setting = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 6, entity_message)
 
         if(type_setting == "1"):
             VocabSettingsHandler.edit_vocab()
@@ -155,7 +155,7 @@ class VocabSettingsHandler():
 
         print(entity_message)
 
-        type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 6, entity_message)
+        type_setting = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 6, entity_message)
 
         if(type_setting == "1"):
             VocabSettingsHandler.delete_vocab()
@@ -216,7 +216,7 @@ class VocabSettingsHandler():
         """ 
 
         ## gets new vocab id
-        new_vocab_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(6))
+        new_vocab_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB ID"))
 
         ## raw strings
         raw_testing_material:typing.List[str] = []
@@ -272,21 +272,21 @@ class VocabSettingsHandler():
 
         ## assemble actual objects and assign ids
         for i in range(len(raw_testing_material)):
-            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(12))
+            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID"))
             testing_material.append(testing_material_blueprint(new_vocab_id, new_testing_material_id, raw_testing_material[i]))
 
             stuff_to_write = [new_vocab_id, new_testing_material_id, raw_testing_material[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_testing_material_path, stuff_to_write)
 
         for i in range(len(raw_romaji)):
-            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(10))
+            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID"))
             readings.append(reading_blueprint(new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
 
             stuff_to_write = [new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_readings_path, stuff_to_write)
 
         for i in range(len(raw_synonyms)):
-            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
+            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
             synonyms.append(synonym_blueprint(new_vocab_id, new_synonym_id, raw_synonyms[i]))
 
             stuff_to_write = [new_vocab_id, new_synonym_id, raw_synonyms[i]]
@@ -343,7 +343,7 @@ class VocabSettingsHandler():
         
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_synonyms)):
-            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(8))
+            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
             synonyms.append(synonym_blueprint(target_vocab_id, new_synonym_id, raw_synonyms[i]))
 
             stuff_to_write = [target_vocab_id, new_synonym_id, raw_synonyms[i]]
@@ -394,7 +394,7 @@ class VocabSettingsHandler():
         
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_testing_material)):
-            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(12))
+            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID")) 
             testing_material.append(testing_material_blueprint(target_vocab_id, new_testing_material_id, raw_testing_material[i]))
 
             stuff_to_write = [target_vocab_id, new_testing_material_id, raw_testing_material[i]]
@@ -454,7 +454,7 @@ class VocabSettingsHandler():
         
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_romaji)):
-            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(10))
+            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID"))
             readings.append(reading_blueprint(target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
 
             stuff_to_write = [target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
@@ -505,7 +505,7 @@ class VocabSettingsHandler():
         
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_typo)):
-            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(3))
+            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TYPO ID"))
             typos.append(typo_blueprint(target_vocab_id, new_typo_id, raw_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_typo_id, raw_typo[i]]
@@ -556,7 +556,7 @@ class VocabSettingsHandler():
         
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_incorrect_typo)):
-            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(4))
+            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB INCORRECT TYPO ID"))                                                 
             incorrect_typos.append(incorrect_typo_blueprint(target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]]
@@ -595,7 +595,7 @@ class VocabSettingsHandler():
 
             print(edit_message)
 
-            type_setting = Toolkit.input_check(2, Toolkit.get_single_key(), 2, edit_message)
+            type_setting = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 2, edit_message)
 
             if(type_setting == "1"):
                 value_to_edit = target_vocab.correct_count

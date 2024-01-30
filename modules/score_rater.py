@@ -309,7 +309,7 @@ class ScoreRater:
         
             print(prompt)
 
-            userA = int(Toolkit.input_check(4 ,Toolkit.get_single_key(), 2, prompt))
+            userA = int(Toolkit.input_check("Validation With V Single Key" ,Toolkit.get_single_key(), 2, prompt))
         
             Toolkit.clear_console()
 
@@ -381,11 +381,11 @@ class ScoreRater:
         """
 
         if(isinstance(Word, Vocab)):
-            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(3))
+            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TYPO ID"))
             path_to_write_to = FileEnsurer.vocab_typos_path
 
         else:
-            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(1))
+            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("KANA TYPO ID"))
             path_to_write_to = FileEnsurer.kana_typos_path
 
         new_typo = typo_blueprint(Word.id, new_typo_id, typo)
@@ -414,11 +414,11 @@ class ScoreRater:
         """
 
         if(isinstance(Word, Vocab)):
-            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(4))
+            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB INCORRECT TYPO ID"))
             path_to_write_to = FileEnsurer.vocab_incorrect_typos_path
 
         else:
-            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(2))
+            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("KANA INCORRECT TYPO ID"))
             path_to_write_to = FileEnsurer.kana_incorrect_typos_path
 
         new_incorrect_typo = incorrect_typo_blueprint(Word.id, new_incorrect_typo_id, incorrect_typo)
@@ -449,12 +449,12 @@ class ScoreRater:
         CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 2
     
         if(isinstance(Word, Vocab)):
-            word_ids = LocalHandler.get_list_of_all_ids(6)
+            word_ids = LocalHandler.get_list_of_all_ids("VOCAB ID")
             path_to_write_to = FileEnsurer.vocab_path
             index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
         
         else:
-            word_ids = LocalHandler.get_list_of_all_ids(5)
+            word_ids = LocalHandler.get_list_of_all_ids("KANA ID")
             path_to_write_to = FileEnsurer.kana_path
             index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
@@ -489,12 +489,12 @@ class ScoreRater:
         INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 3
 
         if(isinstance(Word, Vocab)):
-            word_ids = LocalHandler.get_list_of_all_ids(6)
+            word_ids = LocalHandler.get_list_of_all_ids("VOCAB ID")
             path_to_write_to = FileEnsurer.vocab_path
             index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         else:
-            word_ids = LocalHandler.get_list_of_all_ids(5)
+            word_ids = LocalHandler.get_list_of_all_ids("KANA ID")
             path_to_write_to = FileEnsurer.kana_path
             index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 

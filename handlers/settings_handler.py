@@ -42,7 +42,7 @@ class SettingsHandler():
 
         print(settings_menu_message)
 
-        pathing = Toolkit.input_check(4, Toolkit.get_single_key(), 5, settings_menu_message)
+        pathing = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 5, settings_menu_message)
 
         if(pathing == "1"): 
             VocabSettingsHandler.change_vocab_settings()
@@ -83,7 +83,7 @@ class SettingsHandler():
 
         print(score_message)
 
-        type_print = Toolkit.input_check(4, Toolkit.get_single_key(), 2, score_message)
+        type_print = Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 2, score_message)
 
         if(type_print == "1"):
             _, display_list = ScoreRater.get_kana_to_test(LocalHandler.kana)
@@ -121,7 +121,7 @@ class SettingsHandler():
 
         print(message_to_print)
 
-        if(Toolkit.input_check(4, Toolkit.get_single_key(), 2, message_to_print) == "1"):
+        if(Toolkit.input_check("Validation With V Single Key", Toolkit.get_single_key(), 2, message_to_print) == "1"):
             if(sleep_after_test == "True"):
                 FileHandler.standard_overwrite_file(FileEnsurer.do_sleep_after_test_path, "False")
                 FileEnsurer.do_sleep_after_test = False

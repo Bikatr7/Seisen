@@ -277,62 +277,34 @@ class LocalHandler():
 ##--------------------start-of-get_list_of_all_ids()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_list_of_all_ids(type_of_id_to_query:int) -> typing.List[int]:
+    def get_list_of_all_ids(type_of_id_to_query:typing.Literal["KANA TYPO ID",
+                                                                "KANA INCORRECT TYPO ID",
+                                                                "VOCAB TYPO ID",
+                                                                "VOCAB INCORRECT TYPO ID",
+                                                                "KANA ID",
+                                                                "VOCAB ID",
+                                                                "KANA SYNONYM ID",
+                                                                "VOCAB SYNONYM ID",
+                                                                "KANA READING ID",
+                                                                "VOCAB READING ID",
+                                                                "KANA TESTING MATERIAL ID",
+                                                                "VOCAB TESTING MATERIAL ID"]) -> typing.List[int]:
 
         """
 
         Gets the list of all ids in local storage given the type of id to query.
 
         Parameters:
-        type_of_id_to_query (int) : The type of id to query.
+        type_of_id_to_query (typing.Literal) : The type of id to query.
 
         Returns:
         ids (list - int) : The list of all ids in the database.
-
-        ------------------------------
-
-        KANA TYPO ID = 1
-
-        KANA INCORRECT TYPO ID = 2
-
-        VOCAB TYPO ID = 3
-
-        VOCAB INCORRECT TYPO ID = 4
-
-        KANA ID = 5
-
-        VOCAB ID = 6
-
-        KANA SYNONYM ID = 7
-        
-        VOCAB SYNONYM ID = 8
-
-        KANA READING ID = 9
-
-        VOCAB READING ID = 10
-
-        KANA TESTING MATERIAL ID = 11
-
-        VOCAB TESTING MATERIAL ID = 12
 
         """
 
         ids = ["0"]
 
         i = 0
-
-        KANA_TYPO_ID_IDENTIFIER = 1
-        KANA_INCORRECT_TYPO_ID_IDENTIFIER = 2
-        VOCAB_TYPO_ID_IDENTIFIER = 3
-        VOCAB_INCORRECT_TYPO_ID_IDENTIFIER = 4
-        KANA_ID_IDENTIFIER = 5
-        VOCAB_ID_IDENTIFIER = 6
-        KANA_SYNONYM_ID_IDENTIFIER = 7
-        VOCAB_SYNONYM_ID_IDENTIFIER = 8
-        KANA_READING_ID_IDENTIFIER = 9
-        VOCAB_READING_ID_IDENTIFIER = 10
-        KANA_TESTING_MATERIAL_ID_IDENTIFIER = 11
-        VOCAB_TESTING_MATERIAL_ID_IDENTIFIER = 12
 
         TYPO_ID_INDEX_LOCATION = 2
         WORD_ID_INDEX_LOCATION = 1
@@ -341,7 +313,7 @@ class LocalHandler():
         TESTING_MATERIAL_ID_INDEX_LOCATION = 2
 
         ## 1 = kana typo id
-        if(type_of_id_to_query == KANA_TYPO_ID_IDENTIFIER):
+        if(type_of_id_to_query == "KANA TYPO ID"):
             with open(FileEnsurer.kana_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -350,7 +322,7 @@ class LocalHandler():
                     i+=1
 
         ## 2 = kana incorrect typo id
-        elif(type_of_id_to_query == KANA_INCORRECT_TYPO_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "KANA INCORRECT TYPO ID"):
             with open(FileEnsurer.kana_incorrect_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -359,7 +331,7 @@ class LocalHandler():
                     i+=1
 
         ## 3 = vocab typo id
-        elif(type_of_id_to_query == VOCAB_TYPO_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "VOCAB TYPO ID"):
             with open(FileEnsurer.vocab_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -368,7 +340,7 @@ class LocalHandler():
                     i+=1
 
         ## 4 = vocab incorrect typo id
-        elif(type_of_id_to_query == VOCAB_INCORRECT_TYPO_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "VOCAB INCORRECT TYPO ID"):
             with open(FileEnsurer.vocab_incorrect_typos_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -377,7 +349,7 @@ class LocalHandler():
                     i+=1
 
         ## 5 = kana id
-        elif(type_of_id_to_query == KANA_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "KANA ID"):
             with open(FileEnsurer.kana_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -386,7 +358,7 @@ class LocalHandler():
                     i+=1
                     
         ## 6 = vocab id
-        elif(type_of_id_to_query == VOCAB_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "VOCAB ID"):
             with open(FileEnsurer.vocab_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -395,7 +367,7 @@ class LocalHandler():
                     i+=1
 
         ## 7 = kana synonym id
-        elif(type_of_id_to_query == KANA_SYNONYM_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "KANA SYNONYM ID"):
             with open(FileEnsurer.kana_synonyms_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -404,7 +376,7 @@ class LocalHandler():
                     i+=1
 
         ## 8 = vocab synonym id
-        elif(type_of_id_to_query == VOCAB_SYNONYM_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "VOCAB SYNONYM ID"):
             with open(FileEnsurer.vocab_synonyms_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -413,7 +385,7 @@ class LocalHandler():
                     i+=1
 
         ## 9 = kana reading id
-        elif(type_of_id_to_query == KANA_READING_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "KANA READING ID"):
             with open(FileEnsurer.kana_readings_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -422,7 +394,7 @@ class LocalHandler():
                     i+=1
 
         ## 10 = vocab reading id
-        elif(type_of_id_to_query == VOCAB_READING_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "VOCAB READING ID"):
             with open(FileEnsurer.vocab_readings_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -431,7 +403,7 @@ class LocalHandler():
                     i+=1
 
         ## 11 = kana testing material id
-        elif(type_of_id_to_query == KANA_TESTING_MATERIAL_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "KANA TESTING MATERIAL ID"):
             with open(FileEnsurer.kana_testing_material_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 
@@ -440,7 +412,7 @@ class LocalHandler():
                     i+=1
 
         ## 12 = vocab testing material id
-        elif(type_of_id_to_query == VOCAB_TESTING_MATERIAL_ID_IDENTIFIER):
+        elif(type_of_id_to_query == "VOCAB TESTING MATERIAL ID"):
             with open(FileEnsurer.vocab_testing_material_path, 'r', encoding='utf-8') as file:
                 file_size = file.readlines()
 

@@ -37,13 +37,6 @@ def permission_error_decorator():
         return wrapper
     return decorator
 
-##--------------------start-of-InputType------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-class InputType(Enum):
-    NUMBER_CHOICE_NO_V = 1
-    VALIDATION_WITH_V_SINGLE_KEY = 4
-    VALIDATION_WITH_V_TEXT_ENTER = 5
-
 ##--------------------start-of-Toolkit------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Toolkit():
@@ -75,7 +68,10 @@ class Toolkit():
 ##--------------------start-of-input_check()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def input_check(input_type:int, user_input:str, number_of_choices:int, input_prompt_message:str) -> str:
+    def input_check(input_type:typing.Literal["Number Choice No V", "Validation With V Single Key", "Validation With V Text Enter"],
+                    user_input:str, 
+                    number_of_choices:int, 
+                    input_prompt_message:str) -> str:
 
         """
 
@@ -90,11 +86,6 @@ class Toolkit():
         Returns:
         new_user_input (str) : the user's input.
 
-        Input Types:
-        1 : Number Choice No V : the user can only enter a number choice or q.
-        4 : Validation With V Single Key : the user can enter a number choice, q, or v. User input is confirmed with a single key press.
-        5 : Validation With V Text Enter : the user can enter a number choice, q, or v. User must press enter to confirm their input.
-
         """
 
         new_user_input = str(user_input)
@@ -107,26 +98,26 @@ class Toolkit():
             if(user_input == 'q'):
                 Toolkit.exit_seisen()
 
-            elif(user_input == 'v' and input_type != InputType.NUMBER_CHOICE_NO_V.value):
+            elif(user_input == 'v' and input_type != "Number Choice No V"):
                 return new_user_input
             
-            elif(input_type == InputType.NUMBER_CHOICE_NO_V.value and (str(user_input).isdigit() == False or user_input == "0")):
+            elif(input_type == "Number Choice No V "and (str(user_input).isdigit() == False or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q'\n"
 
-            elif(input_type == InputType.VALIDATION_WITH_V_TEXT_ENTER.value and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
+            elif(input_type == "Validation With V Text Enter" and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
 
-            elif(input_type == InputType.VALIDATION_WITH_V_SINGLE_KEY.value and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
+            elif(input_type == "Validation With V Single Key" and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q' or 'v'\n"
 
             else:
                 return new_user_input
 
-            if(input_type == InputType.VALIDATION_WITH_V_TEXT_ENTER.value):
+            if(input_type == "Validation With V Text Enter"):
                 print(input_issue_message + "\n")
                 user_input = input(input_prompt_message)
 
-            elif(input_type == InputType.VALIDATION_WITH_V_SINGLE_KEY.value or input_type == InputType.NUMBER_CHOICE_NO_V.value):
+            elif(input_type == "Validation With V Single Key" or input_type == "Number Choice No V"):
                 print(input_issue_message + "\n" + input_prompt_message)
                 user_input = Toolkit.get_single_key()
 
@@ -373,7 +364,7 @@ class Toolkit():
             
             Toolkit.clear_stream()
             
-            if(int(Toolkit.input_check(1, Toolkit.get_single_key(), 2 , output)) == 1):
+            if(int(Toolkit.input_check("Number Choice No V", Toolkit.get_single_key(), 2 , output)) == 1):
                     entry_confirmed = True
             else:
 

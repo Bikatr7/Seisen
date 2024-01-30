@@ -1,5 +1,3 @@
-Refactor number choice words to have literals instead of numbers cause that's fucking stupid
-
 ## Things to look into
 Getting rid of the requests requirement? Could be easy just to handle it myself.
 

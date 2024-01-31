@@ -4,8 +4,8 @@ import typing
 ## custom modules
 from entities.reading import Reading
 from entities.testing_material import TestingMaterial
-
 from entities.synonym import Synonym
+
 from entities.word import Word
 
 class Vocab(Word):

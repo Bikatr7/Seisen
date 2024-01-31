@@ -1,11 +1,11 @@
-## Custom Modules
+## custom modules
 from entities.entity import Entity
 
 class IncorrectTypo(Entity):
 
     """
 
-    The IncorrectTypo class represents typos the user makes but are not actually typos when guessing a Word.
+    The IncorrectTypo class represents typos that Seisen flags as possible typos, but are not actually typos when guessing a Word.
         
     """
 

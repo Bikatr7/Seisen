@@ -1,4 +1,4 @@
-## Custom Modules
+## custom modules
 from entities.entity import Entity
 
 class TestingMaterial(Entity):

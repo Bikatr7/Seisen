@@ -1,4 +1,4 @@
-## Custom Modules
+## custom modules
 from entities.entity import Entity
 
 class Reading(Entity):
@@ -9,7 +9,7 @@ class Reading(Entity):
 
     Contains both the furigana and the romaji.
 
-    All Readings have a furigana, but if furigana is the same as the TestingMaterial, it can be assumed that that it is not a Kanji and should not be displayed.
+    All Readings have a furigana, but if furigana is the same as the TestingMaterial, it can be assumed that that it is not a Kanji and should not be displayed when displaying additional Word attributes.
 
     """
 

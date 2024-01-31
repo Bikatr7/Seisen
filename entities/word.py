@@ -1,12 +1,11 @@
-## Built-in Libraries
+## built-in libaries
 import typing
 
-## Custom Modules
+## custom modules
 from entities.entity import Entity
 
 from entities.testing_material import TestingMaterial
 from entities.reading import Reading
-
 from entities.synonym import Synonym
 
 from entities.typo import Typo

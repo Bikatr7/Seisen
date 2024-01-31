@@ -1,6 +1,3 @@
-## Things to look into
-Getting rid of the requests requirement? Could be easy just to handle it myself.
-
 ## Backlog
 Redo All Documentation
 

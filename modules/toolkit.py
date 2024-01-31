@@ -1,6 +1,4 @@
 ## built-in modules
-from enum import Enum
-
 import os
 import time
 import typing
@@ -397,11 +395,14 @@ class Toolkit():
 
         try:
 
-            import requests
+            from urllib.request import urlopen
+            import json
 
-            response = requests.get("https://api.github.com/repos/Bikatr7/Seisen/releases/latest")
-            latest_version = response.json()["tag_name"]
-            release_notes = response.json()["body"]
+            response = urlopen("https://api.github.com/repos/Bikatr7/Seisen/releases/latest")
+            data = json.loads(response.read().decode())
+
+            latest_version = data["tag_name"]
+            release_notes = data["body"]
 
             if(latest_version != Toolkit.CURRENT_VERSION):
                 update_prompt += "There is a new update for Seisen (" + latest_version + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Bikatr7/Seisen/releases/latest \n"

@@ -10,7 +10,7 @@ import typing
 from entities.typo import Typo as typo_blueprint
 from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
-from entities.synonym import Synonym as synonym_blueprint
+from entities.answer import Answer as answer_blueprint
 from entities.word import Word as kana_blueprint
 from entities.vocab import Vocab as vocab_blueprint
 from entities.reading import Reading as reading_blueprint
@@ -128,7 +128,7 @@ class RemoteHandler():
         kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_kana_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_kana_id_list))]
 
         ## construct synonyms, testing_materials, and readings
-        kana_synonyms = [synonym_blueprint(int(synonym_kana_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_kana_id_list))]
+        kana_synonyms = [answer_blueprint(int(synonym_kana_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_kana_id_list))]
         kana_testing_materials = [testing_material_blueprint(int(testing_material_kana_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_kana_id_list))]
         kana_readings = [reading_blueprint(int(reading_kana_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_kana_id_list))]
 
@@ -256,7 +256,7 @@ class RemoteHandler():
         vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_vocab_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_vocab_id_list))]
 
         ## construct synonyms, testing_materials, and readings
-        vocab_synonyms = [synonym_blueprint(int(synonym_vocab_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_vocab_id_list))]
+        vocab_synonyms = [answer_blueprint(int(synonym_vocab_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_vocab_id_list))]
         vocab_testing_materials = [testing_material_blueprint(int(testing_material_vocab_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_vocab_id_list))]
         vocab_readings = [reading_blueprint(int(reading_vocab_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_vocab_id_list))]
 

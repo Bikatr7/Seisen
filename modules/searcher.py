@@ -6,7 +6,7 @@ from modules.toolkit import Toolkit
 
 from entities.vocab import Vocab
 from entities.testing_material import TestingMaterial
-from entities.synonym import Synonym
+from entities.answer import Answer
 from entities.reading import Reading
 from entities.typo import Typo
 from entities.incorrect_typo import IncorrectTypo
@@ -61,8 +61,8 @@ class Searcher:
             f"Testing Material Value(s): {mini_testing_material_value_print}\n"
             f"Reading ID(S): {mini_reading_id_print}\n"
             f"Reading Value(s): {mini_reading_values_print}\n"
-            f"Synonym ID(S): {mini_id_print}\n"
-            f"Synonym Values(s): {mini_value_print}\n"
+            f"Answer ID(S): {mini_id_print}\n"
+            f"Answer Values(s): {mini_value_print}\n"
             f"---------------------------------\n"
         )
 
@@ -102,8 +102,8 @@ class Searcher:
 
         print_item = (
             f"---------------------------------\n"
-            f"Synonym: {target_synonym.value}\n"
-            f"Synonym ID: {target_synonym.id}\n"
+            f"Answer: {target_synonym.value}\n"
+            f"Answer ID: {target_synonym.id}\n"
             f"VOCAB Testing Material: {mini_testing_material_value_print}\n"
             f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
             f"VOCAB ID: {target_synonym.id}\n"
@@ -143,8 +143,8 @@ class Searcher:
 
             print_item = (
                 f"---------------------------------\n"
-                f"Synonym: {synonym.value}\n"
-                f"Synonym ID: {synonym.id}\n"
+                f"Answer: {synonym.value}\n"
+                f"Answer ID: {synonym.id}\n"
                 f"VOCAB: {target_vocab.testing_material}\n"
                 f"VOCAB ID {synonym.id}\n"
                 f"---------------------------------\n"
@@ -190,8 +190,8 @@ class Searcher:
             f"---------------------------------\n"
             f"Testing Material: {target_testing_material.value}\n"
             f"Testing Material ID: {target_testing_material.id}\n"
-            f"VOCAB Synonym(s): {mini_value_print}\n"
-            f"VOCAB Synonym ID(s): {mini_id_print}\n"
+            f"VOCAB Answer(s): {mini_value_print}\n"
+            f"VOCAB Answer ID(s): {mini_id_print}\n"
             f"VOCAB ID: {target_testing_material.id}\n"
             f"---------------------------------\n"
         )
@@ -381,7 +381,7 @@ class Searcher:
 ##--------------------start-of-get_overlying_vocab_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
-    def get_overlying_vocab_from_attribute_id(id:int, attribute_type:typing.Literal["synonym", "testing_material", "reading", "incorrect_typo", "typo"]) -> Vocab:
+    def get_overlying_vocab_from_attribute_id(id:int, attribute_type:typing.Literal["answer", "testing_material", "reading", "incorrect_typo", "typo"]) -> Vocab:
 
         """
 
@@ -431,7 +431,7 @@ class Searcher:
 ##--------------------start-of-get_synonym_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
-    def get_synonym_from_id(id:int) -> Synonym:
+    def get_synonym_from_id(id:int) -> Answer:
 
         """
 
@@ -441,7 +441,7 @@ class Searcher:
         id (int) : the id of the synonym we are getting a print item for.
 
         Returns:
-        synonym (Synonym) : the synonym for the id.
+        synonym (Answer) : the synonym for the id.
 
         Raises:
         IDNotFoundError : if the id is not found.
@@ -620,7 +620,7 @@ class Searcher:
 ##--------------------start-of-get_synonym_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_synonym_from_alphabetic_term(alphabetic_term:str) -> Synonym:
+    def get_synonym_from_alphabetic_term(alphabetic_term:str) -> Answer:
 
         """
 
@@ -630,7 +630,7 @@ class Searcher:
         alphabetic_term (str) : the alphabetic term of the synonym we are getting a print item for.
 
         Returns:
-        synonym (Synonym) : the synonym for the alphabetic term.
+        synonym (Answer) : the synonym for the alphabetic term.
 
         Raises:
         IDNotFoundError : if the synonym is not found.
@@ -871,7 +871,7 @@ class Searcher:
 
         ## if there is a match for a synonym, get the vocab for that synonym
         if(match_list[0] is not None):
-            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[0].id, "synonym")
+            vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[0].id, "answer")
 
         ## if there is a match for a reading, get the vocab for that reading
         elif(match_list[1] is not None):

@@ -14,13 +14,13 @@ from modules.file_ensurer import FileEnsurer
 
 from entities.vocab import Vocab as vocab_blueprint 
 from entities.testing_material import TestingMaterial as testing_material_blueprint
-from entities.synonym import Synonym as synonym_blueprint
+from entities.answer import Answer as answer_blueprint
 from entities.reading import Reading as reading_blueprint
 from entities.typo import Typo as typo_blueprint
 from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
 from entities.vocab import Vocab
-from entities.synonym import Synonym
+from entities.answer import Answer
 from entities.reading import Reading
 from entities.typo import Typo
 from entities.incorrect_typo import IncorrectTypo
@@ -77,7 +77,7 @@ class VocabSettingsHandler():
 
         Logger.log_action("User is adding a vocab entity.")
 
-        entity_message = "What type of entity are you trying to add?\n\n1.Add Vocab\n2.Add Synonym to Existing Vocab\n3.Add TestingMaterial to Existing Vocab\n4.Add Reading to Existing Vocab\n5.Add Typo to Existing Vocab\n6.Add IncorrectTypo to Existing Vocab\n"
+        entity_message = "What type of entity are you trying to add?\n\n1.Add Vocab\n2.Add Answer to Existing Vocab\n3.Add TestingMaterial to Existing Vocab\n4.Add Reading to Existing Vocab\n5.Add Typo to Existing Vocab\n6.Add IncorrectTypo to Existing Vocab\n"
 
         print(entity_message)
 
@@ -114,7 +114,7 @@ class VocabSettingsHandler():
 
         Logger.log_action("User is editing a vocab entity.")
 
-        entity_message = "What type of entity are you trying to edit?\n\n1.Edit Vocab\n2.Edit Synonym of Existing Vocab\n3.Edit TestingMaterial of Existing Vocab\n4.Edit Reading of Existing Vocab\n5.Edit Typo of Existing Vocab\n6.Edit IncorrectTypo of Existing Vocab\n"
+        entity_message = "What type of entity are you trying to edit?\n\n1.Edit Vocab\n2.Edit Answer of Existing Vocab\n3.Edit TestingMaterial of Existing Vocab\n4.Edit Reading of Existing Vocab\n5.Edit Typo of Existing Vocab\n6.Edit IncorrectTypo of Existing Vocab\n"
 
         print(entity_message)
 
@@ -151,7 +151,7 @@ class VocabSettingsHandler():
 
         Logger.log_action("User is deleting a vocab entity.")
 
-        entity_message = "What type of entity are you trying to delete?\n\n1.Delete Vocab\n2.Delete Synonym of Existing Vocab\n3.Delete TestingMaterial of Existing Vocab\n4.Delete Reading of Existing Vocab\n5.Delete Typo of Existing Vocab\n6.Delete IncorrectTypo of Existing Vocab\n"
+        entity_message = "What type of entity are you trying to delete?\n\n1.Delete Vocab\n2.Delete Answer of Existing Vocab\n3.Delete TestingMaterial of Existing Vocab\n4.Delete Reading of Existing Vocab\n5.Delete Typo of Existing Vocab\n6.Delete IncorrectTypo of Existing Vocab\n"
 
         print(entity_message)
 
@@ -227,7 +227,7 @@ class VocabSettingsHandler():
         ## actual objects
         testing_material:typing.List[TestingMaterial] = []
         readings:typing.List[Reading] = []
-        synonyms:typing.List[Synonym] = []
+        synonyms:typing.List[Answer] = []
 
         ## get vocab components
         try:
@@ -259,11 +259,11 @@ class VocabSettingsHandler():
                 raw_furigana.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."), "furigana"))
 
             ## synonyms
-            raw_synonyms.append(Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main synonym (Synonyms are the definition of the testing material. Your main synonym should match the main testing material)."))
+            raw_synonyms.append(Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main answer (Synonyms are the definition of the testing material. Your main answer should match the main testing material)."))
 
             while(input(f"Enter 1 if {raw_testing_material} has any additional synonyms, otherwise enter 2 (Synonyms are the definition of the testing material).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_synonyms.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional synonym (Synonyms are the definition of the testing material. Additional synonyms can match any)."))
+                raw_synonyms.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional answer (Synonyms are the definition of the testing material. Additional synonyms can match any)."))
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -287,7 +287,7 @@ class VocabSettingsHandler():
 
         for i in range(len(raw_synonyms)):
             new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
-            synonyms.append(synonym_blueprint(new_vocab_id, new_synonym_id, raw_synonyms[i]))
+            synonyms.append(answer_blueprint(new_vocab_id, new_synonym_id, raw_synonyms[i]))
 
             stuff_to_write = [new_vocab_id, new_synonym_id, raw_synonyms[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
@@ -309,17 +309,17 @@ class VocabSettingsHandler():
 
         """
 
-        Adds a synonym entity to an existing vocab entity in the database.
+        Adds a answer entity to an existing vocab entity in the database.
 
         """ 
 
         ## raw strings and actual objects
         raw_synonyms:typing.List[str] = []
-        synonyms:typing.List[Synonym] = []
+        synonyms:typing.List[Answer] = []
 
-        ## gets synonym components
+        ## gets answer components
         try:
-            target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add a Synonym to."))
+            target_vocab_id = int(Toolkit.user_confirm("Please enter the vocab id that you want to add a Answer to."))
 
             ## get target vocab
             try:
@@ -330,11 +330,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_synonyms.append(Toolkit.user_confirm("Please enter the Synonym/Answer for " + target_vocab.main_testing_material.value + " you would like to add. (Synonyms are the definition of the testing material)."))
+            raw_synonyms.append(Toolkit.user_confirm("Please enter the Answer/Answer for " + target_vocab.main_testing_material.value + " you would like to add. (Synonyms are the definition of the testing material)."))
 
             while(input(f"Enter 1 if you'd like to add more synonyms for {target_vocab.main_testing_material.value}, otherwise enter 2.\n") == "1"):
                 Toolkit.clear_stream()
-                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Synonym/Answer for {target_vocab.main_testing_material.value} you would like to add. (Synonyms are the definition of the testing material)."))
+                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Answer/Answer for {target_vocab.main_testing_material.value} you would like to add. (Synonyms are the definition of the testing material)."))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -344,7 +344,7 @@ class VocabSettingsHandler():
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_synonyms)):
             new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
-            synonyms.append(synonym_blueprint(target_vocab_id, new_synonym_id, raw_synonyms[i]))
+            synonyms.append(answer_blueprint(target_vocab_id, new_synonym_id, raw_synonyms[i]))
 
             stuff_to_write = [target_vocab_id, new_synonym_id, raw_synonyms[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
@@ -632,24 +632,24 @@ class VocabSettingsHandler():
 
         """
 
-        Edits a synonym entity in the database.
+        Edits a answer entity in the database.
 
         """ 
 
-        ## gets target synonym
+        ## gets target answer
         try:
-            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the synonym you want to edit."))
+            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the answer you want to edit."))
 
-            ## get target synonym
+            ## get target answer
             try:
                 target_synonym = Searcher.get_synonym_from_id(target_synonym_id)
 
             except Searcher.IDNotFoundError:
-                print("Synonym not found.\n")
+                print("Answer not found.\n")
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            message_to_print = "Please enter the new synonym for " + target_synonym.value + ". (Synonym is the definition of the testing material)."
+            message_to_print = "Please enter the new answer for " + target_synonym.value + ". (Answer is the definition of the testing material)."
 
             new_value = Toolkit.user_confirm(message_to_print)
 
@@ -895,20 +895,20 @@ class VocabSettingsHandler():
 
         """
 
-        Deletes a synonym entity from the database.
+        Deletes a answer entity from the database.
 
         """ 
 
-        ## gets target synonym
+        ## gets target answer
         try:
-            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the synonym you want to delete."))
+            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the answer you want to delete."))
 
-            ## get target synonym
+            ## get target answer
             try:
                 target_synonym = Searcher.get_synonym_from_id(target_synonym_id)
 
             except Searcher.IDNotFoundError:
-                print("Synonym not found.\n")
+                print("Answer not found.\n")
                 time.sleep(Toolkit.sleep_constant)
                 return
             
@@ -924,23 +924,23 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            ## obtain vocab that contains synonym
-            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_synonym_id, attribute_type="synonym")
+            ## obtain vocab that contains answer
+            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_synonym_id, attribute_type="answer")
 
-            ### check to ensure that the user is not deleting the only synonym for a vocab
+            ### check to ensure that the user is not deleting the only answer for a vocab
             if(len(target_vocab.answers) == 1):
-                print("You cannot delete the only synonym for a vocab.\n")
+                print("You cannot delete the only answer for a vocab.\n")
                 Toolkit.pause_console()
                 return
             
-            ## check to ensure that the user is not deleting the main synonym for a vocab, if so, change the main synonym to the next synonym
+            ## check to ensure that the user is not deleting the main answer for a vocab, if so, change the main answer to the next answer
             if(target_vocab.main_answer.id == target_synonym_id):
                 target_vocab.main_answer = target_vocab.answers[1]
 
-            ## delete synonym from current session
+            ## delete answer from current session
             target_vocab.answers.remove(target_synonym)
 
-            ## delete synonym from persistent storage
+            ## delete answer from persistent storage
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=2, target_id=target_synonym_id)
             
         except Toolkit.UserCancelError:

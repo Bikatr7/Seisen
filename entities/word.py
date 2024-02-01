@@ -6,7 +6,7 @@ from entities.entity import Entity
 
 from entities.testing_material import TestingMaterial
 from entities.reading import Reading
-from entities.synonym import Synonym
+from entities.answer import Answer
 
 from entities.typo import Typo
 from entities.incorrect_typo import IncorrectTypo
@@ -25,7 +25,7 @@ class Word(Entity):
     def __init__(self, 
                 id:int, 
                 testing_material:typing.List[TestingMaterial],
-                answers:typing.List[Synonym], 
+                answers:typing.List[Answer], 
                 readings:typing.List[Reading],
                 correct_count:int,
                 incorrect_count:int) -> None:
@@ -37,7 +37,7 @@ class Word(Entity):
         Parameters:
         id (int) : The ID of the Word.
         testing_material (list - TestingMaterial) : The testing material of the Word.
-        answers (list - Synonym) : The answers of the Word.
+        answers (list - Answer) : The answers of the Word.
         readings (list - Reading) : The readings of the Word.
         correct_count (int) : The number of times the Word has been answered correctly.
         incorrect_count (int) : The number of times the Word has been answered incorrectly.
@@ -49,8 +49,8 @@ class Word(Entity):
         self.testing_material:typing.List[TestingMaterial] = testing_material
         self.main_testing_material:TestingMaterial = testing_material[0]
 
-        self.answers:typing.List[Synonym] = answers
-        self.main_answer:Synonym = answers[0]
+        self.answers:typing.List[Answer] = answers
+        self.main_answer:Answer = answers[0]
 
         self.readings:typing.List[Reading] = readings
         self.main_reading:Reading = readings[0]

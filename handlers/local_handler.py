@@ -16,7 +16,7 @@ from entities.word import Word as kana_blueprint
 from entities.vocab import Vocab as vocab_blueprint
 
 from entities.reading import Reading as reading_blueprint
-from entities.synonym import Synonym as synonym_blueprint
+from entities.answer import Answer as answer_blueprint
 from entities.testing_material import TestingMaterial as testing_material_blueprint
 
 from modules.toolkit import Toolkit
@@ -26,7 +26,7 @@ from modules.file_ensurer import FileEnsurer
 from handlers.file_handler import FileHandler
 
 if(typing.TYPE_CHECKING): ## Used for cheating the circular import issue that occurs when I need to type check some things
-    from entities.synonym import Synonym
+    from entities.answer import Answer
     from entities.vocab import Vocab
     from entities.word import Word as Kana
     from entities.reading import Reading
@@ -75,7 +75,7 @@ class LocalHandler():
 
         ##----------------------------------------------------------------get_kana_synonyms()----------------------------------------------------------------
 
-        def get_kana_synonyms(kana_id:str) -> typing.List[Synonym]:
+        def get_kana_synonyms(kana_id:str) -> typing.List[Answer]:
 
             synonyms = []
 
@@ -87,7 +87,7 @@ class LocalHandler():
                     
                     if(synonym_kana_id == kana_id):
 
-                        synonyms.append(synonym_blueprint(int(synonym_kana_id), int(synonym_id), synonym_value))
+                        synonyms.append(answer_blueprint(int(synonym_kana_id), int(synonym_id), synonym_value))
 
             return synonyms
         
@@ -176,7 +176,7 @@ class LocalHandler():
 
         ##----------------------------------------------------------------get_vocab_synonym_values()----------------------------------------------------------------
 
-        def get_vocab_synonym_values(vocab_id:str) -> typing.List[Synonym]:
+        def get_vocab_synonym_values(vocab_id:str) -> typing.List[Answer]:
 
             synonyms = []
 
@@ -188,7 +188,7 @@ class LocalHandler():
 
                     if(synonym_vocab_id == vocab_id):
 
-                        synonyms.append(synonym_blueprint(int(synonym_vocab_id), int(synonym_id), synonym_value))
+                        synonyms.append(answer_blueprint(int(synonym_vocab_id), int(synonym_id), synonym_value))
 
             return synonyms
         

@@ -4,7 +4,7 @@ import typing
 ## custom modules
 from entities.reading import Reading
 from entities.testing_material import TestingMaterial
-from entities.synonym import Synonym
+from entities.answer import Answer
 
 from entities.word import Word
 
@@ -21,7 +21,7 @@ class Vocab(Word):
     def __init__(self, 
                 id:int, 
                 testing_material:typing.List[TestingMaterial],
-                answers:typing.List[Synonym], 
+                answers:typing.List[Answer], 
                 readings:typing.List[Reading],
                 correct_count:int,
                 incorrect_count:int
@@ -34,7 +34,7 @@ class Vocab(Word):
         Parameters:
         id (int) : The ID of the Vocab.
         testing_material (list - TestingMaterial) : The testing material of the Vocab.
-        answers (list - Synonym) : The answers of the Vocab.
+        answers (list - Answer) : The answers of the Vocab.
         readings (list - Reading) : The readings of the Vocab.
         correct_count (int) : The number of times the Vocab has been answered correctly.
         incorrect_count (int) : The number of times the Vocab has been answered incorrectly.

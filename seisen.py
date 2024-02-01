@@ -215,7 +215,7 @@ class Seisen:
 
         old_mode = Seisen.current_mode
         
-        Seisen.current_mode = int(Toolkit.input_check(1, Toolkit.get_single_key(), 3, main_menu_message))
+        Seisen.current_mode = int(Toolkit.input_check("Number Choice No V", Toolkit.get_single_key(), 3, main_menu_message))
         FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, target_line=1, column_number=1, value_to_replace_to=str(Seisen.current_mode))
         
         Logger.log_action("Current mode changed to " + str(Seisen.current_mode) + " was " + str(old_mode))

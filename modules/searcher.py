@@ -63,6 +63,7 @@ class Searcher:
             f"Reading Value(s): {mini_reading_values_print}\n"
             f"Answer ID(S): {mini_id_print}\n"
             f"Answer Values(s): {mini_value_print}\n"
+            f"Likelihood: {word.likelihood}%\n"
             f"---------------------------------\n"
         )
 

@@ -1,12 +1,12 @@
-## Custom Modules
+## custom modules
 from entities.entity import Entity
 
-class Synonym(Entity):
+class Answer(Entity):
 
     """
+    
+    The Answer class represents an answer to a word in Seisen.
 
-    The Synonym class represents an alternative answer for a Word.
-        
     """
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -19,12 +19,12 @@ class Synonym(Entity):
 
         """
         
-        Initializes a new Synonym object.
+        Initializes a new Answer object.
 
         Parameters:
-        word_id (int) : The ID of the Word the Synonym is for.
-        id (int) : The ID of the Synonym.
-        value (str) : The value of the Synonym.
+        word_id (int) : The ID of the Word the Answer is for.
+        id (int) : The ID of the Answer.
+        value (str) : The value of the Answer.
 
         """
 

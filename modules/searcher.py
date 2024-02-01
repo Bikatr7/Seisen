@@ -401,7 +401,7 @@ class Searcher:
 
         for vocab in LocalHandler.vocab:
 
-            if(attribute_type == "synonym"):
+            if(attribute_type == "answer"):
                 for synonym in vocab.answers:
                     if(synonym.id == id):
                         return vocab

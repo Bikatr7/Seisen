@@ -99,7 +99,7 @@ class Toolkit():
             elif(user_input == 'v' and input_type != "Number Choice No V"):
                 return new_user_input
             
-            elif(input_type == "Number Choice No V "and (str(user_input).isdigit() == False or user_input == "0")):
+            elif(input_type == "Number Choice No V " or user_input.isdigit() == False or user_input == "0"):
                 input_issue_message = "Invalid Input, please enter a valid number choice or 'q'\n"
 
             elif(input_type == "Validation With V Text Enter" and (str(user_input).isdigit() == False or int(user_input) > number_of_choices or user_input == "0")):

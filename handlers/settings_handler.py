@@ -2,13 +2,12 @@
 import time
 
 ## custom modules
-from handlers.local_handler import LocalHandler
-
 from modules.score_rater import ScoreRater
 from modules.logger import Logger
 from modules.toolkit import Toolkit
 from modules.file_ensurer import FileEnsurer
 
+from handlers.local_handler import LocalHandler
 from handlers.vocab_settings_handler import VocabSettingsHandler
 from handlers.storage_settings_handler import StorageSettingsHandler
 from handlers.file_handler import FileHandler
@@ -127,18 +126,15 @@ class SettingsHandler():
                 FileEnsurer.do_sleep_after_test = False
 
                 print("Switched to pause after test.\n")
-                time.sleep(Toolkit.sleep_constant)
 
             else:
                 FileHandler.standard_overwrite_file(FileEnsurer.do_sleep_after_test_path, "True")
                 FileEnsurer.do_sleep_after_test = True
 
                 print("Switched to sleep after test.\n")
-                time.sleep(Toolkit.sleep_constant)
 
         else:
 
             print("Did not switch.\n")
-            time.sleep(Toolkit.sleep_constant)
-
-
+        
+        time.sleep(Toolkit.sleep_constant)

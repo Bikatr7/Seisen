@@ -449,12 +449,10 @@ class ScoreRater:
         CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 2
     
         if(isinstance(Word, Vocab)):
-            word_ids = LocalHandler.get_list_of_all_ids("VOCAB ID")
             path_to_write_to = FileEnsurer.vocab_path
             index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
         
         else:
-            word_ids = LocalHandler.get_list_of_all_ids("KANA ID")
             path_to_write_to = FileEnsurer.kana_path
             index_location = CORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
@@ -463,8 +461,7 @@ class ScoreRater:
         ## current session update
         Word.correct_count += 1
                             
-        ## line returned needs to be incremented by one to match file
-        line_to_write_to = word_ids.index(Word.id) + 1
+        line_to_write_to = FileHandler.find_seisen_line(path_to_write_to, column_index=1, target_value=Word.id)        
 
         ## updates local storage so the correct answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.correct_count))
@@ -489,12 +486,10 @@ class ScoreRater:
         INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION = 3
 
         if(isinstance(Word, Vocab)):
-            word_ids = LocalHandler.get_list_of_all_ids("VOCAB ID")
             path_to_write_to = FileEnsurer.vocab_path
             index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
         else:
-            word_ids = LocalHandler.get_list_of_all_ids("KANA ID")
             path_to_write_to = FileEnsurer.kana_path
             index_location = INCORRECT_ANSWER_COUNT_FILE_INDEX_LOCATION
 
@@ -503,8 +498,7 @@ class ScoreRater:
         ## current session update
         Word.incorrect_count += 1
 
-        ## line returned needs to be incremented by one to match file
-        line_to_write_to = word_ids.index(Word.id) + 1
+        line_to_write_to = FileHandler.find_seisen_line(path_to_write_to, column_index=1, target_value=Word.id)
 
         ## updates local storage so the incorrect answer will be saved for future sessions
         FileHandler.edit_seisen_line(path_to_write_to, line_to_write_to, index_location, str(Word.incorrect_count))

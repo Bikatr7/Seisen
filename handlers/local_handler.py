@@ -38,214 +38,93 @@ class LocalHandler():
 
     @staticmethod
     def load_words_from_local_storage() -> None:
-        
+
         """
-        
+
         Loads all words from local storage into the program.
 
         """
 
-        ##----------------------------------------------------------------get_kana_readings()----------------------------------------------------------------
+        ##--------------------start-of-load_file()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        def get_kana_readings(kana_id:str) -> typing.List[Reading]:
+        def load_file(file_path, key_index=0):
 
-            readings = []
+            data: typing.Dict[str, typing.List[typing.Any]] = {}
 
-            with open(FileEnsurer.kana_readings_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    reading_kana_id, reading_id, furigana, romaji = FileHandler.extract_seisen_line_values(line)
-
-                    if(reading_kana_id == kana_id):
-
-                        readings.append(Reading(int(reading_kana_id), int(reading_id), furigana, romaji))
-
-            return readings
-
-        ##----------------------------------------------------------------get_kana_answers()----------------------------------------------------------------
-
-        def get_kana_answers(kana_id:str) -> typing.List[Answer]:
-
-            answers = []
-
-            with open(FileEnsurer.kana_answers_path, "r", encoding="utf-8") as file:
+            with open(file_path, "r", encoding="utf-8") as file:
 
                 for line in file:
+                    values = FileHandler.extract_seisen_line_values(line)
+                    key = values[key_index]
 
-                    answer_kana_id, answer_id, answer_value = FileHandler.extract_seisen_line_values(line)
-                    
-                    if(answer_kana_id == kana_id):
+                    if(key not in data):
+                        data[key] = []
 
-                        answers.append(Answer(int(answer_kana_id), int(answer_id), answer_value))
+                    data[key].append(values)
 
-            return answers
+            return data
         
-        ##----------------------------------------------------------------get_kana_testing_material()----------------------------------------------------------------
+        ##--------------------start-of-load_entities()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-        def get_kana_testing_material(kana_id:str) -> typing.List[TestingMaterial]:
+        def load_words(entity_path, readings_path, answers_path, testing_material_path, typo_path, incorrect_typo_path):
 
-            testing_material = []
+            entities:typing.List[Word] = []
 
-            with open(FileEnsurer.kana_testing_material_path, "r", encoding="utf-8") as file:
+            entity_data = load_file(entity_path)
+            readings_data = load_file(readings_path)
+            answers_data = load_file(answers_path)
+            testing_material_data = load_file(testing_material_path)
+            typo_data = load_file(typo_path)
+            incorrect_typo_data = load_file(incorrect_typo_path)
 
-                for line in file:
+            for entity_id, entity_values in entity_data.items():
+                readings = [Reading(*reading_values) for reading_values in readings_data.get(entity_id, [])]
+                answers = [Answer(*answer_values) for answer_values in answers_data.get(entity_id, [])]
+                testing_material = [TestingMaterial(*testing_material_values) for testing_material_values in testing_material_data.get(entity_id, [])]
+                typos = [Typo(*typo_values) for typo_values in typo_data.get(entity_id, [])]
+                incorrect_typos = [IncorrectTypo(*incorrect_typo_values) for incorrect_typo_values in incorrect_typo_data.get(entity_id, [])]
 
-                    testing_material_kana_id, testing_material_id, testing_material_value = FileHandler.extract_seisen_line_values(line)
+                correct_count = int(entity_values[0][0]) 
+                incorrect_count = int(entity_values[0][1])  
 
-                    if(testing_material_kana_id == kana_id):
-                            
-                        testing_material.append(TestingMaterial(int(testing_material_kana_id), int(testing_material_id), testing_material_value))
+                entity = Word(int(entity_id), testing_material, answers, readings, correct_count, incorrect_count)
 
+                entity.typos = typos
+                entity.incorrect_typos = incorrect_typos
 
-            return testing_material
+                entities.append(entity)
 
-        ##----------------------------------------------------------------load_kana()----------------------------------------------------------------
+            return entities
 
-        def load_kana() -> None:
-    
-            with open(FileEnsurer.kana_path, "r", encoding="utf-8") as file:
+        def load_vocab(entity_path, readings_path, answers_path, testing_material_path, typo_path, incorrect_typo_path):
 
-                for line in file:
+            entities:typing.List[Vocab] = []
 
-                    kana_id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
+            entity_data = load_file(entity_path)
+            readings_data = load_file(readings_path)
+            answers_data = load_file(answers_path)
+            testing_material_data = load_file(testing_material_path)
+            typo_data = load_file(typo_path)
+            incorrect_typo_data = load_file(incorrect_typo_path)
 
-                    readings = get_kana_readings(kana_id)
-                    answers = get_kana_answers(kana_id)
-                    testing_material = get_kana_testing_material(kana_id)
+            for entity_id, entity_values in entity_data.items():
+                readings = [Reading(*reading_values) for reading_values in readings_data.get(entity_id, [])]
+                answers = [Answer(*answer_values) for answer_values in answers_data.get(entity_id, [])]
+                testing_material = [TestingMaterial(*testing_material_values) for testing_material_values in testing_material_data.get(entity_id, [])]
+                typos = [Typo(*typo_values) for typo_values in typo_data.get(entity_id, [])]
+                incorrect_typos = [IncorrectTypo(*incorrect_typo_values) for incorrect_typo_values in incorrect_typo_data.get(entity_id, [])]
 
-                    LocalHandler.kana.append(Word(int(kana_id), testing_material, answers, readings, int(correct_count), int(incorrect_count)))
+                correct_count = int(entity_values[0][0])  
+                incorrect_count = int(entity_values[0][1]) 
 
-                    Logger.log_action("Loaded Kana - (" + kana_id + "," + correct_count + "," + incorrect_count + ") with the following readings - " + str([reading.furigana for reading in readings]) + " and the following answers - " + str([answer.value for answer in answers]) + " and the following testing material - " + str([testing_material.value for testing_material in testing_material]))
-            
-            with open(FileEnsurer.kana_typos_path, "r", encoding="utf-8") as file:
+                entity = Vocab(int(entity_id), testing_material, answers, readings, correct_count, incorrect_count)
 
-                for line in file:
-                    
-                    typo_kana_id, typo_id, typo_value = FileHandler.extract_seisen_line_values(line)
+                entity.typos = typos
+                entity.incorrect_typos = incorrect_typos
 
-                    for kana in LocalHandler.kana:
-                        if(kana.id == int(typo_kana_id)):
+                entities.append(entity)
 
-                            kana.typos.append(Typo(int(typo_kana_id), int(typo_id), typo_value))
-
-                            Logger.log_action("Loaded Kana Typo - (" + typo_kana_id + "," + typo_id + "," + typo_value + ",)")
-            
-            with open(FileEnsurer.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-    
-                    incorrect_typo_kana_id, incorrect_typo_id, incorrect_typo_value = FileHandler.extract_seisen_line_values(line)
-
-                    for kana in LocalHandler.kana:
-                        if(kana.id == int(incorrect_typo_kana_id)):
-
-                            kana.incorrect_typos.append(IncorrectTypo(int(incorrect_typo_kana_id), int(incorrect_typo_id), incorrect_typo_value))
-
-                            Logger.log_action("Loaded Kana Incorrect Typo - (" + incorrect_typo_kana_id + "," + incorrect_typo_id + "," + incorrect_typo_value + ",)")
-
-        ##----------------------------------------------------------------get_vocab_readings()----------------------------------------------------------------
-                            
-        def get_vocab_readings(vocab_id:str) -> typing.List[Reading]:
-
-            readings = []
-
-            with open(FileEnsurer.vocab_readings_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    reading_vocab_id, reading_id, furigana, romaji = FileHandler.extract_seisen_line_values(line)
-
-                    if(reading_vocab_id == vocab_id):
-
-                        readings.append(Reading(int(reading_vocab_id), int(reading_id), furigana, romaji))
-
-            return readings
-
-        ##----------------------------------------------------------------get_vocab_answer_values()----------------------------------------------------------------
-
-        def get_vocab_answer_values(vocab_id:str) -> typing.List[Answer]:
-
-            answers = []
-
-            with open(FileEnsurer.vocab_answers_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    answer_vocab_id, answer_id, answer_value = FileHandler.extract_seisen_line_values(line)
-
-                    if(answer_vocab_id == vocab_id):
-
-                        answers.append(Answer(int(answer_vocab_id), int(answer_id), answer_value))
-
-            return answers
-        
-        ##----------------------------------------------------------------get_vocab_testing_material()----------------------------------------------------------------
-
-        def get_vocab_testing_material(vocab_id:str) -> typing.List[TestingMaterial]:
-
-            testing_material = []
-
-            with open(FileEnsurer.vocab_testing_material_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    testing_material_vocab_id, testing_material_id, testing_material_value = FileHandler.extract_seisen_line_values(line)
-
-                    if(testing_material_vocab_id == vocab_id):
-                            
-                        testing_material.append(TestingMaterial(int(testing_material_vocab_id), int(testing_material_id), testing_material_value))
-
-
-            return testing_material
-
-        ##----------------------------------------------------------------load_vocab()----------------------------------------------------------------
-
-        def load_vocab() -> None:
-
-
-            with open(FileEnsurer.vocab_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-
-                    vocab_id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
-
-                    readings = get_vocab_readings(vocab_id)
-                    answers = get_vocab_answer_values(vocab_id)
-                    testing_material = get_vocab_testing_material(vocab_id)
-
-                    LocalHandler.vocab.append(Vocab(int(vocab_id), testing_material, answers, readings, int(correct_count), int(incorrect_count)))
-
-                    Logger.log_action("Loaded Vocab - (" + vocab_id + "," + correct_count + "," + incorrect_count + ") with the following readings - " + str([reading.furigana for reading in readings]) + " and the following answers - " + str([answer.value for answer in answers]) + " and the following testing material - " + str([testing_material.value for testing_material in testing_material]))
-
-            with open(FileEnsurer.vocab_typos_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-                    
-                    typo_vocab_id, typo_id, typo_value = FileHandler.extract_seisen_line_values(line)
-
-                    for vocab in LocalHandler.vocab:
-                        if(vocab.id == int(typo_vocab_id)):
-
-                            vocab.typos.append(Typo(int(typo_vocab_id), int(typo_id), typo_value))
-
-                            Logger.log_action("Loaded Vocab Typo - (" + typo_vocab_id + "," + typo_id + "," + typo_value + ",)")
-
-            with open(FileEnsurer.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    incorrect_typo_vocab_id, incorrect_typo_id, incorrect_typo_value = FileHandler.extract_seisen_line_values(line)
-
-                    for vocab in LocalHandler.vocab:
-                        if(vocab.id == int(incorrect_typo_vocab_id)):
-
-                            vocab.incorrect_typos.append(IncorrectTypo(int(incorrect_typo_vocab_id), int(incorrect_typo_id), incorrect_typo_value))
-
-                            Logger.log_action("Loaded Vocab Incorrect Typo - (" + incorrect_typo_vocab_id + "," + incorrect_typo_id + "," + incorrect_typo_value + ",)")
-
-        ##----------------------------------------------------------------functions----------------------------------------------------------------
+            return entities
 
         LocalHandler.kana.clear()
         LocalHandler.vocab.clear()
@@ -253,14 +132,12 @@ class LocalHandler():
         Logger.log_barrier()
         Logger.log_action("Loading kana from local storage...")
 
-        load_kana()
+        LocalHandler.kana = load_words(FileEnsurer.kana_path, FileEnsurer.kana_readings_path, FileEnsurer.kana_answers_path, FileEnsurer.kana_testing_material_path, FileEnsurer.kana_typos_path, FileEnsurer.kana_incorrect_typos_path)
 
         Logger.log_barrier()
         Logger.log_action("Loading vocab from local storage...")
 
-        load_vocab()
-
-        Logger.log_barrier()
+        LocalHandler.vocab = load_vocab(FileEnsurer.vocab_path, FileEnsurer.vocab_readings_path, FileEnsurer.vocab_answers_path, FileEnsurer.vocab_testing_material_path, FileEnsurer.vocab_typos_path, FileEnsurer.vocab_incorrect_typos_path)
 
 ##--------------------start-of-get_list_of_all_ids()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -290,9 +167,7 @@ class LocalHandler():
 
         """
 
-        ids = ["0"]
-
-        i = 0
+        ids = [0]
 
         TYPO_ID_INDEX_LOCATION = 2
         WORD_ID_INDEX_LOCATION = 1
@@ -300,115 +175,36 @@ class LocalHandler():
         READING_ID_INDEX_LOCATION = 2
         TESTING_MATERIAL_ID_INDEX_LOCATION = 2
 
-        ## 1 = kana typo id
+        def read_ids_from_file(file_path: str, index_location: int):
+            with open(file_path, 'r', encoding='utf-8') as file:
+                file_lines = file.readlines()
+                for i in range(len(file_lines)):
+                    ids.append(int(FileHandler.read_seisen_line(file_path, i+1, index_location)))
+
         if(type_of_id_to_query == "KANA TYPO ID"):
-            with open(FileEnsurer.kana_typos_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 2 = kana incorrect typo id
+            read_ids_from_file(FileEnsurer.kana_typos_path, TYPO_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "KANA INCORRECT TYPO ID"):
-            with open(FileEnsurer.kana_incorrect_typos_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 3 = vocab typo id
+            read_ids_from_file(FileEnsurer.kana_incorrect_typos_path, TYPO_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "VOCAB TYPO ID"):
-            with open(FileEnsurer.vocab_typos_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 4 = vocab incorrect typo id
+            read_ids_from_file(FileEnsurer.vocab_typos_path, TYPO_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "VOCAB INCORRECT TYPO ID"):
-            with open(FileEnsurer.vocab_incorrect_typos_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_incorrect_typos_path, i+1, TYPO_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 5 = kana id
+            read_ids_from_file(FileEnsurer.vocab_incorrect_typos_path, TYPO_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "KANA ID"):
-            with open(FileEnsurer.kana_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_path, i+1, WORD_ID_INDEX_LOCATION))
-                    i+=1
-                    
-        ## 6 = vocab id
+            read_ids_from_file(FileEnsurer.kana_path, WORD_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "VOCAB ID"):
-            with open(FileEnsurer.vocab_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_path, i+1, WORD_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 7 = kana answer id
+            read_ids_from_file(FileEnsurer.vocab_path, WORD_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "KANA SYNONYM ID"):
-            with open(FileEnsurer.kana_answers_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_answers_path, i+1, SYNONYM_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 8 = vocab answer id
+            read_ids_from_file(FileEnsurer.kana_answers_path, SYNONYM_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "VOCAB SYNONYM ID"):
-            with open(FileEnsurer.vocab_answers_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_answers_path, i+1, SYNONYM_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 9 = kana reading id
+            read_ids_from_file(FileEnsurer.vocab_answers_path, SYNONYM_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "KANA READING ID"):
-            with open(FileEnsurer.kana_readings_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_readings_path, i+1, READING_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 10 = vocab reading id
+            read_ids_from_file(FileEnsurer.kana_readings_path, READING_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "VOCAB READING ID"):
-            with open(FileEnsurer.vocab_readings_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_readings_path, i+1, READING_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 11 = kana testing material id
+            read_ids_from_file(FileEnsurer.vocab_readings_path, READING_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "KANA TESTING MATERIAL ID"):
-            with open(FileEnsurer.kana_testing_material_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.kana_testing_material_path, i+1, TESTING_MATERIAL_ID_INDEX_LOCATION))
-                    i+=1
-
-        ## 12 = vocab testing material id
+            read_ids_from_file(FileEnsurer.kana_testing_material_path, TESTING_MATERIAL_ID_INDEX_LOCATION)
         elif(type_of_id_to_query == "VOCAB TESTING MATERIAL ID"):
-            with open(FileEnsurer.vocab_testing_material_path, 'r', encoding='utf-8') as file:
-                file_size = file.readlines()
-
-                while(i < len(file_size)):
-                    ids.append(FileHandler.read_seisen_line(FileEnsurer.vocab_testing_material_path, i+1, TESTING_MATERIAL_ID_INDEX_LOCATION))
-                    i+=1
-
-        ids =  [int(x) for x in ids]
+            read_ids_from_file(FileEnsurer.vocab_testing_material_path, TESTING_MATERIAL_ID_INDEX_LOCATION)
 
         return ids
     
@@ -446,8 +242,6 @@ class LocalHandler():
 
             FileHandler.modified_create_file(FileEnsurer.last_local_backup_path, current_day)
 
-        else:
-            pass
 
 ##--------------------start-of-restore_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -460,32 +254,22 @@ class LocalHandler():
 
         """
 
-        valid_backups = []
-
-        backup_to_restore_prompt = ""
-        
         Toolkit.clear_console()
-        
-        print("Please select a backup to restore:\n")
-        
-        for dir in os.listdir(FileEnsurer.local_archives_dir):
-        
-            full_path = os.path.join(FileEnsurer.local_archives_dir, dir)
-        
-            if(os.path.isdir(full_path)):
-                print(dir)
-                valid_backups.append(dir)
-                backup_to_restore_prompt += dir + "\n"
-        
-        backup_to_restore_prompt += "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
 
-        if(len(valid_backups) == 0):
+        valid_backups = [dir for dir in os.listdir(FileEnsurer.local_archives_dir) 
+                        if(os.path.isdir(os.path.join(FileEnsurer.local_archives_dir, dir)))]
+
+        if(not valid_backups):
             print("No backups found.\n")
             time.sleep(Toolkit.sleep_constant)
             return
 
-        try: ## user confirm will throw an assertion error or a user cancel error if the user cancels.
+        print("Please select a backup to restore:\n")
+        print('\n'.join(valid_backups))
 
+        backup_to_restore_prompt = "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
+
+        try:  # user confirm will throw an assertion error or a user cancel error if the user cancels.
             backup_to_restore = Toolkit.user_confirm(backup_to_restore_prompt)
 
             if(backup_to_restore in valid_backups):
@@ -496,12 +280,12 @@ class LocalHandler():
 
                 shutil.copytree(os.path.join(FileEnsurer.local_archives_dir, backup_to_restore), FileEnsurer.config_dir, dirs_exist_ok=True)
 
-                Logger.log_action("Restored the " + backup_to_restore + " local backup.", output=True, omit_timestamp=True)
+                Logger.log_action(f"Restored the {backup_to_restore} local backup.", output=True, omit_timestamp=True)
 
                 LocalHandler.load_words_from_local_storage()
 
             else:
                 print("Invalid Backup.\n")
 
-        except Toolkit.UserCancelError or AssertionError:
+        except (Toolkit.UserCancelError):
             print("\nCancelled.\n")

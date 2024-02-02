@@ -13,7 +13,7 @@ import mysql.connector.cursor
 ## custom modules
 from handlers.file_handler import FileHandler
 
-from modules.toolkit import Toolkit
+from modules.toolkit import Toolkit, permission_error_decorator
 from modules.file_ensurer import FileEnsurer
 from modules.logger import Logger
 
@@ -59,6 +59,7 @@ class ConnectionHandler():
 
 ##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+    @permission_error_decorator()
     @staticmethod
     def initialize_database_connection() -> typing.Tuple[typing.Union[mysql.connector.connection.MySQLConnection, mysql.connector.pooling.PooledMySQLConnection, None], typing.Union[mysql.connector.cursor.MySQLCursor, None]]:
 

@@ -7,16 +7,14 @@ import time
 import typing
 
 ## custom modules
-from entities.typo import Typo as typo_blueprint
-from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
+from entities.typo import Typo
+from entities.incorrect_typo import IncorrectTypo
 
-from entities.answer import Answer as answer_blueprint
-from entities.word import Word as kana_blueprint
-from entities.vocab import Vocab as vocab_blueprint
-from entities.reading import Reading as reading_blueprint
-from entities.testing_material import TestingMaterial as testing_material_blueprint
-from entities.word import Word as Kana
+from entities.answer import Answer
 from entities.vocab import Vocab
+from entities.reading import Reading
+from entities.testing_material import TestingMaterial
+from entities.word import Word
 
 from modules.file_ensurer import FileEnsurer
 from modules.toolkit import Toolkit
@@ -36,13 +34,27 @@ class RemoteHandler():
 
     """
     
-    The handler that handles all interactions with the remote storage (database).
+    The handler that handles all interactions with the mysql database (remote).
 
     """
 
-    kana:typing.List[Kana] = [] 
+    kana:typing.List[Word] = [] 
 
     vocab:typing.List[Vocab] = []
+
+
+##--------------------start-of-is_remote_enabled()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def is_remote_enabled() -> bool:
+
+        """
+
+        Returns whether the remote storage is enabled or not.
+
+        """
+
+        return FileEnsurer.remote_enabled
 
 ##--------------------start-of-set_up_new_database()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -70,19 +82,6 @@ class RemoteHandler():
         ConnectionHandler.initialize_database_connection()
 
         Logger.log_action("Database connection has been reset...")
-
-##--------------------start-of-is_remote_enabled()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    @staticmethod
-    def is_remote_enabled() -> bool:
-
-        """
-
-        Returns whether the remote storage is enabled or not.
-
-        """
-
-        return FileEnsurer.remote_enabled
 
 ##--------------------start-of-setup_connection_handler()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -124,17 +123,17 @@ class RemoteHandler():
         reading_kana_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select kana_id, reading_id, furigana, romaji from kana_readings")
 
         ## construct typos
-        kana_typos = [typo_blueprint(int(typo_kana_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_kana_id_list))]
-        kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_kana_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_kana_id_list))]
+        kana_typos = [Typo(int(typo_kana_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_kana_id_list))]
+        kana_incorrect_typos = [IncorrectTypo(int(incorrect_typo_kana_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_kana_id_list))]
 
         ## construct answers, testing_materials, and readings
-        kana_answers = [answer_blueprint(int(answer_kana_id_list[i]), int(answer_id_list[i]), answer_list[i]) for i in range(len(answer_kana_id_list))]
-        kana_testing_materials = [testing_material_blueprint(int(testing_material_kana_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_kana_id_list))]
-        kana_readings = [reading_blueprint(int(reading_kana_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_kana_id_list))]
+        kana_answers = [Answer(int(answer_kana_id_list[i]), int(answer_id_list[i]), answer_list[i]) for i in range(len(answer_kana_id_list))]
+        kana_testing_materials = [TestingMaterial(int(testing_material_kana_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_kana_id_list))]
+        kana_readings = [Reading(int(reading_kana_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_kana_id_list))]
 
         ## construct kana dummy objects
         for i in range(len(kana_id_list)):
-            kana = kana_blueprint(int(kana_id_list[i]), [kana_testing_materials[0]], [kana_answers[0]], [kana_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
+            kana = Word(int(kana_id_list[i]), [kana_testing_materials[0]], [kana_answers[0]], [kana_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
             RemoteHandler.kana.append(kana)
 
         ## fill kana objects with their respective answers, testing_materials, and readings
@@ -252,17 +251,17 @@ class RemoteHandler():
         reading_vocab_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select vocab_id, reading_id, furigana, romaji from vocab_readings")
 
         ## construct typos
-        vocab_typos = [typo_blueprint(int(typo_vocab_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_vocab_id_list))]
-        vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_vocab_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_vocab_id_list))]
+        vocab_typos = [Typo(int(typo_vocab_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_vocab_id_list))]
+        vocab_incorrect_typos = [IncorrectTypo(int(incorrect_typo_vocab_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_vocab_id_list))]
 
         ## construct answers, testing_materials, and readings
-        vocab_answers = [answer_blueprint(int(answer_vocab_id_list[i]), int(answer_id_list[i]), answer_list[i]) for i in range(len(answer_vocab_id_list))]
-        vocab_testing_materials = [testing_material_blueprint(int(testing_material_vocab_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_vocab_id_list))]
-        vocab_readings = [reading_blueprint(int(reading_vocab_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_vocab_id_list))]
+        vocab_answers = [Answer(int(answer_vocab_id_list[i]), int(answer_id_list[i]), answer_list[i]) for i in range(len(answer_vocab_id_list))]
+        vocab_testing_materials = [TestingMaterial(int(testing_material_vocab_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_vocab_id_list))]
+        vocab_readings = [Reading(int(reading_vocab_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_vocab_id_list))]
 
         ## construct vocab dummy objects
         for i in range(len(vocab_id_list)):
-            vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], [vocab_answers[0]], [vocab_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
+            vocab = Vocab(int(vocab_id_list[i]), [vocab_testing_materials[0]], [vocab_answers[0]], [vocab_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
             RemoteHandler.vocab.append(vocab)
 
         ## fill vocab objects with their respective answers, testing_materials, and readings
@@ -743,235 +742,29 @@ class RemoteHandler():
 
         """
 
-
-        ##----------------------------------------------------------------kana----------------------------------------------------------------
-
-        def fill_kana() -> None:
-
-            with open(FileEnsurer.kana_path, "r", encoding="utf-8") as file:
-
+        def fill_table(file_path, table_name, keys):
+            with open(file_path, "r", encoding="utf-8") as file:
                 for line in file:
-
-                    id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "kana"
-                    insert_dict = {
-                    "id": id,
-                    "correct_count": correct_count,
-                    "incorrect_count": incorrect_count
-                    }
-
+                    values = FileHandler.extract_seisen_line_values(line)
+                    insert_dict = dict(zip(keys, values))
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_kana_typos() -> None:
-
-            with open(FileEnsurer.kana_typos_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    kana_id, typo_id, typo = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "kana_typos"
-                    insert_dict = {
-                        "kana_id": kana_id,
-                        "typo_id": typo_id,
-                        "typo": typo,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-        
-        def fill_kana_incorrect_typos() -> None:
-
-            with open(FileEnsurer.kana_incorrect_typos_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    kana_id, incorrect_typo_id, incorrect_typo = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "kana_incorrect_typos"
-                    insert_dict = {
-                    "kana_id": kana_id,
-                    "incorrect_typo_id": incorrect_typo_id,
-                    "incorrect_typo": incorrect_typo,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_kana_answers() -> None:
-                            
-            with open(FileEnsurer.kana_answers_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    kana_id, answer_id, answer = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "kana_answers"
-                    insert_dict = {
-                    "kana_id": kana_id,
-                    "answer_id": answer_id,
-                    "answer": answer,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_kana_testing_material() -> None:
-
-            with open(FileEnsurer.kana_testing_material_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    kana_id, testing_material_id, testing_material = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "kana_testing_material"
-                    insert_dict = {
-                    "kana_id": kana_id,
-                    "testing_material_id": testing_material_id,
-                    "testing_material": testing_material,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_kana_readings() -> None:
-
-            with open(FileEnsurer.kana_readings_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    kana_id, reading_id, furigana, romaji = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "kana_readings"
-                    insert_dict = {
-                    "kana_id": kana_id,
-                    "reading_id": reading_id,
-                    "furigana": furigana,
-                    "romaji": romaji
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        ##----------------------------------------------------------------vocab----------------------------------------------------------------
-
-        def fill_vocab() -> None:
-
-            with open(FileEnsurer.vocab_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    id, correct_count, incorrect_count = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "vocab"
-                    insert_dict = {
-                    "id": id,
-                    "correct_count": correct_count,
-                    "incorrect_count": incorrect_count
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_vocab_typos() -> None:
-
-            with open(FileEnsurer.vocab_typos_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    vocab_id, typo_id, typo = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "vocab_typos"
-                    insert_dict = {
-                    "vocab_id": vocab_id,
-                    "typo_id": typo_id,
-                    "typo": typo,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-        
-        def fill_vocab_incorrect_typos() -> None:
-
-            with open(FileEnsurer.vocab_incorrect_typos_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    vocab_id, incorrect_typo_id, incorrect_typo = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "vocab_incorrect_typos"
-                    insert_dict = {
-                    "vocab_id": vocab_id,
-                    "incorrect_typo_id": incorrect_typo_id,
-                    "incorrect_typo": incorrect_typo,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_vocab_csep() -> None:
-                                
-            with open(FileEnsurer.vocab_answers_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    vocab_id, answer_id, answer = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "vocab_answers"
-                    insert_dict = {
-                    "vocab_id": vocab_id,
-                    "answer_id": answer_id,
-                    "answer": answer,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_vocab_testing_material() -> None:
-
-            with open(FileEnsurer.vocab_testing_material_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    vocab_id, testing_material_id, testing_material = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "vocab_testing_material"
-                    insert_dict = {
-                    "vocab_id": vocab_id,
-                    "testing_material_id": testing_material_id,
-                    "testing_material": testing_material,
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        def fill_vocab_readings() -> None:
-
-            with open(FileEnsurer.vocab_readings_path, "r", encoding="utf-8") as file:
-
-                for line in file:
-
-                    vocab_id, reading_id, furigana, romaji = FileHandler.extract_seisen_line_values(line)
-
-                    table_name = "vocab_readings"
-                    insert_dict = {
-                    "vocab_id": vocab_id,
-                    "reading_id": reading_id,
-                    "furigana": furigana,
-                    "romaji": romaji
-                    }
-
-                    ConnectionHandler.insert_into_table(table_name, insert_dict)
-
-        ##----------------------------------------------------------------functions----------------------------------------------------------------
 
         if(not RemoteHandler.is_remote_enabled()):
             return
 
-        fill_kana()
-        fill_kana_typos()
-        fill_kana_incorrect_typos()
-        fill_kana_answers()
-        fill_kana_testing_material()
-        fill_kana_readings()
+        fill_table(FileEnsurer.kana_path, "kana", ["id", "correct_count", "incorrect_count"])
+        fill_table(FileEnsurer.kana_typos_path, "kana_typos", ["kana_id", "typo_id", "typo"])
+        fill_table(FileEnsurer.kana_incorrect_typos_path, "kana_incorrect_typos", ["kana_id", "incorrect_typo_id", "incorrect_typo"])
+        fill_table(FileEnsurer.kana_answers_path, "kana_answers", ["kana_id", "answer_id", "answer"])
+        fill_table(FileEnsurer.kana_testing_material_path, "kana_testing_material", ["kana_id", "testing_material_id", "testing_material"])
+        fill_table(FileEnsurer.kana_readings_path, "kana_readings", ["kana_id", "reading_id", "furigana", "romaji"])
 
-        fill_vocab()
-        fill_vocab_typos()
-        fill_vocab_incorrect_typos()
-        fill_vocab_csep()
-        fill_vocab_testing_material()
-        fill_vocab_readings()
+        fill_table(FileEnsurer.vocab_path, "vocab", ["id", "correct_count", "incorrect_count"])
+        fill_table(FileEnsurer.vocab_typos_path, "vocab_typos", ["vocab_id", "typo_id", "typo"])
+        fill_table(FileEnsurer.vocab_incorrect_typos_path, "vocab_incorrect_typos", ["vocab_id", "incorrect_typo_id", "incorrect_typo"])
+        fill_table(FileEnsurer.vocab_answers_path, "vocab_answers", ["vocab_id", "answer_id", "answer"])
+        fill_table(FileEnsurer.vocab_testing_material_path, "vocab_testing_material", ["vocab_id", "testing_material_id", "testing_material"])
+        fill_table(FileEnsurer.vocab_readings_path, "vocab_readings", ["vocab_id", "reading_id", "furigana", "romaji"])
 
 ##--------------------start-of-create_daily_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -984,71 +777,33 @@ class RemoteHandler():
 
         """
 
-        ##----------------------------------------------------------------kana----------------------------------------------------------------
+        def backup_data(data_type, assemble_func, write_func):
+            remote_archive_data_dir = os.path.join(archive_dir, data_type)
 
-        def backup_kana() -> None:
+            remote_archive_data_paths = {
+                f"{data_type}.seisen": os.path.join(remote_archive_data_dir, f"{data_type}.seisen"),
+                f"{data_type}_typos.seisen": os.path.join(remote_archive_data_dir, f"{data_type}_typos.seisen"),
+                f"{data_type}_incorrect_typos.seisen": os.path.join(remote_archive_data_dir, f"{data_type}_incorrect_typos.seisen"),
+                f"{data_type}_answers.seisen": os.path.join(remote_archive_data_dir, f"{data_type}_answers.seisen"),
+                f"{data_type}_readings.seisen": os.path.join(remote_archive_data_dir, f"{data_type}_readings.seisen"),
+                f"{data_type}_testing_material.seisen": os.path.join(remote_archive_data_dir, f"{data_type}_testing_material.seisen"),
+            }
 
-            remote_archive_kana_dir = os.path.join(archive_dir, "kana")
+            FileHandler.standard_create_directory(remote_archive_data_dir)
 
-            remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.seisen")
-            remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana_typos.seisen")
-            remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana_incorrect_typos.seisen")
-            remote_archive_kana_answers_path = os.path.join(remote_archive_kana_dir, "kana_answers.seisen")
-            remote_archive_kana_readings_path = os.path.join(remote_archive_kana_dir, "kana_readings.seisen")
-            remote_archive_kana_testing_material_path = os.path.join(remote_archive_kana_dir, "kana_testing_material.seisen")
+            assemble_func()
 
-            FileHandler.standard_create_directory(remote_archive_kana_dir)
-
-            RemoteHandler.assemble_kana()
-
-            RemoteHandler.write_kana_to_disk(remote_archive_kana_path, 
-                                            remote_archive_kana_testing_material_path,
-                                            remote_archive_kana_answers_path,
-                                            remote_archive_kana_readings_path,
-                                            remote_archive_kana_typos_path,
-                                            remote_archive_kana_incorrect_typos_path)
-
-        ##----------------------------------------------------------------vocab----------------------------------------------------------------
-
-        def backup_vocab() -> None:
-
-            remote_archive_vocab_dir = os.path.join(archive_dir, "vocab")
-
-            remote_archive_vocab_path = os.path.join(remote_archive_vocab_dir, "vocab.seisen")
-            remote_archive_vocab_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_typos.seisen")
-            remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_incorrect_typos.seisen")
-            remote_archive_vocab_answers_path = os.path.join(remote_archive_vocab_dir, "vocab_answers.seisen")
-            remote_archive_vocab_readings_path = os.path.join(remote_archive_vocab_dir, "vocab_readings.seisen")
-            remote_archive_vocab_testing_material_path = os.path.join(remote_archive_vocab_dir, "vocab_testing_material.seisen")
-
-            FileHandler.standard_create_directory(remote_archive_vocab_dir)
-
-            RemoteHandler.assemble_vocab()
-
-            RemoteHandler.write_vocab_to_disk(remote_archive_vocab_path,
-                                            remote_archive_vocab_testing_material_path,
-                                            remote_archive_vocab_answers_path,
-                                            remote_archive_vocab_readings_path,
-                                            remote_archive_vocab_typos_path,
-                                            remote_archive_vocab_incorrect_typos_path)
-
-        ##----------------------------------------------------------------main----------------------------------------------------------------
+            write_func(*remote_archive_data_paths.values())
 
         if(not RemoteHandler.is_remote_enabled()):
             return
 
-        ## we do not create a remote storage backup if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("remote storage backup creation") == False):
             return
-        
+
         with open(FileEnsurer.last_remote_backup_path, 'r+', encoding="utf-8") as file:
-
             strips_to_perform = " \n\x00"
-
-            last_backup_date = file.read()
-
-            last_backup_date = last_backup_date.strip(strips_to_perform)
-        
+            last_backup_date = file.read().strip(strips_to_perform)
             current_day = str(datetime.today().strftime('%Y-%m-%d'))
 
         if(last_backup_date != current_day):
@@ -1057,15 +812,11 @@ class RemoteHandler():
             Logger.log_action("Created Daily Remote Backup.")
 
             FileHandler.standard_delete_file(FileEnsurer.last_remote_backup_path)
-
             FileHandler.modified_create_file(FileEnsurer.last_remote_backup_path, current_day)
 
-            backup_kana()
-            backup_vocab()
+            backup_data("kana", RemoteHandler.assemble_kana, RemoteHandler.write_kana_to_disk)
+            backup_data("vocab", RemoteHandler.assemble_vocab, RemoteHandler.write_vocab_to_disk)
 
-        else:
-            pass
-  
 ##--------------------start-of-restore_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -1129,7 +880,7 @@ class RemoteHandler():
             else:
                 print("Invalid Backup.\n")
 
-        except Toolkit.UserCancelError or AssertionError:
+        except Toolkit.UserCancelError:
             print("Canceled.\n")
 
 ##--------------------start-of-local_remote_overwrite()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

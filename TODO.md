@@ -1,6 +1,4 @@
 ## Backlog
-make update check if the version is newer not just different
-
 Redo All Documentation
 
 Add confirmations to a lot of core decisions, something old me liked to do was not tell you what was happening???

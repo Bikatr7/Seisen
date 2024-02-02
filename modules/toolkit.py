@@ -401,10 +401,13 @@ class Toolkit():
             response = urlopen("https://api.github.com/repos/Bikatr7/Seisen/releases/latest")
             data = json.loads(response.read().decode())
 
-            latest_version = data["tag_name"]
+            latest_version = str(data["tag_name"])
             release_notes = data["body"]
 
-            if(latest_version != Toolkit.CURRENT_VERSION):
+            latest_version_numbers = [int(num) for num in latest_version[1:].split('.')]
+            current_version_numbers = [int(num) for num in Toolkit.CURRENT_VERSION[1:].split('.')]
+
+            if(latest_version_numbers > current_version_numbers):
                 update_prompt += "There is a new update for Seisen (" + latest_version + ")\nIt is recommended that you use the latest version of Seisen\nYou can download it at https://github.com/Bikatr7/Seisen/releases/latest \n"
 
                 if(release_notes):

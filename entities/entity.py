@@ -20,4 +20,4 @@ class Entity:
 
         """
 
-        self.id:int = id
+        self.id:int = int(id)

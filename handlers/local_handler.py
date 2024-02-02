@@ -84,8 +84,8 @@ class LocalHandler():
                 typos = [Typo(*typo_values) for typo_values in typo_data.get(entity_id, [])]
                 incorrect_typos = [IncorrectTypo(*incorrect_typo_values) for incorrect_typo_values in incorrect_typo_data.get(entity_id, [])]
 
-                correct_count = int(entity_values[0][0]) 
-                incorrect_count = int(entity_values[0][1])  
+                correct_count = int(entity_values[0][1]) 
+                incorrect_count = int(entity_values[0][2])  
 
                 entity = Word(int(entity_id), testing_material, answers, readings, correct_count, incorrect_count)
 
@@ -114,8 +114,8 @@ class LocalHandler():
                 typos = [Typo(*typo_values) for typo_values in typo_data.get(entity_id, [])]
                 incorrect_typos = [IncorrectTypo(*incorrect_typo_values) for incorrect_typo_values in incorrect_typo_data.get(entity_id, [])]
 
-                correct_count = int(entity_values[0][0])  
-                incorrect_count = int(entity_values[0][1]) 
+                correct_count = int(entity_values[0][1])  
+                incorrect_count = int(entity_values[0][2]) 
 
                 entity = Vocab(int(entity_id), testing_material, answers, readings, correct_count, incorrect_count)
 

@@ -22,7 +22,7 @@ class ConnectionHandler():
 
     """
     
-    The ConnectionHandler class handles the connection to the remote (known as remote) and all interactions with it.
+    The ConnectionHandler class handles the connection to the local mysql database if it exists (known as remote) and all interactions with it.
 
     """
     
@@ -65,10 +65,10 @@ class ConnectionHandler():
         """
 
         Sets up the remote connection. If the user has already entered the credentials for the remote, Seisen will use them. If not, Seisen will prompt the user for them.
-        If connection has failed previously, Seisen will skip the connection initialization. start_marked_succeeded_remote_connection() must be called to allow Seisen to attempt to connect to the remote again.
+        If connection has failed previously, Seisen will skip the connection initialization. start_marked_succeeded_remote_connection() must be called to allow Seisen to attempt to connect to remote again.
 
         Returns:
-        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to the remote.
+        connection (object - mysql.connector.connect.MySQLConnection) or (object - mysql.connector.pooling.PooledMySQLConnection) or None : The connection object to remote.
         cursor (object - mysql.connector.cursor.MySqlCursor) or None : The connection cursor.
 
         """
@@ -78,7 +78,7 @@ class ConnectionHandler():
         
         with open(FileEnsurer.has_database_connection_failed_path, "r+", encoding="utf-8") as file:
             if(file.read().strip() == "True"):
-                Logger.log_action("Database connection has failed previously.... skipping connection initialization", output=True)
+                Logger.log_action("Database connection has failed previously... skipping connection initialization", output=True)
                 return connection, cursor
 
         ## program assumes connection will succeed
@@ -110,8 +110,6 @@ class ConnectionHandler():
 
                 database_name = Toolkit.user_confirm("Please enter the name of the database you have:")
 
-                Toolkit.clear_console()
-
                 user_name = Toolkit.user_confirm("Please enter the username for your local database you have:")
 
                 password = Toolkit.user_confirm("Please enter the password for " + user_name + " you have:")
@@ -129,7 +127,7 @@ class ConnectionHandler():
 
                 Logger.log_action("Connected to the " + database_name + " database.", output=True, omit_timestamp=True)  
 
-                time.sleep(2)
+                time.sleep(Toolkit.sleep_constant)
 
             except Toolkit.UserCancelError:
                 
@@ -137,7 +135,7 @@ class ConnectionHandler():
 
                 Logger.log_action("User cancelled connection initialization, skipping...", output=True, omit_timestamp=True)
 
-                time.sleep(2)
+                time.sleep(Toolkit.sleep_constant)
 
                 ConnectionHandler.start_marked_failed_remote_connection()
 
@@ -337,7 +335,7 @@ class ConnectionHandler():
 ##--------------------start-of-insert_into_table()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def insert_into_table(table_name:str, data:dict) -> None:
+    def insert_into_table(table_name:str, data:typing.Dict) -> None:
 
         """
         

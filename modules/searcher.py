@@ -740,37 +740,36 @@ class Searcher:
 
         """
 
-        ## Define the match types and their corresponding methods
         match_types = [
-            ## Needs to be lambda functions because otherwise it'll be evaluated at definition time
-            ("vocab", lambda: Searcher.get_vocab_from_id(id), lambda match: Searcher.assemble_word_print_item_from_object(match)),
-            ("synonym", Searcher.get_synonym_from_id, Searcher.get_synonym_print_item_from_id),
-            ("testing_material", Searcher.get_testing_material_from_id, Searcher.get_testing_material_print_item_from_id),
-            ("reading", Searcher.get_reading_from_id, Searcher.get_reading_print_item_from_id),
-            ("typo", Searcher.get_typo_from_id, Searcher.get_typo_print_item_from_id),
-            ("incorrect_typo", Searcher.get_incorrect_typo_from_id, Searcher.get_incorrect_typo_print_item_from_id)
-        ]
+                ("vocab", lambda id: Searcher.get_vocab_from_id(id), lambda match: Searcher.assemble_word_print_item_from_object(match), True),
+                ("synonym", lambda id: Searcher.get_synonym_from_id(id), lambda id: Searcher.get_synonym_print_item_from_id(id), False),
+                ("testing_material", lambda id: Searcher.get_testing_material_from_id(id), lambda id: Searcher.get_testing_material_print_item_from_id(id), False),
+                ("reading", lambda id: Searcher.get_reading_from_id(id), lambda id: Searcher.get_reading_print_item_from_id(id), False),
+                ("typo", lambda id: Searcher.get_typo_from_id(id), lambda id: Searcher.get_typo_print_item_from_id(id), False),
+                ("incorrect_typo", lambda id: Searcher.get_incorrect_typo_from_id(id), lambda id: Searcher.get_incorrect_typo_print_item_from_id(id), False)
+            ]
 
-        # Initialize the match list and the confirm message list
-        match_list = [None] * len(match_types)
         confirm_message_list = ["", "Press any key to see matching synonyms.", "Press any key to see matching testing materials.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
 
-        # Try to get a match for each type
-        for i, (match_type, get_from_id, get_print_item_from_id) in enumerate(match_types):
-            try:
-                match_list[i] = get_from_id(id)
-            except Searcher.IDNotFoundError:
-                pass
+        match_list = []
 
-        ## Print the matches, do not a confirm message for the first match
-        for i, match in enumerate(match_list):
-            if(match is not None):
-                if(i != 0):
-                    print("\n" + confirm_message_list[i])
-                    Toolkit.pause_console("")
-                    Toolkit.clear_console()
-                    
-                print(match_types[i][2](match.id))
+        for i, (match_type, get_from_id, get_print_item_from_id, requires_object) in enumerate(match_types):
+            try:
+                match = get_from_id(id)
+                if requires_object:
+                    match_list.append((match, get_print_item_from_id))
+                else:
+                    match_list.append((match.id, get_print_item_from_id))
+            except Searcher.IDNotFoundError:
+                continue
+
+        for i, (match, print_function) in enumerate(match_list):
+            if i != 0:
+                print("\n" + confirm_message_list[i])
+                Toolkit.pause_console("")
+                Toolkit.clear_console()
+
+            print(print_function(match))
 
 ##--------------------start-of-perform_search_by_japanese_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

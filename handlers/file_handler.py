@@ -217,12 +217,34 @@ class FileHandler():
 
         """
 
-        items_to_write = [str(item).replace(",","'COMMALITERAL'") for item in items_to_write]
-
-        line = ",".join(str(item) for item in items_to_write)
+        line = ",".join(str(item).replace(",", "'COMMALITERAL'") for item in items_to_write)
         
         with open(seisen_file_path, "a+", encoding="utf-8") as file:
             file.write(line + ",\n")
+
+##--------------------start-of-write_seisen_lines()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    @permission_error_decorator()
+    def write_seisen_lines(seisen_file_path:str, items_to_write:typing.List[typing.List[typing.Any]]) -> None:
+
+        """
+        
+        Writes the given items to the given seisen file.
+
+        Parameters:
+        seisen_file_path (str) : The path to the seisen file.
+        items_to_write (list - list - Any) : The items to be written to the seisen file. Each inner list is a line.
+
+        """
+
+        lines = []
+        for items in items_to_write:
+            line = ",".join(str(item).replace(",", "'COMMALITERAL'") for item in items)
+            lines.append(line)
+
+        with open(seisen_file_path, "a+", encoding="utf-8") as file:
+            file.write(",\n".join(lines) + ",\n")
 
 ##-------------------start-of-edit_sei_file()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -238,26 +260,22 @@ class FileHandler():
         file_path (str) : The file being edited.
         target_line (int) : The line number we are editing.
         column_number (int) : The column number we are editing.
-        value_to_replace_to (Any) : The value to replace the edit value with.
+        value_to_replace_to (Any) : The value to replace the current value with.
 
         """
 
         value_to_replace_to = str(value_to_replace_to).replace(",","'COMMALITERAL'")
+        temp_file_path = file_path + '.tmp'
 
-        with open(file_path, "r+", encoding="utf8") as file:
-            lines = file.readlines()
+        with open(file_path, 'r', encoding='utf8') as read_file, open(temp_file_path, 'w', encoding='utf8') as write_file:
+            for current_line_number, line in enumerate(read_file, start=1):
+                if(current_line_number == target_line):
+                    items = line.split(",")
+                    items[column_number - 1] = value_to_replace_to
+                    line = ",".join(items)
+                write_file.write(line)
 
-        line = lines[target_line - 1]
-        items = line.split(",")
-
-        items[column_number - 1] = value_to_replace_to
-
-        new_line = ",".join(items)
-
-        lines[target_line - 1] = new_line
-
-        with open(file_path, "w", encoding="utf8") as file:
-            file.writelines(lines)
+        os.replace(temp_file_path, file_path)
 
 ##-------------------start-of-read_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -279,29 +297,14 @@ class FileHandler():
 
         """
 
-        i,ii = 0,0
-        build_string = ""
-        file_details = []
-
         with open(seisen_file_path, "r", encoding="utf-8") as file:
-            sei_file = file.readlines()
-
-        sei_line = sei_file[target_line - 1]
-
-        count = sei_line.count(',')
-
-        while(i < count):
-            if(sei_line[ii] != ","):
-                build_string += sei_line[ii]
-            else:
-                file_details.append(build_string)
-                build_string = ""
-                i+=1
-            ii+=1
-
-        file_details = [str(detail).replace("COMMALITERAL",",") for detail in file_details]
-            
-        return file_details[column-1]
+            for current_line_number, line in enumerate(file, start=1):
+                if(current_line_number == target_line):
+                    file_details = line.split(",")
+                    file_details = [str(detail).replace("COMMALITERAL",",") for detail in file_details]
+                    return file_details[column-1]
+                
+        raise ValueError(f"Could not find {target_line} in {seisen_file_path}.")
 
 ##-------------------start-of-delete_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -319,13 +322,14 @@ class FileHandler():
 
         """
 
-        with open(seisen_file_path, "r", encoding="utf-8") as file:
-            lines = file.readlines()
+        temp_file_path = seisen_file_path + '.tmp'
 
-        with open(seisen_file_path, "w", encoding="utf-8") as file:
-            for i, line in enumerate(lines, 1):
-                if(i != target_line):
-                    file.write(line)
+        with open(seisen_file_path, 'r', encoding='utf8') as read_file, open(temp_file_path, 'w', encoding='utf8') as write_file:
+            for current_line_number, line in enumerate(read_file, start=1):
+                if(current_line_number != target_line):
+                    write_file.write(line)
+
+        os.replace(temp_file_path, seisen_file_path)
 
 ##-------------------start-of-find_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -352,10 +356,10 @@ class FileHandler():
 
         with open(seisen_file_path, 'r', encoding='utf-8') as file:
             for i, line in enumerate(file):
+                line_values = line.split(",")
+                line_values = [str(value).replace("COMMALITERAL",",") for value in line_values]
 
-                line_value = FileHandler.read_seisen_line(seisen_file_path, i + 1, column_index)
-
-                if(line_value == str(target_value)):
+                if(line_values[column_index - 1] == str(target_value)):
                     return i + 1  
 
         raise ValueError(f"Could not find {target_value} in {seisen_file_path} at column {column_index}.")
@@ -363,7 +367,6 @@ class FileHandler():
 ##-------------------start-of-extract_seisen_line_values()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    @permission_error_decorator()
     def extract_seisen_line_values(line:str) -> typing.List[str]:
 
         """
@@ -380,13 +383,14 @@ class FileHandler():
 
         values = line.strip().split(',')
 
-        values = [str(value).replace("COMMALITERAL",",") for value in values]
-
-        if(values[-1] == ''): 
-            return values[:-1]
-
+        if(values[-1] == ''):
+            values = values[:-1]
         else:
-            raise ValueError("The given line is not a valid seisen line.")  
+            raise ValueError("The given line is not a valid seisen line.")
+
+        values = [str(value).replace("COMMALITERAL", ",") for value in values]
+
+        return values
         
 ##-------------------start-of-is_file_damaged()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -423,28 +427,21 @@ class FileHandler():
         Parameters:
         file_path (str) : The path to the file to search.
         id_index (int) : The index of where the ID should be.
-        target_id (str) : The ID to look for.
+        target_id (int) : The ID to search for.
 
         """
 
-        i = 0
+        temp_file_path = file_path + '.tmp'
 
-        with open(file_path, 'r', encoding="utf-8") as file:
-            lines = file.readlines()
+        with open(file_path, 'r', encoding="utf-8") as read_file, open(temp_file_path, 'w', encoding="utf-8") as write_file:
+            for line in read_file:
+                line_values = line.split(",")
+                line_values = [str(value).replace("COMMALITERAL",",") for value in line_values]
 
-        line_count = len(lines)
+                if(int(line_values[id_index - 1]) != target_id):
+                    write_file.write(line)
 
-        while(i < line_count):
-
-            if(int(FileHandler.read_seisen_line(file_path, i + 1, id_index)) == target_id):
-                FileHandler.delete_seisen_line(file_path, i + 1)
-                line_count -= 1
-                
-            else:
-                i += 1
-
-            if(i >= line_count):
-                break
+        os.replace(temp_file_path, file_path)
 
 ##--------------------start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -463,20 +460,12 @@ class FileHandler():
 
         """
 
-        id_list = [ID for ID in id_list]
-
-        id_list.sort()
-
+        id_set = set(id_list)
         new_id = 1
 
-        for num in id_list:
-            if(num < new_id):
-                continue
-            elif(num == new_id):
-                new_id += 1
-            else:
-                return new_id
-            
+        while new_id in id_set:
+            new_id += 1
+
         return new_id
     
 ##-------------------start-of-string_to_bool()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------

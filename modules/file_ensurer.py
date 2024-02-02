@@ -68,7 +68,7 @@ class FileEnsurer:
    kana_path = os.path.join(kana_dir, "kana.seisen")
    kana_testing_material_path = os.path.join(kana_dir, "kana_testing_material.seisen")
    kana_readings_path = os.path.join(kana_dir, "kana_readings.seisen")
-   kana_synonyms_path = os.path.join(kana_dir, "kana_synonyms.seisen")
+   kana_answers_path = os.path.join(kana_dir, "kana_answers.seisen")
    kana_typos_path = os.path.join(kana_dir, "kana_typos.seisen")
    kana_incorrect_typos_path = os.path.join(kana_dir, "kana_incorrect_typos.seisen")
 
@@ -76,7 +76,7 @@ class FileEnsurer:
    vocab_path = os.path.join(vocab_dir, "vocab.seisen")
    vocab_testing_material_path = os.path.join(vocab_dir, "vocab_testing_material.seisen")
    vocab_readings_path = os.path.join(vocab_dir, "vocab_readings.seisen")
-   vocab_synonyms_path = os.path.join(vocab_dir, "vocab_synonyms.seisen")
+   vocab_answers_path = os.path.join(vocab_dir, "vocab_answers.seisen")
    vocab_typos_path = os.path.join(vocab_dir, "vocab_typos.seisen")
    vocab_incorrect_typos_path = os.path.join(vocab_dir, "vocab_incorrect_typos.seisen")
 
@@ -84,7 +84,7 @@ class FileEnsurer:
    vocab_path,
    vocab_testing_material_path,
    vocab_readings_path,
-   vocab_synonyms_path,
+   vocab_answers_path,
    ]
 
    ##----------------------------------/
@@ -100,7 +100,7 @@ class FileEnsurer:
    local_lib_kana_path = os.path.join(local_kana_lib_dir, "kana.seisen")
    local_lib_kana_testing_material_path = os.path.join(local_kana_lib_dir, "kana_testing_material.seisen")
    local_lib_kana_readings_path = os.path.join(local_kana_lib_dir, "kana_readings.seisen")
-   local_lib_kana_synonyms_path = os.path.join(local_kana_lib_dir, "kana_synonyms.seisen")
+   local_lib_kana_answers_path = os.path.join(local_kana_lib_dir, "kana_answers.seisen")
 
    ##----------------------------------/
 
@@ -112,7 +112,7 @@ class FileEnsurer:
    local_vocab_lib_path = os.path.join(local_vocab_lib_dir, "vocab.seisen")
    local_vocab_lib_testing_material_path = os.path.join(local_vocab_lib_dir, "vocab_testing_material.seisen")
    local_vocab_lib_readings_path = os.path.join(local_vocab_lib_dir, "vocab_readings.seisen")
-   local_vocab_lib_synonyms_path = os.path.join(local_vocab_lib_dir, "vocab_synonyms.seisen")
+   local_vocab_lib_answers_path = os.path.join(local_vocab_lib_dir, "vocab_answers.seisen")
 
    ##----------------------------------/
 
@@ -228,7 +228,7 @@ class FileEnsurer:
       FileHandler.standard_create_file(FileEnsurer.kana_incorrect_typos_path)
 
       kana_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_path)
-      kana_synonyms_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_synonyms_path)
+      kana_synonyms_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_answers_path)
       kana_readings_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_readings_path)
       kana_testing_material_damaged = FileHandler.is_file_damaged(FileEnsurer.kana_testing_material_path)
 
@@ -252,7 +252,7 @@ class FileEnsurer:
       FileHandler.standard_create_file(FileEnsurer.vocab_incorrect_typos_path)
 
       vocab_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_path)
-      vocab_synonyms_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_synonyms_path)
+      vocab_synonyms_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_answers_path)
       vocab_readings_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_readings_path)
       vocab_testing_material_damaged = FileHandler.is_file_damaged(FileEnsurer.vocab_testing_material_path)
 
@@ -302,7 +302,7 @@ class FileEnsurer:
       shutil.copy2(FileEnsurer.local_lib_kana_path, FileEnsurer.kana_path)
       shutil.copy2(FileEnsurer.local_lib_kana_testing_material_path, FileEnsurer.kana_testing_material_path)
       shutil.copy2(FileEnsurer.local_lib_kana_readings_path, FileEnsurer.kana_readings_path)
-      shutil.copy2(FileEnsurer.local_lib_kana_synonyms_path, FileEnsurer.kana_synonyms_path)
+      shutil.copy2(FileEnsurer.local_lib_kana_answers_path, FileEnsurer.kana_answers_path)
 
       Logger.log_action("Kana files repaired.")
 
@@ -321,7 +321,7 @@ class FileEnsurer:
       shutil.copy2(FileEnsurer.local_vocab_lib_path, FileEnsurer.vocab_path)
       shutil.copy2(FileEnsurer.local_vocab_lib_testing_material_path, FileEnsurer.vocab_testing_material_path)
       shutil.copy2(FileEnsurer.local_vocab_lib_readings_path, FileEnsurer.vocab_readings_path)
-      shutil.copy2(FileEnsurer.local_vocab_lib_synonyms_path, FileEnsurer.vocab_synonyms_path)
+      shutil.copy2(FileEnsurer.local_vocab_lib_answers_path, FileEnsurer.vocab_answers_path)
 
       Logger.log_action("Vocab files repaired.")
 

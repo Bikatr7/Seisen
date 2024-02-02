@@ -119,7 +119,7 @@ class RemoteHandler():
         kana_id_list, correct_count_list, incorrect_count_list = ConnectionHandler.read_multi_column_query("select id, correct_count, incorrect_count from kana")
         typo_kana_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select kana_id, typo_id, typo from kana_typos")
         incorrect_typo_kana_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select kana_id, incorrect_typo_id, incorrect_typo from kana_incorrect_typos") 
-        synonym_kana_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select kana_id, synonym_id, synonym from kana_synonyms")
+        answer_kana_id_list, answer_id_list, answer_list = ConnectionHandler.read_multi_column_query("select kana_id, answer_id, answer from kana_answers")
         testing_material_kana_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select kana_id, testing_material_id, testing_material from kana_testing_material")
         reading_kana_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select kana_id, reading_id, furigana, romaji from kana_readings")
 
@@ -127,17 +127,17 @@ class RemoteHandler():
         kana_typos = [typo_blueprint(int(typo_kana_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_kana_id_list))]
         kana_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_kana_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_kana_id_list))]
 
-        ## construct synonyms, testing_materials, and readings
-        kana_synonyms = [answer_blueprint(int(synonym_kana_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_kana_id_list))]
+        ## construct answers, testing_materials, and readings
+        kana_answers = [answer_blueprint(int(answer_kana_id_list[i]), int(answer_id_list[i]), answer_list[i]) for i in range(len(answer_kana_id_list))]
         kana_testing_materials = [testing_material_blueprint(int(testing_material_kana_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_kana_id_list))]
         kana_readings = [reading_blueprint(int(reading_kana_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_kana_id_list))]
 
         ## construct kana dummy objects
         for i in range(len(kana_id_list)):
-            kana = kana_blueprint(int(kana_id_list[i]), [kana_testing_materials[0]], [kana_synonyms[0]], [kana_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
+            kana = kana_blueprint(int(kana_id_list[i]), [kana_testing_materials[0]], [kana_answers[0]], [kana_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
             RemoteHandler.kana.append(kana)
 
-        ## fill kana objects with their respective synonyms, testing_materials, and readings
+        ## fill kana objects with their respective answers, testing_materials, and readings
         for kana in RemoteHandler.kana:
 
             ## clear out old dummy data
@@ -157,17 +157,17 @@ class RemoteHandler():
                     kana.testing_material.append(testing_material)
                     Logger.log_action("Added Testing Material " + testing_material.value + " to Kana " + str(kana.id))
 
-            for synonym in kana_synonyms:
-                if(synonym.word_id == kana.id):
+            for answer in kana_answers:
+                if(answer.word_id == kana.id):
 
-                    is_first_synonym = True
+                    is_first_answer = True
 
-                    if(is_first_synonym):
-                        kana.main_answer = synonym
-                        is_first_synonym = False
+                    if(is_first_answer):
+                        kana.main_answer = answer
+                        is_first_answer = False
                     
-                    kana.answers.append(synonym)
-                    Logger.log_action("Added Synonym " + synonym.value + " to Kana " + kana.main_testing_material.value)
+                    kana.answers.append(answer)
+                    Logger.log_action("Added Synonym " + answer.value + " to Kana " + kana.main_testing_material.value)
 
             for reading in kana_readings:
                 if(reading.word_id == kana.id):
@@ -196,7 +196,7 @@ class RemoteHandler():
 ##--------------------start-of-write_kana_to_disk()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def write_kana_to_disk(kana_path:str, kana_testing_material_path:str, kana_synonyms_path:str, kana_readings_path:str, kana_typos_path:str, kana_incorrect_typos_path:str) -> None:
+    def write_kana_to_disk(kana_path:str, kana_testing_material_path:str, kana_answers_path:str, kana_readings_path:str, kana_typos_path:str, kana_incorrect_typos_path:str) -> None:
 
         if(not RemoteHandler.is_remote_enabled()):
             return
@@ -210,9 +210,9 @@ class RemoteHandler():
                 testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
                 FileHandler.write_seisen_line(kana_testing_material_path, testing_material_values)
 
-            for synonym in kana.answers:
-                synonym_values = [synonym.word_id, synonym.id, synonym.value]
-                FileHandler.write_seisen_line(kana_synonyms_path, synonym_values)
+            for answer in kana.answers:
+                answer_values = [answer.word_id, answer.id, answer.value]
+                FileHandler.write_seisen_line(kana_answers_path, answer_values)
 
             for reading in kana.readings:
                 reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
@@ -247,7 +247,7 @@ class RemoteHandler():
         vocab_id_list, correct_count_list, incorrect_count_list = ConnectionHandler.read_multi_column_query("select id, correct_count, incorrect_count from vocab")
         typo_vocab_id_list, typo_id_list, typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, typo_id, typo from vocab_typos")
         incorrect_typo_vocab_id_list, incorrect_typo_id_list, incorrect_typo_list = ConnectionHandler.read_multi_column_query("select vocab_id, incorrect_typo_id, incorrect_typo from vocab_incorrect_typos")
-        synonym_vocab_id_list, synonym_id_list, synonym_list = ConnectionHandler.read_multi_column_query("select vocab_id, synonym_id, synonym from vocab_synonyms")
+        answer_vocab_id_list, answer_id_list, answer_list = ConnectionHandler.read_multi_column_query("select vocab_id, answer_id, answer from vocab_answers")
         testing_material_vocab_id_list, testing_material_id_list, testing_material_list = ConnectionHandler.read_multi_column_query("select vocab_id, testing_material_id, testing_material from vocab_testing_material")
         reading_vocab_id_list, reading_id_list, furigana_list, romaji_list = ConnectionHandler.read_multi_column_query("select vocab_id, reading_id, furigana, romaji from vocab_readings")
 
@@ -255,17 +255,17 @@ class RemoteHandler():
         vocab_typos = [typo_blueprint(int(typo_vocab_id_list[i]), int(typo_id_list[i]), typo_list[i]) for i in range(len(typo_vocab_id_list))]
         vocab_incorrect_typos = [incorrect_typo_blueprint(int(incorrect_typo_vocab_id_list[i]), int(incorrect_typo_id_list[i]), incorrect_typo_list[i]) for i in range(len(incorrect_typo_vocab_id_list))]
 
-        ## construct synonyms, testing_materials, and readings
-        vocab_synonyms = [answer_blueprint(int(synonym_vocab_id_list[i]), int(synonym_id_list[i]), synonym_list[i]) for i in range(len(synonym_vocab_id_list))]
+        ## construct answers, testing_materials, and readings
+        vocab_answers = [answer_blueprint(int(answer_vocab_id_list[i]), int(answer_id_list[i]), answer_list[i]) for i in range(len(answer_vocab_id_list))]
         vocab_testing_materials = [testing_material_blueprint(int(testing_material_vocab_id_list[i]), int(testing_material_id_list[i]), testing_material_list[i]) for i in range(len(testing_material_vocab_id_list))]
         vocab_readings = [reading_blueprint(int(reading_vocab_id_list[i]), int(reading_id_list[i]), furigana_list[i], romaji_list[i]) for i in range(len(reading_vocab_id_list))]
 
         ## construct vocab dummy objects
         for i in range(len(vocab_id_list)):
-            vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], [vocab_synonyms[0]], [vocab_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
+            vocab = vocab_blueprint(int(vocab_id_list[i]), [vocab_testing_materials[0]], [vocab_answers[0]], [vocab_readings[0]], int(correct_count_list[i]), int(incorrect_count_list[i])) 
             RemoteHandler.vocab.append(vocab)
 
-        ## fill vocab objects with their respective synonyms, testing_materials, and readings
+        ## fill vocab objects with their respective answers, testing_materials, and readings
         for vocab in RemoteHandler.vocab:
 
             ## clear out old dummy data
@@ -285,18 +285,18 @@ class RemoteHandler():
                     vocab.testing_material.append(testing_material)
                     Logger.log_action("Added Testing Material " + testing_material.value + " to Vocab " + str(vocab.id))
 
-            for synonym in vocab_synonyms:
+            for answer in vocab_answers:
 
-                if(synonym.word_id == vocab.id):
+                if(answer.word_id == vocab.id):
 
-                    is_first_synonym = True
+                    is_first_answer = True
 
-                    if(is_first_synonym):
-                        vocab.main_answer = synonym
-                        is_first_synonym = False
+                    if(is_first_answer):
+                        vocab.main_answer = answer
+                        is_first_answer = False
 
-                    vocab.answers.append(synonym)
-                    Logger.log_action("Added Synonym " + synonym.value + " to Vocab " + vocab.main_testing_material.value)
+                    vocab.answers.append(answer)
+                    Logger.log_action("Added Synonym " + answer.value + " to Vocab " + vocab.main_testing_material.value)
 
             for reading in vocab_readings:
                 if(reading.word_id == vocab.id):
@@ -325,7 +325,7 @@ class RemoteHandler():
 ##--------------------start-of-write_vocab_to_disk()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                     
     @staticmethod
-    def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_synonyms_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str, vocab:typing.Union[Vocab, None]=None) -> None:
+    def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_answers_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str, vocab:typing.Union[Vocab, None]=None) -> None:
 
         if(not RemoteHandler.is_remote_enabled()):
             return
@@ -345,9 +345,9 @@ class RemoteHandler():
                 testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
                 FileHandler.write_seisen_line(vocab_testing_material_path, testing_material_values)
 
-            for synonym in vocab.answers:
-                synonym_values = [synonym.word_id, synonym.id, synonym.value]
-                FileHandler.write_seisen_line(vocab_synonyms_path, synonym_values)
+            for answer in vocab.answers:
+                answer_values = [answer.word_id, answer.id, answer.value]
+                FileHandler.write_seisen_line(vocab_answers_path, answer_values)
 
             for reading in vocab.readings:
                 reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
@@ -385,7 +385,7 @@ class RemoteHandler():
         def clear_local_kana() -> None:
 
             FileHandler.clear_file(FileEnsurer.kana_path)
-            FileHandler.clear_file(FileEnsurer.kana_synonyms_path)
+            FileHandler.clear_file(FileEnsurer.kana_answers_path)
             FileHandler.clear_file(FileEnsurer.kana_typos_path)
             FileHandler.clear_file(FileEnsurer.kana_incorrect_typos_path)
             FileHandler.clear_file(FileEnsurer.kana_readings_path)
@@ -396,7 +396,7 @@ class RemoteHandler():
         def clear_local_vocab() -> None:
 
             FileHandler.clear_file(FileEnsurer.vocab_path)
-            FileHandler.clear_file(FileEnsurer.vocab_synonyms_path)
+            FileHandler.clear_file(FileEnsurer.vocab_answers_path)
             FileHandler.clear_file(FileEnsurer.vocab_typos_path)
             FileHandler.clear_file(FileEnsurer.vocab_incorrect_typos_path)
             FileHandler.clear_file(FileEnsurer.vocab_readings_path)
@@ -410,7 +410,7 @@ class RemoteHandler():
 
             RemoteHandler.write_kana_to_disk(FileEnsurer.kana_path, 
                                             FileEnsurer.kana_testing_material_path,
-                                            FileEnsurer.kana_synonyms_path,
+                                            FileEnsurer.kana_answers_path,
                                             FileEnsurer.kana_readings_path,
                                             FileEnsurer.kana_typos_path,
                                             FileEnsurer.kana_incorrect_typos_path)
@@ -423,7 +423,7 @@ class RemoteHandler():
 
             RemoteHandler.write_vocab_to_disk(FileEnsurer.vocab_path, 
                                             FileEnsurer.vocab_testing_material_path,
-                                            FileEnsurer.vocab_synonyms_path,
+                                            FileEnsurer.vocab_answers_path,
                                             FileEnsurer.vocab_readings_path,
                                             FileEnsurer.vocab_typos_path,
                                             FileEnsurer.vocab_incorrect_typos_path)
@@ -517,8 +517,8 @@ class RemoteHandler():
         drop table if exists kana_testing_material;
         """
 
-        delete_kana_synonyms_query = """
-        drop table if exists kana_synonyms;
+        delete_kana_answers_query = """
+        drop table if exists kana_answers;
         """
 
         delete_kana_typos_query = """
@@ -543,8 +543,8 @@ class RemoteHandler():
         drop table if exists vocab_testing_material;
         """
 
-        delete_vocab_synonyms_query = """
-        drop table if exists vocab_synonyms;
+        delete_vocab_answers_query = """
+        drop table if exists vocab_answers;
         """
 
         delete_vocab_typos_query = """
@@ -566,14 +566,14 @@ class RemoteHandler():
 
         ConnectionHandler.execute_query(delete_kana_readings_query)
         ConnectionHandler.execute_query(delete_kana_testing_material_query)
-        ConnectionHandler.execute_query(delete_kana_synonyms_query)
+        ConnectionHandler.execute_query(delete_kana_answers_query)
         ConnectionHandler.execute_query(delete_kana_typos_query)
         ConnectionHandler.execute_query(delete_kana_incorrect_typos_query)
         ConnectionHandler.execute_query(delete_kana_query)
 
         ConnectionHandler.execute_query(delete_vocab_readings_query)
         ConnectionHandler.execute_query(delete_vocab_testing_material_query)
-        ConnectionHandler.execute_query(delete_vocab_synonyms_query)
+        ConnectionHandler.execute_query(delete_vocab_answers_query)
         ConnectionHandler.execute_query(delete_vocab_typos_query)
         ConnectionHandler.execute_query(delete_vocab_incorrect_typos_query)
         ConnectionHandler.execute_query(delete_vocab_query)
@@ -620,12 +620,12 @@ class RemoteHandler():
         );
         """
 
-        create_kana_synonyms_query = """
-        CREATE TABLE kana_synonyms (
+        create_kana_answers_query = """
+        CREATE TABLE kana_answers (
             kana_id INT NOT NULL,
-            synonym_id INT NOT NULL,
-            synonym VARCHAR(1024) NOT NULL,
-            PRIMARY KEY (synonym_id),
+            answer_id INT NOT NULL,
+            answer VARCHAR(1024) NOT NULL,
+            PRIMARY KEY (answer_id),
             FOREIGN KEY (kana_id) REFERENCES kana(id)
         );
         """
@@ -682,12 +682,12 @@ class RemoteHandler():
         );
         """
 
-        create_vocab_synonym_query = """
-        CREATE TABLE vocab_synonyms (
+        create_vocab_answer_query = """
+        CREATE TABLE vocab_answers (
             vocab_id INT NOT NULL,
-            synonym_id INT NOT NULL,
-            synonym VARCHAR(1024) NOT NULL,
-            PRIMARY KEY (synonym_id),
+            answer_id INT NOT NULL,
+            answer VARCHAR(1024) NOT NULL,
+            PRIMARY KEY (answer_id),
             FOREIGN KEY (vocab_id) REFERENCES vocab(id)
         );
         """
@@ -721,14 +721,14 @@ class RemoteHandler():
         ConnectionHandler.execute_query(create_kana_query)
         ConnectionHandler.execute_query(create_kana_typos_query)
         ConnectionHandler.execute_query(create_kana_incorrect_typos_query)
-        ConnectionHandler.execute_query(create_kana_synonyms_query)
+        ConnectionHandler.execute_query(create_kana_answers_query)
         ConnectionHandler.execute_query(create_kana_testing_material_query)
         ConnectionHandler.execute_query(create_kana_readings_query)
 
         ConnectionHandler.execute_query(create_vocab_query)
         ConnectionHandler.execute_query(create_vocab_typos_query)
         ConnectionHandler.execute_query(create_vocab_incorrect_typos_query)
-        ConnectionHandler.execute_query(create_vocab_synonym_query)
+        ConnectionHandler.execute_query(create_vocab_answer_query)
         ConnectionHandler.execute_query(create_vocab_testing_material_query)
         ConnectionHandler.execute_query(create_vocab_readings_query)
 
@@ -797,19 +797,19 @@ class RemoteHandler():
 
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
 
-        def fill_kana_synonyms() -> None:
+        def fill_kana_answers() -> None:
                             
-            with open(FileEnsurer.kana_synonyms_path, "r", encoding="utf-8") as file:
+            with open(FileEnsurer.kana_answers_path, "r", encoding="utf-8") as file:
 
                 for line in file:
 
-                    kana_id, synonym_id, synonym = FileHandler.extract_seisen_line_values(line)
+                    kana_id, answer_id, answer = FileHandler.extract_seisen_line_values(line)
 
-                    table_name = "kana_synonyms"
+                    table_name = "kana_answers"
                     insert_dict = {
                     "kana_id": kana_id,
-                    "synonym_id": synonym_id,
-                    "synonym": synonym,
+                    "answer_id": answer_id,
+                    "answer": answer,
                     }
 
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
@@ -904,17 +904,17 @@ class RemoteHandler():
 
         def fill_vocab_csep() -> None:
                                 
-            with open(FileEnsurer.vocab_synonyms_path, "r", encoding="utf-8") as file:
+            with open(FileEnsurer.vocab_answers_path, "r", encoding="utf-8") as file:
 
                 for line in file:
 
-                    vocab_id, synonym_id, synonym = FileHandler.extract_seisen_line_values(line)
+                    vocab_id, answer_id, answer = FileHandler.extract_seisen_line_values(line)
 
-                    table_name = "vocab_synonyms"
+                    table_name = "vocab_answers"
                     insert_dict = {
                     "vocab_id": vocab_id,
-                    "synonym_id": synonym_id,
-                    "synonym": synonym,
+                    "answer_id": answer_id,
+                    "answer": answer,
                     }
 
                     ConnectionHandler.insert_into_table(table_name, insert_dict)
@@ -962,7 +962,7 @@ class RemoteHandler():
         fill_kana()
         fill_kana_typos()
         fill_kana_incorrect_typos()
-        fill_kana_synonyms()
+        fill_kana_answers()
         fill_kana_testing_material()
         fill_kana_readings()
 
@@ -993,7 +993,7 @@ class RemoteHandler():
             remote_archive_kana_path = os.path.join(remote_archive_kana_dir, "kana.seisen")
             remote_archive_kana_typos_path = os.path.join(remote_archive_kana_dir, "kana_typos.seisen")
             remote_archive_kana_incorrect_typos_path = os.path.join(remote_archive_kana_dir, "kana_incorrect_typos.seisen")
-            remote_archive_kana_synonyms_path = os.path.join(remote_archive_kana_dir, "kana_synonyms.seisen")
+            remote_archive_kana_answers_path = os.path.join(remote_archive_kana_dir, "kana_answers.seisen")
             remote_archive_kana_readings_path = os.path.join(remote_archive_kana_dir, "kana_readings.seisen")
             remote_archive_kana_testing_material_path = os.path.join(remote_archive_kana_dir, "kana_testing_material.seisen")
 
@@ -1003,7 +1003,7 @@ class RemoteHandler():
 
             RemoteHandler.write_kana_to_disk(remote_archive_kana_path, 
                                             remote_archive_kana_testing_material_path,
-                                            remote_archive_kana_synonyms_path,
+                                            remote_archive_kana_answers_path,
                                             remote_archive_kana_readings_path,
                                             remote_archive_kana_typos_path,
                                             remote_archive_kana_incorrect_typos_path)
@@ -1017,7 +1017,7 @@ class RemoteHandler():
             remote_archive_vocab_path = os.path.join(remote_archive_vocab_dir, "vocab.seisen")
             remote_archive_vocab_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_typos.seisen")
             remote_archive_vocab_incorrect_typos_path = os.path.join(remote_archive_vocab_dir, "vocab_incorrect_typos.seisen")
-            remote_archive_vocab_synonyms_path = os.path.join(remote_archive_vocab_dir, "vocab_synonyms.seisen")
+            remote_archive_vocab_answers_path = os.path.join(remote_archive_vocab_dir, "vocab_answers.seisen")
             remote_archive_vocab_readings_path = os.path.join(remote_archive_vocab_dir, "vocab_readings.seisen")
             remote_archive_vocab_testing_material_path = os.path.join(remote_archive_vocab_dir, "vocab_testing_material.seisen")
 
@@ -1027,7 +1027,7 @@ class RemoteHandler():
 
             RemoteHandler.write_vocab_to_disk(remote_archive_vocab_path,
                                             remote_archive_vocab_testing_material_path,
-                                            remote_archive_vocab_synonyms_path,
+                                            remote_archive_vocab_answers_path,
                                             remote_archive_vocab_readings_path,
                                             remote_archive_vocab_typos_path,
                                             remote_archive_vocab_incorrect_typos_path)

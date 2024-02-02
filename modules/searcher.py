@@ -49,8 +49,8 @@ class Searcher:
         mini_reading_id_print = [str(reading.id) for reading in word.readings]
         mini_reading_values_print = [str(reading.romaji) + "/" + str(reading.furigana) for reading in word.readings]
 
-        mini_id_print = [str(synonym.id) for synonym in word.answers]
-        mini_value_print = [str(synonym.value) for synonym in word.answers]
+        mini_id_print = [str(answer.id) for answer in word.answers]
+        mini_value_print = [str(answer.value) for answer in word.answers]
 
         print_item = (
             f"---------------------------------\n"
@@ -69,17 +69,17 @@ class Searcher:
 
         return print_item
     
-##--------------------start-of-get_synonym_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_answer_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_synonym_print_item_from_id(id:int) -> str:
+    def get_answer_print_item_from_id(id:int) -> str:
 
         """
         
-        Gets a print item for a synonym given a synonym id.
+        Gets a print item for a answer given a answer id.
 
         Parameters:
-        id (int) : The id of the synonym we are getting a print item for.
+        id (int) : The id of the answer we are getting a print item for.
 
         Returns:
         print_item (str) : the print item for the id.\n
@@ -87,15 +87,15 @@ class Searcher:
         """
         
         target_vocab = None
-        target_synonym = None
+        target_answer = None
 
         for vocab in LocalHandler.vocab:
-            for synonym in vocab.answers:
-                if(synonym.id == id):
-                    target_synonym = synonym
+            for answer in vocab.answers:
+                if(answer.id == id):
+                    target_answer = answer
                     target_vocab = vocab
 
-        if(target_synonym == None or target_vocab == None):
+        if(target_answer == None or target_vocab == None):
             raise Searcher.IDNotFoundError(id)
         
         mini_testing_material_value_print = [str(testing_material.value) for testing_material in target_vocab.testing_material]
@@ -103,24 +103,24 @@ class Searcher:
 
         print_item = (
             f"---------------------------------\n"
-            f"Answer: {target_synonym.value}\n"
-            f"Answer ID: {target_synonym.id}\n"
+            f"Answer: {target_answer.value}\n"
+            f"Answer ID: {target_answer.id}\n"
             f"VOCAB Testing Material: {mini_testing_material_value_print}\n"
             f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
-            f"VOCAB ID: {target_synonym.id}\n"
+            f"VOCAB ID: {target_answer.id}\n"
             f"---------------------------------\n"
         )
 
         return print_item
     
-##--------------------start-of-get_synonym_print_items_from_vocab_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_answer_print_items_from_vocab_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_synonym_print_items_from_vocab_id(vocab_id:int) -> typing.List[str]:
+    def get_answer_print_items_from_vocab_id(vocab_id:int) -> typing.List[str]:
 
         """
         
-        Gets a print item for a synonym given a vocab id.
+        Gets a print item for a answer given a vocab id.
 
         Parameters:
         vocab_id (int) : the id of the vocab we are getting a print item for.
@@ -140,14 +140,14 @@ class Searcher:
         if(target_vocab == None):
             raise Searcher.IDNotFoundError(vocab_id)
         
-        for synonym in target_vocab.answers:
+        for answer in target_vocab.answers:
 
             print_item = (
                 f"---------------------------------\n"
-                f"Answer: {synonym.value}\n"
-                f"Answer ID: {synonym.id}\n"
+                f"Answer: {answer.value}\n"
+                f"Answer ID: {answer.id}\n"
                 f"VOCAB: {target_vocab.testing_material}\n"
-                f"VOCAB ID {synonym.id}\n"
+                f"VOCAB ID {answer.id}\n"
                 f"---------------------------------\n"
             )
 
@@ -184,8 +184,8 @@ class Searcher:
         if(target_testing_material == None or target_vocab == None):
             raise Searcher.IDNotFoundError(id)
         
-        mini_id_print = [str(synonym.id) for synonym in target_vocab.answers]
-        mini_value_print = [str(synonym.value) for synonym in target_vocab.answers]
+        mini_id_print = [str(answer.id) for answer in target_vocab.answers]
+        mini_value_print = [str(answer.value) for answer in target_vocab.answers]
 
         print_item = (
             f"---------------------------------\n"
@@ -403,8 +403,8 @@ class Searcher:
         for vocab in LocalHandler.vocab:
 
             if(attribute_type == "answer"):
-                for synonym in vocab.answers:
-                    if(synonym.id == id):
+                for answer in vocab.answers:
+                    if(answer.id == id):
                         return vocab
                     
             elif(attribute_type == "testing_material"):
@@ -429,20 +429,20 @@ class Searcher:
 
         raise Searcher.IDNotFoundError(id)
     
-##--------------------start-of-get_synonym_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_answer_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     
     @staticmethod
-    def get_synonym_from_id(id:int) -> Answer:
+    def get_answer_from_id(id:int) -> Answer:
 
         """
 
-        Gets a synonym given an id.
+        Gets a answer given an id.
 
         Parameters:
-        id (int) : the id of the synonym we are getting a print item for.
+        id (int) : the id of the answer we are getting a print item for.
 
         Returns:
-        synonym (Answer) : the synonym for the id.
+        answer (Answer) : the answer for the id.
 
         Raises:
         IDNotFoundError : if the id is not found.
@@ -450,9 +450,9 @@ class Searcher:
         """
 
         for vocab in LocalHandler.vocab:
-            for synonym in vocab.answers:
-                if(synonym.id == id):
-                    return synonym
+            for answer in vocab.answers:
+                if(answer.id == id):
+                    return answer
 
         raise Searcher.IDNotFoundError(id)
 
@@ -618,30 +618,30 @@ class Searcher:
 
         raise Searcher.TermNotFoundError(japanese_term)
     
-##--------------------start-of-get_synonym_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-get_answer_from_alphabetic_term()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def get_synonym_from_alphabetic_term(alphabetic_term:str) -> Answer:
+    def get_answer_from_alphabetic_term(alphabetic_term:str) -> Answer:
 
         """
 
-        Gets a synonym given an alphabetic term.
+        Gets a answer given an alphabetic term.
 
         Parameters:
-        alphabetic_term (str) : the alphabetic term of the synonym we are getting a print item for.
+        alphabetic_term (str) : the alphabetic term of the answer we are getting a print item for.
 
         Returns:
-        synonym (Answer) : the synonym for the alphabetic term.
+        answer (Answer) : the answer for the alphabetic term.
 
         Raises:
-        IDNotFoundError : if the synonym is not found.
+        IDNotFoundError : if the answer is not found.
         
         """
 
         for vocab in LocalHandler.vocab:
-            for synonym in vocab.answers:
-                if(synonym.value == alphabetic_term):
-                    return synonym
+            for answer in vocab.answers:
+                if(answer.value == alphabetic_term):
+                    return answer
 
         raise Searcher.TermNotFoundError(alphabetic_term)
 
@@ -742,14 +742,14 @@ class Searcher:
 
         match_types = [
                 ("vocab", lambda id: Searcher.get_vocab_from_id(id), lambda match: Searcher.assemble_word_print_item_from_object(match), True),
-                ("synonym", lambda id: Searcher.get_synonym_from_id(id), lambda id: Searcher.get_synonym_print_item_from_id(id), False),
+                ("answer", lambda id: Searcher.get_answer_from_id(id), lambda id: Searcher.get_answer_print_item_from_id(id), False),
                 ("testing_material", lambda id: Searcher.get_testing_material_from_id(id), lambda id: Searcher.get_testing_material_print_item_from_id(id), False),
                 ("reading", lambda id: Searcher.get_reading_from_id(id), lambda id: Searcher.get_reading_print_item_from_id(id), False),
                 ("typo", lambda id: Searcher.get_typo_from_id(id), lambda id: Searcher.get_typo_print_item_from_id(id), False),
                 ("incorrect_typo", lambda id: Searcher.get_incorrect_typo_from_id(id), lambda id: Searcher.get_incorrect_typo_print_item_from_id(id), False)
             ]
 
-        confirm_message_list = ["", "Press any key to see matching synonyms.", "Press any key to see matching testing materials.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
+        confirm_message_list = ["", "Press any key to see matching answers.", "Press any key to see matching testing materials.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
 
         match_list = []
 
@@ -852,7 +852,7 @@ class Searcher:
 
         ## Define the match types and their corresponding methods
         match_types = [
-            ("synonym", Searcher.get_synonym_from_alphabetic_term, Searcher.get_synonym_print_item_from_id),
+            ("answer", Searcher.get_answer_from_alphabetic_term, Searcher.get_answer_print_item_from_id),
             ("reading", Searcher.get_reading_from_alphabetic_term, Searcher.get_reading_print_item_from_id),
             ("typo", Searcher.get_typo_from_alphabetic_term, Searcher.get_typo_print_item_from_id),
             ("incorrect_typo", Searcher.get_incorrect_typo_from_alphabetic_term, Searcher.get_incorrect_typo_print_item_from_id)
@@ -860,7 +860,7 @@ class Searcher:
 
         # Initialize the match list and the confirm message list
         match_list = [None] * len(match_types)
-        confirm_message_list = ["Press any key to see matching synonyms.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
+        confirm_message_list = ["Press any key to see matching answers.", "Press any key to see matching readings.", "Press any key to see matching typos.", "Press any key to see matching incorrect typos."]
 
         # Try to get a match for each type
         for i, (match_type, get_from_alphabetic_term, get_print_item_from_id) in enumerate(match_types):
@@ -869,7 +869,7 @@ class Searcher:
             except Searcher.TermNotFoundError:
                 pass
 
-        ## if there is a match for a synonym, get the vocab for that synonym
+        ## if there is a match for a answer, get the vocab for that answer
         if(match_list[0] is not None):
             vocab = Searcher.get_overlying_vocab_from_attribute_id(match_list[0].id, "answer")
 

@@ -87,7 +87,7 @@ class VocabSettingsHandler():
             VocabSettingsHandler.add_vocab()
 
         elif(type_setting == "2"):
-            VocabSettingsHandler.add_synonym_to_existing_vocab()
+            VocabSettingsHandler.add_answer_to_existing_vocab()
 
         elif(type_setting == "3"):
             VocabSettingsHandler.add_testing_material_to_existing_vocab()
@@ -124,7 +124,7 @@ class VocabSettingsHandler():
             VocabSettingsHandler.edit_vocab()
 
         elif(type_setting == "2"):
-            VocabSettingsHandler.edit_synonym()
+            VocabSettingsHandler.edit_answer()
 
         elif(type_setting == "3"):
             VocabSettingsHandler.edit_testing_material()
@@ -161,7 +161,7 @@ class VocabSettingsHandler():
             VocabSettingsHandler.delete_vocab()
 
         elif(type_setting == "2"):
-            VocabSettingsHandler.delete_synonym()
+            VocabSettingsHandler.delete_answer()
 
         elif(type_setting == "3"):
             VocabSettingsHandler.delete_testing_material()
@@ -222,12 +222,12 @@ class VocabSettingsHandler():
         raw_testing_material:typing.List[str] = []
         raw_romaji:typing.List[str] = []
         raw_furigana:typing.List[str] = []
-        raw_synonyms:typing.List[str] = []
+        raw_answers:typing.List[str] = []
 
         ## actual objects
         testing_material:typing.List[TestingMaterial] = []
         readings:typing.List[Reading] = []
-        synonyms:typing.List[Answer] = []
+        answers:typing.List[Answer] = []
 
         ## get vocab components
         try:
@@ -258,12 +258,12 @@ class VocabSettingsHandler():
                 raw_romaji.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional romaji (romaji are the pronunciation of the testing material. Additional Romaji can match any)."), "romaji"))
                 raw_furigana.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm(f"Please enter {raw_romaji[-1]}'s furigana (furigana is the kana spelling of {raw_romaji[-1]})."), "furigana"))
 
-            ## synonyms
-            raw_synonyms.append(Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main answer (Synonyms are the definition of the testing material. Your main answer should match the main testing material)."))
+            ## answers
+            raw_answers.append(Toolkit.user_confirm(f"Please enter {curr_raw_testing_material}'s main answer (Synonyms are the definition of the testing material. Your main answer should match the main testing material)."))
 
-            while(input(f"Enter 1 if {raw_testing_material} has any additional synonyms, otherwise enter 2 (Synonyms are the definition of the testing material).\n") == "1"):
+            while(input(f"Enter 1 if {raw_testing_material} has any additional answers, otherwise enter 2 (Synonyms are the definition of the testing material).\n") == "1"):
                 Toolkit.clear_stream()
-                raw_synonyms.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional answer (Synonyms are the definition of the testing material. Additional synonyms can match any)."))
+                raw_answers.append(Toolkit.user_confirm(f"Please enter {raw_testing_material}'s additional answer (Synonyms are the definition of the testing material. Additional answers can match any)."))
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -285,15 +285,15 @@ class VocabSettingsHandler():
             stuff_to_write = [new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_readings_path, stuff_to_write)
 
-        for i in range(len(raw_synonyms)):
-            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
-            synonyms.append(answer_blueprint(new_vocab_id, new_synonym_id, raw_synonyms[i]))
+        for i in range(len(raw_answers)):
+            new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
+            answers.append(answer_blueprint(new_vocab_id, new_answer_id, raw_answers[i]))
 
-            stuff_to_write = [new_vocab_id, new_synonym_id, raw_synonyms[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
+            stuff_to_write = [new_vocab_id, new_answer_id, raw_answers[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_answers_path, stuff_to_write)
 
         ## assemble vocab object
-        new_vocab = vocab_blueprint(new_vocab_id, testing_material, synonyms, readings, correct_count=0, incorrect_count=0)
+        new_vocab = vocab_blueprint(new_vocab_id, testing_material, answers, readings, correct_count=0, incorrect_count=0)
 
         ## write to file
         stuff_to_write = [new_vocab_id, new_vocab.incorrect_count, new_vocab.correct_count]
@@ -302,10 +302,10 @@ class VocabSettingsHandler():
         ## add to current session
         LocalHandler.vocab.append(new_vocab)
 
-##--------------------start-of-add_synonym_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-add_answer_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def add_synonym_to_existing_vocab() -> None:
+    def add_answer_to_existing_vocab() -> None:
 
         """
 
@@ -314,8 +314,8 @@ class VocabSettingsHandler():
         """ 
 
         ## raw strings and actual objects
-        raw_synonyms:typing.List[str] = []
-        synonyms:typing.List[Answer] = []
+        raw_answers:typing.List[str] = []
+        answers:typing.List[Answer] = []
 
         ## gets answer components
         try:
@@ -330,11 +330,11 @@ class VocabSettingsHandler():
                 time.sleep(Toolkit.sleep_constant)
                 return
         
-            raw_synonyms.append(Toolkit.user_confirm("Please enter the Answer/Answer for " + target_vocab.main_testing_material.value + " you would like to add. (Synonyms are the definition of the testing material)."))
+            raw_answers.append(Toolkit.user_confirm("Please enter the Answer/Answer for " + target_vocab.main_testing_material.value + " you would like to add. (Synonyms are the definition of the testing material)."))
 
-            while(input(f"Enter 1 if you'd like to add more synonyms for {target_vocab.main_testing_material.value}, otherwise enter 2.\n") == "1"):
+            while(input(f"Enter 1 if you'd like to add more answers for {target_vocab.main_testing_material.value}, otherwise enter 2.\n") == "1"):
                 Toolkit.clear_stream()
-                raw_synonyms.append(Toolkit.user_confirm(f"Please enter the Answer/Answer for {target_vocab.main_testing_material.value} you would like to add. (Synonyms are the definition of the testing material)."))
+                raw_answers.append(Toolkit.user_confirm(f"Please enter the Answer/Answer for {target_vocab.main_testing_material.value} you would like to add. (Synonyms are the definition of the testing material)."))
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -342,16 +342,16 @@ class VocabSettingsHandler():
             return
         
         ## assemble actual objects, assign ids, and write to persistent storage
-        for i in range(len(raw_synonyms)):
-            new_synonym_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
-            synonyms.append(answer_blueprint(target_vocab_id, new_synonym_id, raw_synonyms[i]))
+        for i in range(len(raw_answers)):
+            new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
+            answers.append(answer_blueprint(target_vocab_id, new_answer_id, raw_answers[i]))
 
-            stuff_to_write = [target_vocab_id, new_synonym_id, raw_synonyms[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_synonyms_path, stuff_to_write)
+            stuff_to_write = [target_vocab_id, new_answer_id, raw_answers[i]]
+            FileHandler.write_seisen_line(FileEnsurer.vocab_answers_path, stuff_to_write)
 
         ## add to current session
-        for i in range(len(synonyms)):
-            target_vocab.answers.append(synonyms[i])
+        for i in range(len(answers)):
+            target_vocab.answers.append(answers[i])
 
 ##--------------------start-of-add_testing_material_to_existing_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -591,7 +591,7 @@ class VocabSettingsHandler():
                 return
             
             ## get value to edit
-            edit_message = "What would you like to edit?\n\n1. Correct Count\n2. Incorrect Count\nID cannot be edited, please use other settings to edit associated entities (testing material, synonyms, etc.)\n"
+            edit_message = "What would you like to edit?\n\n1. Correct Count\n2. Incorrect Count\nID cannot be edited, please use other settings to edit associated entities (testing material, answers, etc.)\n"
 
             print(edit_message)
 
@@ -625,10 +625,10 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.sleep_constant)
             return
         
-##--------------------start-of-edit_synonym()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-edit_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
-    def edit_synonym() -> None:
+    def edit_answer() -> None:
 
         """
 
@@ -638,27 +638,27 @@ class VocabSettingsHandler():
 
         ## gets target answer
         try:
-            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the answer you want to edit."))
+            target_answer_id = int(Toolkit.user_confirm("Please enter the id of the answer you want to edit."))
 
             ## get target answer
             try:
-                target_synonym = Searcher.get_synonym_from_id(target_synonym_id)
+                target_answer = Searcher.get_answer_from_id(target_answer_id)
 
             except Searcher.IDNotFoundError:
                 print("Answer not found.\n")
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            message_to_print = "Please enter the new answer for " + target_synonym.value + ". (Answer is the definition of the testing material)."
+            message_to_print = "Please enter the new answer for " + target_answer.value + ". (Answer is the definition of the testing material)."
 
             new_value = Toolkit.user_confirm(message_to_print)
 
             ## edit value in current session
-            target_synonym.value = new_value
+            target_answer.value = new_value
 
             ## edit value in persistent storage
-            target_synonym_line = FileHandler.find_seisen_line(FileEnsurer.vocab_synonyms_path, column_index=2, target_value=target_synonym_id)
-            FileHandler.edit_seisen_line(FileEnsurer.vocab_synonyms_path, target_synonym_line, column_number=3, value_to_replace_to=new_value)
+            target_answer_line = FileHandler.find_seisen_line(FileEnsurer.vocab_answers_path, column_index=2, target_value=target_answer_id)
+            FileHandler.edit_seisen_line(FileEnsurer.vocab_answers_path, target_answer_line, column_number=3, value_to_replace_to=new_value)
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
@@ -878,7 +878,7 @@ class VocabSettingsHandler():
             ## delete vocab from persistent storage
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_path, id_index=1, target_id=target_vocab_id)
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_testing_material_path, id_index=1, target_id=target_vocab_id)
-            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=1, target_id=target_vocab_id)
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_answers_path, id_index=1, target_id=target_vocab_id)
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_readings_path, id_index=1, target_id=target_vocab_id)
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_typos_path, id_index=1, target_id=target_vocab_id)
             FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_incorrect_typos_path, id_index=1, target_id=target_vocab_id)
@@ -888,10 +888,10 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.sleep_constant)
             return
         
-##--------------------start-of-delete_synonym()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+##--------------------start-of-delete_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
-    def delete_synonym() -> None:
+    def delete_answer() -> None:
 
         """
 
@@ -901,18 +901,18 @@ class VocabSettingsHandler():
 
         ## gets target answer
         try:
-            target_synonym_id = int(Toolkit.user_confirm("Please enter the id of the answer you want to delete."))
+            target_answer_id = int(Toolkit.user_confirm("Please enter the id of the answer you want to delete."))
 
             ## get target answer
             try:
-                target_synonym = Searcher.get_synonym_from_id(target_synonym_id)
+                target_answer = Searcher.get_answer_from_id(target_answer_id)
 
             except Searcher.IDNotFoundError:
                 print("Answer not found.\n")
                 time.sleep(Toolkit.sleep_constant)
                 return
             
-            print_item = Searcher.get_synonym_print_item_from_id(target_synonym_id)
+            print_item = Searcher.get_answer_print_item_from_id(target_answer_id)
 
             print(print_item)
 
@@ -925,7 +925,7 @@ class VocabSettingsHandler():
                 return
             
             ## obtain vocab that contains answer
-            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_synonym_id, attribute_type="answer")
+            target_vocab = Searcher.get_overlying_vocab_from_attribute_id(target_answer_id, attribute_type="answer")
 
             ### check to ensure that the user is not deleting the only answer for a vocab
             if(len(target_vocab.answers) == 1):
@@ -934,14 +934,14 @@ class VocabSettingsHandler():
                 return
             
             ## check to ensure that the user is not deleting the main answer for a vocab, if so, change the main answer to the next answer
-            if(target_vocab.main_answer.id == target_synonym_id):
+            if(target_vocab.main_answer.id == target_answer_id):
                 target_vocab.main_answer = target_vocab.answers[1]
 
             ## delete answer from current session
-            target_vocab.answers.remove(target_synonym)
+            target_vocab.answers.remove(target_answer)
 
             ## delete answer from persistent storage
-            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_synonyms_path, id_index=2, target_id=target_synonym_id)
+            FileHandler.delete_all_occurrences_of_id(FileEnsurer.vocab_answers_path, id_index=2, target_id=target_answer_id)
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")

@@ -198,7 +198,8 @@ class VocabSettingsHandler():
         if(search_term.isnumeric()):
             Searcher.perform_search_by_id(int(search_term))
 
-        elif(any(char in search_term for char in FileEnsurer.kana_filter)):
+        ## search by japanese term
+        elif(search_term.encode('utf-8').isalpha() == False):
             Searcher.perform_search_by_japanese_term(search_term)
 
         else:

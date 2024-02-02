@@ -393,7 +393,7 @@ class Seisen:
         ## gets the total number of rounds and the number of correct rounds, and calculates the ratio
         total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
         number_of_correct_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
-        round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds,2)) or str(0.0)
+        round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds, 2)) if total_number_of_rounds != 0 else "0.0"
 
         Logger.log_action("Testing Vocab... Round " + str(total_number_of_rounds))
 

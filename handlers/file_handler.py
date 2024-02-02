@@ -260,22 +260,26 @@ class FileHandler():
         file_path (str) : The file being edited.
         target_line (int) : The line number we are editing.
         column_number (int) : The column number we are editing.
-        value_to_replace_to (Any) : The value to replace the current value with.
+        value_to_replace_to (Any) : The value to replace the edit value with.
 
         """
 
         value_to_replace_to = str(value_to_replace_to).replace(",","'COMMALITERAL'")
-        temp_file_path = file_path + '.tmp'
 
-        with open(file_path, 'r', encoding='utf8') as read_file, open(temp_file_path, 'w', encoding='utf8') as write_file:
-            for current_line_number, line in enumerate(read_file, start=1):
-                if(current_line_number == target_line):
-                    items = line.split(",")
-                    items[column_number - 1] = value_to_replace_to
-                    line = ",".join(items)
-                write_file.write(line)
+        with open(file_path, "r+", encoding="utf8") as file:
+            lines = file.readlines()
 
-        os.replace(temp_file_path, file_path)
+        line = lines[target_line - 1]
+        items = line.split(",")
+
+        items[column_number - 1] = value_to_replace_to
+
+        new_line = ",".join(items)
+
+        lines[target_line - 1] = new_line
+
+        with open(file_path, "w", encoding="utf8") as file:
+            file.writelines(lines)
 
 ##-------------------start-of-read_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -297,14 +301,29 @@ class FileHandler():
 
         """
 
+        i,ii = 0,0
+        build_string = ""
+        file_details = []
+
         with open(seisen_file_path, "r", encoding="utf-8") as file:
-            for current_line_number, line in enumerate(file, start=1):
-                if(current_line_number == target_line):
-                    file_details = line.split(",")
-                    file_details = [str(detail).replace("COMMALITERAL",",") for detail in file_details]
-                    return file_details[column-1]
-                
-        raise ValueError(f"Could not find {target_line} in {seisen_file_path}.")
+            sei_file = file.readlines()
+
+        sei_line = sei_file[target_line - 1]
+
+        count = sei_line.count(',')
+
+        while(i < count):
+            if(sei_line[ii] != ","):
+                build_string += sei_line[ii]
+            else:
+                file_details.append(build_string)
+                build_string = ""
+                i+=1
+            ii+=1
+
+        file_details = [str(detail).replace("COMMALITERAL",",") for detail in file_details]
+            
+        return file_details[column-1]
 
 ##-------------------start-of-delete_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -322,14 +341,13 @@ class FileHandler():
 
         """
 
-        temp_file_path = seisen_file_path + '.tmp'
+        with open(seisen_file_path, "r", encoding="utf-8") as file:
+            lines = file.readlines()
 
-        with open(seisen_file_path, 'r', encoding='utf8') as read_file, open(temp_file_path, 'w', encoding='utf8') as write_file:
-            for current_line_number, line in enumerate(read_file, start=1):
-                if(current_line_number != target_line):
-                    write_file.write(line)
-
-        os.replace(temp_file_path, seisen_file_path)
+        with open(seisen_file_path, "w", encoding="utf-8") as file:
+            for i, line in enumerate(lines, 1):
+                if(i != target_line):
+                    file.write(line)
 
 ##-------------------start-of-find_seisen_line()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -356,10 +374,10 @@ class FileHandler():
 
         with open(seisen_file_path, 'r', encoding='utf-8') as file:
             for i, line in enumerate(file):
-                line_values = line.split(",")
-                line_values = [str(value).replace("COMMALITERAL",",") for value in line_values]
 
-                if(line_values[column_index - 1] == str(target_value)):
+                line_value = FileHandler.read_seisen_line(seisen_file_path, i + 1, column_index)
+
+                if(line_value == str(target_value)):
                     return i + 1  
 
         raise ValueError(f"Could not find {target_value} in {seisen_file_path} at column {column_index}.")
@@ -427,21 +445,28 @@ class FileHandler():
         Parameters:
         file_path (str) : The path to the file to search.
         id_index (int) : The index of where the ID should be.
-        target_id (int) : The ID to search for.
+        target_id (str) : The ID to look for.
 
         """
 
-        temp_file_path = file_path + '.tmp'
+        i = 0
 
-        with open(file_path, 'r', encoding="utf-8") as read_file, open(temp_file_path, 'w', encoding="utf-8") as write_file:
-            for line in read_file:
-                line_values = line.split(",")
-                line_values = [str(value).replace("COMMALITERAL",",") for value in line_values]
+        with open(file_path, 'r', encoding="utf-8") as file:
+            lines = file.readlines()
 
-                if(int(line_values[id_index - 1]) != target_id):
-                    write_file.write(line)
+        line_count = len(lines)
 
-        os.replace(temp_file_path, file_path)
+        while(i < line_count):
+
+            if(int(FileHandler.read_seisen_line(file_path, i + 1, id_index)) == target_id):
+                FileHandler.delete_seisen_line(file_path, i + 1)
+                line_count -= 1
+                
+            else:
+                i += 1
+
+            if(i >= line_count):
+                break
 
 ##--------------------start-of-get_new_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

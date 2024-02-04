@@ -43,7 +43,6 @@ class FileEnsurer:
    lib_dir = os.path.join(script_dir, "lib")
 
    local_lib_dir = os.path.join(lib_dir, "local")
-   remote_lib_dir = os.path.join(lib_dir, "remote")
 
    local_archives_dir = os.path.join(archives_dir, "local")
    remote_archives_dir = os.path.join(archives_dir, "remote")
@@ -130,8 +129,8 @@ class FileEnsurer:
    
    ##----------------------------------/
 
-   ## remote lib
-   has_database_connection_failed_path = os.path.join(remote_lib_dir, "has_connection_failed.txt")
+   ## settings 
+   has_database_connection_failed_path = os.path.join(settings_dir, "has_connection_failed.txt")
 
    ##----------------------------------/
 
@@ -163,8 +162,6 @@ class FileEnsurer:
 
       FileEnsurer.ensure_vocab_files()
 
-      FileEnsurer.ensure_lib_files()
-
       FileEnsurer.ensure_archive_files()
 
       FileEnsurer.ensure_settings_files()
@@ -193,7 +190,6 @@ class FileEnsurer:
       FileHandler.standard_create_directory(FileEnsurer.lib_dir)
       FileHandler.standard_create_directory(FileEnsurer.kana_dir)
       FileHandler.standard_create_directory(FileEnsurer.vocab_dir)
-      FileHandler.standard_create_directory(FileEnsurer.remote_lib_dir)
       FileHandler.standard_create_directory(FileEnsurer.archives_dir)
       FileHandler.standard_create_directory(FileEnsurer.settings_dir)
                
@@ -259,33 +255,6 @@ class FileEnsurer:
       ## if vocab testing files are damaged or empty, then repair them
       if(vocab_damaged or vocab_synonyms_damaged or vocab_readings_damaged or vocab_testing_material_damaged):
          FileEnsurer.repair_vocab()
-
-##--------------------start-of-ensure_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-   @staticmethod
-   def ensure_lib_files() -> None:
-
-      """
-
-      Ensures that the lib files are present and ready to be used.
-
-      """
-
-      FileEnsurer.ensure_remote_lib_files()
-
-##--------------------start-of-ensure_remote_lib_files()------- -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-   @staticmethod
-   def ensure_remote_lib_files() -> None:
-
-      """
-
-      Ensures that the remote lib files for the remote handler are present and ready to be used.
-      
-      """
-
-      ## needs to be false so that connectionHandler.py will attempt to connect, only if it doesn't exist
-      FileHandler.modified_create_file(FileEnsurer.has_database_connection_failed_path, "False")
 
 ##--------------------start-of-ensure_kana_local_lib_files()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -358,6 +327,8 @@ class FileEnsurer:
       """
 
       FileHandler.modified_create_file(FileEnsurer.do_sleep_after_test_path, "True")
+
+      FileHandler.modified_create_file(FileEnsurer.has_database_connection_failed_path, "False")
 
       FileEnsurer.do_sleep_after_test = FileHandler.string_to_bool(FileHandler.standard_read_file(FileEnsurer.do_sleep_after_test_path))
 

@@ -99,4 +99,4 @@ __pypackages__/
 .vs/Kudasai/v17/.wsuo
 
 ## seisen files
-.seisen
+*.seisen

@@ -2,35 +2,29 @@
 import os
 import time
 import typing
-import traceback
 
 ## custom modules
 from modules.logger import Logger
 
 ##--------------------start-of-permission_error_decorator------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def permission_error_decorator():
+def permission_error_decorator() -> typing.Callable:
 
     """
     
-    Returns a decorator that will catch a PermissionError, inform the user, and exit Seisen.
+    Returns a decorator that will catch a PermissionError and keep trying until the file is no longer in use.
 
     """
 
     def decorator(func):
         def wrapper(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except PermissionError as e:
 
-                Toolkit.clear_console()
+            while True:
+                try:
+                    return func(*args, **kwargs)
 
-                print(f"PermissionError: {e}")
-                print(traceback.format_exc())
-
-                Toolkit.pause_console()
-
-                Toolkit.exit_seisen()
+                except PermissionError:
+                    time.sleep(Toolkit.small_sleep_constant)
                 
         return wrapper
     return decorator
@@ -46,7 +40,8 @@ class Toolkit():
     """
 
     CURRENT_VERSION = "v2.0.0"
-    sleep_constant = 2
+    long_sleep_constant = 2
+    small_sleep_constant = 0.1
 
 ##--------------------start-of-exit_seisen()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

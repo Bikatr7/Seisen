@@ -261,7 +261,7 @@ class LocalHandler():
 
         if(not valid_backups):
             print("No backups found.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
 
         print("Please select a backup to restore:\n")

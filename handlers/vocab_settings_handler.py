@@ -184,7 +184,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         if(search_term.isnumeric()):
@@ -260,7 +260,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         list_of_stuff_to_write = []
@@ -332,7 +332,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
         
             raw_answers.append(Toolkit.user_confirm("Please enter the Answer/Answer for " + target_vocab.main_testing_material.value + " you would like to add. (Synonyms are the definition of the testing material)."))
@@ -343,7 +343,7 @@ class VocabSettingsHandler():
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         list_of_stuff_to_write = []
@@ -387,7 +387,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
         
             raw_testing_material.append(Toolkit.perform_entity_sanitization(Toolkit.user_confirm("Please enter the Testing Material for " + target_vocab.main_testing_material.value + " you would like to add. (testing material are kanji/kana that are used as the material to be tested on)."), "testing_material"))
@@ -398,7 +398,7 @@ class VocabSettingsHandler():
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         list_of_stuff_to_write = []
@@ -444,7 +444,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
         
             curr_raw_romaji = Toolkit.user_confirm(f"Please enter a romaji for {target_vocab.main_testing_material.value} you would like to add. (romaji are the pronunciation of the testing material).")
@@ -463,7 +463,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         list_of_stuff_to_write = []
@@ -508,7 +508,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
         
             raw_typo.append(Toolkit.user_confirm(f"Please enter a typo for {target_vocab.main_testing_material.value} you would like to add. (typos are the incorrect spelling of the testing material) These \"typos\" automatically count as correct answers."))
@@ -519,7 +519,7 @@ class VocabSettingsHandler():
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         list_of_stuff_to_write = []
@@ -563,7 +563,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
         
             raw_incorrect_typo.append(Toolkit.user_confirm(f"Please enter an incorrect typo for {target_vocab.main_testing_material.value} you would like to add. (incorrect typos are the incorrect spelling of the testing material that are counted as incorrect answers)."))
@@ -574,7 +574,7 @@ class VocabSettingsHandler():
         
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         list_of_stuff_to_write = []
@@ -614,7 +614,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             ## get value to edit
@@ -649,7 +649,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-edit_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -673,7 +673,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Answer not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             message_to_print = "Please enter the new answer for " + target_answer.value + ". (Answer is the definition of the testing material)."
@@ -689,7 +689,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-edit_testing_material()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -713,7 +713,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Testing Material not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             message_to_print = "Please enter the new testing material for " + target_testing_material.value + ". (Testing Material is the kanji/kana that are used as the material to be tested on)."
@@ -731,7 +731,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-edit_reading()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -755,7 +755,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Reading not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             message_to_print = "Please enter the new romaji for " + target_reading.romaji + ". (Romaji is the pronunciation of the testing material)."
@@ -780,7 +780,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-edit_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -804,7 +804,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Typo not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             message_to_print = "Please enter the new typo for " + target_typo.value + ". (Typo is the incorrect spelling of the testing material)."
@@ -820,7 +820,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-edit_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -844,7 +844,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Incorrect Typo not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             message_to_print = "Please enter the new incorrect typo for " + target_incorrect_typo.value + ". (Incorrect Typo is the incorrect spelling of the testing material that is counted as incorrect)."
@@ -860,7 +860,7 @@ class VocabSettingsHandler():
 
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-delete_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -884,7 +884,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Vocab not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             print_item = Searcher.assemble_word_print_item_from_object(target_vocab)
@@ -896,7 +896,7 @@ class VocabSettingsHandler():
             
             else:
                 print("\nCancelled.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
 
             ## delete vocab from current session
@@ -912,7 +912,7 @@ class VocabSettingsHandler():
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-delete_answer()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -936,7 +936,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Answer not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             print_item = Searcher.get_answer_print_item_from_id(target_answer_id)
@@ -948,7 +948,7 @@ class VocabSettingsHandler():
             
             else:
                 print("\nCancelled.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             ## obtain vocab that contains answer
@@ -972,7 +972,7 @@ class VocabSettingsHandler():
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-delete_testing_material()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -996,7 +996,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Testing Material not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             print_item = Searcher.get_testing_material_print_item_from_id(target_testing_material_id)
@@ -1008,7 +1008,7 @@ class VocabSettingsHandler():
             
             else:
                 print("\nCancelled.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             ## obtain vocab that contains testing material
@@ -1032,7 +1032,7 @@ class VocabSettingsHandler():
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-delete_reading()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1056,7 +1056,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Reading not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             print_item = Searcher.get_reading_print_item_from_id(target_reading_id)
@@ -1068,7 +1068,7 @@ class VocabSettingsHandler():
             
             else:
                 print("\nCancelled.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             ## obtain vocab that contains reading
@@ -1088,7 +1088,7 @@ class VocabSettingsHandler():
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-delete_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1112,7 +1112,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Typo not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             print_item = Searcher.get_typo_print_item_from_id(target_typo_id)
@@ -1124,7 +1124,7 @@ class VocabSettingsHandler():
             
             else:
                 print("\nCancelled.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             ## obtain vocab that contains typo
@@ -1138,7 +1138,7 @@ class VocabSettingsHandler():
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
 ##--------------------start-of-delete_incorrect_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1162,7 +1162,7 @@ class VocabSettingsHandler():
 
             except Searcher.IDNotFoundError:
                 print("Incorrect Typo not found.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             print_item = Searcher.get_incorrect_typo_print_item_from_id(target_incorrect_typo_id)
@@ -1174,7 +1174,7 @@ class VocabSettingsHandler():
             
             else:
                 print("\nCancelled.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
             
             ## obtain vocab that contains incorrect typo
@@ -1188,5 +1188,5 @@ class VocabSettingsHandler():
             
         except Toolkit.UserCancelError:
             print("\nCancelled.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return

@@ -834,7 +834,7 @@ class RemoteHandler():
         ## we do not fuck w/ remote if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("restore remote storage backup") == False):
             print("No valid database connection skipping remote portion.\n")
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
 
         valid_backups = []

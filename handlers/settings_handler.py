@@ -137,4 +137,4 @@ class SettingsHandler():
 
             print("Did not switch.\n")
         
-        time.sleep(Toolkit.sleep_constant)
+        time.sleep(Toolkit.long_sleep_constant)

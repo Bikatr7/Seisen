@@ -1,9 +1,9 @@
 ## Backlog
-REFACTOR ALL CODE, LIKE LITERALLY EVERYTHING
-
 Redo All Documentation
 
-Make logging better
+Perfect logging better
+
+Redo Readme
 
 ## Things that will get added eventually (maybe)
 Look into using spacy to get root verbs and force things into it, could add a conjugation mode

@@ -499,7 +499,7 @@ class Seisen:
         print(Seisen.current_question_prompt)
 
         if(FileEnsurer.do_sleep_after_test == True):
-            time.sleep(2)
+            time.sleep(Toolkit.long_sleep_constant)
 
         else:
             Toolkit.pause_console()

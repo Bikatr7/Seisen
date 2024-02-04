@@ -281,12 +281,12 @@ class StorageSettingsHandler():
 
             else:
                 print("Invalid Deck Choice.\n")
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
                 return
 
         except Toolkit.UserCancelError:
             Logger.log_action("\nCancelled deck import", output=True, omit_timestamp=True)
-            time.sleep(Toolkit.sleep_constant)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         with open(valid_import_paths[target_index], 'r', encoding="utf-8") as file:

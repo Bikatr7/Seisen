@@ -54,6 +54,8 @@ class Toolkit():
 
         """
 
+        print("Cleaning up and exiting...")
+
         Logger.push_batch()
 
         exit()

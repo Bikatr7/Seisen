@@ -128,7 +128,7 @@ class ConnectionHandler():
 
                 Logger.log_action("Connected to the " + database_name + " database.", output=True, omit_timestamp=True)  
 
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
 
             except Toolkit.UserCancelError:
                 
@@ -136,7 +136,7 @@ class ConnectionHandler():
 
                 Logger.log_action("User cancelled connection initialization, skipping...", output=True, omit_timestamp=True)
 
-                time.sleep(Toolkit.sleep_constant)
+                time.sleep(Toolkit.long_sleep_constant)
 
                 ConnectionHandler.start_marked_failed_remote_connection()
 

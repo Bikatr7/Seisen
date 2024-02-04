@@ -76,7 +76,7 @@ class Seisen:
         if(input("Error loading local storage, would you like Seisen to attempt to fix this? (data may be lost) (1 for yes, 2 for no) ") == "1"):
 
         
-            Logger.log_action("Error loading local storage, resetting local storage with remote storage.",output=True, omit_timestamp=True)
+            Logger.log_action("Error loading local storage, resetting local storage with remote storage.")
 
             try:
                 StorageSettingsHandler.reset_local_with_remote(hard_reset=True)

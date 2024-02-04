@@ -346,13 +346,17 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.sleep_constant)
             return
         
+        list_of_stuff_to_write = []
+
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_answers)):
             new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
             answers.append(Answer(target_vocab_id, new_answer_id, raw_answers[i]))
 
             stuff_to_write = [target_vocab_id, new_answer_id, raw_answers[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_answers_path, stuff_to_write)
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_answers_path, list_of_stuff_to_write)
 
         ## add to current session
         for i in range(len(answers)):
@@ -397,13 +401,18 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.sleep_constant)
             return
         
+        list_of_stuff_to_write = []
+
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_testing_material)):
             new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID")) 
             testing_material.append(TestingMaterial(target_vocab_id, new_testing_material_id, raw_testing_material[i]))
 
             stuff_to_write = [target_vocab_id, new_testing_material_id, raw_testing_material[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_testing_material_path, stuff_to_write)
+            
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_testing_material_path, list_of_stuff_to_write)
 
         ## add to current session
         for i in range(len(testing_material)):
@@ -457,13 +466,18 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.sleep_constant)
             return
         
+        list_of_stuff_to_write = []
+
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_romaji)):
             new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID"))
             readings.append(Reading(target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
 
             stuff_to_write = [target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_readings_path, stuff_to_write)
+           
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_readings_path, list_of_stuff_to_write)
 
         ## add to current session
         for i in range(len(readings)):
@@ -508,13 +522,17 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.sleep_constant)
             return
         
+        list_of_stuff_to_write = []
+        
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_typo)):
             new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TYPO ID"))
             typos.append(Typo(target_vocab_id, new_typo_id, raw_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_typo_id, raw_typo[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_typos_path, stuff_to_write)
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_typos_path, list_of_stuff_to_write)
 
         ## add to current session
         for i in range(len(typos)):
@@ -559,13 +577,17 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.sleep_constant)
             return
         
+        list_of_stuff_to_write = []
+        
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_incorrect_typo)):
             new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB INCORRECT TYPO ID"))                                                 
             incorrect_typos.append(IncorrectTypo(target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_incorrect_typos_path, stuff_to_write)
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_incorrect_typos_path, list_of_stuff_to_write)
 
         ## add to current session
         for i in range(len(incorrect_typos)):

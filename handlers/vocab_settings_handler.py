@@ -4,20 +4,12 @@ import time
 
 ## custom modules
 from handlers.local_handler import LocalHandler
-from handlers.remote_handler import RemoteHandler
 from handlers.file_handler import FileHandler
 
 from modules.searcher import Searcher
 from modules.toolkit import Toolkit
 from modules.logger import Logger
 from modules.file_ensurer import FileEnsurer
-
-from entities.vocab import Vocab as vocab_blueprint 
-from entities.testing_material import TestingMaterial as testing_material_blueprint
-from entities.answer import Answer as answer_blueprint
-from entities.reading import Reading as reading_blueprint
-from entities.typo import Typo as typo_blueprint
-from entities.incorrect_typo import IncorrectTypo as incorrect_typo_blueprint
 
 from entities.vocab import Vocab
 from entities.answer import Answer
@@ -270,34 +262,46 @@ class VocabSettingsHandler():
             print("\nCancelled.\n")
             time.sleep(Toolkit.sleep_constant)
             return
+        
+        list_of_stuff_to_write = []
 
         ## assemble actual objects and assign ids
         for i in range(len(raw_testing_material)):
             new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID"))
-            testing_material.append(testing_material_blueprint(new_vocab_id, new_testing_material_id, raw_testing_material[i]))
+            testing_material.append(TestingMaterial(new_vocab_id, new_testing_material_id, raw_testing_material[i]))
 
             stuff_to_write = [new_vocab_id, new_testing_material_id, raw_testing_material[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_testing_material_path, stuff_to_write)
+
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_testing_material_path, list_of_stuff_to_write)
+        list_of_stuff_to_write = []
 
         for i in range(len(raw_romaji)):
             new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID"))
-            readings.append(reading_blueprint(new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
+            readings.append(Reading(new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
 
             stuff_to_write = [new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_readings_path, stuff_to_write)
+
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_readings_path, list_of_stuff_to_write)
+        list_of_stuff_to_write = []
 
         for i in range(len(raw_answers)):
             new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
-            answers.append(answer_blueprint(new_vocab_id, new_answer_id, raw_answers[i]))
+            answers.append(Answer(new_vocab_id, new_answer_id, raw_answers[i]))
 
             stuff_to_write = [new_vocab_id, new_answer_id, raw_answers[i]]
-            FileHandler.write_seisen_line(FileEnsurer.vocab_answers_path, stuff_to_write)
+            list_of_stuff_to_write.append(stuff_to_write)
+
+        FileHandler.write_seisen_lines(FileEnsurer.vocab_answers_path, list_of_stuff_to_write)
 
         ## assemble vocab object
-        new_vocab = vocab_blueprint(new_vocab_id, testing_material, answers, readings, correct_count=0, incorrect_count=0)
+        new_vocab = Vocab(new_vocab_id, testing_material, answers, readings, correct_count=0, incorrect_count=0)
 
         ## write to file
-        stuff_to_write = [new_vocab_id, new_vocab.incorrect_count, new_vocab.correct_count]
+        stuff_to_write = [new_vocab_id, new_vocab.correct_count, new_vocab.incorrect_count]
         FileHandler.write_seisen_line(FileEnsurer.vocab_path, stuff_to_write)
 
         ## add to current session
@@ -345,7 +349,7 @@ class VocabSettingsHandler():
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_answers)):
             new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
-            answers.append(answer_blueprint(target_vocab_id, new_answer_id, raw_answers[i]))
+            answers.append(Answer(target_vocab_id, new_answer_id, raw_answers[i]))
 
             stuff_to_write = [target_vocab_id, new_answer_id, raw_answers[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_answers_path, stuff_to_write)
@@ -396,7 +400,7 @@ class VocabSettingsHandler():
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_testing_material)):
             new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID")) 
-            testing_material.append(testing_material_blueprint(target_vocab_id, new_testing_material_id, raw_testing_material[i]))
+            testing_material.append(TestingMaterial(target_vocab_id, new_testing_material_id, raw_testing_material[i]))
 
             stuff_to_write = [target_vocab_id, new_testing_material_id, raw_testing_material[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_testing_material_path, stuff_to_write)
@@ -456,7 +460,7 @@ class VocabSettingsHandler():
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_romaji)):
             new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID"))
-            readings.append(reading_blueprint(target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
+            readings.append(Reading(target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
 
             stuff_to_write = [target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_readings_path, stuff_to_write)
@@ -507,7 +511,7 @@ class VocabSettingsHandler():
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_typo)):
             new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TYPO ID"))
-            typos.append(typo_blueprint(target_vocab_id, new_typo_id, raw_typo[i]))
+            typos.append(Typo(target_vocab_id, new_typo_id, raw_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_typo_id, raw_typo[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_typos_path, stuff_to_write)
@@ -558,7 +562,7 @@ class VocabSettingsHandler():
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_incorrect_typo)):
             new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB INCORRECT TYPO ID"))                                                 
-            incorrect_typos.append(incorrect_typo_blueprint(target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]))
+            incorrect_typos.append(IncorrectTypo(target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]]
             FileHandler.write_seisen_line(FileEnsurer.vocab_incorrect_typos_path, stuff_to_write)

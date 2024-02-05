@@ -22,6 +22,7 @@ from modules.logger import Logger
 
 from handlers.file_handler import FileHandler
 
+## Prevents errors if mysql-connector-python is not installed
 try:
     from handlers.connection_handler import ConnectionHandler
 
@@ -52,6 +53,9 @@ class RemoteHandler():
 
         Returns whether the remote storage is enabled or not.
 
+        Returns:
+        bool: True if remote storage is enabled, False otherwise.
+
         """
 
         return FileEnsurer.remote_enabled
@@ -72,10 +76,10 @@ class RemoteHandler():
             Toolkit.pause_console()
             return
         
-        ## forces the RemoteHandler to not skip a remote connection upon next startup
+        ## forces the RemoteHandler to not skip a remote connection upon next attempt
         ConnectionHandler.start_marked_succeeded_remote_connection()
         
-        ## clears the credentials file so that if a valid login exists, it's not used
+        ## clears the credentials file so that if a valid login exists, it's not used and prompts for a new one
         ConnectionHandler.clear_credentials_file()
 
         ## reinitializes the database connection 
@@ -197,35 +201,64 @@ class RemoteHandler():
     @staticmethod
     def write_kana_to_disk(kana_path:str, kana_testing_material_path:str, kana_answers_path:str, kana_readings_path:str, kana_typos_path:str, kana_incorrect_typos_path:str) -> None:
 
+        """
+        
+        Writes the kana objects to local storage.
+
+        Parameters:
+        kana_path (str) : The path to the kana file.
+        kana_testing_material_path (str) : The path to the kana testing material file.
+        kana_answers_path (str) : The path to the kana answers file.
+        kana_readings_path (str) : The path to the kana readings file.
+        kana_typos_path (str) : The path to the kana typos file.
+        kana_incorrect_typos_path (str) : The path to the kana incorrect typos file.
+
+        """
+
         if(not RemoteHandler.is_remote_enabled()):
             return
+
+
+        values_to_write_list = []
 
         ## apply changes to local storage
         for kana in RemoteHandler.kana:
 
             kana_values = [kana.id, kana.correct_count, kana.incorrect_count]
+            FileHandler.write_seisen_line(kana_path, kana_values)
             
             for testing_material in kana.testing_material:
                 testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
-                FileHandler.write_seisen_line(kana_testing_material_path, testing_material_values)
+                values_to_write_list.append(testing_material_values)
+
+            FileHandler.write_seisen_lines(kana_testing_material_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for answer in kana.answers:
                 answer_values = [answer.word_id, answer.id, answer.value]
-                FileHandler.write_seisen_line(kana_answers_path, answer_values)
+                values_to_write_list.append(answer_values)
+
+            FileHandler.write_seisen_lines(kana_answers_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for reading in kana.readings:
                 reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
-                FileHandler.write_seisen_line(kana_readings_path, reading_values)
+                values_to_write_list.append(reading_values)
+
+            FileHandler.write_seisen_lines(kana_readings_path, values_to_write_list)
 
             for typo in kana.typos:
                 typo_values = [typo.word_id, typo.id, typo.value]
-                FileHandler.write_seisen_line(kana_typos_path, typo_values)
+                values_to_write_list.append(typo_values)
+
+            FileHandler.write_seisen_lines(kana_typos_path, values_to_write_list)
 
             for incorrect_typo in kana.incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value]
-                FileHandler.write_seisen_line(kana_incorrect_typos_path, incorrect_typo_values)
+                values_to_write_list.append(incorrect_typo_values)
 
-            FileHandler.write_seisen_line(kana_path, kana_values)
+            FileHandler.write_seisen_lines(kana_incorrect_typos_path, values_to_write_list)
+            values_to_write_list.clear()
 
 ##--------------------start-of-assemble_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                     
@@ -326,6 +359,23 @@ class RemoteHandler():
     @staticmethod
     def write_vocab_to_disk(vocab_path:str, vocab_testing_material_path:str, vocab_answers_path:str, vocab_readings_path:str, vocab_typos_path:str, vocab_incorrect_typos_path:str, vocab:typing.Union[Vocab, None]=None) -> None:
 
+        """
+
+        Writes the vocab objects to local storage.
+
+        Parameters:
+        vocab_path (str) : The path to the vocab file.
+        vocab_testing_material_path (str) : The path to the vocab testing material file.
+        vocab_answers_path (str) : The path to the vocab answers file.
+        vocab_readings_path (str) : The path to the vocab readings file.
+        vocab_typos_path (str) : The path to the vocab typos file.
+        vocab_incorrect_typos_path (str) : The path to the vocab incorrect typos file.
+        vocab (Vocab) : The vocab object to write to disk.
+
+        """
+
+        values_to_write_list = []
+        
         if(not RemoteHandler.is_remote_enabled()):
             return
         
@@ -339,28 +389,43 @@ class RemoteHandler():
         for vocab in RemoteHandler.vocab:
 
             vocab_values = [vocab.id, vocab.correct_count, vocab.incorrect_count]
-            
+            FileHandler.write_seisen_line(vocab_path, vocab_values)
+            values_to_write_list.clear()
+
             for testing_material in vocab.testing_material:
                 testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
-                FileHandler.write_seisen_line(vocab_testing_material_path, testing_material_values)
+                values_to_write_list.append(testing_material_values)
+
+            FileHandler.write_seisen_lines(vocab_testing_material_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for answer in vocab.answers:
                 answer_values = [answer.word_id, answer.id, answer.value]
-                FileHandler.write_seisen_line(vocab_answers_path, answer_values)
+                values_to_write_list.append(answer_values)
+
+            FileHandler.write_seisen_lines(vocab_answers_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for reading in vocab.readings:
                 reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
-                FileHandler.write_seisen_line(vocab_readings_path, reading_values)
+                values_to_write_list.append(reading_values)
+
+            FileHandler.write_seisen_lines(vocab_readings_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for typo in vocab.typos:
                 typo_values = [typo.word_id, typo.id, typo.value]
-                FileHandler.write_seisen_line(vocab_typos_path, typo_values)
+                values_to_write_list.append(typo_values)
+
+            FileHandler.write_seisen_lines(vocab_typos_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for incorrect_typo in vocab.incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value]
-                FileHandler.write_seisen_line(vocab_incorrect_typos_path, incorrect_typo_values)
+                values_to_write_list.append(incorrect_typo_values)
 
-            FileHandler.write_seisen_line(vocab_path, vocab_values)
+            FileHandler.write_seisen_lines(vocab_incorrect_typos_path, values_to_write_list)
+            values_to_write_list.clear()
 
         if(vocab != None):
             RemoteHandler.vocab = old_remote_vocab
@@ -374,7 +439,7 @@ class RemoteHandler():
         """
         
         Loads the words from remote storage into local storage.
-        Note that this will reset all the words locally stored on this device.
+        Note that this will reset all the words locally stored on the current device.
         Use carefully!
 
         """
@@ -474,7 +539,7 @@ class RemoteHandler():
         ## we do not reset remote if there is no valid database connection
         if(ConnectionHandler.check_connection_validity("remote storage reset") == False):
             print("No valid database connection skipping remote portion.\n")
-            time.sleep(1)
+            time.sleep(Toolkit.long_sleep_constant)
             return
         
         with open(FileEnsurer.last_local_remote_overwrite_timestamp_path, 'w+', encoding="utf-8") as file:
@@ -502,7 +567,7 @@ class RemoteHandler():
 
         """
         
-        Deletes the remote storage. By dropping all the tables.
+        Deletes the remote storage by dropping all the tables.
 
         """
 
@@ -769,7 +834,7 @@ class RemoteHandler():
 ##--------------------start-of-create_daily_remote_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def create_daily_remote_backup():
+    def create_daily_remote_backup() -> None:
 
         """
         
@@ -861,7 +926,7 @@ class RemoteHandler():
             time.sleep(1)
             return
 
-        try: ## user confirm will throw an UserConfirm error if the user wants to cancel the backup restore.
+        try: ## user confirm will throw an UserCancelError if the user cancels
 
             backup_to_restore = Toolkit.user_confirm(backup_to_restore_prompt)
 

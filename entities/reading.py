@@ -9,8 +9,8 @@ class Reading(Entity):
 
     Contains both the furigana and the romaji.
 
-    All Readings have a furigana, but if furigana is the same as the TestingMaterial, it can be assumed that that it is not a Kanji and should not be displayed when displaying additional Word attributes.
-
+    All Readings have a furigana, but if furigana is the same as the TestingMaterial, it can be assumed that that it is not a Kanji.
+    
     """
 
 ##--------------------start-of-__init__()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

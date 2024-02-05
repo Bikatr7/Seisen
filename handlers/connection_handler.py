@@ -45,6 +45,8 @@ class ConnectionHandler():
 
         """
 
+        Logger.log_barrier()
+
         log_message = "Checking connection for reason: " + reason_for_check + ", Connection is valid, continuing."
         is_valid = True
 
@@ -73,11 +75,15 @@ class ConnectionHandler():
 
         """
 
+        Logger.log_barrier()
+
         connection = None
         cursor = None
         
         if(FileHandler.standard_read_file(FileEnsurer.has_database_connection_failed_path) == "True"):
             Logger.log_action("Database connection has failed previously... skipping connection initialization", output=True)
+            Logger.log_barrier()
+            time.sleep(Toolkit.small_sleep_constant)
             return connection, cursor
 
         ## program assumes connection will succeed, faux is used to inform logger that the connection was made for reset purposes.

@@ -1,6 +1,4 @@
 ## Backlog
-Perfect Logging
-
 Redo Readme
 
 ## Things that will get added eventually (maybe)
@@ -13,3 +11,6 @@ Look into building a jisho query option into it
 Look into gradio implementation
 
 Look into using OpenAi to generate sentences for the user to translate
+
+## The "I can't be fucking bothered to do this anytime soon list"
+Perfect Logging

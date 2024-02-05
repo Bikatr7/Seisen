@@ -275,10 +275,9 @@ class LocalHandler():
             time.sleep(Toolkit.long_sleep_constant)
             return
 
-        print("Please select a backup to restore:\n")
-        print('\n'.join(valid_backups))
+        backup_to_restore_prompt = "\n".join(valid_backups)
 
-        backup_to_restore_prompt = "\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
+        backup_to_restore_prompt += "\n\nPlease select a backup to restore, please keep in mind that this process is not easily reversible."
 
         try:  # user confirm will throw an assertion error or a user cancel error if the user cancels.
             backup_to_restore = Toolkit.user_confirm(backup_to_restore_prompt)

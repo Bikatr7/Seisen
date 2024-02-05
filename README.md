@@ -14,9 +14,6 @@
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Notes**<a name="notes"></a>
 
-Seisen is currently undergoing a rewrite, if you're reading this, you're looking at the main branch, which is definitely not stable or working depending one the day lol. If you want to use Seisen, please use v2.0.0, which is the latest stable release. See:
-https://github.com/Bikatr7/Seisen/releases/tag/v2.0.0
- 
 Built for Windows.
 
 May work on Linux/Mac, attempts were made to make it cross platform, but no guarantees. I'd welcome any feedback on this.
@@ -28,9 +25,7 @@ Tests the user on Japanese Kana and Vocabulary.
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Dependencies**<a name="dependencies"></a>
 
-mysql.connector-python
-
-requests
+mysql.connector-python (optional)
 
 or see requirements.txt
 
@@ -60,13 +55,16 @@ pressing 3 will enter the settings menu. The settings are as follows:
 
 Vocab Settings are as follows:
 
-1. Add Vocab - Adds a custom vocab to the testing deck
-2. Add CSEP/Answer to Vocab - Adds a answer (CSEP) to an existing vocab
-3. Replace Vocab Value - Edits a vocab value
-4. Replace CSEP/Answer - Edits a CSEP/Answer
-5. Delete Vocab Value - Deletes a vocab value
-6. Delete CSEP/Answer - Deletes a CSEP/Answer from a vocab
-7. Search Vocab - Searches for a vocab, given a term (can be numeric, alphabetic, or japanese)
+1. Add Entity - Allows you to add an entity to the vocab deck
+2. Edit Entity - Allows you to edit an entity in the vocab deck
+3. Delete Entity - Allows you to delete an entity from the vocab deck
+4. Search Entity - Allows you to search for an entity in the vocab deck
+
+Entity is a term to describe all "things" in the deck.
+
+A Vocab is an entity, each vocab has a Reading, a TestingMaterial, and an Answer.
+
+All of those are entities, meaning you can add, edit, delete, and search for them.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Storage Settings**<a name="storage-settings"></a>

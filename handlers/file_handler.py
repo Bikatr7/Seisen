@@ -219,6 +219,9 @@ class FileHandler():
 
         """
 
+        if(len(items_to_write) == 0):
+            return
+
         line = ",".join(str(item).replace(",", "'COMMALITERAL'") for item in items_to_write)
         
         with open(seisen_file_path, "a+", encoding="utf-8") as file:
@@ -241,6 +244,9 @@ class FileHandler():
         """
 
         lines = []
+
+        if(len(items_to_write) == 0):
+            return
 
         for items in items_to_write:
             line = ",".join(str(item).replace(",", "'COMMALITERAL'") for item in items)

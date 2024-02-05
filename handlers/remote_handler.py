@@ -246,12 +246,14 @@ class RemoteHandler():
                 values_to_write_list.append(reading_values)
 
             FileHandler.write_seisen_lines(kana_readings_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for typo in kana.typos:
                 typo_values = [typo.word_id, typo.id, typo.value]
                 values_to_write_list.append(typo_values)
 
             FileHandler.write_seisen_lines(kana_typos_path, values_to_write_list)
+            values_to_write_list.clear()
 
             for incorrect_typo in kana.incorrect_typos:
                 incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value]

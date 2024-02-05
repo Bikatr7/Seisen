@@ -39,7 +39,7 @@ class Toolkit():
 
     """
 
-    CURRENT_VERSION = "v2.0.0"
+    CURRENT_VERSION = "v3.0.0"
     long_sleep_constant = 2
     small_sleep_constant = 0.1
 

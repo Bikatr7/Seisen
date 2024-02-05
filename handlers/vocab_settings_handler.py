@@ -187,6 +187,7 @@ class VocabSettingsHandler():
             time.sleep(Toolkit.long_sleep_constant)
             return
         
+        ## search by id
         if(search_term.isnumeric()):
             Searcher.perform_search_by_id(int(search_term))
 

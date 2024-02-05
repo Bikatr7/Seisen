@@ -20,11 +20,11 @@ from handlers.local_handler import LocalHandler
 
 class Searcher:
 
-    '''
+    """
 
-    The search class is used to search for things in localHandler.
-        
-    '''
+    A class for searching for entities.
+
+    """
 
 ##--------------------start-of-assemble_word_print_item_from_id()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -33,13 +33,13 @@ class Searcher:
 
         """
         
-        Gets a print item for a vocab given an id.
+        Assembles a print item for a word given a word object.
 
         Parameters:
-        vocab_id (int) : the id of the vocab we are getting a print item for.
+        word (Word) : the word object we are getting a print item for.
 
         Returns:
-        print_item (str) : the print item for the id.
+        print_item (str) : the print item for the word object.
         
         """
                     
@@ -82,7 +82,10 @@ class Searcher:
         id (int) : The id of the answer we are getting a print item for.
 
         Returns:
-        print_item (str) : the print item for the id.\n
+        print_item (str) : the print item for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
         
         """
         
@@ -120,13 +123,16 @@ class Searcher:
 
         """
         
-        Gets a print item for a answer given a vocab id.
+        Gets a print item for an answer given a vocab id.
 
         Parameters:
         vocab_id (int) : the id of the vocab we are getting a print item for.
 
         Returns:
         print_items (list - str) : the print item for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
         
         """
             
@@ -169,6 +175,9 @@ class Searcher:
 
         Returns:
         print_item (str) : the print item for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
         
         """
         
@@ -214,6 +223,9 @@ class Searcher:
         Returns:
         print_item (str) : the print item for the id.
         
+        Raises:
+        IDNotFoundError : if the id is not found.
+
         """
         
         target_vocab = None
@@ -253,6 +265,9 @@ class Searcher:
 
         Returns:
         print_item (str) : the print item for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
         
         """
         
@@ -297,6 +312,9 @@ class Searcher:
 
         Returns:
         print_item (str) : the print item for the id.
+
+        Raises:
+        IDNotFoundError : if the id is not found.
         
         """
         

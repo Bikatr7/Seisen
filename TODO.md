@@ -1,7 +1,5 @@
 ## Backlog
-Redo All Documentation
-
-Perfect logging better
+Perfect Logging
 
 Redo Readme
 

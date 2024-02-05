@@ -21,7 +21,6 @@ from modules.file_ensurer import FileEnsurer
 
 from handlers.file_handler import FileHandler
 
-
 class LocalHandler():
 
     """
@@ -64,8 +63,8 @@ class LocalHandler():
 
             return data
         
-        ##--------------------start-of-load_entities()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+        ##--------------------start-of-load_words()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        
         def load_words(entity_path, readings_path, answers_path, testing_material_path, typo_path, incorrect_typo_path):
 
             entities:typing.List[Word] = []
@@ -95,6 +94,8 @@ class LocalHandler():
                 entities.append(entity)
 
             return entities
+        
+        ##--------------------start-of-load_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         def load_vocab(entity_path, readings_path, answers_path, testing_material_path, typo_path, incorrect_typo_path):
 
@@ -183,26 +184,37 @@ class LocalHandler():
 
         if(type_of_id_to_query == "KANA TYPO ID"):
             read_ids_from_file(FileEnsurer.kana_typos_path, TYPO_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "KANA INCORRECT TYPO ID"):
             read_ids_from_file(FileEnsurer.kana_incorrect_typos_path, TYPO_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "VOCAB TYPO ID"):
             read_ids_from_file(FileEnsurer.vocab_typos_path, TYPO_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "VOCAB INCORRECT TYPO ID"):
             read_ids_from_file(FileEnsurer.vocab_incorrect_typos_path, TYPO_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "KANA ID"):
             read_ids_from_file(FileEnsurer.kana_path, WORD_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "VOCAB ID"):
             read_ids_from_file(FileEnsurer.vocab_path, WORD_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "KANA SYNONYM ID"):
             read_ids_from_file(FileEnsurer.kana_answers_path, SYNONYM_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "VOCAB SYNONYM ID"):
             read_ids_from_file(FileEnsurer.vocab_answers_path, SYNONYM_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "KANA READING ID"):
             read_ids_from_file(FileEnsurer.kana_readings_path, READING_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "VOCAB READING ID"):
             read_ids_from_file(FileEnsurer.vocab_readings_path, READING_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "KANA TESTING MATERIAL ID"):
             read_ids_from_file(FileEnsurer.kana_testing_material_path, TESTING_MATERIAL_ID_INDEX_LOCATION)
+
         elif(type_of_id_to_query == "VOCAB TESTING MATERIAL ID"):
             read_ids_from_file(FileEnsurer.vocab_testing_material_path, TESTING_MATERIAL_ID_INDEX_LOCATION)
 
@@ -241,7 +253,6 @@ class LocalHandler():
             FileHandler.standard_delete_file(FileEnsurer.last_local_backup_path)
 
             FileHandler.modified_create_file(FileEnsurer.last_local_backup_path, current_day)
-
 
 ##--------------------start-of-restore_local_backup()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

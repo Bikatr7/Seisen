@@ -78,6 +78,9 @@ class StorageSettingsHandler():
 
         Resets local storage with remote storage.
 
+        Parameters:
+        hard_reset (bool | optional | default=False): If True, will reset local storage with remote storage without asking for confirmation.
+
         """
 
         if(not RemoteHandler.is_remote_enabled()):
@@ -325,4 +328,4 @@ class StorageSettingsHandler():
 
         Logger.log_action("Imported the " + deck_to_import + " vocab deck.", output=True, omit_timestamp=True)
 
-        time.sleep(2)
+        time.sleep(Toolkit.long_sleep_constant)

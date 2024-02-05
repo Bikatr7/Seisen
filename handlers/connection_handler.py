@@ -4,8 +4,7 @@ import typing
 import base64
 
 ## third party modules
-
-## Intended to crash if not installed, However RemoteHandler has precautions in place for this, and will not use this module if it is not installed.
+## Will crash if not installed, However RemoteHandler has precautions in place for this, and will not use this module if it is not installed.
 import mysql.connector
 import mysql.connector.pooling
 import mysql.connector.cursor
@@ -59,8 +58,8 @@ class ConnectionHandler():
 
 ##-------------------start-of-initialize_database_connection()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    @permission_error_decorator()
     @staticmethod
+    @permission_error_decorator()
     def initialize_database_connection() -> typing.Tuple[typing.Union[mysql.connector.connection.MySQLConnection, mysql.connector.pooling.PooledMySQLConnection, None], typing.Union[mysql.connector.cursor.MySQLCursor, None]]:
 
         """
@@ -77,17 +76,18 @@ class ConnectionHandler():
         connection = None
         cursor = None
         
-        with open(FileEnsurer.has_database_connection_failed_path, "r+", encoding="utf-8") as file:
-            if(file.read().strip() == "True"):
-                Logger.log_action("Database connection has failed previously... skipping connection initialization", output=True)
-                return connection, cursor
+        if(FileHandler.standard_read_file(FileEnsurer.has_database_connection_failed_path) == "True"):
+            Logger.log_action("Database connection has failed previously... skipping connection initialization", output=True)
+            return connection, cursor
 
-        ## program assumes connection will succeed
+        ## program assumes connection will succeed, faux is used to inform logger that the connection was made for reset purposes.
         ConnectionHandler.start_marked_succeeded_remote_connection(faux=True)
 
         try:
 
             ## get saved connection credentials if exists
+            ## Credentials are saved under /appdata/credentials.txt, so they are not leaked to the public if config files are shared.
+            ## not encrypted, however are obfuscated with base64 encoding.
             with open(FileEnsurer.credentials_path, 'r', encoding='utf-8') as file:  
                 credentials = file.readlines()
 
@@ -200,7 +200,7 @@ class ConnectionHandler():
 
         """
 
-        Creates a connection to the database (remote)
+        Creates a connection to a database (remote)
 
         Parameters:
         host_name (str) : The host name of the database.
@@ -247,6 +247,7 @@ class ConnectionHandler():
 
         Parameters:
         query (str) : The query to be executed.
+        params (list | optional | default=None) : The parameters to be used in the query.
 
         """
 

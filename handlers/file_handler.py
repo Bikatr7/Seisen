@@ -42,6 +42,7 @@ class FileHandler():
         """
 
         Creates a directory if it doesn't exist or if the path provided is blank or empty, as well as logs what was created.
+        path_to_check can be a path to a file or a directory.
 
         Parameters:
         directory_path (str) : Path to the directory to be created.
@@ -105,6 +106,7 @@ class FileHandler():
 
                 if(omit):
                     content_to_write = "(Content was omitted.)"
+
                 Logger.log_action(file_path + " was written to with the following content: " + content_to_write)
 
             did_overwrite = True
@@ -197,7 +199,7 @@ class FileHandler():
         """
 
         with open(file_path, "r", encoding="utf-8") as file:
-            content = file.read()
+            content = file.read().strip()
 
         return content
 
@@ -239,6 +241,7 @@ class FileHandler():
         """
 
         lines = []
+
         for items in items_to_write:
             line = ",".join(str(item).replace(",", "'COMMALITERAL'") for item in items)
             lines.append(line)
@@ -273,6 +276,7 @@ class FileHandler():
                     items = line.split(",")
                     items[column_number - 1] = value_to_replace_to
                     line = ",".join(items)
+
                 write_file.write(line)
 
         os.replace(temp_file_path, file_path)
@@ -294,6 +298,9 @@ class FileHandler():
 
         Returns:
         file_details[column-1] : The value of the given column.
+
+        Raises:
+        ValueError : If the target line is not found.
 
         """
 
@@ -344,12 +351,12 @@ class FileHandler():
         Parameters:
         seisen_file_path (str) : The path to the seisen file.
         column_index (int) : The column to search.
-        target_value (str) : The value to search for.
+        target_value (Any) : The value to search for.
 
         Returns:
         i + 1 (int) : The line number of the value.
 
-        Throws:
+        Raises:
         ValueError : If the value is not found.
 
         """
@@ -378,6 +385,9 @@ class FileHandler():
 
         Returns:
         values (list - str) : The values extracted from the line.
+
+        Raises:
+        ValueError : If the given line is not a valid seisen line.
 
         """
 

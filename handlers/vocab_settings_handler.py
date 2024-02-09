@@ -266,9 +266,15 @@ class VocabSettingsHandler():
         
         list_of_stuff_to_write = []
 
+        new_testing_material_ids = []
+        new_reading_ids = []
+        new_answer_ids = []
+
         ## assemble actual objects and assign ids
         for i in range(len(raw_testing_material)):
-            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID"))
+            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID") + new_testing_material_ids)
+            new_testing_material_ids.append(new_testing_material_id)
+
             testing_material.append(TestingMaterial(new_vocab_id, new_testing_material_id, raw_testing_material[i]))
 
             stuff_to_write = [new_vocab_id, new_testing_material_id, raw_testing_material[i]]
@@ -279,7 +285,8 @@ class VocabSettingsHandler():
         list_of_stuff_to_write = []
 
         for i in range(len(raw_romaji)):
-            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID"))
+            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID") + new_reading_ids)
+            new_reading_ids.append(new_reading_id)
             readings.append(Reading(new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
 
             stuff_to_write = [new_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
@@ -290,7 +297,8 @@ class VocabSettingsHandler():
         list_of_stuff_to_write = []
 
         for i in range(len(raw_answers)):
-            new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
+            new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID") + new_answer_ids)
+            new_answer_ids.append(new_answer_id)
             answers.append(Answer(new_vocab_id, new_answer_id, raw_answers[i]))
 
             stuff_to_write = [new_vocab_id, new_answer_id, raw_answers[i]]
@@ -349,9 +357,12 @@ class VocabSettingsHandler():
         
         list_of_stuff_to_write = []
 
+        new_answer_ids = []
+
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_answers)):
-            new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID"))
+            new_answer_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID") + new_answer_ids)
+            new_answer_ids.append(new_answer_id)
             answers.append(Answer(target_vocab_id, new_answer_id, raw_answers[i]))
 
             stuff_to_write = [target_vocab_id, new_answer_id, raw_answers[i]]
@@ -404,9 +415,12 @@ class VocabSettingsHandler():
         
         list_of_stuff_to_write = []
 
+        new_testing_material_ids = []
+
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_testing_material)):
-            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID")) 
+            new_testing_material_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID") + new_testing_material_ids)
+            new_testing_material_ids.append(new_testing_material_id)
             testing_material.append(TestingMaterial(target_vocab_id, new_testing_material_id, raw_testing_material[i]))
 
             stuff_to_write = [target_vocab_id, new_testing_material_id, raw_testing_material[i]]
@@ -469,9 +483,12 @@ class VocabSettingsHandler():
         
         list_of_stuff_to_write = []
 
+        new_reading_ids = []
+
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_romaji)):
-            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID"))
+            new_reading_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID") + new_reading_ids)
+            new_reading_ids.append(new_reading_id)
             readings.append(Reading(target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]))
 
             stuff_to_write = [target_vocab_id, new_reading_id, raw_furigana[i], raw_romaji[i]]
@@ -524,10 +541,13 @@ class VocabSettingsHandler():
             return
         
         list_of_stuff_to_write = []
+
+        new_typo_ids = []
         
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_typo)):
-            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TYPO ID"))
+            new_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TYPO ID") + new_typo_ids)
+            new_typo_ids.append(new_typo_id)
             typos.append(Typo(target_vocab_id, new_typo_id, raw_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_typo_id, raw_typo[i]]
@@ -579,10 +599,13 @@ class VocabSettingsHandler():
             return
         
         list_of_stuff_to_write = []
+
+        new_incorrect_typo_ids = []
         
         ## assemble actual objects, assign ids, and write to persistent storage
         for i in range(len(raw_incorrect_typo)):
-            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB INCORRECT TYPO ID"))                                                 
+            new_incorrect_typo_id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB INCORRECT TYPO ID") + new_incorrect_typo_ids)
+            new_incorrect_typo_ids.append(new_incorrect_typo_id)                                          
             incorrect_typos.append(IncorrectTypo(target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]))
 
             stuff_to_write = [target_vocab_id, new_incorrect_typo_id, raw_incorrect_typo[i]]

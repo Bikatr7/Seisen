@@ -149,7 +149,7 @@ class Seisen:
 
         Seisen.has_valid_connection, update_prompt = Toolkit.check_update()
 
-        if(update_prompt):
+        if(update_prompt is not None):
             Toolkit.clear_console()
 
             print(update_prompt)
@@ -390,6 +390,18 @@ class Seisen:
         ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
         vocab_to_test, _ = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
 
+        all_testing_material = set([testing_material.value for testing_material in vocab_to_test.testing_material])
+        all_furigana = set([reading.furigana for reading in vocab_to_test.readings])
+
+        testing_material_string = '/'.join(all_testing_material)
+
+        furigana_string = '/'.join(all_furigana)
+
+        extended_prompt = testing_material_string + " (" + furigana_string + ")"
+
+        ## string to hold the You guessed... line
+        guessed_string = ""
+
         ## gets the total number of rounds and the number of correct rounds, and calculates the ratio
         total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
         number_of_correct_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
@@ -402,16 +414,14 @@ class Seisen:
         Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
         Seisen.current_question_prompt += "\nWhat is the meaning of " + vocab_to_test.main_testing_material.value + "?\n"
 
+        ## check if the main testing material has multiple occurrences, if so just display the extended prompt
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material:
+                if(vocab_to_test.main_testing_material.value == testing_material.value and vocab_to_test.main_testing_material != testing_material):
+                    Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.main_testing_material.value, extended_prompt)
+                    break
+
         Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
-
-        all_testing_material = set([testing_material.value for testing_material in vocab_to_test.testing_material])
-        all_furigana = set([reading.furigana for reading in vocab_to_test.readings])
-
-        testing_material_string = '/'.join(all_testing_material)
-
-        furigana_string = '/'.join(all_furigana)
-
-        extended_prompt = testing_material_string + " (" + furigana_string + ")"
 
         ## if the user wants to change the mode do so
         if(Seisen.current_user_guess == "v"):
@@ -462,11 +472,13 @@ class Seisen:
 
         if(is_correct == True):
             number_of_correct_rounds+=1
-            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is correct.\n"
+            your_guess = "You guessed " + Seisen.current_user_guess + ", which is correct.\n"
+            Seisen.current_question_prompt += "\n\n" + your_guess
             ScoreRater.log_correct_answer(vocab_to_test)           
 
         elif(is_correct == False):
-            Seisen.current_question_prompt += "\n\nYou guessed " + Seisen.current_user_guess + ", which is incorrect, a correct answer was " + vocab_to_test.main_answer.value + ".\n"
+            your_guess = "You guessed " + Seisen.current_user_guess + ", which is incorrect, a correct answer was " + vocab_to_test.main_answer.value + ".\n"
+            Seisen.current_question_prompt += "\n\n" + your_guess
             ScoreRater.log_incorrect_answer(vocab_to_test)
 
         else:
@@ -496,7 +508,11 @@ class Seisen:
                 Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
                 display_other = True
 
-        print(Seisen.current_question_prompt)
+        if(len(answers) >= 3):
+            print(Seisen.current_question_prompt + "\n" + your_guess)
+
+        else:
+            print(Seisen.current_question_prompt)
 
         if(FileEnsurer.do_sleep_after_test == True):
             time.sleep(Toolkit.long_sleep_constant)

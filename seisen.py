@@ -149,7 +149,7 @@ class Seisen:
 
         Seisen.has_valid_connection, update_prompt = Toolkit.check_update()
 
-        if(update_prompt is not None):
+        if(update_prompt != ""):
             Toolkit.clear_console()
 
             print(update_prompt)

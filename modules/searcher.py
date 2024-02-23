@@ -110,7 +110,7 @@ class Searcher:
             f"Answer ID: {target_answer.id}\n"
             f"VOCAB Testing Material: {mini_testing_material_value_print}\n"
             f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
-            f"VOCAB ID: {target_answer.id}\n"
+            f"VOCAB ID: {target_vocab.id}\n"
             f"---------------------------------\n"
         )
 
@@ -153,7 +153,7 @@ class Searcher:
                 f"Answer: {answer.value}\n"
                 f"Answer ID: {answer.id}\n"
                 f"VOCAB: {target_vocab.testing_material}\n"
-                f"VOCAB ID {answer.id}\n"
+                f"VOCAB ID {target_vocab.id}\n"
                 f"---------------------------------\n"
             )
 
@@ -202,7 +202,7 @@ class Searcher:
             f"Testing Material ID: {target_testing_material.id}\n"
             f"VOCAB Answer(s): {mini_value_print}\n"
             f"VOCAB Answer ID(s): {mini_id_print}\n"
-            f"VOCAB ID: {target_testing_material.id}\n"
+            f"VOCAB ID: {target_vocab.id}\n"
             f"---------------------------------\n"
         )
 
@@ -245,7 +245,7 @@ class Searcher:
             f"Romaji: {target_reading.romaji}\n"
             f"Furigana: {target_reading.furigana}\n"
             f"Reading ID: {target_reading.id}\n"
-            f"VOCAB ID: {target_reading.id}\n"
+            f"VOCAB ID: {target_vocab.id}\n"
             f"---------------------------------\n"
         )
 
@@ -292,7 +292,7 @@ class Searcher:
             f"Incorrect Typo ID: {target_incorrect_typo.id}\n"
             f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
             f"VOCAB Testing Material Value(s): {mini_testing_material_value_print}\n"
-            f"VOCAB ID: {target_incorrect_typo.id}\n"
+            f"VOCAB ID: {target_vocab.id}\n"
             f"---------------------------------\n"
         )
 
@@ -339,7 +339,7 @@ class Searcher:
             f"Typo ID: {target_typo.id}\n"
             f"VOCAB Testing Material ID(s): {mini_testing_material_id_print}\n"
             f"VOCAB Testing Material Value(s): {mini_testing_material_value_print}\n"
-            f"VOCAB ID: {target_typo.id}\n"
+            f"VOCAB ID: {target_vocab.id}\n"
             f"---------------------------------\n"
         )
 

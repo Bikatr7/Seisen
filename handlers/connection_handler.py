@@ -5,9 +5,9 @@ import base64
 
 ## third party modules
 ## Will crash if not installed, However RemoteHandler has precautions in place for this, and will not use this module if it is not installed.
+from mysql.connector.pooling import PooledMySQLConnection
+from mysql.connector.abstracts import MySQLConnectionAbstract, MySQLCursorAbstract
 import mysql.connector
-import mysql.connector.pooling
-import mysql.connector.cursor
 
 ## custom modules
 from handlers.file_handler import FileHandler
@@ -15,6 +15,7 @@ from handlers.file_handler import FileHandler
 from modules.toolkit import Toolkit, permission_error_decorator
 from modules.file_ensurer import FileEnsurer
 from modules.logger import Logger
+
 
 
 class ConnectionHandler():
@@ -25,8 +26,8 @@ class ConnectionHandler():
 
     """
     
-    connection: typing.Union[mysql.connector.pooling.PooledMySQLConnection, mysql.connector.connection.MySQLConnection, None] = None
-    cursor: typing.Union[mysql.connector.cursor.MySQLCursor, None] = None
+    connection: typing.Union[PooledMySQLConnection, MySQLConnectionAbstract, None] = None
+    cursor: typing.Union[MySQLCursorAbstract, None] = None
 
 ##-------------------start-of-check_connection_validity()---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -62,7 +63,7 @@ class ConnectionHandler():
 
     @staticmethod
     @permission_error_decorator()
-    def initialize_database_connection() -> typing.Tuple[typing.Union[mysql.connector.connection.MySQLConnection, mysql.connector.pooling.PooledMySQLConnection, None], typing.Union[mysql.connector.cursor.MySQLCursor, None]]:
+    def initialize_database_connection() -> typing.Tuple[typing.Union[PooledMySQLConnection, MySQLConnectionAbstract, None], typing.Union[MySQLCursorAbstract, None]]:
 
         """
 
@@ -202,7 +203,7 @@ class ConnectionHandler():
 ##--------------------start-of-create_database_connection()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def create_database_connection(host_name:str, user_name:str, db_name:str, user_password:str) -> typing.Union[mysql.connector.connection.MySQLConnection, mysql.connector.pooling.PooledMySQLConnection]:
+    def create_database_connection(host_name:str, user_name:str, db_name:str, user_password:str) -> typing.Union[PooledMySQLConnection, MySQLConnectionAbstract]:
 
         """
 
@@ -219,7 +220,7 @@ class ConnectionHandler():
 
         """
 
-        connection = mysql.connector.connect(
+        connection: typing.Union[PooledMySQLConnection, MySQLConnectionAbstract] = mysql.connector.connect(
             host=host_name,
             user=user_name,
             database=db_name,
@@ -263,7 +264,7 @@ class ConnectionHandler():
         if(ConnectionHandler.cursor == None or ConnectionHandler.connection == None):
             raise Exception("Connection is invalid, please ensure you have a valid connection and try again.")
 
-        ConnectionHandler.cursor.execute(query, params)
+        ConnectionHandler.cursor.execute(query, params) # type: ignore
         
         ConnectionHandler.connection.commit()
 
@@ -298,7 +299,7 @@ class ConnectionHandler():
         ConnectionHandler.cursor.execute(query)
         results = ConnectionHandler.cursor.fetchall() 
 
-        results_actual = [str(i[0]) for i in results]
+        results_actual = [str(result[0]) for result in results] ## type: ignore
 
         return results_actual
 

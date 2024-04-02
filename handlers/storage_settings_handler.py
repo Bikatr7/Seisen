@@ -493,14 +493,20 @@ class StorageSettingsHandler():
         new_typo_ids = []
         new_incorrect_typo_ids = []
 
-        ## perform elimination of duplicates
+        # Define a function to count the number of attributes in an object
+        def count_attributes(obj):
+            return len(obj.__dict__)
+
+        # Perform elimination of duplicates
         new_vocab = [vocab1 for vocab1 in new_vocab if 
-                    not any(vocab1.main_testing_material.value == vocab2.main_testing_material.value and 
-                            vocab1.main_reading.romaji == vocab2.main_reading.romaji for vocab2 in old_vocab)]
-        
+                    not any((vocab1.main_testing_material.value == vocab2.main_testing_material.value and 
+                            vocab1.main_reading.romaji == vocab2.main_reading.romaji and
+                            count_attributes(vocab1) <= count_attributes(vocab2)) for vocab2 in old_vocab)]
+
         old_vocab = [vocab1 for vocab1 in old_vocab if
-                    not any(vocab1.main_testing_material.value == vocab2.main_testing_material.value and
-                            vocab1.main_reading.romaji == vocab2.main_reading.romaji for vocab2 in new_vocab)]
+                    not any((vocab1.main_testing_material.value == vocab2.main_testing_material.value and
+                            vocab1.main_reading.romaji == vocab2.main_reading.romaji and
+                            count_attributes(vocab1) <= count_attributes(vocab2)) for vocab2 in new_vocab)]
 
         ## apply new vocab to file
         for vocab in new_vocab:

@@ -560,7 +560,7 @@ class Seisen:
         vocab_to_test, _ = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
 
         all_testing_material = set([testing_material.value for testing_material in vocab_to_test.testing_material])
-        first_5_answers = [value.value for value in vocab_to_test.answers[:5]] 
+        first_5_answers = [value.value for value in vocab_to_test.answers[:5] if value.value not in [reading.romaji for reading in vocab_to_test.readings]]
 
         testing_material_string = '/'.join(all_testing_material)
 

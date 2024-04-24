@@ -177,14 +177,25 @@ class Seisen:
 
         Toolkit.clear_console()
 
+        import random
+
         while True:
 
             if(Seisen.current_mode == 1):
                 Seisen.test_kana()
 
             elif(Seisen.current_mode == 2):
-                Seisen.test_vocab()
+
+                choice = random.choice([1, 2])
+
+                if(choice == 1):
+                
+                    Seisen.test_vocab()
         
+                else:
+
+                    Seisen.test_vocab_romaji()
+
             elif(Seisen.current_mode == 3):
                 SettingsHandler.change_settings()
 
@@ -399,9 +410,6 @@ class Seisen:
 
         extended_prompt = testing_material_string + " (" + furigana_string + ")"
 
-        ## string to hold the You guessed... line
-        guessed_string = ""
-
         ## gets the total number of rounds and the number of correct rounds, and calculates the ratio
         total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
         number_of_correct_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
@@ -486,6 +494,164 @@ class Seisen:
             ScoreRater.log_incorrect_answer(vocab_to_test)
 
         answers = [value.value for value in vocab_to_test.answers]
+
+        for answer in answers: ## prints the other accepted answers 
+
+            if(len(answers) == 1):
+                break
+
+            if(is_correct == None or is_correct == False and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
+
+                if(display_other == False):
+                    Seisen.current_question_prompt += "\nOther Answers include:\n"
+
+                Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
+                display_other = True
+
+            elif(is_correct == True and answer != Seisen.current_user_guess and answer != vocab_to_test.answers):
+
+                if(display_other == False):
+                    Seisen.current_question_prompt += "\nOther Answers include:\n"
+                    
+                Seisen.current_question_prompt +=  "----------\n" + answer + "\n"
+                display_other = True
+
+        if(len(answers) >= 3):
+            print(Seisen.current_question_prompt + "\n" + your_guess)
+
+        else:
+            print(Seisen.current_question_prompt)
+
+        if(FileEnsurer.do_sleep_after_test == True):
+            time.sleep(Toolkit.long_sleep_constant)
+
+        else:
+            Toolkit.pause_console()
+            
+        Toolkit.clear_console()
+
+        FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION, str(total_number_of_rounds))
+        FileHandler.edit_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION, str(number_of_correct_rounds))
+
+        Logger.log_action("--------------------------------------------------------------")
+
+##--------------------start-of-test_vocab()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def test_vocab_romaji() -> None:
+
+        """
+        
+        Tests the user on vocab in romaji.
+
+        """
+        
+        Toolkit.clear_stream()
+
+        Toolkit.clear_console()
+
+        ROUND_COUNT_INDEX_LOCATION = 2
+        NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION = 3
+
+        display_other = False
+        roma_triggered = False
+
+        ## uses the word rater to get the vocab we are gonna test, as well as the display list, but that is not used here
+        vocab_to_test, _ = ScoreRater.get_vocab_to_test(LocalHandler.vocab)
+
+        all_testing_material = set([testing_material.value for testing_material in vocab_to_test.testing_material])
+        first_5_answers = [value.value for value in vocab_to_test.answers[:5]] 
+
+        testing_material_string = '/'.join(all_testing_material)
+
+        first_5_answers_string = '/'.join(first_5_answers)
+
+        extended_prompt = testing_material_string + " (" + first_5_answers_string + ")"
+
+        ## gets the total number of rounds and the number of correct rounds, and calculates the ratio
+        total_number_of_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, ROUND_COUNT_INDEX_LOCATION))
+        number_of_correct_rounds = int(FileHandler.read_seisen_line(FileEnsurer.loop_data_path, 1, NUMBER_OF_CORRECT_ROUNDS_INDEX_LOCATION))
+        round_ratio = str(round(number_of_correct_rounds / total_number_of_rounds, 2)) if total_number_of_rounds != 0 else "0.0"
+
+        Logger.log_action("Testing Vocab... Round " + str(total_number_of_rounds))
+
+        Seisen.current_question_prompt = "You currently have " + str(number_of_correct_rounds) + " out of " + str(total_number_of_rounds) + " correct; Ratio : " + round_ratio + "\n"
+        Seisen.current_question_prompt += "Likelihood : " + str(vocab_to_test.likelihood) + "%"
+        Seisen.current_question_prompt +=  "\n" + "-" * len(Seisen.current_question_prompt)
+        Seisen.current_question_prompt += "\nHow do you pronounce " + vocab_to_test.main_testing_material.value + "?\n"
+
+        ## check if the main testing material has multiple occurrences, if so just display the extended prompt
+        for vocab in LocalHandler.vocab:
+            for testing_material in vocab.testing_material:
+                if(vocab_to_test.main_testing_material.value == testing_material.value and vocab_to_test.main_testing_material != testing_material):
+                    Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.main_testing_material.value, extended_prompt)
+                    break
+
+        Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower().strip()
+
+        ## if the user wants to change the mode do so
+        if(Seisen.current_user_guess == "v"):
+
+            Toolkit.clear_console()
+
+            Logger.log_action("--------------------------------------------------------------")
+            Logger.log_action("User chose to change mode")
+            Logger.log_action("--------------------------------------------------------------")
+             
+            Seisen.change_mode()
+            return
+        
+        ## if the user wants to see the furigana do so
+        elif(Seisen.current_user_guess == "b"):
+
+            Toolkit.clear_console()
+
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.main_testing_material.value, extended_prompt)
+
+            Seisen.current_user_guess = str(input(Seisen.current_question_prompt)).lower()
+
+            roma_triggered = True
+
+            ## if the user wants to change the mode do so
+            if(Seisen.current_user_guess == "v"):
+
+                Toolkit.clear_console()
+                
+                Logger.log_action("--------------------------------------------------------------")
+                Logger.log_action("User chose to change mode")
+                Logger.log_action("--------------------------------------------------------------")
+                
+                Seisen.change_mode()
+                return
+            
+        total_number_of_rounds += 1
+
+        ## checks if the users answer is correct
+        is_correct, Seisen.current_user_guess = ScoreRater.check_answers_word(vocab_to_test, Seisen.current_user_guess, Seisen.current_question_prompt, is_romaji_type=True)
+    
+        Logger.log_action("User guessed " + Seisen.current_user_guess + ", is_correct = " + str(is_correct))
+
+        Toolkit.clear_console()
+
+        if(roma_triggered == False):
+            Seisen.current_question_prompt = Seisen.current_question_prompt.replace(vocab_to_test.main_testing_material.value, extended_prompt)
+
+        if(is_correct == True):
+            number_of_correct_rounds+=1
+            your_guess = "You guessed " + Seisen.current_user_guess + ", which is correct.\n"
+            Seisen.current_question_prompt += "\n\n" + your_guess
+            ScoreRater.log_correct_answer(vocab_to_test)           
+
+        elif(is_correct == False):
+            your_guess = "You guessed " + Seisen.current_user_guess + ", which is incorrect, a correct answer was " + vocab_to_test.readings[0].romaji + ".\n"
+            Seisen.current_question_prompt += "\n\n" + your_guess
+            ScoreRater.log_incorrect_answer(vocab_to_test)
+
+        else:
+            Seisen.current_question_prompt += "\n\nSkipped.\n"
+            ScoreRater.log_incorrect_answer(vocab_to_test)
+
+        answers = [reading.romaji for reading in vocab_to_test.readings] + [reading.furigana for reading in vocab_to_test.readings]
 
         for answer in answers: ## prints the other accepted answers 
 

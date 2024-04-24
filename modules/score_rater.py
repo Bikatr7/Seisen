@@ -261,11 +261,11 @@ class ScoreRater:
 ##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def check_typo(Word:Word, user_guess:str, prompt:str) -> str:  
+    def check_typo(Word:Word, user_guess:str, prompt:str, is_romaji_type:bool=False) -> str:  
 
         """
 
-        hecks if the user's guess is a typo or not.
+        Checks if the user's guess is a typo or not.
 
         Parameters:
         Word (object - Word) : the Word we're checking typos for.
@@ -287,8 +287,9 @@ class ScoreRater:
         typos = [typo.value for typo in Word.typos]
         incorrect_typos = [incorrect_typo.value for incorrect_typo in Word.incorrect_typos]
 
+        possible_intended_answers = [synonym.value for synonym in Word.answers] if not is_romaji_type else [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
+
         if(user_guess in typos):
-            possible_intended_answers = [synonym.value for synonym in Word.answers]
             return ScoreRater.get_intended_answer(user_guess, possible_intended_answers)
         elif(user_guess in incorrect_typos):
             return user_guess
@@ -313,7 +314,8 @@ class ScoreRater:
         
             Toolkit.clear_console()
 
-            if(userA == 1):
+            ## not gonna log typos for romaji type
+            if(userA == 1 and not is_romaji_type):
 
                 final_answer = closest_match
 
@@ -321,16 +323,18 @@ class ScoreRater:
 
                 return final_answer
         
-            else:
+            elif(userA == 2 and not is_romaji_type):
                 ScoreRater.log_new_incorrect_typo(Word, incorrect_typo=user_guess)
 
+            else:
+                pass
         
         return final_answer
     
 ##--------------------start-of-check_answers_word()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
-    def check_answers_word(Word:Word, user_guess:str, prompt:str) -> typing.Tuple[typing.Union[bool ,None], str]: 
+    def check_answers_word(Word:Word, user_guess:str, prompt:str, is_romaji_type:bool=False) -> typing.Tuple[typing.Union[bool ,None], str]: 
 
         """
         
@@ -348,13 +352,17 @@ class ScoreRater:
 
         """
 
-        answers = [synonym.value for synonym in Word.answers]
+        if(is_romaji_type):
+            answers = [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
+
+        else:
+            answers = [synonym.value for synonym in Word.answers]
 
         if(user_guess == 'q'): ## if the user wants to quit the program do so
             Toolkit.exit_seisen()
         
         if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
-            user_guess = ScoreRater.check_typo(Word, user_guess, prompt)
+            user_guess = ScoreRater.check_typo(Word, user_guess, prompt, is_romaji_type=is_romaji_type)
 
         if(user_guess in answers): 
             return True, user_guess

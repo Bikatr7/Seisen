@@ -498,15 +498,20 @@ class StorageSettingsHandler():
             return len(obj.__dict__)
 
         # Perform elimination of duplicates
-        new_vocab = [vocab1 for vocab1 in new_vocab if 
-                    not any((vocab1.main_testing_material.value == vocab2.main_testing_material.value and 
-                            vocab1.main_reading.romaji == vocab2.main_reading.romaji and
-                            count_attributes(vocab1) <= count_attributes(vocab2)) for vocab2 in old_vocab)]
+        new_vocab = []
+        for vocab1 in LocalHandler.vocab:
+            duplicates = [vocab2 for vocab2 in old_vocab if vocab1.main_testing_material.value == vocab2.main_testing_material.value and vocab1.main_reading.romaji == vocab2.main_reading.romaji]
+            if duplicates:
+                # If there are duplicates, choose the one with more attributes or higher counts
+                duplicate = max(duplicates, key=lambda x: (count_attributes(x), x.correct_count, x.incorrect_count))
+                if count_attributes(vocab1) > count_attributes(duplicate) or (vocab1.correct_count, vocab1.incorrect_count) > (duplicate.correct_count, duplicate.incorrect_count):
+                    new_vocab.append(vocab1)
+                else:
+                    new_vocab.append(duplicate)
+            else:
+                new_vocab.append(vocab1)
 
-        old_vocab = [vocab1 for vocab1 in old_vocab if
-                    not any((vocab1.main_testing_material.value == vocab2.main_testing_material.value and
-                            vocab1.main_reading.romaji == vocab2.main_reading.romaji and
-                            count_attributes(vocab1) <= count_attributes(vocab2)) for vocab2 in new_vocab)]
+        old_vocab = [vocab1 for vocab1 in old_vocab if not any(vocab1.main_testing_material.value == vocab2.main_testing_material.value and vocab1.main_reading.romaji == vocab2.main_reading.romaji for vocab2 in new_vocab)]
 
         ## apply new vocab to file
         for vocab in new_vocab:

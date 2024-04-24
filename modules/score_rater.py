@@ -320,14 +320,12 @@ class ScoreRater:
                 final_answer = closest_match
 
                 ScoreRater.log_new_typo(Word, typo=user_guess)
-
-                return final_answer
         
             elif(userA == 2 and not is_romaji_type):
                 ScoreRater.log_new_incorrect_typo(Word, incorrect_typo=user_guess)
 
-            else:
-                pass
+            elif(userA == 1 and is_romaji_type):
+                final_answer = closest_match
         
         return final_answer
     

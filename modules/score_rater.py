@@ -293,14 +293,16 @@ class ScoreRater:
             return ScoreRater.get_intended_answer(user_guess, possible_intended_answers)
         elif(user_guess in incorrect_typos):
             return user_guess
+        
+        correct_answers = [synonym.value for synonym in Word.answers] if not is_romaji_type else [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
 
-        for correct_answer in Word.answers:
+        for correct_answer in correct_answers:
 
-            new_distance = ScoreRater.levenshtein(user_guess, correct_answer.value)
+            new_distance = ScoreRater.levenshtein(user_guess, correct_answer)
 
             if(new_distance < min_distance and new_distance < lowest_distance):
                 lowest_distance = new_distance
-                closest_match = correct_answer.value
+                closest_match = correct_answer
 
         if(closest_match is not None):
 

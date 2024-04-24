@@ -1,3 +1,9 @@
+## Related to romaji
+need to add it to where romaji typos can get saved
+need to clean up a lot of code regarding that
+for the typos, we'd need a way to differentiate synonym typos vs reading typos
+make it to where if it's asking for a reading, and you answer a synonym, it'll let you try again and vice versa
+
 ## Things that will get added eventually (maybe)
 Look into using spacy to get root verbs and force things into it, could add a conjugation mode
 

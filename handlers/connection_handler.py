@@ -17,7 +17,6 @@ from modules.file_ensurer import FileEnsurer
 from modules.logger import Logger
 
 
-
 class ConnectionHandler():
 
     """

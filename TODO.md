@@ -1,3 +1,6 @@
+## Overall cleaning
+A lot of stuff needs to be refactored and trimmed down, especially seisen.py and storage_settings_handler.py
+
 ## Related to romaji
 need to add it to where romaji typos can get saved
 need to clean up a lot of code regarding that

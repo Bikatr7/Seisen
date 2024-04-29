@@ -22,6 +22,8 @@ Python Version: 3.8+
 
 Tests the user on Japanese Kana and Vocabulary.
 
+Seisen has a trello board for tracking planned features and bugs, you can find it [here](https://trello.com/b/2sxSLq1L/seisen).
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 **Dependencies**<a name="dependencies"></a>
 

@@ -244,49 +244,22 @@ class StorageSettingsHandler():
 
         """
 
-        valid_import_paths = []
-        valid_import_names = []
+        valid_imports = [(os.path.join(FileEnsurer.script_dir, file_name), file_name.replace(".seisen", "")) 
+                        for file_name in os.listdir(FileEnsurer.script_dir) if file_name.endswith(".seisen")]
 
-        import_deck = []
-
-        portions_write: typing.Dict[str, typing.List[str]] = {}
-
-        target_index = -1
-
-        deck_to_import_prompt = ""
-
-        for file_name in os.listdir(FileEnsurer.script_dir):
-
-            if(file_name.endswith(".seisen")): 
-
-                file_path = os.path.join(FileEnsurer.script_dir, file_name)
-                file_name = file_name.replace(".seisen", "")
-
-                valid_import_paths.append(file_path)
-                valid_import_names.append(file_name)
-
-                deck_to_import_prompt += file_name + "\n" 
-
-        deck_to_import_prompt += "\nWhat deck would you like to import?"
-
-        if(len(valid_import_paths) == 0):
-                
+        if(not valid_imports):
             print("No valid decks to import. The target deck must be in the script directory.\n")
-
             Toolkit.pause_console()
-
             return
 
-        try: ## user confirm will throw a UserCancel error if the user wants to cancel the backup restore.
+        deck_to_import_prompt = "\n".join(name for _, name in valid_imports) + "\n\nWhat deck would you like to import?"
 
+        try:
             deck_to_import = Toolkit.user_confirm(deck_to_import_prompt)
 
-            if(deck_to_import in valid_import_names):
-                Toolkit.clear_console()
+            target_index = next((index for index, (_, name) in enumerate(valid_imports) if name == deck_to_import), -1)
 
-                target_index = valid_import_names.index(deck_to_import)
-
-            else:
+            if(target_index == -10):
                 print("Invalid Deck Choice.\n")
                 time.sleep(Toolkit.long_sleep_constant)
                 return
@@ -295,34 +268,29 @@ class StorageSettingsHandler():
             Logger.log_action("\nCancelled deck import", output=True, omit_timestamp=True)
             time.sleep(Toolkit.long_sleep_constant)
             return
-        
-        with open(valid_import_paths[target_index], 'r', encoding="utf-8") as file:
+
+        with open(valid_imports[target_index][0], 'r', encoding="utf-8") as file:
             import_deck = file.readlines()
 
         if(import_deck[0] != "Seisen Vocab Deck\n"):
             print("Invalid Deck, please make sure the .seisen file is a Seisen Vocab Deck.\n")
             time.sleep(2)
             return
-        
-        ## Gets rid of the Seisen Vocab Deck Identifier
-        import_deck.pop(0)
 
+        import_deck.pop(0)
+        portions_write = {}
         portion_index = 0
 
         for line in import_deck:
-            
-            ## Delimiter for portions of the deck.
             if(line == "---\n"):
-                portion_index += 1  # move to the next portion
+                portion_index += 1
                 continue
 
             decoded_content = base64.b64decode(line.strip()).decode('utf-8')
+
             portion = FileEnsurer.vocab_paths[portion_index]
-
-            if(portion not in portions_write):
-                portions_write[portion] = []
-
-            portions_write[portion].append(decoded_content)
+            
+            portions_write.setdefault(portion, []).append(decoded_content)
 
         for portion, lines in portions_write.items():
             with open(portion, 'w+', encoding="utf-8") as file:
@@ -330,7 +298,7 @@ class StorageSettingsHandler():
 
         LocalHandler.load_words_from_local_storage()
 
-        Logger.log_action("Imported the " + deck_to_import + " vocab deck.", output=True, omit_timestamp=True)
+        Logger.log_action(f"Imported the {valid_imports[target_index][1]} vocab deck.", output=True, omit_timestamp=True)
 
         time.sleep(Toolkit.long_sleep_constant)
 

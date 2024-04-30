@@ -370,14 +370,14 @@ class ScoreRater:
         rom_answers = [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
         reg_answers = [synonym.value for synonym in Word.answers]
 
-        if(user_guess == 'q'): ## if the user wants to quit the program do so
-            Toolkit.exit_seisen()
-
         answers = set(rom_answers) if is_romaji_type else set(reg_answers)
         alt_answers = set(reg_answers) if is_romaji_type else set(rom_answers)
         
         if(user_guess in alt_answers and user_guess not in answers):
-            user_guess = input(f"\nYou entered a {'reading' if is_romaji_type else 'meaning'} instead of a {'meaning' if is_romaji_type else 'reading'}. Please enter the correct {'meaning' if not is_romaji_type else 'reading'} : ") 
+            user_guess = input(f"\nYou entered a {'reading' if not is_romaji_type else 'meaning'} instead of a {'meaning' if not is_romaji_type else 'reading'}. Please enter the correct {'meaning' if not is_romaji_type else 'reading'} : ") 
+
+        if(user_guess == 'q'): ## if the user wants to quit the program do so
+            Toolkit.exit_seisen()
 
         if(user_guess not in answers and user_guess.strip() != ''): ## checks if user_guess is a typo
             user_guess = ScoreRater.check_typo(Word, user_guess, prompt, is_romaji_type=is_romaji_type)

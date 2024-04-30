@@ -258,6 +258,34 @@ class ScoreRater:
 
         return closest_string
 
+##--------------------start-of-get_matching_typos()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------    
+
+    @staticmethod
+    def get_matching_typos(actual_answers, typos) -> typing.List[str]:
+
+        """
+
+        Typos can either be romaji or definition, so we need to get the one's that are close to the actual answers.
+
+        Parameters:
+        actual_answers (list - str) : the correct answers.
+        typos (list - str) : the typos.
+
+        Returns:
+        matching_typos (list - str) : the typos that match the actual answers.
+
+        """
+
+        matching_typos = []
+
+        for typo in typos:
+            for answer in actual_answers:
+                if(ScoreRater.levenshtein(typo, answer) < 3):
+                    matching_typos.append(typo)
+                    break
+
+        return matching_typos
+
 ##--------------------start-of-check_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     @staticmethod
@@ -278,33 +306,28 @@ class ScoreRater:
         """
 
         min_distance = 3
-        lowest_distance = 3
-
         closest_match = None
-
         final_answer = user_guess
 
         typos = [typo.value for typo in Word.typos]
         incorrect_typos = [incorrect_typo.value for incorrect_typo in Word.incorrect_typos]
 
-        possible_intended_answers = [synonym.value for synonym in Word.answers] if not is_romaji_type else [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
-
-        if(user_guess in typos):
-            return ScoreRater.get_intended_answer(user_guess, possible_intended_answers)
-        elif(user_guess in incorrect_typos):
-            return user_guess
-        
         correct_answers = [synonym.value for synonym in Word.answers] if not is_romaji_type else [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
 
-        for correct_answer in correct_answers:
+        if(user_guess in incorrect_typos):
+            return user_guess
+        elif(user_guess in typos):
+            return ScoreRater.get_intended_answer(user_guess, correct_answers)
 
-            new_distance = ScoreRater.levenshtein(user_guess, correct_answer)
+        typos = ScoreRater.get_matching_typos(correct_answers, typos)
 
-            if(new_distance < min_distance and new_distance < lowest_distance):
-                lowest_distance = new_distance
-                closest_match = correct_answer
+        closest_match, lowest_distance = min(
+            ((correct_answer, ScoreRater.levenshtein(user_guess, correct_answer)) for correct_answer in correct_answers),
+            key=lambda x: x[1],
+            default=(None, min_distance)
+        )
 
-        if(closest_match is not None):
+        if(closest_match is not None and lowest_distance < min_distance):
 
             Toolkit.clear_console()
 
@@ -315,19 +338,11 @@ class ScoreRater:
             userA = int(Toolkit.input_check("Validation With V Single Key" ,Toolkit.get_single_key(), 2, prompt))
         
             Toolkit.clear_console()
-
-            ## not gonna log typos for romaji type
-            if(userA == 1 and not is_romaji_type):
-
+            if(userA == 1):
                 final_answer = closest_match
-
                 ScoreRater.log_new_typo(Word, typo=user_guess)
-        
-            elif(userA == 2 and not is_romaji_type):
+            elif(userA == 2):
                 ScoreRater.log_new_incorrect_typo(Word, incorrect_typo=user_guess)
-
-            elif(userA == 1 and is_romaji_type):
-                final_answer = closest_match
         
         return final_answer
     
@@ -352,26 +367,29 @@ class ScoreRater:
 
         """
 
-        if(is_romaji_type):
-            answers = [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
-
-        else:
-            answers = [synonym.value for synonym in Word.answers]
+        rom_answers = [reading.romaji for reading in Word.readings] + [reading.furigana for reading in Word.readings]
+        reg_answers = [synonym.value for synonym in Word.answers]
 
         if(user_guess == 'q'): ## if the user wants to quit the program do so
             Toolkit.exit_seisen()
+
+        answers = set(rom_answers) if is_romaji_type else set(reg_answers)
+        alt_answers = set(reg_answers) if is_romaji_type else set(rom_answers)
         
-        if(user_guess not in answers and user_guess != 'z' and user_guess.strip() != ''): ## checks if user_guess is a typo
+        if(user_guess in alt_answers and user_guess not in answers):
+            user_guess = input(f"\nYou entered a {'reading' if is_romaji_type else 'meaning'} instead of a {'meaning' if is_romaji_type else 'reading'}. Please enter the correct {'meaning' if not is_romaji_type else 'reading'} : ") 
+
+        if(user_guess not in answers and user_guess.strip() != ''): ## checks if user_guess is a typo
             user_guess = ScoreRater.check_typo(Word, user_guess, prompt, is_romaji_type=is_romaji_type)
 
         if(user_guess in answers): 
             return True, user_guess
         
-        elif(user_guess != 'z'): 
+        if(user_guess != 'z'): 
             return False, user_guess
         
-        else: ## z indicates the user is skipping the Word
-            return None, user_guess
+        ## z indicates the user is skipping the Word
+        return None, user_guess
     
 ##--------------------start-of-log_new_typo()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

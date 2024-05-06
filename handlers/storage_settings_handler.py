@@ -302,6 +302,7 @@ class StorageSettingsHandler():
 
         time.sleep(Toolkit.long_sleep_constant)
 
+
 ##--------------------start-of-combine_vocab_decks()------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
         
     @staticmethod
@@ -326,10 +327,17 @@ class StorageSettingsHandler():
 
         deck_to_import_prompt = ""
 
-        file_names = [file for file in os.listdir(FileEnsurer.script_dir) if file.endswith(".seisen")]
-        valid_import_paths = [os.path.join(FileEnsurer.script_dir, file_name) for file_name in file_names]
-        valid_import_names = [file_name.replace(".seisen", "") for file_name in file_names]
-        deck_to_import_prompt = "\n".join(valid_import_names)
+        for file_name in os.listdir(FileEnsurer.script_dir):
+
+            if(file_name.endswith(".seisen")): 
+
+                file_path = os.path.join(FileEnsurer.script_dir, file_name)
+                file_name = file_name.replace(".seisen", "")
+
+                valid_import_paths.append(file_path)
+                valid_import_names.append(file_name)
+
+                deck_to_import_prompt += file_name + "\n" 
 
         deck_to_import_prompt += "\nWhat deck would you like to combine with the current deck?"
 
@@ -383,7 +391,10 @@ class StorageSettingsHandler():
             decoded_content = base64.b64decode(line.strip()).decode('utf-8')
             portion = FileEnsurer.vocab_paths[portion_index]
 
-            portions_write.setdefault(portion, []).append(decoded_content)
+            if(portion not in portions_write):
+                portions_write[portion] = []
+
+            portions_write[portion].append(decoded_content)
 
         for portion, lines in portions_write.items():
             with open(portion, 'w+', encoding="utf-8") as file:
@@ -401,28 +412,49 @@ class StorageSettingsHandler():
         ## some constraints to consider:
         ## id's are all over the place, so we need to reassign them.
 
-        def write_vocab_values(file_path, vocab_values):
-            values_to_write_list = [vocab_values]
-            FileHandler.write_seisen_lines(file_path, values_to_write_list)
-        
+        ## apply old vocab to file
         for vocab in old_vocab:
+
+            values_to_write_list = []
+
             vocab_values = [vocab.id, vocab.correct_count, vocab.incorrect_count]
             FileHandler.write_seisen_line(FileEnsurer.vocab_path, vocab_values)
-        
+            values_to_write_list.clear()
+
             for testing_material in vocab.testing_material:
-                write_vocab_values(FileEnsurer.vocab_testing_material_path, [testing_material.word_id, testing_material.id, testing_material.value])
-        
+                testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
+                values_to_write_list.append(testing_material_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_testing_material_path, values_to_write_list)
+            values_to_write_list.clear()
+
             for answer in vocab.answers:
-                write_vocab_values(FileEnsurer.vocab_answers_path, [answer.word_id, answer.id, answer.value])
-        
+                answer_values = [answer.word_id, answer.id, answer.value]
+                values_to_write_list.append(answer_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_answers_path, values_to_write_list)
+            values_to_write_list.clear()
+
             for reading in vocab.readings:
-                write_vocab_values(FileEnsurer.vocab_readings_path, [reading.word_id, reading.id, reading.furigana, reading.romaji])
-        
+                reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
+                values_to_write_list.append(reading_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_readings_path, values_to_write_list)
+            values_to_write_list.clear()
+
             for typo in vocab.typos:
-                write_vocab_values(FileEnsurer.vocab_typos_path, [typo.word_id, typo.id, typo.value])
-        
+                typo_values = [typo.word_id, typo.id, typo.value]
+                values_to_write_list.append(typo_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_typos_path, values_to_write_list)
+            values_to_write_list.clear()
+
             for incorrect_typo in vocab.incorrect_typos:
-                write_vocab_values(FileEnsurer.vocab_incorrect_typos_path, [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value])
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value]
+                values_to_write_list.append(incorrect_typo_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_incorrect_typos_path, values_to_write_list)
+            values_to_write_list.clear()
 
         new_testing_material_ids = []
         new_reading_ids = []
@@ -435,40 +467,99 @@ class StorageSettingsHandler():
             return len(obj.__dict__)
 
         # Perform elimination of duplicates
-        new_vocab = []
-        for vocab1 in LocalHandler.vocab:
-            duplicates = [vocab2 for vocab2 in old_vocab if vocab1.main_testing_material.value == vocab2.main_testing_material.value and vocab1.main_reading.romaji == vocab2.main_reading.romaji]
-            if(duplicates):
-                # If there are duplicates, choose the one with more attributes or higher counts
-                duplicate = max(duplicates, key=lambda x: (count_attributes(x), x.correct_count, x.incorrect_count))
-                if count_attributes(vocab1) > count_attributes(duplicate) or (vocab1.correct_count, vocab1.incorrect_count) > (duplicate.correct_count, duplicate.incorrect_count):
-                    new_vocab.append(vocab1)
-                else:
-                    new_vocab.append(duplicate)
-            else:
-                new_vocab.append(vocab1)
+        new_vocab = [vocab1 for vocab1 in new_vocab if 
+                    not any((vocab1.main_testing_material.value == vocab2.main_testing_material.value and 
+                            vocab1.main_reading.romaji == vocab2.main_reading.romaji and
+                            count_attributes(vocab1) <= count_attributes(vocab2)) for vocab2 in old_vocab)]
 
-        old_vocab = [vocab1 for vocab1 in old_vocab if not any(vocab1.main_testing_material.value == vocab2.main_testing_material.value and vocab1.main_reading.romaji == vocab2.main_reading.romaji for vocab2 in new_vocab)]
+        old_vocab = [vocab1 for vocab1 in old_vocab if
+                    not any((vocab1.main_testing_material.value == vocab2.main_testing_material.value and
+                            vocab1.main_reading.romaji == vocab2.main_reading.romaji and
+                            count_attributes(vocab1) <= count_attributes(vocab2)) for vocab2 in new_vocab)]
 
-        def handle_vocab_attribute(vocab, attribute, id_name, new_ids, attribute_values_func):
-            values_to_write_list = []
-            for item in getattr(vocab, attribute):
-                item.word_id = vocab.id
-                item.id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids(id_name) + new_ids)
-                new_ids.append(item.id)
-                values_to_write_list.append(attribute_values_func(item))
-            FileHandler.write_seisen_lines(getattr(FileEnsurer, f"vocab_{attribute}_path"), values_to_write_list)
-        
-        # apply new vocab to file
+        ## apply new vocab to file
         for vocab in new_vocab:
+
+            values_to_write_list = []
+
+            ## new id needs to be assigned
             vocab.id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB ID"))
+
             vocab_values = [vocab.id, vocab.correct_count, vocab.incorrect_count]
             FileHandler.write_seisen_line(FileEnsurer.vocab_path, vocab_values)
-        
-            handle_vocab_attribute(vocab, 'testing_material', 'VOCAB TESTING MATERIAL ID', new_testing_material_ids, lambda x: [x.word_id, x.id, x.value])
-            handle_vocab_attribute(vocab, 'answers', 'VOCAB SYNONYM ID', new_answer_ids, lambda x: [x.word_id, x.id, x.value])
-            handle_vocab_attribute(vocab, 'readings', 'VOCAB READING ID', new_reading_ids, lambda x: [x.word_id, x.id, x.furigana, x.romaji])
-            handle_vocab_attribute(vocab, 'typos', 'VOCAB TYPO ID', new_typo_ids, lambda x: [x.word_id, x.id, x.value])
-            handle_vocab_attribute(vocab, 'incorrect_typos', 'VOCAB INCORRECT TYPO ID', new_incorrect_typo_ids, lambda x: [x.word_id, x.id, x.value])
-        
+            values_to_write_list.clear()
+
+            for testing_material in vocab.testing_material:
+
+                ## set testing material word id to the new vocab id
+                testing_material.word_id = vocab.id
+
+                ## and generate a new id for the testing material
+                testing_material.id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TESTING MATERIAL ID") + new_testing_material_ids)
+                new_testing_material_ids.append(testing_material.id)
+
+                testing_material_values = [testing_material.word_id, testing_material.id, testing_material.value]
+                values_to_write_list.append(testing_material_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_testing_material_path, values_to_write_list)
+            values_to_write_list.clear()
+
+            for answer in vocab.answers:
+
+                ## set answer word id to the new vocab id 
+                answer.word_id = vocab.id
+
+                ## and generate a new id for the answer
+                answer.id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB SYNONYM ID") + new_answer_ids)
+                new_answer_ids.append(answer.id)
+
+                answer_values = [answer.word_id, answer.id, answer.value]
+                values_to_write_list.append(answer_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_answers_path, values_to_write_list)
+            values_to_write_list.clear()
+
+            for reading in vocab.readings:
+
+                ## set reading word id to the new vocab id
+                reading.word_id = vocab.id
+
+                ## and generate a new id for the reading
+                reading.id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB READING ID") + new_reading_ids)
+                new_reading_ids.append(reading.id)
+
+                reading_values = [reading.word_id, reading.id, reading.furigana, reading.romaji]
+                values_to_write_list.append(reading_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_readings_path, values_to_write_list)
+            values_to_write_list.clear()
+
+            for typo in vocab.typos:
+
+                ## set typo word id to the new vocab id
+                typo.word_id = vocab.id
+
+                ## and generate a new id for the typo
+                typo.id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB TYPO ID") + new_typo_ids)
+
+                typo_values = [typo.word_id, typo.id, typo.value]
+                values_to_write_list.append(typo_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_typos_path, values_to_write_list)
+            values_to_write_list.clear()
+
+            for incorrect_typo in vocab.incorrect_typos:
+
+                ## set incorrect typo word id to the new vocab id
+                incorrect_typo.word_id = vocab.id
+
+                ## and generate a new id for the incorrect typo
+                incorrect_typo.id = FileHandler.get_new_id(LocalHandler.get_list_of_all_ids("VOCAB INCORRECT TYPO ID") + new_incorrect_typo_ids)
+
+                incorrect_typo_values = [incorrect_typo.word_id, incorrect_typo.id, incorrect_typo.value]
+                values_to_write_list.append(incorrect_typo_values)
+
+            FileHandler.write_seisen_lines(FileEnsurer.vocab_incorrect_typos_path, values_to_write_list)
+            values_to_write_list.clear()
+
         LocalHandler.load_words_from_local_storage()
